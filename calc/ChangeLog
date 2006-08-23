@@ -1,0 +1,23 @@
+alpha:
+- first revision
+- modified extcalc math algorithms to work in calc
+- modified accerelated algorithms for integration and differentiation for calc
+
+0.2.2:
+- inserted new extcalc algorithms
+- enabled command-line options -v (version) -h (help) -o (output length) -a (angle)
+
+0.3.0:
+- updated to extcalc 0.3.0 algorithms
+
+0.3.1:
+- variables can be used
+- answer memory works
+
+0.4.0
+- problems with roots solved
+- update to calculation algorithms v0.4.0
+
+0.4.5
+- supports scripting
+- updated manpage

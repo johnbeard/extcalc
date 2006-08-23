@@ -1,0 +1,125 @@
+Das ist ein Test
+
+
+CALC - Readme
+
+1. Introduction
+2. Installation
+3. Usage
+4. Options
+5. Scripting
+
+
+
+
+1. Introduction
+
+Calc is a scientific calculator for the text console.
+It is simple to use and it can process many mathematical functions.
+Calc is as subproject of Extcalc. It uses the calculation algorithms of 
+the graphical Extcalc calculator.
+This is version 0.4.5 of Calc. The parser algorithms should work
+correctly now and all needed command line options are active.
+Variables and the answer memory can be used. An early version of the 
+Extcalc script interpreter is also included.
+
+2. Installation
+
+1. unpack the packet (if you have not already done so) [tar -xzf calc.tar.gz]
+2. change directory [cd calc]
+3. configure package [./configure]
+4. copile package [make]
+5. become root [su]
+6. install [make install]
+
+To remove the package, just type make uninstall.
+
+3. Usage
+
+After the installation, you just need to type calc into your console to run calc.
+You can input a calculation direcly as command line paramter:
+calc "2*(6+sqrt4/(2^5-sin(pi/3)))"
+If you do so, put your function into " ", because otherwise, the shell may interpret the brackts wrong.
+The second way is to start calc without parameter and then type the function into the running programm.
+Calc will process your input when you press enter.
+
+4. Options
+
+-m mode 
+--mode mode
+  Possible values: base, Mode for base-n calculatons and logic functions
+                   std,  normal calculation mode (default)
+                   script, for running scripts (additional information at Point 5)
+
+-b base
+--base base
+  Possible values: dec, for decimal numbers (base 10)
+                   hex, for hexadecimal numbers (base 16)
+		   oct, for octal numbers (base 8)
+		   bin, for binary numbers (base 2)
+  This option can only be used when -m base is set.
+
+
+-o output length in digits
+--output output length
+  Possible Values: 2-15 at Systems with  8 byte floating-point variables (for example Alpha or PPC64 CPUs)
+                   2-18 at Systems with 10 byte floating-point variables (most 32 bit CPUs)
+                   2-33 at Systems with 16 byte floating-point variables (some 64 bit CPUs, for example sparc64)
+  Example: calc -o 7 "sqrt2"
+
+-a angle type
+--angle angle type
+  Possible Values: deg, degrees; full circle is 360
+                   rad, radiant; full circle is 2*pi
+                   gra, grade; full circle is 400
+  Example: calc -a deg "sin30"
+
+-v
+--version
+  Output the version number of calc and return.
+  
+-h
+--help
+  Output a short help and return.
+
+5. Scripting
+If you want to run a script, the parameters of Calc are different.
+To run a script, you should type
+calc -m script "path"
+Path is the path where the script code is stored.
+
+Script programming:
+The script interpreter of calc uses a C-like programming  syntax.   The
+following command are supported.
+
+IF EXPRESSION
+if(condition)
+  command for condition true;
+else command for condition false;
+
+WHILE LOOP
+while(condition)
+  command that is run while condition is true;
+
+FOR LOOP
+for(initialisation; condition; count-command)
+  command that is run while condition is true;
+
+
+PRINT COMMAND
+print( output to print out );
+
+GETLINE COMMAND
+getline; // read a text line from stdin and returns this text
+
+GETKEY COMMAND
+getkey; // return the key pressed by the user
+        // blocks until the user presses any key
+
+KEYSTATE COMMAND
+keystate;  // returns the key pressed by the user or 0 if no keywas pressed
+           // nonblocking
+
+SLEEP COMMAND
+sleep( time in microseconds ); //Script is stops for  the  given time
+
