@@ -1,0 +1,88 @@
+0.1.0 initial version
+- GUI for calculator
+- GUI for graphics
+- graphics drawing with OpenGL
+- Analysation of graphs
+- mathematical parser
+- accerelated parser for grapic calculations
+- integration
+- differentiation
+- menu for calculator preferences
+- dialog for graphic preferences
+- short documentation in english and german
+
+0.1.1 bugfix update for 0.1.1
+- bug in calculator preferences menu fixed
+- grapic preferences menu added
+
+0.2.0 first release with logic functions
+- base-n calculaton
+- logic functions
+- completely rewritten parser and calculaton algorithms without QT
+- parser compatible to calc project
+- calculator works with higher precisision
+- program modified to run on 64Bit systems
+
+0.2.1 bugfixes and changes in GUI
+- calculator preferences dialog added
+- Problem with installation on Suse Linux 8.2 fixed
+- documentation rewritten
+
+0.2.2 added features for polar coordinate system and parameter functions
+- bugs in mathematical parser fixed
+- added features for drawing polar coordinate systems
+- updated graphics outupt window to processs polar functions and parameter functions
+- updated graphics analysation window for polar functions (no analysation of parameter functions yet)
+- updated preferences dialogs and preferences storing system
+
+0.2.3 3D-graphics enabled
+- Added support for 3D-coordinate system
+- enabled 3D-graphs
+- updated preferences dialogs for 3D coordinate system
+- updated graph solving functions
+- modified parser algorithm to run on systems with support for long double calculations as well as 
+  on systems without this
+
+0.2.4 dynamic graphs
+- It is possible to use every type of graph in a dynamic mode
+- graphic preferences dialog uses tabs now
+- added table window
+
+0.3.0 first 0.3 release
+- completed table functions
+- added table preferences menu and dialogs
+- fixed some bugs in graph drawing and function tables
+
+0.4.0 Graph analysation updated
+- bugs in some analysation methods fixed
+- modified analysation method for inequaity functions
+- added support for analysation of 3D-functions and parameter functions 
+
+0.4.1 Menubar updated
+- filled file-menu
+- added edit-menu with standard-items
+- added view-menu to show or hide the different tabs
+- added script editor widget 
+- added script preferences widget
+- created assistet for initial configuration
+
+0.4.2 Script editor widget finished
+- added fully-functional editor widget
+- creates and manages workspace
+- saves, loads removes, creates files and directories
+- script execute feature activated
+- basic functions (if, while, brackets, compare operators) activated
+
+0.4.5 improved scripting functions
+- new commands: for loop, type converting
+- input and output functions (print, getkey, getline, keystate, clear, setcursor)
+- added script console window for running scripts
+- updated documentation, added script code examples
+
+0.5.0 full scripting support
+- new scripting commands break, continue stop
+- script interpreter supports arrays
+- executing a script from another script is possible
+- script parser shows all parse errors and their position in the code
+- improved script interpreter
+- fixed some memory leaks in script interpreter and calculator

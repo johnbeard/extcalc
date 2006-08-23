@@ -1,0 +1,136 @@
+EXTCALC README
+
+1. Einleitung
+
+2. Installation
+
+3. Inhalt des Pakets
+
+4. Version
+
+5. Hinweise 
+
+
+
+
+1. EINLEITUNG
+Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner für Linux. Er unterstützt alle wichtigen Grundrechenfunktionen, Integral- und Differentialrechnung. Es ist ausßerdem möglich Grafen zeichnen zu lassen und auszuwerten und es können Tabellen zu Funktionen erstellt werden. Extcalc ist auch programmierbar. Es kann Script-Programme, die in einer C-ähnlichen Sprache geschrieben werden, ausführen.
+
+
+
+
+2. INSTALLATION
+- auspacken (tar -xzf extcalc-0.4.5.tar.gz)
+- in Verzeichnis wechseln (cd extcalc-0.4.5)
+- konfigurieren (./configure --enable-language_de)
+- kompilieren (make)
+- root werden (su)
+- installieren (make install)
+
+Sprachunterstützung:
+Um extcalc in englisch zu installieren muss nur "./configure" ausgeführt werden.
+Zur Installation in deutsch mus "./configure --enable-language_de" ausgeführt werden.
+
+
+
+3. INHALT DES PAKETS
+Folgende Dateien sind in diesem Paket enthalten:
+README               engliche Readme
+LIESMICH             deutsche Readme
+configure            Konfigurationsscript
+...                  Dateien für Automake
+src/                 der gesamte Sourcecode
+    ...
+share/               Installationsdaten
+      ...            Icons, Lizenz
+doc/                 Dokumentation
+    help_de.html     deutsche Doku
+    help_en.html     englische Doku
+    ...              Bilder
+   
+	   
+4. VERSION
+Version 0.4.5
+
+Dies ist eine Testversion!
+Teile des Programms sind noch nicht fertig und deshalb inaktiv oder fehlerhaft.
+
+Fertig:
+Grafische Oberfläche Rechner
+Grafische Oberfläche Grafik
+Verarbeitung mathematischer Ausdrücke
+Graphen zeichnen (kartesisches und polares Koorinatensystem)
+Graphen auswerten
+Integralrechung, Differentialrechnung
+Verschieden Zahlensysteme
+Logikfunktionen
+3D-Grafik
+Dynamische Grafik
+Grundlegende Scrpt-Funktionen
+Script-Konsole
+Script-Editor
+
+Noch zu tun:
+Vervollständigen der Script-Sprache
+Script-Debugging
+Matrixrechnung
+Vektorrechnung
+Komplexe Zahlen
+
+
+
+5. HINWEISE
+
+Benötigte Pakete:
+Linux
+GCC 3 oder GCC 4 (läuft nicht mit gcc 2.xx)
+QT Version 3.1 oder höher
+OpenGL 
+
+Getestete Distributionen:
+Suse Linux 8.2:            getestet, ok
+Suse Linux 9.2:            getestet, ok
+Suse Linux 9.3:            getestet, ok
+Suse Linux 10.0:           getestet, ok
+Debian 3.1 Sarge:          Update benötigt
+Debian Etch:               getestet, ok
+Ubuntu Linux 5.04          läuft nicht
+Ubuntu Linux 5.10          getestet, ok
+Mandriva 2006:             getestet, ok
+Fedora Core 2:             getestet, ok
+Fedora Core 3 (64Bit):     getestet, ok
+Fedora Core 4:             Update benötigt
+Slackware 10:              getestet, ok
+
+Ubuntu Linux 5.04:
+              Installation läuft fehlerfrei
+              Programm lässt sich starten, aber Grafik-Fenster bleibt schwarz
+              Fehler im X-Server Paket von Ubuntu, für den kein Patch zur Verfügung steht.
+              Allerdings wurde dieses Problem in Version 5.10 von Ubuntu behoben.
+
+Debian 3.1 Sarge:
+              Falls das selbe Problem wie bei Ubuntu Linux 5.04 beschrieben, hier auftritt, 
+              muss das Update für X-Server und OpenGL installiert werden.
+
+Fedora Core 4:
+              Installation läuft fehlerfrei
+              Programm bricht sofort mit Speicherzugriffsfehler ab 
+              Der Linker von FC4 erzeugt ohne Update einen fehlerhaften ELF-Header.
+              Um das Problem zu beheben, muss nur der Patch für gcc und g++ installiert werden.
+	
+
+  
+
+Hardwareanforderungen:
+Prozessor mit ca. 1GHz (32Bit oder 64Bit)
+Genug RAM für grafische Oberfläche
+Für 3D-Grafik wird eine 3D-Karte empfohlen
+Zum Zoomen und Drehen von 3D-Graphen ist eine Maus mit Mausrad nötig
+
+Rechengenauigkeit:
+Die Rechengenauigkeit des Taschenrechners auf 32bit-CPUs beträgt maximal 18 Stellen.
+Die Genauigkeit bei Integralrechnungen beträgt etwa 9 Stellen
+Bei Differentialrechnung: ca. 8 Stellen
+Winkelfunktionen und Logarithmen: ca. 17 Stellen
+
+

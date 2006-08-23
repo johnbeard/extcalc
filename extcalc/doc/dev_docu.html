@@ -1,0 +1,544 @@
+<html>
+  <head>
+    <title>Extcalc</title>
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+  <h1> Extcalc - Scientific Calculator </h1>
+  Version 0.4.0
+  <br>
+  <br>
+  <h3>Inhalt</h3>
+  <a href="#introduction"><h3>1. Introduction</h3></a>
+  <a href="#source"><h3>2. Source Tree</h3></a>
+  <a href="#math"><h3>3. Mathematical Functions</h3></a>
+  <a href="#sub"><h3>4. Other Important Functions</h3></a>
+  <a href="#conf"><h3>5. Configuration Files and Preferences</h3></a>
+  <a href="#var"><h3>6. Used Variables</h3></a>
+  <a href="#automake"><h3>7. Automake and Autoconf</h3></a>
+  <br>
+  <br>
+  <br>
+  <a name="introduction"><h2>1. Introduction</h2></a>
+  This is the documentation for developers. It describes all important internal functions and classes,
+  the source tree, the internal processing of mathematical functions and the configuration files.
+  <br>
+  <br>
+  <br>
+  <a name="source"><h2>2. Source Tree</h2></a>  
+  <h3>File List:</h3>
+  <h5>Source Files:</h5>
+  extcalc.cpp<br>
+  buttons.cpp<br>
+  calcwidget.cpp<br>
+  global.cpp<br>
+  graph.cpp<br>
+  graphout.cpp<br>
+  graphpref.cpp<br>
+  graphsolve.cpp<br>
+  calctable.cpp<br>
+  calcinput.cpp<br>
+  calcpref.cpp<br>
+  functiontable.cpp<br>
+  table.cpp<br>
+  tablepref.cpp<br>
+  scriptedit.cpp<br>
+  scriptpref.cpp<br>
+  scriptio.cpp<br>
+  <h5>Object Header Files:</h5>
+   extcalc.h<br>
+  buttons.h<br>
+  calcwidget.h<br>
+  global.h<br>
+  graph.h<br>
+  graphout.h<br>
+  graphpref.h<br>
+  graphsolve.h<br>
+  calctable.h<br>
+  calcinput.h<br>
+  calcpref.h<br>
+  functiontable.h<br>
+  table.h<br>
+  tablepref.h<br>
+  scriptedit.h<br>
+  scriptpref.h<br>
+  scriptio.h<br>
+  <h5>Extra Header Files:</h5>
+  list.h<br>
+  calclocale.h<br>
+  <h3>Source Tree</h3>
+  <pre>
+  
+
+  
+                                     calclocale.h            list.h
+                                          |                 /  |  \________________________
+          ________________________________|________________/   |                           \
+         /                             global.h                |                        calctable.h___________
+        /  _______________________________|____________________|_____________________________|________________\___________________________________________________________________________________________________________
+       /  /                    /                         \     |                      \      |             \  |        \               \                \                    \               \               \            \
+  calcinput.h              buttons.h                       graphout.h                  graphsolve.h   functiontable.h  |               |                |                    |               |               |            |
+      \____              _____/     \                            \______        ______/                /            \  |               |                |                    |               |               |            |
+           \            /            \_________________________________ \      /______________________/              \ |               |                |                    |               |               |            |
+            calcwidget.h                                                graph.h                                     table.h       scriptedit.h       scriptio.h         graphpref.h    calcpref.h     tablepref.h     scriptpref.h
+                  \________________________           ___________________/                                            /                /                /                   /               /               /             /
+                                           \         /_______________________________________________________________/________________/________________/___________________/_______________/_______________/_____________/
+                                            extcalc.h
+  </pre>
+  <h3>Object Description</h3>
+  extcalc:<br>
+  Main Object of GUI, includes menus, tabs initialisation and management of preferences.<br><br>
+  calcwidget:<br>
+  Complete calculator window (calculator tab), which includes and connects all calculator components.<br><br>
+  calcinput:<br>
+  This is the text field of the calculator. It calls the calculate function.<br><br>
+  calcpref:<br>
+  Preferences dialog for calculator preferences.<br><br><br>
+
+  graph:<br>
+  Graphics main window (graphics tab). It includes and connects graph solving window and graph output window and
+  it manages the function table.<br><br>
+  graphout:<br>
+  This is the GL-component of the calculator. It precalculates the function graphs and shows them in the GL-window.<br><br>
+  graphsolve:<br>
+  This object includes the User Interface of the graph analysation window and the special calculation alogithms for
+  Newton's method, function roots, points of intersection ... .<br><br>
+  graphpref:<br>
+  Preferences dialog for graphics preferences.<br><br><br>
+
+  table:<br>
+  Table window (table tab). This is the main window for calculating result tables of functions<br><br>
+  tablepref:<br>
+  Preferences dialog for tables.<br><br><br>
+
+  scriptedit:<br>
+  Editor window for creating, editing and managing scripts<br><br>
+  scriptio:<br>
+  Console for the text input and output of calculator scripts<br><br>
+  scriptpref:<br>
+  Preferences dialog for scripts<br><br><br> 
+
+  buttons:<br>
+  This object includes both button groups of the calculator.<br><br>
+  calctable:<br>
+  Overloaded QT-table which can show text in different colors.<br><br>
+  functiontable:<br>
+  Overloaded calctable class, which manages the functions strings for graphs and tables. It can also manage
+  the function preferences like color, type, ...<br><br>
+  global:<br>
+  This object includes the calculator function and the accerelated calculator class and all needed subroutines.
+  It also includes the script  class for running calculator scripts and functions for processing configfiles and unicode.
+  In it's header file, all macros and the Preferences struct are defined.<br><br>
+
+  <a name="math"><h2>3. Mathematical Functions</h2></a>
+  All mathematical functions are processed in the calculate function and the Calculate class of the global object.
+  These functions don't use the Qt API.<br>
+  <h3>General</h3>
+  For single calculations (when you type them into the calculator window) Extcalc uses a recursive function called calculate().
+  This function parses the input string and calculates it recusively.<br>
+  For multiple calculations, like integration or drawing graphs Extcalc uses the Calculate class.
+  This class must be initialized with a string which is parsed on initialization. To calculate, you can run the calc() method.
+  This method may be called multiple times, with different variable vaules.<br>
+  Anoter class calle Script exists for running scripts in Extcalc. This class is used initialized like the Calculate class.
+  To execute the Script, you must call the exec() method.<br>
+  The Script class and the Calculate class have the same parent class called Math. Through this parent class, a script can also use
+  Calculate objects and a Calculate object can use Script objects.<br>
+  <h3>Usage of the calculator functions</h3>
+  1. Single calculation:<br>
+  <pre>
+      QString("calculation")           char*[] {"calculaton"}
+               |                                 |
+    char* checkString(QString)   _______________/
+               |                /
+    char* checkStringAnsi(char*)
+               |
+    long double calculate(char*)------->result
+  </pre>
+   2. multiple calculations:<br>
+  <pre>
+      QString("calculation")           char*[] {"calculation"}
+               |                                 |
+    char* checkString(QString)   _______________/
+               |                /
+    char* checkStringAnsi(char*)
+               |
+        class Calculate(char*)
+           /            /\      \        can be called as often as needed with new content of the included variables
+        calls            \      includes      | 
+         /                |            \      |
+       split()->initializes           double calc()---------->results
+  </pre> 
+   2. scripts:<br>
+  <pre>
+      QString("script code")         char*[] {"script code"}
+               |                                 |
+    char* checkString(QString)   _______________/
+               |                /
+    char* checkStringAnsi(char*)
+               |
+         class Script(char*)____
+           /            /\      \        can be called as often as needed
+        calls            \      includes      | 
+         /                |            \      |
+       split()->initializes           double exec()---------->executing script, text input and output is exchanged by script console
+  </pre> 
+  <h3>Code examples</h3>
+  1. Single calculation:<br>
+  <pre>
+  //calls the calculator with the given string
+  long double useCalc(char*function)
+  {
+      Preferences pref;			//make preferences for calculaton
+      pref.precisision=18;
+      pref.angle=DEG;
+      long double vars[27];		//array with variables 26 variables (A-Z) and answer memory (the 27th)
+  
+      char*checkdFunction=checkString(function,&amppref,&ampvars)
+      if(checkedFunction != NULL)
+      {
+          vars[26]=calculate(checkdFunction,&amppref,&ampvars);
+          delete[]checkedFunction;
+      }
+      else return (NAN);
+      return (vars[26]);
+  }
+  </pre>
+  2. multiple calculations:<br>
+  <pre>
+  //calculats a function with parameter X num times from X=0 to X=num-1
+  int multiCalc(char*function,double*results,int num)
+  {
+      Preferences pref;			//make preferences for calculaton
+      pref.precisision=15;
+      pref.angle=DEG;
+      long double vars[27];		//array with variables 26 variables (A-Z) and answer memory (the 27th)
+  
+      char*checkdFunction=checkString(function,&amppref,&ampvars)
+      if(checkedFunction != NULL)
+      {
+          Calculate f(checkedFunction,&amppref,&ampvars);
+          for(int c=0; c&ltnum; c++)
+          {
+              vars[23]=(long double)c;
+              results[c]=f.calc();
+          }
+		  delete[]checkedFunction;
+      }
+      else return (-1);
+      return (0);
+  }
+  </pre>
+  <h3>Script processing</h3>
+  Extcalc is able to process scripts written in a C-like scripting language.<br>
+  The script interpreter currently works only together with some extcalc components. The code can't be transfered
+  into any other program.<br>
+  In a later version, a modified version of the script interpreter code will be transfered into Calc. This modified version
+  may be used in every other code. I won't insert any code examples or descriptions here, until this is done.<br>
+  This scripts may also contain mathematical functions
+  known bythe accerelated math parser. The script class works as it is shown above. For text input and output, an extra script console
+  window is used. <br>
+  The script console class manages and executes scripts. The running script works in an own thread, so the rest of the program can be used
+  during script execution.<br>
+  The scripting language currently knows the following commands:<br>
+<pre>
+  //C-like if-expression: braces are optional, else is optional
+  if(expression)
+  {
+     commands
+  }
+  else {
+    commands
+  }
+
+  // c-like for loop: braces are optional, also possible: for(;;)
+  for(initialisation; run-condition; counter)
+  {
+     commands
+  }
+
+  // c-like while loop: braces ar optional
+  while(run-condition)
+  {
+     commands
+  }
+
+  // sleep function; time in microseconds
+  sleep(time);
+
+  //text output function; can print all processable data
+  print(output);
+
+  //clear text screen
+  clear;
+
+  //set text cursor position 0,0 is the upper left corner
+  setcursor(x,y);
+
+  //Warning: the set operator (= in C) currently only works like that
+  3.5->A;
+  "text"->B;
+  //only variable names A-Z can be used (like in the calculator) 
+  //this variables can store floating point numbers, integer numbers, booleans and text
+</pre>
+
+  <h3>Preformating of the function string</h3>
+  <h5>First step of preformating: checkString</h5>
+  One Loop: replaces all unicode through ascii code<br>
+  Functions, which are replaced:<br>
+  integral<br>
+  root<br>
+  pi<br>
+  e (euler)<br>
+  M (Mega)<br>
+  G (Giga)<br>
+  T (Tera)<br>
+  ²<br>
+  ³<br>
+  <h5>Second step of preformating: checkStringAnsi</h5>
+  Four Loops:<br>
+  First Loop:<br>
+  remove whitespace (space, tab, newline)<br>
+  replace \n, \t, ... (for scripts)<br>
+  return an error if string contents a backslash outside of a string<br>
+  (the backslash is needed later for internal use)<br>
+  Second Loop:<br>
+  replace parameter function calls through special char seqences, which contain a backslash and can be 
+  processed by calculate<br>
+  replace lowercase x and z through uppercase X and Z (not in base mode).<br>
+  replace ² and ³ (only for compatibility with Calc)<br>
+  replace mili, mega, giga ... through e-3, e6, e9 ...<br>
+  remove + and - signs which are not needed<br>
+  Third Loop:<br>
+  add *-signs where they are normally not written <br>
+  Fourth Loop:<br>
+  replace constants (pi, e and ans) through real numbers<br>
+  Fifth Loop:<br>
+  add *-signs which are needed after replacing constants <br>
+  <br>
+  If you use the math code of the Calc subproject, there will be no function called
+  checkStringAnsi. In this code, checkString does the same as checkStringAnsi
+  in Extcalc and a function for replacing unicode isn't needed.
+  <br>
+  <h3>Calculation Priority</h3>
+  The calculate-function knows five Types of Input:<br>
+  <h5>1. Binary operators:</h5>
+  Lowest priority<br>
+  +, -,<br>
+  *, /,<br>
+   ^, root, %, <br>
+  &amp, |, &lt&lt, &gt&gt, xor<br>
+  &amp&amp, ||<br>
+  <h5>2. Unary operators with argument right:</h5>
+  (unary) -<br>
+  sin, cos, tan,<br>
+  asin, acos, atan,<br>
+  sinh, cosh, tanh,<br>
+  asinh, acosh, atanh,<br>
+  ln, log,<br>
+  sqare root, cubed root,<br>
+  ~, not<br>
+  <h5>3. Unary operators with argument left:</h5>
+  !<br>
+  <h5>4. Functions with argument list:</h5>
+  integral, differential<br>
+  <h5>5. Standalone functions</h5>
+  Highest priority<br>
+  brackets ()<br>
+  variables A, B, C, ...<br>
+  Numbers 7, 1.45, -1.4e-45, .34, 12. ...<br>
+  <br>
+  Constants (Pi, e, ans) are replaced by their values by the checkString function.
+  So in the calculation, they a treated as numbers.
+  <br>
+  <br>
+  <a name="sub"><h2>4. Other Important Functions</h2></a>
+  <h3>bracketFind, bracketFindRev</h3>
+  This are search functions, which can run through a string and return only the matches, which are not inside
+  of brackets. The following signs will be processed like brackets: () {} ""<br>
+  It is also possible to search for one of these signs.<br><br>
+  Declarations:<br>
+  int bracketFind(char*string,char*searchString,int startPos=0);<br>
+  int bracketFindRev(char*string,char*searchString,int startPos=-1);<br>
+  Parameters:<br>
+  string: The string in which the other string is searched<br>
+  searchString: This string is searched in string<br>
+  startPos: The start index for the search in string<br>
+  At bracketFind, default is 0 and at bracketFindRev, default is -1. If startPos is set to the default
+  value, the whole string is searched.<br>
+  Return Value:<br>
+  Both functions return the index of the first match or -1 if searchString is not found.<br>
+  <br>
+  <h3>strcopy, strdel, strins</h3>
+  This are extra functions to modify strings.<br>
+  strcut cuts a part out of a string.<br>
+  strins inserts one string into the other and returns the result string.<br>
+  strcopy copies a part of one string into another string (replacement of strcpy)<br>
+  Declarations:<br>
+  char*strcut(char*src,int index,int len=1);<br>
+  char*strins(char*dest,char*src,int index);<br>
+  int strcopy(char*dest,char*src,int len);<br>
+  Parameters:<br>
+  strcut:<br>
+  src: the string to cut<br>
+  index: index to start cutting<br>
+  len: number of characters to cut out (default is 1 character)<br>
+  strins:<br>
+  dest: the string where the other string should be copied in<br>
+  src: the string to copy into dest<br>
+  index: the index where src is iserted into dest<br>
+  strcopy:<br>
+  dest: destination string to copy the other string in(must be a large enough allocated memory)<br>
+  src: the string, from which a part is copied into dest<br>
+  len: the length of the copied string<br>
+  Return Values:<br>
+  strins and strcut return the resulting string of the transformation.<br>
+  strcopy returns 0 if it runs correctly and -1 if it fails.<br>
+  <br>
+  <br>
+  <a name="conf"><h2>5. Configuration Files and Preferences</h2></a>
+  Extcalc only needs a configuration file at the home direcory of its user.<br>
+  The configfile should not be changed manually. Comments can't be uesd.
+  It's saved at ~/.extcalc/extcalc.conf and looks like the this:<br>
+  <pre>
+  ANGLE=rad                    (angle type: deg, rad, gra)
+  OUTPUTTYPE=variablenum       (output format: fixednum, variablenum, expsym)
+  OUTPUTLENGTH=18              (max. digits of output: 2 - max. precisision)
+  XMIN=-10                     (size of graphics coordinate system -x, +x, -y, +y: floating point number)
+  XMAX=10
+  YMIN=-10
+  YMAX=10
+  ZMIN=-10
+  ZMAX=10
+  RADIUSMAX=10                 (size of polar coordinate system max. radius, max. angle: floating pount numbers)
+  ANGLEMAX=6.283
+  RASTERSIZEX=1                (size of raster for x and y: floating point number)
+  RASTERSIZEY=1
+  RASTERSIZEZ=1
+  PARAMETERSTART=0             (start value of parameter T for parameter functions)	
+  PARAMETEREND=10              (end value of parameter T)
+  PARAMETERSTEPS=200           (number of steps for drawing)
+  DYNAMICSTART=0               (start value of parameter A for dynamic functions)
+  DYNAMICEND=10                (end value of parameter A)
+  DYNAMICSTEPS=10              (number of shown dynamic function graphs)
+  DYNAMICDELAY=100             (time delay beteween different graphs)
+  DYNAMICMOVEUPDOWN=false      (true: count from start value to end value and form and value to start value; false: count only from start value to and value and then restart at start value)
+  RASTERSIZEANGLE=0.31415      (size of raster in polar coordinate system: floating point number)
+  RASTERSIZERADIUS=1
+  RASTER=true                  (show raster: true, false)
+  AXIS=true                    (show axes: true, false)
+  LABEL=true                   (show labels: true, false)
+  AUTOSIZE=false               (constant width-to-height ratio of graphout window: true, false)
+  GRAPHTYPE=std                (type of coordinate system: std, polar 3d)
+  CALCTYPE=base                (mode of calculator: scientific, base)
+  BASE=dec                     (base for base mode: hex, dec, oct, bin)
+  F1=X+sinX                    (function table F1-F20: text of uncleaned functionstring without unicode)
+  ...                    
+  F1ACTIVE=true                (function active flag F1-F20: true, false)
+  ...
+  F1COLOR=black                (color of functions F1-F20: black grey, brown, green, blue, magenta, orange, red, yellow, cyan, colored)
+  ...
+  F1TYPE=normal                ( function types F1-F20: normal, polar, parameter, 3d, ieg (inequaity greather), iege (inequaity greather or equal), iel (inequaity less), iele (inequaity less or equal))
+  ...
+  F1DYNAMIC=false              (dynamic functions flag F1-F20:  true, false)
+  ...
+  </pre>
+  <h4>Preferences in Extcalc</h4>
+  This is a list of the possible preferences and the ways to change them:<br>
+  <h5>Calculator preferences</h5>
+  output type (dialog, menu)<br>
+  output length (dialog, menu)<br>
+  angle type (dialog, menu, quick preferences)<br>
+  calculator mode (dialog, menu, quick preferences)<br>
+  base (dialog, menu, quick preferences)<br>
+  <h5>Graphics Preferences</h5>
+  graph type (menu, dialog)<br>
+  xmin, xmax, ymin, ymax, zmin, zmax (dialog)<br>
+  angleMax, radiusMax (dialog)<br>
+  rasterSizeX, rasterSizeY, rasterSizeZ (dialog)<br>
+  rastersizeangle, rastersizeradius (dialog)<br>
+  parameterstart, parameterend, parameterSteps (dialog)<br>
+  dynamicstart, dynamicend, dynamicsteps, dynamicdelay (dialog)<br>
+  axes (dialog, menu)<br>
+  labels (dialog, menu)<br>
+  raster (dialog, menu)<br>
+  autosize (dialog, menu)<br>
+  function strings F1-F20 (function table)<br>
+  function active flag F1-F20 (function table)<br>
+  function color F1-F20 (function table)<br>
+  function type F1-F20 (function table)<br>
+  dynamic function flag F1-F20 (function table)<br>
+  <h5>Internal Preferences</h5>  
+  The internal preferences were not saved in the configfile.<br>
+  button shift mode (buttons)<br>
+  button alpha mode (buttons)<br>
+  button hyp mode (buttons)<br>
+  maximal precision (tested on startup)<br>
+  <br>
+  <br>
+  <a name="var"><h2>6. Used Variables</h2></a>
+  for calculate function:<br>
+  long double<br>
+  32-bit CPU:<br>
+  structure:<br>
+  1 bit for sign<br>
+  15 bits for exponent<br>
+  64 bits for mantisse<br>
+  values:<br>
+  maximum exponent: 4932<br>
+  maximal number in mantisse: 1.2e18<br>
+  valid decimal digits: 18<br>
+  <br>
+ 
+  for Calculate class:<br>
+  double<br>
+  structure:<br>
+  1 bit for sign<br>
+  10 bits for exponent<br>
+  53 bits for mantisse<br>
+  values:<br>
+  maximum exponent: 308<br>
+  maximal number in mantisse: 1.7e15<br>
+  valid decimal digits: 15<br>
+  <br>
+  Long double on different types of CPUs:<br>
+  Intel 32bit (IA32): 12 Bytes size, 10 Bytes used<br>
+  Intel 64bit (X86-64): 16 Bytes size, 10 Bytes used<br>
+  PowerPC 64bit (PPC64): 8-16 Bytes size, 8 Bytes used<br>
+  Ultra SPARC64 (sparc64): 16 Bytes size, 16 Bytes used<br>
+  Alpha 64bit (alpha): 8 Bytes size, 8 Bytes used<br> 
+  <br>
+  <a name="automake"><h2>7. Automake and Autoconf</h2></a>
+  Automake and Autoconf are used to generate the configuration and installation scripts of Extcalc.
+  The following files contain the Automake and Autoconf configuration:
+  configure.ac: configuration file of Autoconf<br>
+  Makefile.am: root configuration file of Automake<br>
+  src/Makefile.am: Automake configuration for compiling<br>
+  doc/Makefile.am, share/Makefile.am: Automake configuration for installation<br>
+  <br>
+  The Automake configuration doesn't contain any special options. It is configured to generate normal Makefiles
+  for compiling, installation and uninstallation.<br><br>
+  The configure-script generated by Autoconf does some system tests:<br>
+  - checking for standard C headers<br>
+  - checking whether QT environment variables are set<br>
+  - search QT if the environment variables are not set<br>
+  ---> stop if QT is not found.<br>
+  - set compiler options for QT<br>
+  - check QT library<br>
+  - check QT version<br>
+  ---> stop if QT library is not found or QT is older then v3.0.0<br>
+  - set linker options<br>
+  - check for some QT utilities<br>
+  - check for OpenGL libraries<br>
+  ---> stop if OpenGL is not found<br>
+  - check for standard C functions<br>
+  - check for support of long double math functions and set a macro to switch them off in the code if they are not supported<br>
+  - set compiler option for install path macro (Extcalc needs the path during installation)<br>
+  - check if a language option is set and set a macro for installation language<br>
+  - check wether math functions for long double (sinl, cosl, ...) are available and set macro for compilation<br>
+  - generate output files<br>
+  
+  
+  
+    </body>
+</html>

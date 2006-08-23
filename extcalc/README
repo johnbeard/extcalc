@@ -1,0 +1,153 @@
+noch ein Test
+
+
+EXTCALC README
+
+1. Introduction
+
+2. Installation
+
+3. Content
+
+4. Version
+
+5. Important 
+
+
+
+
+1. INTRODUCTION
+Extcalc is a scientific graphic calculator for linux. It can process difficult
+mathmatical functions, draw graphs and work with functions. You can also calculate tables from functions. A Script-Interpreter for programs, written in a C-like language, is also includen in Extcalc. 
+
+
+
+
+2. INSTALLATION
+- unpack archive (tar -xzf extcalc-0.4.5.tar.gz)
+- switch to directory (cd extcalc-0.4.5)
+- run configure (./configure)
+- compile (make)
+- become root (su)
+- install (make install)
+
+Languages:
+To install the german version of the calculator, type "./configure --enable-language_de" instead of
+"./configure"
+
+Configuration:
+
+
+
+
+3. CONTENT
+The following things should be in this packet:
+
+README                       this readme
+LIESMICH                     german readme
+configure                    configure script
+...                          other files for automake
+src/                         the complete sourcecode
+    ...
+share/                       files needed for installation
+      ...                    icons, license
+doc/                         documentation
+    help_en.html             english documentation
+    help_de.html             german documentation
+    ...                      images
+
+
+	   
+	   
+4. VERSION
+Version 0.4.5
+
+This is a TESTING VERSION!
+Parts of the program may not work or may work wrong!
+
+done:
+User Interface for Calculator
+User Interface for Graphics
+parser for calculations
+drawing graphs (cartesian an polar coordinate system)
+working with graphs
+integration, differentiation
+base-n calculations
+logic functions
+3D-graphs
+dynamic graphs
+tables
+basic scripting functions
+script editor
+script console
+
+to do:
+complete scripting language
+script debugger
+matrix calculation
+vector calculation
+complex numbers
+
+
+
+
+
+5. IMPORTANT
+
+This is a TESTING VERSION!
+Parts of the program may not work or calculated results may be wrong!
+
+Tested Distributions:
+Suse Linux 8.2         ok
+Suse Linux 9.2         ok
+Suse Linux 9.3         ok
+Suse Linux 10.0        ok
+Debian 3.1 Sarge       update needed
+Debian Etch            ok
+Mandriva 2006          ok
+Fedora Core 2          ok
+Fedora Core 3 (64Bit)  ok
+Fedora Core 4          update needed
+Ubuntu Linux 5.04      errors
+Ubuntu Linux 5.10      ok
+Slackware 10           ok
+
+Ubuntu Linux 5.04
+             Installation runs without errors.
+             Program starts without errors, but graphics-window doesn't work.
+             This is a bug in the X-Server, which has not been fixed.
+             Version 5.10 of Ubuntu has fixed this bug.
+
+Debian 3.1 Sarge
+             If the same problem exists on Debian 3.1, please install the
+             updates for X and OpenGL to fix this bug.
+             
+Fedora Core 4        
+             installation runs without errors
+             programm stops immediately with segmentation fault 
+             The linker of the standard version of FC4 doesn't generate
+             a working ELF header for this program.
+             To fix this bug, please update gcc and g++.
+
+Needed software:
+Linux
+GCC 3 or GCC 4 (doesn't run with gcc 2.xx)
+QT3.1 or higher
+OpenGL 
+
+Needed hardware:
+CPU at about 1GHz (32Bit or 64Bit)
+enough RAM to run X
+For 3D-graphics, a 3D-graphics card is recommended
+A mouse with mousewheel is needed for rotating and zooming 3D-graphs
+
+
+Precision:
+The maximal precision of extcalc on a 32Bit-CPU is 18 digits because it uses long double-variables for
+calculation.
+The precision of integrations is about 9 digits
+The precision of differentiations is about 8 digits
+At trigonimetric functions and logarithms about 17 digits
+
+
+
