@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - Scientific Calculator </h1>
-  Version 0.4.8
+  Version 0.5.0
   <br>
   <br>
   <h3>Inhalt</h3>
@@ -32,13 +32,15 @@
   <a name="introduction"><h2>1. Introduction</h2></a>
   Extcalc is a scientific graphic calculator for linux. Extcalc is able to process difficult
   mathmatical functions, to draw graph and to work with them. 
-  This is the documentation for version 0.4.8. 
+  This is the documentation for version 0.5.0. 
   <br>
   <br>
   <br>
-  <a name="install"><h2>2. Installation</h2></a>  
-  - extract packet (tar -xzf extcalc-0.4.8.tar.gz)<br>
-  - switch to directory (cd extcalc-0.4.8)<br>
+  <a name="install"><h2>2. Installation</h2></a>
+  This description is only for the installation of the source code package (.tar.gz). If you install a binary package, you have to use the
+  packet manager of your distribution.<br><br>
+  - extract packet (tar -xzf extcalc-0.5.0.tar.gz)<br>
+  - switch to directory (cd extcalc-0.5.0)<br>
   - configure (./configure)<br>
   - compile (make)<br>
   - become root (su)<br>
@@ -78,9 +80,9 @@
   Shift<br>
   Press this button to use additional operations<br>
   Alpha<br>
-  Press this key to use variables<br>
+  Press this button to use variables<br>
   hyp<br>
-  Use this key for hyperbolic functions.<br>
+  Use this button for hyperbolic functions.<br>
   ANS<br>
   This is the answer-memory. Use this key to recall the last result.<br><br>
   The following buttons don't work in this version:<br> 
@@ -99,7 +101,7 @@
   You can use the root operation only with the integrated buttons.<br>
   Square Root:<br>
   <img src="sqrtbutton.jpg"></img>Sqare root button<br>
-  <img src="sqrt.jpg"></img>Formula<br>
+  Formula:<img src="sqrt.jpg"></img><br>
   <img src="sqrtbracket.jpg"></img>Use brackets for calculations under a root<br>
   To use the square root operation first press the sqare root button an then insert
   the argument<br>
@@ -119,7 +121,7 @@
   Differentiation:<br>
   The program can only calculate an approximated value of the differentiation.
   The Precisision is about +/-1e-8<br>
-  <img src="shift.jpg"></img>+<img src="diffbutton.jpg"></img> Use this keys for differentiation<br>
+ Use this keys for differentiation: <img src="shift.jpg"></img>+<img src="diffbutton.jpg"></img> <br>
   <img src="diff.jpg"></img> Formula example<br>
   Usage: d/dx(function,x-value)<br>
   The function parameter must be X. Example: 2X^3-3X+3<br>
@@ -129,8 +131,8 @@
   The program can also calculate an approximated value for integration. 
   An integral calculation will fail if there is a vertical asymptote between start and end point.
   The Precisision is about +/-1e-9.<br>
-  <img src="integralbutton.jpg"></img>The integral key<br>
-  <img src="integral.jpg"></img>Fromula example<br>
+  The integral key:<img src="integralbutton.jpg"></img><br>
+  Fromula example:<img src="integral.jpg"></img><br>
   Usage: Integralsign(function,start value,end value)<br>
   The function parameter must be X. Example: sin(X)*3<br>
   The area below the graph of "function" between "start value" and "end value" is calculated.<br>
@@ -184,7 +186,7 @@
   <a name="graph"><h2>3.2 Graphic</h2></a>
   In this window of Extcalc, you can draw and analyse different function graphs.<br>
   You can choose different types of graphs and different types of coordinate systems.<br>
-  This is a short list of the availables types of graphs in version 0.4.8 with a short description:<br>
+  This is a short list of the availables types of graphs in version 0.5.0 with a short description:<br>
   <h4>Graph Types</h4>
   <h5>Standard Graphs y(x)=X</h5>
   This is the standard for drawing function graphs. This type draws a normal 2D-Graph. The function variable
@@ -197,14 +199,14 @@
   A parameter function contains two functions; one for the X-coordinate and one for the Y-coordinate.
   Both functions have the same variable T. You can set the range of the variable T in the graphics preferences dialog.
   <h5>Inequaity Graphs y(X) &gt X, y(X) &lt X, y(X) &gt=X, y(X) &lt=X</h5>
-  When you use this type of graph, the area, in which the function is true will be colored.
+  When you use this type of graph, the area in which the function is true will be colored.
   <h5>3D Graphs y(x,z)=XZ</h5>
   This is the graph type for standard 3D-graphs. You need a 3D-coordinate system to show this type of graph.
   The 3D-function contains the two variable X and Z. The Y-coordinate is calculated by this function containing X and Z.
   <h5> Dynamic graphs</h5>
   All above described types of graphs can be used in a dynamic mode. For this dynamic graphs, an extra parameter A must
-  exist in your function. This parameter is changed after a specific delay time. So you can show moving graphs.
-  This type of graphs may need much graphics performance, so you may need a 3D-Card for using this type of graphs.
+  exist in your function. This parameter depends on the time. So you can show moving graphs.
+  This type of graphs needs much graphics performance, so you may need a 3D-Card for using this type of graphs.
   <h4>Coordinate Systems</h4>
   It is possible to draw every type of graph in every coordinate system, but some combinations don't make sense.<br>
   <h5>Standard Coordinate System</h5>
@@ -237,10 +239,11 @@
   If you don't want to draw all functions of the function table, you can turn some functions off. To activate
   and inactivate functions, just klick into the checkboxes of the third column.<br>
   In Extcalc, you can use different function types, which you can choose in the fourth column. Here you can
-  choose normal functions, polar functions, parameter functions, dynamic functions and inequaities. You can 
+  choose normal functions, polar functions, parameter functions, 3D-Functions and inequaities. You can 
   also draw different types of functions at the same time, but you can only draw them into one coordinate system.<br>
+  In the last column, you can switch the function to a dynamic function.<br>
   <h5>Output Window</h5>
-  If you press the plot button, the graphs of all active fuctions will be drawn at the output window. You can choose
+  If you press the print button, the graphs of all active fuctions will be drawn at the output window. You can choose
   one type of coordinate system for your output window at the graphics menu or at the graphic preferences dialog.<br>
 
   <br>
@@ -330,12 +333,12 @@
   The syntax for Extcalc scripts is similar to the C syntax, but the normal calculator commands and operations can also be used in this scripts.
   You can't use script command in the normal calculator. The scripts programs run in a seperate console, and you may the other extcalc functions 
   while running a script. Scripts can be managed, edited and started from the integrated script editor.<br>
-  In this version 0.4.8 are not all planned features included.<br><br>
+  In this version 0.5.0 are not all planned features included.<br><br>
 
   <a name="scriptedit"><h3>3.4.2 The Script-Editor</h3></a>
   <img src="scriptedit.jpg"></img>
   <br><br>
-  The integrated script editor has all normal editor functions an you can use it to write, modify and run your scripts.<br><br>
+  The integrated script editor has all important editor functions and you can use it to write, modify and run your scripts.<br><br>
   Before you can use this editor, you have to create the script directories. Normally, this is done at the first start of extcalc, but if you
   haven't done it there, you may need use the script preferences dialog from the preferences menu to create them.<br>
   There you have to create a script root directory and set the names for a code subdirectory and a data subdirectory.<br><br>
@@ -362,32 +365,31 @@
   button at the file list and choose "Update" to see your changes in Extcalc.<br>
   <h5>Running Scripts:</h5>
   To run a script, just coose it from the file list and press the "Run"-Button.<br>
-  Then, the script will be translated and started at the script console<br>
+  Then, the script will be translated and the active window switches to the script console.<br>
+  In the script console, you can see the interpreter errors. If the script was tanslated without errors, you can press the run-button to run the script.<br>
   It is not possible, to run two scripts at the same time. If you start another script while one is running, you were asked, if you want to 
   kill the currently running script.<br>
   You can always stop a running script by pressing the "Kill"-Button at the script console window.<br>
+  If the script does not stop before the timeout, an error message is displayed. You have to press the kill-button again to stop the script correctly.<br>
   <a name="scriptsyntax"><h3>3.4.3 Scripting Language</h3></a>
-  In version 0.4.8 of Extcalc, is only a part of the planned features already included. You can read more about the planned features 
+  In version 0.5.0 of Extcalc, not all features are included. You can read more about the planned features 
   at <a href="#else">Chapter 4</a>.<br>
   <h5>Problems:</h5>
-  This is a list of the current problems of the 0.4.5 version of the Extcalc Script Interpreter<br><br>
+  This is a list of the current problems of the 0.5.0 version of the Extcalc Script Interpreter<br><br>
   1. Speed<br>
   The extcalc scripts were ran by an Interpreter and so they run not as fast as compiled programmes, but it will be optimized in later versions.<br><br>
-  2. Programming Errors in Scripts<br>
-  In this Version of the Script interpreter, there is no Error check of the Scripts included. Your Scripts will be executed as far as possible.
-  If an Error occurs, the Interpreter will just stop there.<br><br>
-  3. Variables:<br>
+  2. Variables:<br>
   You can use the uppercase letters from A to Z as variables. Every variable can also be used as an Array.<br><br>
-  4. Features<br>
+  3. Features<br>
   Most of the planned features is available, now, but this is only a calculator script interpreter that can be used to solve simple mathematical problems.
   It will never have the flexibility and power of a complex programming language like C.
   <br><br>
-  5. Stability<br>
+  4. Stability<br>
   The Script interpreter is in an early development state and it may not always run without problems.<br>
   <h5>Syntax:</h5>
   The syntax of the Extcalc Script interpreter is similar to the C syntax.<br>
   Main Rules:<br>
-  - Every command ends with a ; semicolin<br>
+  - Every command ends with a ; semicolon<br>
   - Behind loops and conditions directly follows the command to run, and no semicolon<br>
   - If you want to run more than one command in a loop or a condition, you have to write this commands in braces {}.<br>
   - It is possible to use mathematical operations in the code. Tey are also finished with the semicolon.<br>
@@ -397,8 +399,18 @@
   - Cou can't use the C-Comments /* ... */ int your scripts<br>
   - The compare operator is written like in C with ==, the single = operator is the set-operator<br>
   - If you want to use a Variable as an Array, use the Index-Operator with it. Example: A[3]=5;<br>
+  - It is not possible to use functions. The commands are written directly into the code file.<br>
+  - it is possible to execute another script file by the run() command.<br>
   <br>
-
+  <h5>Error Messages:</h5>
+  If you want to run a script in Extcalc, your script code is first processed by an script interpreter. This script interpreter generates 
+  a executable object in the memory without executing it. This object can be ran as often as you want.<br>
+  If this script interpreter is unable to process your code, it prints out an error message and the line, where the error was found.
+  But the interpreter doesn't have the original code format, so it can't exactly say, where to find the error in the code. The line number, which 
+  the interpreter shows is calculated by searching for the semicolons in the code, so it may be that the shown error is above the shown line number.
+  Sometimes, the script interpreter may not find an error in the script. This is mainly, when the error is in an mathematical operation.<br>
+  If the console shows the error message "Preprocessor Error", it was unable to run the script interpreter. This may be because the file is empty, or because
+  the file does not contain anything translatable, or if the code contains a backlash outside of a string.<br>
   <h5>Variables:</h5>
   You can use the uppercase letters from A to Z as variables.<br>
   This variables may be initialized directly in the code, or.<br>
@@ -413,7 +425,7 @@
   If you set a variable with a floating point value, it will be of type float.
   If you insert a integer value into the variable, it will be of type int.
   Results from logic operations are of type bool.
-  Text, auch Benutzereingaben haben den Type string.
+  Text, and input from the user is of type string.
   If an operation fails, the variable will be set to NONE.<br>
   Every variable type contains a correct floating point value for compatibility with the normal calculator algorithms.<br>
   <br>
@@ -587,7 +599,23 @@
   print(D+1);    //prints 235.45
   </pre>
 
-  10. Arrays<br>
+  10. Running subprograms<br>
+  Syntax:<br>
+  <pre>
+  run("script path");
+  </pre>
+  With this command, you can execute another code file from your script.<br>
+  The script path must be relative to the script code directory.<br>
+  The script path must be hard coded in your script code<br>
+  With this command, it is also possible to program a recursive algorithm. But you should not do that, because this 
+  may lead to a stack overflow and the program will crash. The script interpreter can not prevent this crash.<br>
+  Example:<br>
+  <pre>
+  run("subprogram");       //runs a subprogram with the name subprogram that is in the script code directory
+  runt("prog/routine4");   //runs a subprogram with the name routine4 which is in the directory prog
+  </pre>
+
+  11. Arrays<br>
   Syntax: <br>
   <pre>
   Variable[index];                               //normal array
@@ -605,7 +633,7 @@
   print(A);                            //prints the characters inverted
   </pre>
 
-  11. Possible Operators<br>
+  12. Possible Operators<br>
   Operator List <br>
   <pre>
   In script interpreter integrated operators (can be used with every variable type)
@@ -810,9 +838,11 @@
   logic functions<br>
   3D-Graphs<br>
   dynamic graphs<br>
+  most scripting functions<br>
+  script debugging<br>
 
   <h5>Todo-list</h5>
-  scripting<br> 
+  scriptin functions for graph drawing and file usage<br> 
   matrix calculation<br> 
   vector calculation<br> 
   complex numbers<br> 

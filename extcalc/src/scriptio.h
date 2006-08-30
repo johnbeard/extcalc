@@ -130,7 +130,7 @@ class ScriptIOWidget :public QWidget
 			maximizeButton=new QPushButton(CALCWIDGETH_STR1,this);
 			killButton=new QPushButton(SCRIPTIO_STR1,this);
 			killButton->setEnabled(false);
-			runButton=new QPushButton("Run",this);
+			runButton=new QPushButton(SCRIPTIO_STR7,this);
 			runButton->setEnabled(false);
 
 			ioFieldWidth=600;

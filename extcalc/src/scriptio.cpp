@@ -656,7 +656,7 @@ void ScriptIOWidget::runScript(QString*code)
 	char*cleanString=checkString(*code,&pref,vars);
 
 	delete scriptObject;
-	insert("\nProcessing main file ...");
+	insert(SCRIPTIO_STR8);
 	if(cleanString==NULL)
 	{
 		insert("\nPreprocessor Error\n");
@@ -806,7 +806,7 @@ void ScriptIOWidget::loadSubScripts()
 				initDebugging(&qSubFileContent);
 				cleanSubFileContent=checkString(qSubFileContent,&pref,vars);
 				qApp->processEvents();
-				insert("\nProcessing file ");
+				insert(SCRIPTIO_STR9);
 				insert(threadData->subprogramPath[c]);
 				if(cleanSubFileContent==NULL)
 				{
@@ -826,11 +826,11 @@ void ScriptIOWidget::loadSubScripts()
 	qApp->processEvents();
 	if(!errorFlag)
 	{
-		insert("\nScript sucessfully loaded.\nNow you can press run.\n");
+		insert(SCRIPTIO_STR10);
 		runButton->setEnabled(true);
 	}
 	else {
-		insert("\nProcessing script failed!\n");
+		insert(SCRIPTIO_STR11);
 		runButton->setEnabled(false);
 	}
 }

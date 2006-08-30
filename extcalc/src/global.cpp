@@ -2960,7 +2960,7 @@ char* Script::parse(char* line)
 	}
 	else if(line[0] == '\"')
 	{
-		if(line[len-1]!='\"')
+		if(line[len-1]!='\"' || len <=1)
 		{
 			printError("Invalid String",semicolonCount,eventReciver->eventReciver);
 			operation=SFAIL;

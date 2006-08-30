@@ -251,6 +251,11 @@
 #define SCRIPTIO_STR4 "\n*** beendet ***\n"
 #define SCRIPTIO_STR5 "Es läuft bereits ein Programm.\nSoll es beendet werden?"
 #define SCRIPTIO_STR6 "\n*** script ***\n"
+#define SCRIPTIO_STR7 "Ausführen"
+#define SCRIPTIO_STR8 "\nLade Hauptdatei ..."
+#define SCRIPTIO_STR9 "\nLade Datei "
+#define SCRIPTIO_STR10 "\nScript erfolgreich geladen.\nZum starten Ausführen drücken.\n"
+#define SCRIPTIO_STR11 "\nScript konnte nicht geladen werden!\n"
 
 #define SCRIPTEDITH_STR1 "Maximieren"
 #define SCRIPTEDITH_STR2 "Ausführen"
@@ -549,6 +554,12 @@
 #define SCRIPTIO_STR4 "\n*** finish ***\n"
 #define SCRIPTIO_STR5 "You are already running a script.\nKill it?"
 #define SCRIPTIO_STR6 "\n*** script ***\n"
+#define SCRIPTIO_STR7 "Run"
+#define SCRIPTIO_STR8 "\nProcessing main file ..."
+#define SCRIPTIO_STR9 "\nProcessing file "
+#define SCRIPTIO_STR10 "\nScript sucessfully loaded.\nNow you can press run.\n"
+#define SCRIPTIO_STR11 "\nProcessing script failed!\n"
+
 
 #define SCRIPTEDITH_STR1 "Maximize"
 #define SCRIPTEDITH_STR2 "Run"

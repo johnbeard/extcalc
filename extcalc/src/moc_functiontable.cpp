@@ -2,7 +2,7 @@
 ** FunctionTable meta object code from reading C++ file 'functiontable.h'
 **
 ** Created: Mon Aug 21 18:27:45 2006
-**      by: The Qt MOC ($Id: moc_functiontable.cpp,v 1.15 2006/08/21 16:41:40 rainer1223 Exp $)
+**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/

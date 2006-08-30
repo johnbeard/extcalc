@@ -2,7 +2,7 @@
 ** CalcInput meta object code from reading C++ file 'calcinput.h'
 **
 ** Created: Sun Aug 20 19:44:27 2006
-**      by: The Qt MOC ($Id: moc_calcinput.cpp,v 1.24 2006/08/21 16:41:40 rainer1223 Exp $)
+**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/

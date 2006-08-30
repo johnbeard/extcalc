@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - wissenschaftlicher Taschenrechner </h1>
-  Version 0.4.8
+  Version 0.5.0
   <br>
   <br>
   <h3>Inhalt</h3>
@@ -31,13 +31,15 @@
   <br>
   <a name="introduction"><h2>1. Einleitung</h2></a>
   Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner.
-  Diese Hilfe wurde für die Version 0.4.8 von Extcalc geschrieben.
+  Diese Hilfe wurde für die Version 0.5.0 von Extcalc geschrieben.
   <br>
   <br>
   <br>
-  <a name="install"><h2>2. Installation</h2></a>  
-  - Paket auspacken (tar -xzf extcalc-0.4.8.tar.gz)<br>
-  - ins Verzeichnis wechseln (cd extcalc-0.4.8)<br>
+  <a name="install"><h2>2. Installation</h2></a>
+  Dies ist die Beschreibung zur Installation von Extcalc aus dem Quellcode-Paket. Vorkompilierte Pakete müssen mit dem Paketmanager der jeweiligen
+  Distribution installiert werden.<br><br>
+  - Paket auspacken (tar -xzf extcalc-0.5.0.tar.gz)<br>
+  - ins Verzeichnis wechseln (cd extcalc-0.5.0)<br>
   - konfigurieren (./configure --enable-language_de)<br>
   - kompilieren (make)<br>
   - root-rechte erlangen (su)<br>
@@ -48,8 +50,10 @@
    
   <a name="use"><h2>3. Bedienung</h2></a>
   Da dies noch eine Enticklungsversion von Extcalc ist, kann sich die Bedienoberfläche noch
-  stark ändern. Diese Informationen beziehen sich auf die Version 0.4.8. Mit dem Reiter unter der
-  Menüleiste kann man zwischen den einzelnen Komponenten, Taschenrechner und Grafik, umschalten.
+  stark ändern. Diese Informationen beziehen sich auf die Version 0.5.0. Mit dem Reiter unter der
+  Menüleiste kann man zwischen den einzelnen Komponenten umschalten.Dies sind  ein Taschenrechner, ein Grafik-Fenster
+  zum Zeichnen und analysieren verschiedner Typen von Graphen, ein Tabellen-Fenster, ein Script-Editor und eine Script-Konsole zum
+  Ausführen von Scripten.
   <br>
   <br>
   <a name="calc"><h2>3.1 Taschenrechner</h2></a>
@@ -220,7 +224,7 @@
   <a name="graph"><h2>3.2 Grafik</h2></a>
   Im Grafik-Modus des Rechners kann man verschiedene Funktionsgrafen zeichnen und auswerten
   lassen. Extcalc unterstützt verschiedene Typen von Funktionen und verschiedene Koordinatensysteme.
-  Es folgt eine Liste der verfügbaren Graphen- und Koordinatensystemtypen von Version 0.4.8:<br>
+  Es folgt eine Liste der verfügbaren Graphen- und Koordinatensystemtypen von Version 0.5.0:<br>
   <h4>Graphentypen</h4>
   <h5>Standardgraph y(x)=X</h5>
   Dies ist die Voreinstellung für alle Graphen. Es ist ein normaler 2D-Graph. Die zugehörige Funktion verwendet
@@ -238,7 +242,7 @@
   <h5>3D-Graph y(x,z)=XZ</h5>
   Für 3D-Graphen im kartesischen Koordinatensystem wird diese Einstellung verwendet. Die entsprechende Funktion
   berechnet die Höhe y in Abhängigkeit von X und Z. Um 3D-Graphen korrekt anzeigen zu können, sollte ein 
-  3d-Koordinatensystem eingestellt werden.
+  3D-Koordinatensystem eingestellt werden.
   <h5>Dynamische Graphen</h5>
   Alle oben beschriebenen Typen können auch als dynamische Graphen verwendet werden. Diese Option kann in der
   Funktionstabelle für jede Funktion einzeln ein- oder ausgeschaltet werden. Wird dynamische Grafik aktiviert,
@@ -379,7 +383,7 @@
   Taschenrechner-Befehle im Programm verwendet werden können. Die Script-Befehle können allerdings nicht im normalen Rechner verwendet werden.
   Wird ein Programm ausgeführt, dann läuft es in einem eigenen Konsolenfenster ab. Die anderen Funktionen des Rechners können noch normal benutzt werden.
   Zum Schreiben und Verwalten der verschiedenen Programme ist in Extcalc ein kleiner Script-Editor integriert.<br>
-  In Version 0.4.8 sind noch nicht alle geplaten Funktionen enthalten.
+  Der Script-Interprter hat in dieser Version noch nicht den vollständigen Funktionsumfang.
   <a name="scriptedit"><h3>3.4.2 Der Script-Editor</h3></a>
   Das Script-Editor Fenster bietet alle grundlegenden Editorfunktionen, um die Script-Programme zu schreiben und zu verwalten.
   Die Programme werden auch von dort aus aufgerufen.<br><br>
@@ -417,32 +421,36 @@
   Man kann die Dateien und Verzeichnisse auch außerhalb des Script-Editors ändern, umbenennen oder löschen. Um die Änderungen in Extcalc zu übernehmen,
   muss in der Dateiliste die rechte Maustaste gedrückt und "Aktualisieren" gewählt werden. Geänderte Scripte können dann einfach angeklickt werden.<br>
   Dies ist natürlich nicht nötig, wenn Extcalc während der Änderungen nicht gestartet war.<br>
+  Sonderzeichen:<br>
+  Selbstverständlich können beim Programmieren auch die Sondertasten auf der integrierten Tastatur von Extcalc verwendet werden. Beim Abspeichern werden
+  diese allerdings durch die jeweiligen ASCII-Befehle ausgetauscht, um Probleme beim Speichern und Laden zu verhindern und um zu ermöglichen, dass der Code
+  von einem externen Editor nicht beschädigt wird.<br>
   <h5>Programme ausführen:</h5>
   Um ein Programm auszuführen, wählt man es aus der Dateiliste aus und klickt auf den "Ausführen"-Knopf.<br>
-  Das Script-Programm wird dann übersetzt und in der Script-Konsole ausgeführt.<br>
+  Das Script-Programm wird dann übersetzt und die Ansicht wechselt in die Script-Konsole.<br>
+  Auf der Script-Konsole werden dann eventuelle Fehler im Code angezeigt. Falls das Script ohne Fehler geladen werden konnte, kann man es mit dem
+  Ausfürhen-Knopf starten. Mit diesem Knopf kann immer das Programm ausgeführt werden, dass als letztes geladen wurde.
   Es ist nicht möglich, zwei Programme gleicheitig zu starten. Falls bereits ein Programm läuft, wenn man ein Programm startet, wird abgefragt, ob
   das laufende Programm beendet, oder das neue nicht gestartet werden soll.<br>
   Laufende Programme können jederzeit über den "Abbrechen"-Knopf unter der Script-Konsole beendet werden. Bei sehr hoher Prozessorbelastung ist es 
-  möglich, dass das Abbrechen fehlschlägt. Man kann den Knopf dann noch einmal drücken.<br>
+  möglich, dass das Abbrechen-Signal nicht rechtzeitig vom Script empfangen wird. Man muss dann den Abbrechen-Knopf noch einmal drücken, um
+  das Programm korrekt zu Beenden.<br>
   <a name="scriptsyntax"><h3>3.4.3 Die Script-Sprache</h3></a>
-  In Version 0.4.8 von Extcalc ist erst ein Teil der geplaten Befehle und Funktionen implementiert. Nähere Informationen zu den geplaten
+  In Version 0.5.0 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. Nähere Informationen zu den geplaten
   Funktionen finden Sie im <a href="#else">Kapitel 4</a>.<br>
   <h5>Probleme:</h5>
-  In der folgenden Liste sind Probleme aufgeführt, die in der Version 0.4.8 des Script-Interpreters noch vorhanden sind.<br><br>
+  In der folgenden Liste sind Probleme aufgeführt, die in der Version 0.5.0 des Script-Interpreters noch vorhanden sind.<br><br>
   1. Geschwindigkeit<br>
   Da die Programme von einem Interpreter abgearbeitet werden, laufen diese auch wesentlich langsamer, als kompilierte Programme.
   Der Interpreter wird aber in späteren Versionen noch weiter optimiert.<br><br>
-  2. Programmierfehler<br>
-  In dieser Version findet noch keine Fehlerprüfung der Script-Programme statt. Der Interpreter liest das Programm soweit möglich ein.
-  Fehlerhafte Teile des Programms werden ohne Fehlermeldung ignoriert. Es ist noch nicht möglich, sich die Fehlerhafte Stelle anzeigen zu lassen.<br><br>
-  3. Variablen:<br>
+  2. Variablen:<br>
   Es können nur die Großbuchstaben von A bis Z als Variablen verwendet werden. Jede Variable kann auch als Array benutzt werden.<br><br>
-  4. Geringere Möglichkeiten<br>
+  3. Geringere Möglichkeiten<br>
   In dieser Version ist nur ein Teil der geplanten Funktionalitäten bereits aktiviert. Deshalb ist es nicht möglich, komplexe Probleme mit den
   Script-Programmen zu lösen. Die Sprache wird in späteren Versionen noch so weit wie möglich ausgebaut. Sie ist aber trotzdem nur zum Lösen oder
   automatisieren kleinerer mathematischer Aufgaben da. Komplexe Programme sollten in einer kompletten Programmiersprache wie C geschrieben werden.
   <br><br>
-  5. Stabilität<br>
+  4. Stabilität<br>
   Die Script-Programmiersprache befindet sich wie das gesamte Programm noch in einem frühen Entwicklungsstadium. Deshalb kann hier nicht für die
   Stabilität des Script-Interpreters garantiert werden. Bei einem Script-Interprter ergeben sich durch die Programmierbarkeit leider besonders viele
   Fehlerquellen. Fehler werden selbstverständlich so schnell wie möglich behoben.<br>
@@ -460,8 +468,21 @@
   - Der C-Kommenter /* ... */ kann noch NICHT verwendet werden<br>
   - Der Vergleichsoperator besteht wie in C aus ZWEI GLEICHHEITSZEICHEN ==, ein Gleichheitszeichen bedeutet Zuweisung<br>
   - Will man eine Variable als Array verwenden, hängt man einfach den []-Operator an, das Array wird dann automatisch generiert<br>
+  - Es gibt keine Unterfunktionen. Die Befehle werden direkt in die Datei geschrieben<br>
+  - Es ist allerdings möglich, eine andere Code-Datei mit dem Befehl run() aufzurufen<br>
   <br>
-
+  <h5>Fehlermeldungen:</h5>
+  Beim Laden eines Scripts wird die Haupt-Datei und alle Unterprogramme, die aufgerufen werden von einem Interpreter in den Speicher geladen, ohne das
+  Script auszuführen. Das Speicher-Objekt, das dabei entsteht ist das ausführbare Script. Es kann unabhängig vom Quellcode so oft ausgeführt werden, wie 
+  man will.<br>
+  Falls beim Interpretieren des Script Fehler auftreten, werden diese auf der Script-Konsole angezeigt, und das Script kann nicht ausgeführt werden.
+  Da für den Interpreter die ursprüngliche Formatierung des Quelltextes nicht mehr existiert, wird die Zeilennummer anhand der im Code enthaltenen 
+  Strichpunkte ermittelt. Deshalb befindet sich der Fehler manchmal in einer Zeile überhalb der Zeile, die in der Fehlermeldung angegeben ist.<br>
+  Es kann auch vorkommen, dass ein Quellcode fehlerhaft ist, aber vom Interpreter dennoch übersetzt werden kann. Dies ist vor allem bei Fehlern innerhalb
+  von Rechnungen der Fall.<br>
+  Es kann auch vorkommen, dass nur die Fehlermeldung "Preprozessor Error" ausgegeben wird, und der Script-Interpreter gar nicht aufgerufen wird.
+  Dann ist die Datei entweder leer, oder enthält überhaupt keine interpretierbare Information, oder Sie enthält einen Rückschrägstrich außerhalb
+  eines Strings.<br>
   <h5>Variablen:</h5>
   Als Variablen stehen wie oben genannt die Großbuchstaben von A bis Z zur Verfügung.<br>
   Diese können mit festen Werten vorinitialisiert werden, oder im Programmablauf errechnet werden.<br>
@@ -652,8 +673,25 @@
   D=(float)C;   //Text kann als Zahl interpretiert werden, D wird auf Zahlenwert gesetzt
   print(D+1);    //Gibt 235.45 aus
   </pre>
+  
 
-  10. Arrays<br>
+  10. Unterprogramme<br>
+  Syntax: <br>
+  <pre>
+  run("Script-Pfad");
+  </pre>
+  Es ist möglich, in einem Script eine andere Programm-Datei aufzurufen. Dazu wird der Script-Pfad relativ zum Script-Code Verzeichnis angegeben, 
+  so wie er auch im Editor-Fenster angezeigt wird. Der Pfad muss in Anführungszeichen stehen. Damit ist rekursive Programmierung möglich. Dies sollte
+  aber vermieden werden, weil es zu einem Stack-Overflow führen kann. Dieser kann wird schon nach einigen hundert Rekursions-Scritten eintreten, und 
+  der Absturz des Programms lässt sich dann vom Interpreter nicht verhindern.<br>
+  Beispiel:<br>
+  <pre>
+  run("subprogram");    //Program heißt subprogram und befindet sich direkt im Code-Hauptverzeichnis
+  run("myprog/subroutine2"); //Programm heißt subroutine2 und befindet sich im Unterverzeichnis myprog
+  </pre>
+
+
+  11. Arrays<br>
   Syntax: <br>
   <pre>
   Variable[index];                               //Normales Array
@@ -671,7 +709,7 @@
   print(A);                            //gibt die Zeichen invertiert aus
   </pre>
 
-  11. Mögliche Operatoren<br>
+  12. Mögliche Operatoren<br>
   Operatorenliste <br>
   <pre>
   In Scriptinterpreter integrierte Operatoren (funktionieren mit allen Datentypen)
@@ -860,7 +898,7 @@
   <br>
   <a name="else"><h2>4. Sonstiges</h2></a>
   <h5> Version</h5>
-  Extcalc Version 0.4.8<br>
+  Extcalc Version 0.5.0<br>
   Dies ist eine Testversion! Deshalb konnen einige Funktionen inaktiv oder fehlerhaft sein.<br>    
   <h5>Rechengenauigkeit:</h5>
   Aufgrund des Aufbaus eines PC-Prozessors und der verwendeten Variablen vom Typ long double (80 Bit)
@@ -933,10 +971,10 @@
   Dynamisch Grafik<br>
   Scripting-Editor<br>
   Grossteil der Scripting-Funktionen<br>
+  Script-Debugging<br>
 
   <h5>noch zu Tun</h5>
-  Vollständige Scripting-Funktionen<br>
-  Script-Debugging<br>
+  Script-Funktionen für Graphik und Dateioperationen<br>
   Matrix-Berechnungen<br>
   Vektoren<br>
   Komplexe Zahlen<br>
