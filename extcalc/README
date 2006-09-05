@@ -1,6 +1,3 @@
-noch ein Test
-
-
 EXTCALC README
 
 1. Introduction
@@ -18,14 +15,14 @@ EXTCALC README
 
 1. INTRODUCTION
 Extcalc is a scientific graphic calculator for linux. It can process difficult
-mathmatical functions, draw graphs and work with functions. You can also calculate tables from functions. A Script-Interpreter for programs, written in a C-like language, is also includen in Extcalc. 
+mathmatical functions, draw graphs and work with functions. You can also calculate tables from functions. A Script-Interpreter for programs, written in a C-like language, is also included in Extcalc. 
 
 
 
 
 2. INSTALLATION
-- unpack archive (tar -xzf extcalc-0.4.5.tar.gz)
-- switch to directory (cd extcalc-0.4.5)
+- unpack archive (tar -xzf extcalc-0.5.0.tar.gz)
+- switch to directory (cd extcalc-0.5.0)
 - run configure (./configure)
 - compile (make)
 - become root (su)
@@ -60,7 +57,7 @@ doc/                         documentation
 	   
 	   
 4. VERSION
-Version 0.4.5
+Version 0.5.0
 
 This is a TESTING VERSION!
 Parts of the program may not work or may work wrong!
@@ -77,13 +74,13 @@ logic functions
 3D-graphs
 dynamic graphs
 tables
-basic scripting functions
+scripting functions
 script editor
 script console
+script debug messages
 
 to do:
-complete scripting language
-script debugger
+script commands for file usage and graphics
 matrix calculation
 vector calculation
 complex numbers
@@ -100,26 +97,23 @@ Parts of the program may not work or calculated results may be wrong!
 Tested Distributions:
 Suse Linux 8.2         ok
 Suse Linux 9.2         ok
-Suse Linux 9.3         ok
-Suse Linux 10.0        ok
+Suse Linux 10.1        ok
 Debian 3.1 Sarge       update needed
 Debian Etch            ok
 Mandriva 2006          ok
 Fedora Core 2          ok
 Fedora Core 3 (64Bit)  ok
 Fedora Core 4          update needed
-Ubuntu Linux 5.04      errors
+Fedora Core 5          ok
 Ubuntu Linux 5.10      ok
+Ubuntu Linux 6.06      ok
+Mepis Linux 6.0        ok
 Slackware 10           ok
 
-Ubuntu Linux 5.04
-             Installation runs without errors.
-             Program starts without errors, but graphics-window doesn't work.
-             This is a bug in the X-Server, which has not been fixed.
-             Version 5.10 of Ubuntu has fixed this bug.
-
 Debian 3.1 Sarge
-             If the same problem exists on Debian 3.1, please install the
+             The program builds without errors, but if you want to use 
+             the graphics window, it is black and you can't draw graphs
+             If this happans on your system,  please install the
              updates for X and OpenGL to fix this bug.
              
 Fedora Core 4        

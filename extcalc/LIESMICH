@@ -20,8 +20,8 @@ Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner für Linux. Er unte
 
 
 2. INSTALLATION
-- auspacken (tar -xzf extcalc-0.4.5.tar.gz)
-- in Verzeichnis wechseln (cd extcalc-0.4.5)
+- auspacken (tar -xzf extcalc-0.5.0.tar.gz)
+- in Verzeichnis wechseln (cd extcalc-0.5.0)
 - konfigurieren (./configure --enable-language_de)
 - kompilieren (make)
 - root werden (su)
@@ -50,7 +50,7 @@ doc/                 Dokumentation
    
 	   
 4. VERSION
-Version 0.4.5
+Version 0.5.0
 
 Dies ist eine Testversion!
 Teile des Programms sind noch nicht fertig und deshalb inaktiv oder fehlerhaft.
@@ -66,13 +66,13 @@ Verschieden Zahlensysteme
 Logikfunktionen
 3D-Grafik
 Dynamische Grafik
-Grundlegende Scrpt-Funktionen
+Script-Sprache
+Script-Debug Nachrichten
 Script-Konsole
 Script-Editor
 
 Noch zu tun:
-Vervollständigen der Script-Sprache
-Script-Debugging
+Dateisystem-Befehle und Grafik-Befehle für Script-Sprache
 Matrixrechnung
 Vektorrechnung
 Komplexe Zahlen
@@ -90,27 +90,24 @@ OpenGL
 Getestete Distributionen:
 Suse Linux 8.2:            getestet, ok
 Suse Linux 9.2:            getestet, ok
-Suse Linux 9.3:            getestet, ok
-Suse Linux 10.0:           getestet, ok
+Suse Linux 10.1:           getestet, ok
 Debian 3.1 Sarge:          Update benötigt
 Debian Etch:               getestet, ok
-Ubuntu Linux 5.04          läuft nicht
 Ubuntu Linux 5.10          getestet, ok
+Ubuntu Linux 6.06          getestet, ok
 Mandriva 2006:             getestet, ok
 Fedora Core 2:             getestet, ok
 Fedora Core 3 (64Bit):     getestet, ok
 Fedora Core 4:             Update benötigt
+Fedora Core 5:             getestet, ok
+Mepis Linux 6.0            getestet, ok
 Slackware 10:              getestet, ok
 
-Ubuntu Linux 5.04:
-              Installation läuft fehlerfrei
-              Programm lässt sich starten, aber Grafik-Fenster bleibt schwarz
-              Fehler im X-Server Paket von Ubuntu, für den kein Patch zur Verfügung steht.
-              Allerdings wurde dieses Problem in Version 5.10 von Ubuntu behoben.
-
 Debian 3.1 Sarge:
-              Falls das selbe Problem wie bei Ubuntu Linux 5.04 beschrieben, hier auftritt, 
-              muss das Update für X-Server und OpenGL installiert werden.
+              Das Programm lässt sich fehlerfrei kompilieren, aber das
+              Grafik-Anzeigefenster ist schwarz und es können keine Graphen
+              gezeichnet werden. Wenn dieses Problem auftritt, muss das Update
+              für X-Server und OpenGL installiert werden.
 
 Fedora Core 4:
               Installation läuft fehlerfrei

@@ -2,7 +2,7 @@
 ** TablePreferences meta object code from reading C++ file 'tablepref.h'
 **
 ** Created: Sun Aug 20 19:44:27 2006
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
+**      by: The Qt MOC ($Id: moc_tablepref.cpp,v 1.15 2006/08/27 13:05:42 rainer1223 Exp $)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
