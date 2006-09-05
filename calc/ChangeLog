@@ -21,3 +21,9 @@ alpha:
 0.4.5
 - supports scripting
 - updated manpage
+
+0.5.0
+- full scripting support (including subprograms, arrays, brake, continue, ...)
+- script debug messages
+- documentation update
+- bugfixed calculator algorithms

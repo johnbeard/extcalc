@@ -1,6 +1,3 @@
-Das ist ein Test
-
-
 CALC - Readme
 
 1. Introduction
@@ -18,10 +15,10 @@ Calc is a scientific calculator for the text console.
 It is simple to use and it can process many mathematical functions.
 Calc is as subproject of Extcalc. It uses the calculation algorithms of 
 the graphical Extcalc calculator.
-This is version 0.4.5 of Calc. The parser algorithms should work
+This is version 0.5.0 of Calc. The parser algorithms should work
 correctly now and all needed command line options are active.
-Variables and the answer memory can be used. An early version of the 
-Extcalc script interpreter is also included.
+Variables and the answer memory can be used. The script interpreter is
+nearly completed.
 
 2. Installation
 
@@ -105,6 +102,10 @@ FOR LOOP
 for(initialisation; condition; count-command)
   command that is run while condition is true;
 
+CONTINUE, BREAK, STOP KEYWORDS
+continue; // lets a loop immedeatley continue with the next step
+break;    // stops the loop
+stop;     // immediately stops the program
 
 PRINT COMMAND
 print( output to print out );
@@ -120,6 +121,19 @@ KEYSTATE COMMAND
 keystate;  // returns the key pressed by the user or 0 if no keywas pressed
            // nonblocking
 
+SETCURSOR COMMAND
+setcursor(x,y);  // Sets the cursor to the given position (0,0) ist the upper
+                 // left corner
+
 SLEEP COMMAND
 sleep( time in microseconds ); //Script is stops for  the  given time
 
+RUN COMMAND
+run("path"); // runs the script with the path "path"
+             // the path must be hard coded in the script
+	     // and it must be quoted
+
+ARRAYS
+Every variable can be used as an array without any initialisation.
+A[10]=4; // this sets the eleventh element of A to 4
+         // the array will always have the size you need

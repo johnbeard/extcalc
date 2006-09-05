@@ -11,9 +11,10 @@
 #include <termios.h>
 #include <unistd.h>
 #include <errno.h>
+#include "list.h"
 
 
-#define VERSIONSTRING "Version: 0.4.5 2006-06-03\nParser algorithm: extcalc v0.4.5 2006-05-16"
+#define VERSIONSTRING "Version: 0.5.0 2006-09-03\nCalculator algorithm: extcalc v0.5.0 2006-08-20"
 #define AUTHORSTRING "Author:\nRainer Strobel\n2006\n"
 
 
@@ -46,6 +47,13 @@
 #define SNOT				119
 #define SCAST				120
 #define SKEYSTATE			121
+#define SARRAY				122
+#define SRAND				123
+#define SMATRIX				124
+#define SBREAK				125
+#define SCONTINUE			126
+#define SSTOP				127
+#define SRUN				128
 
 
 
@@ -82,6 +90,7 @@
 #define DIFF				22
 #define INTEGRAL			23
 #define MODULO				116
+#define ARRAY				129
 
 #define RAD					6
 #define DEG					7
@@ -108,12 +117,14 @@
 #endif
 #define SPI					"3.141592653589793238462643383279502884197"
 #define SEULER				"2.718281828459045235360287471352662497757"
-#ifndef NAN
-#define NAN (0.0/0.0)
 
+
+
+#ifndef NAN
+#define NAN (HUGE_VAL/HUGE_VAL)
 #endif
 
-
+class Math;
 
 struct Preferences
 {
@@ -138,21 +149,33 @@ struct Number
 
 struct ThreadSync
 {
+
+	int status;
+	bool usleep;
 	bool exit;
-	Number*vars;
+	bool bbreak;
+	bool bcontinue;
+	bool error;
+	int numlen[27];
+	Number**vars;
+	List <Math*>subprograms;
+	List <char*>subprogramPath;
+	List <int>semicolonLines;
+	int countDifference;
 };
 
-
+typedef List<long double> Variable;
 
 
 //Standard Calculator functions
-long double calculate(char*,Preferences*pref,long double*vars);
+long double calculate(char*,Preferences*pref,Variable*vars);
 int bracketFind(char* string,char* searchString, int start=0);
 int bracketFindRev(char* string,char* searchString, int start=-1);
 char*strcut(char*src,int index,int len=1);
 char*strins(char*dest,const char*src,int index);
 int strcopy(char*dest,char*src,int len);
-char* checkString(char*calcString,Preferences*pref,long double*vars);
+char* checkString(char*calcString,Preferences*pref,Variable*vars);
+void printError(const char*,int,ThreadSync*);
 
 
 
@@ -186,7 +209,7 @@ char* checkString(char*calcString,Preferences*pref,long double*vars);
 class Math
 {
 	protected:
-	long double*vars;
+	Variable*vars;
 	Preferences*pref;
 	Math*parent;
 	Math *vertObj,*horzObj;
@@ -194,10 +217,9 @@ class Math
 	int var;
 	int operation;
 	
-	
 public:
 		
-	Math(Math*par,Preferences*pr,long double*va)
+	Math(Math*par,Preferences*pr,Variable*va)
 	{
 		parent=par;
 		pref=pr;
@@ -237,7 +259,7 @@ class Calculate :public Math
 
 public:
 	
-	Calculate(Math *par,char* line,Preferences*pr,long double*va) :Math((Math*)par,pr,va)
+	Calculate(Math *par,char* line,Preferences*pr,Variable*va) :Math((Math*)par,pr,va)
 	{
 		horzObj=vertObj=NULL;
 		split(line);
@@ -258,7 +280,7 @@ class Script :public Math
 
 public:
 
-	Script(Script*par,char*line,Preferences*pr,long double*va,ThreadSync*evrec) :Math((Math*)par,pr,va)
+	Script(Script*par,char*line,Preferences*pr,Variable*va,ThreadSync*evrec) :Math((Math*)par,pr,va)
 	{
 		horzObj=vertObj=vertObj2=vertObj3=nextObj=NULL;
 		value.type=NNONE;
@@ -275,6 +297,42 @@ public:
 			}
 		}
 	}
+	
+	~Script()
+	{
+		if(value.type==SVALUE && value.type==NCHAR && value.cval!=NULL)
+		{
+			delete[]value.cval;
+			value.cval=NULL;
+		}
+		if(horzObj!=NULL)
+		{
+			delete horzObj;
+			horzObj=NULL;
+		}
+		if(vertObj!=NULL)
+		{
+			delete vertObj;
+			vertObj=NULL;
+		}
+		if(vertObj2!=NULL)
+		{
+			delete vertObj2;
+			vertObj2=NULL;
+		}
+		if(vertObj3!=NULL)
+		{
+			delete vertObj3;
+			vertObj3=NULL;
+		}
+		if(nextObj!=NULL)
+		{
+			delete nextObj;
+			nextObj=NULL;
+		}
+		
+	}
+	
 	char*parse(char*line);
 	virtual int split(char* line);
 

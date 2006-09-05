@@ -1,173 +1,97 @@
 #include "global.h"
 
 
+void printError(const char*string,int semicolonCount,ThreadSync*data)
+{
+	int index=semicolonCount-data->countDifference;
+	if(index>=data->semicolonLines.GetLen())
+		fprintf(stderr,"End of File            : ");
+	else 
+	{
+		if((index>0) && data->semicolonLines[index-1]< data->semicolonLines[index]-1)
+			fprintf(stderr,"Before or in line ");
+		else fprintf(stderr,"In line           ");
+	
+		fprintf(stderr,"%5i: ",(data->semicolonLines)[index]);
+
+
+	}
+	
+	
+	fprintf(stderr,string);
+	fprintf(stderr,"\n");
+
+	data->error=true;
+}
+
+
 
 
 int bracketFind(char* string,char* searchString, int start)
 {
-	//special search options:
-	//searchString= "a-z"
-	//searchString= "A-Z"
-	//searchString= "0-9"
+
+	int searchLen=strlen(searchString);
+	int bracket=0,brace=0,sqbracket=0;
+	bool quote=false;
+	for(int c=start; c<(int)strlen(string); c++)
+	{
+		if(bracket == 0 && brace == 0  && sqbracket==0 && !quote)
+		{
+			if(strncmp(&string[c],searchString,searchLen) == 0)
+				return c;
+			else if(string[c] == '(')
+				bracket++;
+			else if(string[c] == '{')
+				brace++;
+			else if(string[c] == '[')
+				sqbracket++;
+			else if(string[c] == '\"')
+				quote=true;
+		}
+		else {
+			if(!quote)
+			{
+				if(string[c] == '(')
+					bracket++;
+				else if(string[c] == ')')
+				{
+					bracket--;
+					if(bracket == 0 && brace == 0 && sqbracket==0)
+					{
+						if(strncmp(&string[c],searchString,searchLen) == 0)
+							return c;
+					}
+				}
+				else if(string[c] == '{')
+					brace++;
+				else if(string[c] == '}')
+				{
+					brace--;
+					if(bracket == 0 && brace == 0 && sqbracket==0)
+					{
+						if(strncmp(&string[c],searchString,searchLen) == 0)
+							return c;
+					}
+				}
+				if(string[c] == '[')
+					sqbracket++;
+				else if(string[c] == ']')
+				{
+					sqbracket--;
+					if(bracket == 0 && brace == 0 && sqbracket==0)
+					{
+						if(strncmp(&string[c],searchString,searchLen) == 0)
+							return c;
+					}
+				}
+				else if(string[c] == '\"')
+					quote=!quote;
+			}
+			else if(string[c] == '\"')
+				quote=!quote;
+		}
+	}
 	
-	if(searchString == "a-z")
-	{
-		int bracket=0,brace=0;
-		bool quote=false;
-		for(int c=start; c<(int)strlen(string); c++)
-		{
-			if(bracket == 0 && brace == 0 && !quote)
-			{
-				if(string[c] == '(')
-					bracket++;
-				else if(string[c] == '{')
-					brace++;
-				else if(string[c] == '\"')
-					quote=true;
-				else if(string[c] >= 'a' && string[c] <= 'z')
-					return c;
-			}
-			else {
-				if(!quote)
-				{
-					if(string[c] == '(')
-						bracket++;
-					else if(string[c] == ')')
-						bracket--;
-					else if(string[c] == '{')
-						brace++;
-					else if(string[c] == '}')
-						brace--;
-					else if(string[c] == '\"')
-						quote=!quote;
-				}
-				else if(string[c] == '\"')
-					quote=!quote;
-			}
-		}
-	}
-	else if(searchString == "A-Z")
-	{
-		int bracket=0,brace=0;
-		bool quote=false;
-		for(int c=start; c<(int)strlen(string); c++)
-		{
-			if(bracket == 0 && brace == 0 && !quote)
-			{
-				if(string[c] == '(')
-					bracket++;
-				else if(string[c] == '{')
-					brace++;
-				else if(string[c] == '\"')
-					quote=true;
-				else if(string[c] >= 'A' && string[c] <= 'Z')
-					return c;
-			}
-			else {
-				if(!quote)
-				{
-					if(string[c] == '(')
-						bracket++;
-					else if(string[c] == ')')
-						bracket--;
-					else if(string[c] == '{')
-						brace++;
-					else if(string[c] == '}')
-						brace--;
-					else if(string[c] == '\"')
-						quote=!quote;
-				}
-				else if(string[c] == '\"')
-					quote=!quote;
-			}
-		}
-	}
-	else if(searchString == "0-9")
-	{
-		int bracket=0,brace=0;
-		bool quote=false;
-		for(int c=start; c<(int)strlen(string); c++)
-		{
-			if(bracket == 0 && brace == 0 && !quote)
-			{
-				if(string[c] == '(')
-					bracket++;
-				else if(string[c] == '{')
-					brace++;
-				else if(string[c] == '\"')
-					quote=true;
-				else if(string[c] >= '0' && string[c] <= '9')
-					return c;
-			}
-			else {
-				if(!quote)
-				{
-					if(string[c] == '(')
-						bracket++;
-					else if(string[c] == ')')
-						bracket--;
-					else if(string[c] == '{')
-						brace++;
-					else if(string[c] == '}')
-						brace--;
-					else if(string[c] == '\"')
-						quote=!quote;
-				}
-				else if(string[c] == '\"')
-					quote=!quote;
-			}
-		}
-	}
-	else{
-		int searchLen=strlen(searchString);
-		int bracket=0,brace=0;
-		bool quote=false;
-		for(int c=start; c<(int)strlen(string); c++)
-		{
-			if(bracket == 0 && brace == 0 && !quote)
-			{
-				if(strncmp(&string[c],searchString,searchLen) == 0)
-					return c;
-				else if(string[c] == '(')
-					bracket++;
-				else if(string[c] == '{')
-					brace++;
-				else if(string[c] == '\"')
-					quote=true;
-			}
-			else {
-				if(!quote)
-				{
-					if(string[c] == '(')
-						bracket++;
-					else if(string[c] == ')')
-					{
-						bracket--;
-						if(bracket == 0 && brace == 0)
-						{
-							if(strncmp(&string[c],searchString,searchLen) == 0)
-								return c;
-						}
-					}
-					else if(string[c] == '{')
-						brace++;
-					else if(string[c] == '}')
-					{
-						brace--;
-						if(bracket == 0 && brace == 0)
-						{
-							if(strncmp(&string[c],searchString,searchLen) == 0)
-								return c;
-						}
-					}
-					else if(string[c] == '\"')
-						quote=!quote;
-				}
-				else if(string[c] == '\"')
-					quote=!quote;
-			}
-		}
-	}
 	return -1;
 }
 
@@ -176,154 +100,49 @@ int bracketFindRev(char* string,char* searchString, int start)
 {
 	if(start==-1)
 		start=strlen(string)-1;
-	if(searchString == "a-z")
+
+	int searchLen=strlen(searchString);
+	int bracket=0,brace=0,sqbracket=0;
+	bool quote=false;
+	for(int c=start; c>=0; c--)
 	{
-		int bracket=0,brace=0;
-		bool quote=false;
-		for(int c=start; c>=0; c--)
+
+		if(bracket == 0 && brace == 0 && sqbracket==0 && !quote)
 		{
-	
-			if(bracket == 0 && brace == 0 && !quote)
+			if(strncmp(&string[c-searchLen+1],searchString,searchLen) == 0)
+				return c;
+			else if(string[c] == ')')
+				bracket++;
+			else if(string[c] == '}')
+				brace++;
+			else if(string[c] == ']')
+				sqbracket++;
+			else if(string[c] == '\"')
+				quote=true;
+		}
+		else {
+			if(!quote)
 			{
 				if(string[c] == ')')
 					bracket++;
 				else if(string[c] == '}')
 					brace++;
-				else if(string[c] == '\"')
-					quote=true;
-				else if(string[c] >= 'a' && string[c] <= 'z')
-					return c;
-			}
-			else {
-				if(!quote)
-				{
-					if(string[c] == ')')
-						bracket++;
-					else if(string[c] == '(')
-						bracket--;
-					else if(string[c] == '{')
-						brace--;
-					else if(string[c] == '}')
-						brace++;
-					else if(string[c] == '\"')
-						quote=!quote;
-				}
+				else if(string[c] == '(')
+					bracket--;
+				else if(string[c] == '[')
+					sqbracket--;
+				if(string[c] == ']')
+					sqbracket++;
+				else if(string[c] == '{')
+					brace--;
 				else if(string[c] == '\"')
 					quote=!quote;
 			}
+			else if(string[c] == '\"')
+				quote=!quote;
 		}
 	}
-	else if(searchString == "A-Z")
-	{
-		int bracket=0,brace=0;
-		bool quote=false;
-		for(int c=start; c>=0; c--)
-		{
 	
-			if(bracket == 0 && brace == 0 && !quote)
-			{
-				if(string[c] == ')')
-					bracket++;
-				else if(string[c] == '}')
-					brace++;
-				else if(string[c] == '\"')
-					quote=true;
-				else if(string[c] >= 'A' && string[c] <= 'Z')
-					return c;
-			}
-			else {
-				if(!quote)
-				{
-					if(string[c] == ')')
-						bracket++;
-					else if(string[c] == '}')
-						brace++;
-					else if(string[c] == '(')
-						bracket--;
-					else if(string[c] == '{')
-						brace--;
-					else if(string[c] == '\"')
-						quote=!quote;
-				}
-				else if(string[c] == '\"')
-					quote=!quote;
-			}
-		}
-	}
-	else if(searchString == "0-9")
-	{
-		int bracket=0,brace=0;
-		bool quote=false;
-		for(int c=start; c>=0; c--)
-		{
-	
-			if(bracket == 0 && brace == 0 && !quote)
-			{
-				if(string[c] == ')')
-					bracket++;
-				else if(string[c] == '}')
-					brace++;
-				else if(string[c] == '\"')
-					quote=true;
-				else if(string[c] >= '0' && string[c] <= '9')
-					return c;
-			}
-			else {
-				if(!quote)
-				{
-					if(string[c] == ')')
-						bracket++;
-					else if(string[c] == '}')
-						brace++;
-					else if(string[c] == '(')
-						bracket--;
-					else if(string[c] == '{')
-						brace--;
-					else if(string[c] == '\"')
-						quote=!quote;
-				}
-				else if(string[c] == '\"')
-					quote=!quote;
-			}
-		}
-	}
-	else {
-		int searchLen=strlen(searchString);
-		int bracket=0,brace=0;
-		bool quote=false;
-		for(int c=start; c>=0; c--)
-		{
-	
-			if(bracket == 0 && brace == 0 && !quote)
-			{
-				if(strncmp(&string[c-searchLen+1],searchString,searchLen) == 0)
-					return c;
-				else if(string[c] == ')')
-					bracket++;
-				else if(string[c] == '}')
-					brace++;
-				else if(string[c] == '\"')
-					quote=true;
-			}
-			else {
-				if(!quote)
-				{
-					if(string[c] == ')')
-						bracket++;
-					else if(string[c] == '}')
-						brace++;
-					else if(string[c] == '(')
-						bracket--;
-					else if(string[c] == '{')
-						brace--;
-					else if(string[c] == '\"')
-						quote=!quote;
-				}
-				else if(string[c] == '\"')
-					quote=!quote;
-			}
-		}
-	}
 	return -1;
 }
 
@@ -359,16 +178,15 @@ int strcopy(char*dest,char*src,int len)
 }
 
 
-
-char* checkString(char* str,Preferences*pref,long double*vars)
+char* checkString(char* str,Preferences*pref,Variable*vars)
 {
 	char* calcString=new char[strlen(str)+1];
-	char*temp;
+	char*tmp;
 	memcpy(calcString,str,strlen(str)+1);
 	int calcLen=strlen(calcString);
 	bool quote=false;
 
-	for(unsigned int c=0; c<calcLen; c++)	//Step 1: remove whitespace, correct strings
+	for(int c=0; c<calcLen; c++)	//Step 1: remove whitespace, correct strings
 	{
 		if(calcLen <= 0)
 			return NULL;
@@ -397,8 +215,12 @@ char* checkString(char* str,Preferences*pref,long double*vars)
 				else if(calcString[c+1]=='\\')
 					calcString[c]='\\';
 				
-				if(strlen(calcString)>c+1)
+				if((signed)strlen(calcString)>c+1)
+				{
+					tmp=calcString;
 					calcString=strcut(calcString,c+1);
+					delete[]tmp;
+				}
 			}
 			continue;
 		}
@@ -413,21 +235,27 @@ char* checkString(char* str,Preferences*pref,long double*vars)
 				}
 			if(pos==-1)
 				return NULL;
-			else calcString=strcut(calcString,c,pos-c);
+			else {
+				tmp=calcString;
+				calcString=strcut(calcString,c,pos-c);
+				delete[]tmp;
+			}
 		}
 		if(calcString[c] == ' ' || calcString[c] == '\t' || calcString[c] == '\n')
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c);
+			delete[]tmp;
 			c--;
 		}
-		if(calcString[c] == '\\')//reserved sign
+		if(calcString[c] == '\\')//reserved character
 		{
 			return NULL;
 		}
 		calcLen=strlen(calcString);
 	}
 	quote=false;
-	for(unsigned int c=0; c<calcLen; c++)	//Step 2: replace special functions
+	for(int c=0; c<calcLen; c++)	//Step 2: replace special functions
 	{
 		if(calcLen <= 0)
 			return NULL;
@@ -437,38 +265,66 @@ char* checkString(char* str,Preferences*pref,long double*vars)
 			continue;
 		if(strncmp(&calcString[c],"root",4) == 0)
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c,4);
+			delete[]tmp;
+			tmp=calcString;
 			calcString=strins(calcString,"$r",c);
+			delete[]tmp;
 		}
 		if(strncmp(&calcString[c],"d/dx",4) == 0)
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c,4);
+			delete[]tmp;
+			tmp=calcString;
 			calcString=strins(calcString,"\\d",c);
+			delete[]tmp;
 		}
 		if(strncmp(&calcString[c],"integ",5) == 0)
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c,5);
+			delete[]tmp;
+			tmp=calcString;
 			calcString=strins(calcString,"\\i",c);
+			delete[]tmp;
 		}
 		if(strncmp(&calcString[c],"bin",3) == 0)
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c,3);
+			delete[]tmp;
+			tmp=calcString;
 			calcString=strins(calcString,"\\b",c);
+			delete[]tmp;
 		}
 		if(strncmp(&calcString[c],"oct",3) == 0)
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c,3);
+			delete[]tmp;
+			tmp=calcString;
 			calcString=strins(calcString,"\\o",c);
+			delete[]tmp;
 		}
 		if(strncmp(&calcString[c],"dec",3) == 0)
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c,3);
+			delete[]tmp;
+			tmp=calcString;
 			calcString=strins(calcString,"\\c",c);
+			delete[]tmp;
 		}
 		if(strncmp(&calcString[c],"hex",3) == 0)
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c,3);
+			delete[]tmp;
+			tmp=calcString;
 			calcString=strins(calcString,"\\h",c);
+			delete[]tmp;
 		}
 		
 		if(calcString[c] == 'x' && pref->calcType!=BASE)
@@ -480,30 +336,44 @@ char* checkString(char* str,Preferences*pref,long double*vars)
 		if(calcString[c] == '-' && calcString[c+1] == '-' )
 		{
 			calcString[c]='+';
+			tmp=calcString;
 			calcString=strcut(calcString,c+1);
+			delete[]tmp;
 		}
 		if(calcString[c] == (char)0xb2)	// second power
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c,1);
+			delete[]tmp;
 			if(c>0)
 				if(calcString[c-1] == (char)0xc2)
 				{
+					tmp=calcString;
 					calcString=strcut(calcString,c-1,1);
+					delete[]tmp;
 					c--;
 				}
+			tmp=calcString;
 			calcString=strins(calcString,"^2",c);
+			delete[]tmp;
 
 		}
 		if(calcString[c] == (char)0xb3)	// third power
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c,1);
+			delete[]tmp;
 			if(c>0)
 				if(calcString[c-1] == (char)0xc2)
 				{
+					tmp=calcString;
 					calcString=strcut(calcString,c-1,1);
+					delete[]tmp;
 					c--;
 				}
+			tmp=calcString;
 			calcString=strins(calcString,"^3",c);
+			delete[]tmp;
 		}
 		if(c>0 && !(calcString[c+1]>='a' && calcString[c+1]<='z'))
 		{
@@ -511,39 +381,65 @@ char* checkString(char* str,Preferences*pref,long double*vars)
 			{
 				if(calcString[c] == 'f')
 				{
+					tmp=calcString;
 					calcString=strcut(calcString,c);
+					delete[]tmp;
+					tmp=calcString;
 					calcString=strins(calcString,"e-15",c);
+					delete[]tmp;
 				}
 				if(calcString[c+1] == 'n')
 				{
+					tmp=calcString;
 					calcString=strcut(calcString,c+1);
+					delete[]tmp;
+					tmp=calcString;
 					calcString=strins(calcString,"e-9",c+1);
+					delete[]tmp;
 				}
 				if(calcString[c] == 'p')
 				{
+					tmp=calcString;
 					calcString=strcut(calcString,c);
+					delete[]tmp;
+					tmp=calcString;
 					calcString=strins(calcString,"e-12",c);
+					delete[]tmp;
 				}
 				if(calcString[c] == (char)0xb5)	//micro
 				{
+					tmp=calcString;
 					calcString=strcut(calcString,c);
+					delete[]tmp;
 					if(c>0)
 						if(calcString[c-1] == (char)0xc2)
 					{
+						tmp=calcString;
 						calcString=strcut(calcString,c-1,1);
+						delete[]tmp;
 						c--;
 					}
+					tmp=calcString;
 					calcString=strins(calcString,"e-6",c);
-				}		
+					delete[]tmp;
+				}
 				if(calcString[c] == 'm')
 				{
+					tmp=calcString;
 					calcString=strcut(calcString,c);
+					delete[]tmp;
+					tmp=calcString;
 					calcString=strins(calcString,"e-3",c);
+					delete[]tmp;
 				}
 				if(calcString[c] == 'k')
 				{
+					tmp=calcString;
 					calcString=strcut(calcString,c);
+					delete[]tmp;
+					tmp=calcString;
 					calcString=strins(calcString,"e3",c);
+					delete[]tmp;
 				}
 			}
 		}
@@ -552,17 +448,21 @@ char* checkString(char* str,Preferences*pref,long double*vars)
 				  calcString[c] == '^'
 		   ) && calcString[c+1] == '+')
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c+1);
+			delete[]tmp;
 		}
 		else if((calcString[c+1] == '+' || calcString[c+1] == '-') && calcString[c] == '+')
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c);
+			delete[]tmp;
 		}
 		calcLen=strlen(calcString);
 	}
 	
 	quote=false;
-	for(unsigned int c=1; c<calcLen; c++)		//Step 3: insert not written *-signs
+	for(int c=1; c<calcLen; c++)		//Step 3: insert not written *-signs
 	{
 		if(calcString[c]=='\"')
 			quote=!quote;
@@ -578,7 +478,11 @@ char* checkString(char* str,Preferences*pref,long double*vars)
 				 ((pref->calcType==SCIENTIFIC && calcString[c-1] >= 'A' || calcString[c-1]>='G') && calcString[c-1]<='Z') || 
 				 (calcString[c-1] >= '0' && calcString[c-1]<='9'))
 		  )
+		{
+			tmp=calcString;
 			calcString=strins(calcString,"*",c);
+			delete[]tmp;
+		}
 
 
 		if(
@@ -588,12 +492,16 @@ char* checkString(char* str,Preferences*pref,long double*vars)
 				 (//calcString[c-1] == '!' ||
 				 ((pref->calcType==SCIENTIFIC && calcString[c-1] >= 'A' || calcString[c-1]>='G') && calcString[c-1]<='Z'))
 		  )
+		{
+			tmp=calcString;
 			calcString=strins(calcString,"*",c);
+			delete[]tmp;
+		}
 		
 		calcLen=strlen(calcString);
 	}
 	quote=false;
-	for(unsigned int c=0; c<calcLen-1; c++)		//Step 4: replace constants
+	for(int c=0; c<calcLen-1; c++)		//Step 4: replace constants
 	{
 		if(calcLen <= 0)
 			return NULL;
@@ -603,44 +511,62 @@ char* checkString(char* str,Preferences*pref,long double*vars)
 			continue;
 		if(strncmp(&calcString[c],"ans",3) == 0)
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c,3);
+			delete[]tmp;
 			char*lastRes=new char[60];
 			if(pref->calcType == SCIENTIFIC)
 			{
-				sprintf(lastRes,"%'.40Lg",vars[26]);
+				sprintf(lastRes,"%'.40Lg",vars[26][0]);
+				tmp=calcString;
 				calcString=strins(calcString,"()",c);
+				delete[]tmp;
+				tmp=calcString;
 				calcString=strins(calcString,lastRes,c+1);
+				delete[]tmp;
 			}
 			else {
-				sprintf(lastRes,"\\c%lli",(long long)vars[26]);
+				sprintf(lastRes,"\\c%lli",(long long)vars[26][0]);
+				tmp=calcString;
 				calcString=strins(calcString,"()",c);
+				delete[]tmp;
+				tmp=calcString;
 				calcString=strins(calcString,lastRes,c+1);
+				delete[]tmp;
 			}
 			
 			delete[]lastRes;
 		}
 		if(strncmp(&calcString[c],"pi",2) == 0)
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c,2);
-//			char*pi=new char[60];
-//			sprintf(pi,"%'.40Lg",(long double)PI);
+			delete[]tmp;
+			tmp=calcString;
 			calcString=strins(calcString,"()",c);
+			delete[]tmp;
+			tmp=calcString;
 			calcString=strins(calcString,SPI,c+1);
+			delete[]tmp;
 			c+=strlen(SPI)-2;
 		}
 		if(strncmp(&calcString[c],"eu",2) == 0)
 		{
+			tmp=calcString;
 			calcString=strcut(calcString,c,2);
-//			char*euler=new char[60];
-//			sprintf(euler,"%'.40Lg",(long double)EULER);
+			delete[]tmp;
+			tmp=calcString;
 			calcString=strins(calcString,"()",c);
+			delete[]tmp;
+			tmp=calcString;
 			calcString=strins(calcString,SEULER,c+1);
+			delete[]tmp;
 			c+=strlen(SEULER)-2;
 		}
 		calcLen=strlen(calcString);
 	}
 	quote=false;
-	for(unsigned int c=1; c<calcLen; c++)		//Step 5: insert not written *-signs
+	for(int c=1; c<calcLen; c++)		//Step 5: insert not written *-signs
 	{
 		if(calcString[c]=='\"')
 			quote=!quote;
@@ -656,7 +582,11 @@ char* checkString(char* str,Preferences*pref,long double*vars)
 				 ((pref->calcType==SCIENTIFIC && calcString[c-1] >= 'A' || calcString[c-1]>='G') && calcString[c-1]<='Z') || 
 				 (calcString[c-1] >= '0' && calcString[c-1]<='9'))
 		  )
+		{
+			tmp=calcString;
 			calcString=strins(calcString,"*",c);
+			delete[]tmp;
+		}
 
 
 		if(
@@ -666,7 +596,11 @@ char* checkString(char* str,Preferences*pref,long double*vars)
 				 (//calcString[c-1] == '!' ||
 				 ((pref->calcType==SCIENTIFIC && calcString[c-1] >= 'A' || calcString[c-1]>='G') && calcString[c-1]<='Z'))
 		  )
+		{
+			tmp=calcString;
 			calcString=strins(calcString,"*",c);
+			delete[]tmp;
+		}
 		
 		calcLen=strlen(calcString);
 	}
@@ -679,7 +613,7 @@ char* checkString(char* str,Preferences*pref,long double*vars)
 
 
 
-long double calculate(char* line,Preferences*pref,long double*vars)
+long double calculate(char* line,Preferences*pref,Variable*vars)
 {
 //	perror(line);
 	if(line == NULL)
@@ -688,7 +622,7 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 	if(len <=0)
 		return (NAN);
 	long double complete=(long double)0.0;
-	char*recString1,*recString2,*recString3;
+	char*recString1,*recString2;
 
 	if(bracketFind(line,"->") != -1)
 	{
@@ -702,9 +636,9 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 
 		recString1=new char[pos1];
 		strcopy(recString1,line,pos1-1);
-		vars[var]=calculate(recString1,pref,vars);
+		vars[var][0]=calculate(recString1,pref,vars);
 		delete[]recString1;
-		return vars[var];
+		return vars[var][0];
 	}
 	else if(bracketFind(line,"+") != -1 || bracketFind(line,"-") != -1)
 	{
@@ -930,7 +864,7 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 		delete[] recString1;
 		delete[] recString2;
 	}
-/*	else if(bracketFind(line,"$r") != -1)	//	root operation for extcalc (binary operator)
+	else if(bracketFind(line,"$r") != -1)	//	root operation for extcalc (binary operator)
 	{
 
 		int pos=bracketFind(line,"$r");
@@ -944,7 +878,7 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 		delete[]recString2;
 		return complete;
 	}
-*/	else if(line[0]>='a' && line[0]<='z') 
+	else if(line[0]>='a' && line[0]<='z') 
 	{
 		long double mult=1.0;
 		if(pref->angle==DEG)
@@ -1010,9 +944,6 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 		}
 		else if(strncmp(line,"rnd",3) == 0)
 		{
-			struct timeval rndTime;
-			gettimeofday(&rndTime,NULL);
-			srand(rndTime.tv_usec*rndTime.tv_sec);
 			complete=((rand()%1000000000)*calculate(&line[3],pref,vars))/1000000000;
 		}
 		else if(strncmp(line,"sqrt",4) == 0)
@@ -1025,7 +956,7 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 		}
 		else if(line[0]=='n')
 		{
-			int num=calculate(&line[1],pref,vars);
+			int num=(int)calculate(&line[1],pref,vars);
 			if(num==0)
 				return(1.0);
 			else return(0.0);
@@ -1040,7 +971,7 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 	}
 	else if(line[0]=='~')
 	{
-		long long num=calculate(&line[1],pref,vars);
+		long long num=(long long)calculate(&line[1],pref,vars);
 		num=~num;
 		return (long double)num;
 	}
@@ -1056,7 +987,7 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 		for(int c=2; c<=(int)end; c++)
 			complete*=c;
 	}
-	else if(bracketFind(line,"\\r(") != -1)		//root operation for calc (operator with arguments)
+/*	else if(bracketFind(line,"\\r(") != -1)		//root operation for calc (operator with arguments)
 	{
 		// syntax: fourth root of nine: root(4,9)
 		int pos1=bracketFind(line,"\\r(");
@@ -1074,7 +1005,7 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 		delete[]recString1;
 		delete[]recString2;
 	}
-	else if(bracketFind(line,"\\i(") != -1)
+*/	else if(bracketFind(line,"\\i(") != -1)
 	{
 		// syntax: integration of sin X between 2 and 3: integ(sinx,2,3)
 		bool inv=false;
@@ -1107,16 +1038,16 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 		double * line1=new double;						//	Romberg's Method
 		double *line2=new double[3];
 		double y,oldy;
-		double step;
-		vars[23]=start;
+		vars[23][0]=start;
 		oldy=integ.calc();
-		vars[23]=end;
+		vars[23][0]=end;
 		y=integ.calc();
 		line1[0]=(y+oldy)*(end-start)/2.0;
-		double fail=(1.0/0.0),oldfail=0.0;
+		double fail=HUGE_VAL,oldfail=0.0;
 		
 		int num=1;
 		int steps;
+
 		while(true)
 		{
 			delete[]line2;
@@ -1124,11 +1055,11 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 			line1=new double[num+1];
 			line1[0]=0.0;
 			
-			steps=pow(2,(num-1));
+			steps=(int)pow(2,(num-1));
 			
 			for(int c=1; c<=steps; c++)
 			{
-				vars[23]=start+((2*c-1)*(end-start))/pow(2,num);
+				vars[23][0]=start+((2*c-1)*(end-start))/pow(2,num);
 				line1[0]+=integ.calc();
 			}
 			line1[0]=0.5*(line1[0]*(end-start)/pow(2,num-1)+line2[0]);
@@ -1143,11 +1074,17 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 			if(fail < 0.0)
 				fail*=-1.0;
 			if(num>16 || (fail < 1e-9))
-				break;
+			{
+				if(num>3)					//precision check may not work before that
+					break;
+			}
 			if(fail>oldfail)
 			{
-				line1[num-1]=NAN;
-				break;
+				if(num>5)					//error check may not work before that
+				{
+					line1[num-1]=NAN;
+					break;
+				}
 			}
 		}
 		complete=line1[num-1];
@@ -1174,11 +1111,13 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 		double step=(pos*(double)1e-6);
 		if(step<1e-6)
 			step=1e-6;
-		vars[23]=pos-step;
+		vars[23][0]=pos-step;
 		double w1=diff.calc();
-		vars[23]=pos+step;
+		vars[23][0]=pos+step;
 		double w2=diff.calc();
 		complete=(w2-w1)/((double)2.0*step);
+		delete[]function;
+		delete[]startStr;
 	}
 	else if(line[0]=='(')
 	{
@@ -1193,12 +1132,12 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 			strcopy(recString1,&line[1],len-1);
 		}
 		complete=calculate(recString1,pref,vars);
-
+		delete[] recString1;
 	}
 	else if((pref->calcType == SCIENTIFIC && line[0]>='A' || line[0]>='G') && line[0]<='Z')
 	{
 
-		complete=vars[(int)line[0]-65];
+		complete=vars[(int)line[0]-65][0];
 
 	}
 	else if(line[0] == '\\')
@@ -1226,6 +1165,8 @@ long double calculate(char* line,Preferences*pref,long double*vars)
 				return (long double)strtoll(line,NULL,16);
 			else if(pref->base == DEC)
 				return (long double)strtoll(line,NULL,10);
+			
+			
 		}
 		else return(strtold(line,NULL));
 	} 
@@ -1249,6 +1190,7 @@ int Calculate::split(char* line)
 	int len=strlen(line);
 	if(len <=0)
 		return -1;
+//	perror("split: "+QString(line));
 
 	if(bracketFind(line," ") != -1)	//Leeroperation
 	{
@@ -1293,7 +1235,7 @@ int Calculate::split(char* line)
 		{
 			if((line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
 			   || line[pos2-1]>='0' && line[pos2-1]<='9'
-			   || line[pos2-1]=='.' || line[pos2-1]==')') && pos2>0)
+			   || line[pos2-1]=='.' || line[pos2-1]==')'|| line[pos2-1]==']') && pos2>0)
 			{
 				pos=pos2;
 				number=NAN;
@@ -1323,7 +1265,7 @@ int Calculate::split(char* line)
 		{
 			if((line[pos1-1] >='A' && line[pos1-1]<='Z'					//binary + operator
 						 || line[pos1-1]>='0' && line[pos1-1]<='9'
-						 || line[pos1-1]=='.' || line[pos1-1]==')') && pos1>0)
+						 || line[pos1-1]=='.' || line[pos1-1]==')' || line[pos1-1]==']') && pos1>0)
 			{
 				pos=pos1;
 				number=NAN;
@@ -1369,6 +1311,8 @@ int Calculate::split(char* line)
 			strcopy(recString2,&line[pos+1],len-pos-1);
 			horzObj=new Calculate(this,recString2,pref,vars);
 			vertObj=new Calculate(this,recString1,pref,vars);
+			delete[]recString1;
+			delete[]recString2;
 			return 0;
 		}
 		else
@@ -1382,6 +1326,8 @@ int Calculate::split(char* line)
 			strcopy(recString2,&line[pos+1],len-pos-1);
 			horzObj=new Calculate(this,recString2,pref,vars);
 			vertObj=new Calculate(this,recString1,pref,vars);
+			delete[]recString1;
+			delete[]recString2;
 			return 0;
 		}
 	}
@@ -1419,7 +1365,7 @@ int Calculate::split(char* line)
 		delete[]recString2;
 		return 0;
 	}
-/*	else if(bracketFind(line,"$r") != -1)	//	root operation for extcalc (binary operator)
+	else if(bracketFind(line,"$r") != -1)	//	root operation for extcalc (binary operator)
 	{
 		operation=ROOT;
 		var=-1;
@@ -1435,7 +1381,7 @@ int Calculate::split(char* line)
 		delete[]recString2;
 		return 0;
 	}
-*/	else if(line[0]>='a' && line[0]<='z') 
+	else if(line[0]>='a' && line[0]<='z') 
 	{
 		horzObj=NULL;
 		var=-1;
@@ -1527,12 +1473,14 @@ int Calculate::split(char* line)
 			vertObj=new Calculate(this,"3",pref,vars);
 		}
 		else{
+			operation=NONE;
+			number=NAN;
 			return -1;
 		}
 
 		return 0;
 	}
-	else if(bracketFind(line,"$r(") != -1)		//root operation for calc (operator with arguments)
+	/*	else if(bracketFind(line,"$r(") != -1)		//root operation for calc (operator with arguments)
 	{
 		// syntax: fourth root of nine: root(4,9)
 		operation=ROOT;
@@ -1555,7 +1503,7 @@ int Calculate::split(char* line)
 		delete[]recString1;
 		delete[]recString2;
 		return 0;
-	}
+	}*/
 	else if(bracketFind(line,"\\d(") != -1)
 	{
 		operation=DIFF;
@@ -1581,8 +1529,6 @@ int Calculate::split(char* line)
 		operation=INTEGRAL;
 		number=NAN;
 		var=-1;
-		bool inv=false;
-		double start,end;
 		int pos1=bracketFind(line,",",3);
 		if(pos1==-1)
 			return-1;
@@ -1628,12 +1574,25 @@ int Calculate::split(char* line)
 	{
 		
 		number=NAN;
-		operation=NONE;
-		var=((int)line[0])-65;
-		horzObj=NULL;
 		vertObj=NULL;
-
+		var=((int)line[0])-65;
 		
+		if(len>1)
+		{
+			if(line[1]=='[' && line[len-1]==']')
+			{
+				operation=ARRAY;
+				char*recString1=new char[len-2];
+				strcopy(recString1,&line[2],len-3);
+				horzObj=new Calculate(this,recString1,pref,vars);
+			}
+			else var=-1;
+		}
+		else 
+		{
+			operation=NONE;
+			horzObj=NULL;
+		}
 	}
 	else{
 		operation=NONE;
@@ -1641,7 +1600,9 @@ int Calculate::split(char* line)
 		var=-1;
 		horzObj=NULL;
 		vertObj=NULL;
-		return 0;
+		if(number==NAN)
+			return -1;
+		else return 0;
 //		 line.toDouble();
 	}
 	return -1;
@@ -1652,6 +1613,7 @@ int Calculate::split(char* line)
 
 double Calculate::calc()
 {
+//	perror("calc: "+QString::number(operation));
 	switch(operation)
 	{
 		case NONE:
@@ -1666,7 +1628,7 @@ double Calculate::calc()
 			}
 			else if(var!=-1)
 			{
-				return vars[var];
+				return vars[var][0];
 			}
 			else if(number!=NAN)
 			{
@@ -1709,6 +1671,14 @@ double Calculate::calc()
 			return vertObj->calc()*horzObj->calc();
 		case DIVIDE:
 			return vertObj->calc()/horzObj->calc();
+		case ARRAY:
+		{
+			double dIndex=horzObj->calc();
+			int index=(int)dIndex;
+			if(index>=0 && index<vars[var].GetLen())
+				return vars[var][index];
+			else return NAN;
+		}
 		case POW:
 			return pow(vertObj->calc(),horzObj->calc());
 		case ROOT:
@@ -1743,7 +1713,7 @@ double Calculate::calc()
 			return atanh(vertObj->calc());
 		case DIFF:
 		{
-			double savedX=vars[23];
+			double savedX=vars[23][0];
 			double point;
 			if(vertObj!= NULL)
 				point=vertObj->calc();
@@ -1753,18 +1723,18 @@ double Calculate::calc()
 			double step=(point*1e-6);
 			if(step<1e-6)
 				step=1e-6;
-			vars[23]=point-step;
+			vars[23][0]=point-step;
 			double w1=horzObj->calc();
-			vars[23]=point+step;
+			vars[23][0]=point+step;
 			double w2=horzObj->calc();
-			vars[23]=savedX;
+			vars[23][0]=savedX;
 			return((w2-w1)/(2*step));
 		}
 		case MODULO:
 			return fmod(vertObj->calc(),horzObj->calc());
 		case INTEGRAL:
 		{
-			double savedX=vars[23];
+			double savedX=vars[23][0];
 //     Verzweigung:
 			//    
 //         end
@@ -1775,7 +1745,7 @@ double Calculate::calc()
 			//
 //        integral(function,start,end);
 
-			double result,complete=(double)0.0;
+			double complete=(double)0.0;
 			if(vertObj == NULL || horzObj == NULL)
 				return NAN;
 			double start=vertObj->calcHorzObj();
@@ -1790,13 +1760,12 @@ double Calculate::calc()
 				inverse=true;
 			}
 
-			double * line1=new double;						// Romberg-Verfahren
+			double * line1=new double;
 			double *line2=new double[3];
 			double y,oldy;
-			double step;
-			vars[23]=start;
+			vars[23][0]=start;
 			oldy=horzObj->calc();
-			vars[23]=end;
+			vars[23][0]=end;
 			y=horzObj->calc();
 			line1[0]=(y+oldy)*(end-start)/2.0;
 			double fail=1e+308,oldfail=0.0;
@@ -1809,10 +1778,10 @@ double Calculate::calc()
 				line2=line1;
 				line1=new double[num+1];
 				line1[0]=0.0;
-				steps=pow(2,(num-1));
+				steps=(int)pow(2,(num-1));
 				for(int c=1; c<=steps; c++)
 				{
-					vars[23]=start+((2*c-1)*(end-start))/pow(2,num);
+					vars[23][0]=start+((2*c-1)*(end-start))/pow(2,num);
 					line1[0]+=horzObj->calc();
 				}
 				line1[0]=0.5*(line1[0]*(end-start)/pow(2,num-1)+line2[0]);
@@ -1827,16 +1796,22 @@ double Calculate::calc()
 					fail*=-1.0;
 				
 				if(num>13 || (fail < 1e-7))
-					break;
+				{
+					if(num>3)
+						break;
+				}
 				if(fail>oldfail)
 				{
-					line1[num-1]=NAN;
-					break;
+					if(num>5)
+					{
+						line1[num-1]=NAN;
+						break;
+					}
 				}
 			}
 			complete=line1[num-1];
 
-			vars[23]=savedX;
+			vars[23][0]=savedX;
 			if(inverse)
 				return -complete;
 			else return complete;
@@ -1864,40 +1839,47 @@ double Calculate::calcHorzObj()
 
 int Script::split(char*line)
 {
-//	perror("split: "+QString(line));
 	bool init=false;
 	char*rest;
 	if(parent==NULL)
 	{
 		operation=SINIT;
 		rest=line;
-		init =true;
+		init=true;
+		parse(NULL);
 	}
 	else rest=parse(line);
-//	perror("split rest: "+QString(rest));
+
 	if(rest!=NULL)
 	{
 		nextObj=new Script(this,NULL,pref,vars,eventReciver);
 		nextObj->split(rest);
 		if(parent!=NULL)
 			delete[]rest;
-//		else perror("complete finish");
 	}
-//	else perror("finished");
 	return 0;
 }
 
 
 char* Script::parse(char* line)
 {
+	static int semicolonCount=0;
+	if(line==NULL)
+	{
+		semicolonCount=0;
+		return NULL;
+	}
 	int pos1;
 	int len=strlen(line);
 //	perror("parse: "+QString(line));
+	
+	//programming language structures
 	if((pos1=bracketFind(line,"if(")) == 0)
 	{
 		int pos2=bracketFind(line,")");
 		if(pos2<3 || len<pos2+2)
 		{
+			printError("No closing bracket for if found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -1937,6 +1919,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,")");
 		if(pos2<7)
 		{
+			printError("No closing bracket for while found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -1946,7 +1929,6 @@ char* Script::parse(char* line)
 		strcopy(recString1,&line[6],pos2-6);
 		vertObj=new Script(this,recString1,pref,vars,eventReciver);
 		delete[]recString1;
-		int pos3;
 		char*recString2=new char[len-pos2];
 		strcopy(recString2,&line[pos2+1],len-pos2-1);
 
@@ -1958,12 +1940,14 @@ char* Script::parse(char* line)
 	}
 	else if((pos1=bracketFind(line,"for(")) == 0)
 	{
+		
 		operation=SFOR;
 		int pos2=bracketFind(line,";",4);
 		int pos3=bracketFind(line,";",pos2+1);
 		int pos4=bracketFind(line,")",3);
 		if(pos2<4 || pos3<5 || pos4<6)
 		{
+			printError("Invalid usage of for",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -1989,6 +1973,7 @@ char* Script::parse(char* line)
 		
 		if(len-pos4<2)
 		{
+			printError("For-loop has no body",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -2008,6 +1993,7 @@ char* Script::parse(char* line)
 		int pos1=bracketFind(line,"}");
 		if(pos1<1)
 		{
+			printError("No closing bracket for { found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -2028,6 +2014,7 @@ char* Script::parse(char* line)
 			return recString2;
 		}
 	}
+	//operators
 	else if((pos1=bracketFind(line,";")) != -1)
 	{
 //		perror("semicolon");
@@ -2037,6 +2024,10 @@ char* Script::parse(char* line)
 		if(pos1>0)
 			vertObj=new Script(this,recString1,pref,vars,eventReciver);
 		else vertObj=NULL;
+		delete[]recString1;
+	//	printError("Strichpunkt gefunden",semicolonCount,eventReciver->eventReciver);
+		semicolonCount++;
+		
 		if(len-pos1>1)
 		{
 			char*recString2=new char[len-pos1];
@@ -2045,89 +2036,6 @@ char* Script::parse(char* line)
 		}
 		else return NULL;
 
-	}
-	else if((pos1=bracketFind(line,"print(")) == 0)
-	{
-//		perror("print");
-		operation=SPRINT;
-		int pos2=bracketFind(line,")");
-		if(pos2<7)
-		{
-			operation=SFAIL;
-			return NULL;
-		}
-		char*recString1=new char[pos2-5];
-		strcopy(recString1,&line[6],pos2-6);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		delete[]recString1;
-
-		return NULL;
-	}
-	else if((pos1=bracketFind(line,"clear")) == 0)
-	{
-//		perror("clear");
-		operation=SCLEARTEXT;
-		return NULL;
-	}
-	else if((pos1=bracketFind(line,"setcursor(")) == 0)
-	{
-//		perror("setcursor");
-		operation=SSETCURSOR;
-		int pos2=bracketFind(line,",",10);
-		int pos3=bracketFind(line,")",10);
-		if(pos2<11 || pos3<12 || pos3<pos2)
-		{
-			operation=SFAIL;
-			return NULL;
-		}
-		char*recString1=new char[pos2-9];
-		strcopy(recString1,&line[10],pos2-10);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		char*recString2=new char[pos3-pos2];
-		strcopy(recString2,&line[pos2+1],pos3-pos2-1);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-
-		return NULL;
-	}
-	else if((pos1=bracketFind(line,"sleep(")) == 0)
-	{
-//		perror("sleep");
-		operation=SSLEEP;
-		int pos2=bracketFind(line,")");
-		if(pos2<7)
-		{
-			operation=SFAIL;
-			return NULL;
-		}
-		char*recString1=new char[pos2-5];
-		strcopy(recString1,&line[6],pos2-6);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		delete[]recString1;
-		return NULL;
-	}
-	else if((pos1=bracketFind(line,"->")) != -1)
-	{
-		operation=SSET;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[2];
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+2],1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		var=recString2[0]-65;
-		if(var<0 || var>25)
-		{
-			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			delete[]recString1;
-			delete[]recString2;
-			return NULL;
-		}
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
 	}
 	else if((pos1=bracketFind(line,"&&")) != -1)
 	{
@@ -2143,7 +2051,7 @@ char* Script::parse(char* line)
 		delete[]recString2;
 		return NULL;
 	}
-	else if(pos1=bracketFind(line,"||") != -1)
+	else if((pos1=bracketFind(line,"||")) != -1)
 	{
 
 		operation=SOR;
@@ -2155,6 +2063,68 @@ char* Script::parse(char* line)
 		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
 		delete[]recString1;
 		delete[]recString2;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"->")) != -1)
+	{
+		operation=SSET;
+		char*recString2;
+		vertObj2=vertObj3=NULL;
+		int pos2=0;
+		if(pos1!=len-3)
+		{
+			if(line[pos1+3]=='[' && line[len-1]==']')
+			{
+				if((pos2=bracketFind(line,"[",pos1+4))!=-1)
+				{
+					if(line[pos2-1]!=']')
+					{
+						printError("No closing brace for set operation found",semicolonCount,eventReciver);
+						operation=SFAIL;
+						return NULL;
+					}
+					recString2=new char[pos2-pos1-4];
+					char*recString3=new char[len-pos2-1];
+					strcopy(recString2,&line[pos1+4],pos2-pos1-5);
+					strcopy(recString3,&line[pos2+1],len-pos2-2);
+					vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+					vertObj3=new Script(this,recString3,pref,vars,eventReciver);
+				//	perror(QString("arrow index: ")+recString2);
+					delete[]recString2;
+					delete[]recString3;
+					
+				}
+				else {
+					recString2=new char[len-pos1-4];
+					strcopy(recString2,&line[pos1+4],len-pos1-5);
+					vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+			//		perror(QString("arrow index: ")+recString2);
+					delete[]recString2;
+				}
+			}
+			else {
+				printError("Right operand of set operation invalid",semicolonCount,eventReciver);
+				operation=SFAIL;
+				return NULL;
+			}
+		}
+		char*recString1=new char[pos1+1];
+		strcopy(recString1,line,pos1);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+
+			
+		var=line[pos1+2]-65;
+		if(var<0 || var>25)
+		{
+			printError("Invalid variable for set operation",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			delete[]recString1;
+			return NULL;
+		}
+		eventReciver->numlen[var]=1;
+		delete[]recString1;
 		return NULL;
 	}
 	else if(bracketFind(line,"==") != -1)
@@ -2247,27 +2217,73 @@ char* Script::parse(char* line)
 		char*recString1=new char[len-pos1];
 		strcopy(recString1,&line[pos1+1],len-pos1-1);
 		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		delete[]recString1;
+		vertObj2=vertObj3=NULL;
+		int pos2=0;
+		if(pos1!=1)
+		{
+			if(line[1]=='[' && line[pos1-1]==']')
+			{
+				if((pos2=bracketFindRev(line,"]",pos1-2)) !=-1)
+				{
+					if(line[pos2+1]!='[')
+					{
+						printError("Closing brace for set operation not found",semicolonCount,eventReciver);
+						operation=SFAIL;
+						return NULL;
+					}
+					char*recString2=new char[pos2-1];
+					char*recString3=new char[pos1-pos2-2];
+					strcopy(recString2,&line[2],pos2-2);
+					strcopy(recString3,&line[pos2+2],pos1-pos2-3);
+					vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+					vertObj3=new Script(this,recString3,pref,vars,eventReciver);
+	//				perror(QString("set index: ")+recString2);
+					delete[]recString2;
+					delete[]recString3;
+				}
+				else {
+					char*recString2=new char[pos1-2];
+					strcopy(recString2,&line[2],pos1-3);
+					vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+	//				perror(QString("set index: ")+recString2);
+					delete[]recString2;
+				}
+			}
+			else {
+				printError("Left operand of set operation invalid",semicolonCount,eventReciver);
+				operation=SFAIL;
+				return NULL;
+			}
+			
+		}
 		var=line[0]-65;
 		if(var<0 || var>25)
 		{
+			printError("Invalid variable for set operation",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
-			delete[]recString1;
 			return NULL;
 		}
-		delete[]recString1;
+		eventReciver->numlen[var]=1;
 		return NULL;
 	}
 	else if((pos1=bracketFind(line,"+")) != -1)
 	{
-		operation=PLUS;
+		operation=SFAIL;
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1];
+		if(pos1<1)
+			printError("First operand of + invalid",semicolonCount,eventReciver);
+		else if(len-pos1<2)
+			printError("Second operand of + invalid",semicolonCount,eventReciver);
+		else operation=PLUS;
 		strcopy(recString1,line,pos1);
 		strcopy(recString2,&line[pos1+1],len-pos1-1);
 		vertObj=new Script(this,recString1,pref,vars,eventReciver);
 		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+			
 		delete[]recString1;
 		delete[]recString2;
 		return NULL;
@@ -2283,21 +2299,165 @@ char* Script::parse(char* line)
 		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
 		delete[]recString1;
 		delete[]recString2;
+		if(vertObj->getOperation()==NONE)
+		{
+			operation=NONE;
+			delete vertObj;
+			delete vertObj2;
+			vertObj=vertObj2=NULL;
+		}
+		else return NULL;
+	}
+	if(bracketFind(line,"!") ==0)
+	{
+		if(len<2)
+		{
+			operation=SFAIL;
+			printError("No argument for ! set",semicolonCount,eventReciver);
+		}
+		else operation=SNOT;
+		char*recString1=new char[len];
+		strcopy(recString1,&line[1],len-1);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=vertObj3=horzObj=nextObj=NULL;
+		delete[]recString1;
 		return NULL;
 	}
-	else if(bracketFind(line,"getline") !=-1)
+	else if((pos1=bracketFind(line,"print(")) == 0)
+	{
+//		perror("print");
+		operation=SPRINT;
+		int pos2=bracketFind(line,")");
+		if(pos2<7)
+		{
+			printError("Closing bracket for print not found",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char*recString1=new char[pos2-5];
+		strcopy(recString1,&line[6],pos2-6);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		delete[]recString1;
+
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"clear")) == 0)
+	{
+//		perror("clear");
+		operation=SCLEARTEXT;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"setcursor(")) == 0)
+	{
+//		perror("setcursor");
+		operation=SSETCURSOR;
+		int pos2=bracketFind(line,",",10);
+		int pos3=bracketFindRev(line,")");
+		if(pos2<11 || pos3<12 || pos3<pos2)
+		{
+			printError("Invalid use of setcursor",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char*recString1=new char[pos2-9];
+		strcopy(recString1,&line[10],pos2-10);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		char*recString2=new char[pos3-pos2];
+		strcopy(recString2,&line[pos2+1],pos3-pos2-1);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+		delete[]recString1;
+		delete[]recString2;
+
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"sleep(")) == 0)
+	{
+//		perror("sleep");
+		operation=SSLEEP;
+		int pos2=bracketFind(line,")");
+		if(pos2<7)
+		{
+			printError("No closing bracket for sleep found",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char*recString1=new char[pos2-5];
+		strcopy(recString1,&line[6],pos2-6);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		delete[]recString1;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"rnd(")) == 0)
+	{
+		operation=SRAND;
+		value.type=NFLOAT;
+		if(line[len-1]!=')')
+		{
+			printError("No closing bracket for rnd found",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char*recString1=new char[len-pos1-4];
+		strcopy(recString1,&line[4],len-pos1-5);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		delete[]recString1;
+		return NULL;
+	}
+
+	else if((pos1=bracketFind(line,"run(")) == 0)
+	{
+		operation=SRUN;
+		
+		if(line[len-1]!=')')
+		{
+			printError("No closing bracket for run found",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		if(line[len-2]!='\"' || line[4]!='\"')
+		{
+			printError("Filename in run must be quoted",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char*recString1=new char[len-pos1-6];
+		strcopy(recString1,&line[5],len-pos1-7);
+		var=-1;
+		for(int c=0; c<eventReciver->subprogramPath.GetLen(); c++)
+			if(strcmp(eventReciver->subprogramPath[c],recString1)==0)
+			{
+				var=c;
+				break;
+			}
+		if(var==-1)
+		{
+			printError("File for run does not exist",semicolonCount,eventReciver);
+			delete[]recString1;
+			operation=SFAIL;
+			return NULL;
+		}
+		delete[]recString1;
+		return NULL;
+	}
+	else if(bracketFind(line,"getline") ==0)
 	{
 		if(len>7)
+		{
+			printError("Invalid operation after getline",semicolonCount,eventReciver);
 			operation=SFAIL;
+		}
 		else operation=SGETLINE;
 		value.type=NCHAR;
 		vertObj=vertObj2=vertObj3=horzObj=nextObj=NULL;
 		return NULL;
 	}
-	else if(bracketFind(line,"getkey") !=-1)
+	else if(bracketFind(line,"getkey") ==0)
 	{
 		if(len>6)
+		{
+			printError("Invalid operation after getkey",semicolonCount,eventReciver);
 			operation=SFAIL;
+		}
 		else operation=SGETKEY;
 		value.type=NCHAR;
 		value.cval=new char[2];
@@ -2305,10 +2465,13 @@ char* Script::parse(char* line)
 		vertObj=vertObj2=vertObj3=horzObj=nextObj=NULL;
 		return NULL;
 	}
-	else if(bracketFind(line,"keystate") !=-1)
+	else if(bracketFind(line,"keystate") ==0)
 	{
 		if(len>8)
+		{
+			printError("Invalid operation after keystate",semicolonCount,eventReciver);
 			operation=SFAIL;
+		}
 		else operation=SKEYSTATE;
 		value.type=NCHAR;
 		value.cval=new char[2];
@@ -2316,29 +2479,48 @@ char* Script::parse(char* line)
 		vertObj=vertObj2=vertObj3=horzObj=nextObj=NULL;
 		return NULL;
 	}
-	else if(bracketFind(line,"!") ==0)
+	else if(bracketFind(line,"break") ==0)
 	{
-		if(len<2)
+		if(len>5)
+		{
+			printError("Invalid operation after break",semicolonCount,eventReciver);
 			operation=SFAIL;
-		else operation=SNOT;
-		char*recString1=new char[len];
-		strcopy(recString1,&line[1],len-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=vertObj3=horzObj=nextObj=NULL;
+		}
+		else operation=SBREAK;
+		value.type=NNONE;
+		vertObj=vertObj2=vertObj3=horzObj=nextObj=NULL;
 		return NULL;
 	}
-	else if(bracketFind(line,"A-Z")==0 && len==1)
+	else if(bracketFind(line,"continue") ==0)
 	{
-		operation=SVAR;
-		var=line[0]-65;
+		if(len>8)
+		{
+			printError("Invalid operation after getkey",semicolonCount,eventReciver);
+			operation=SFAIL;
+		}
+		else operation=SCONTINUE;
+		value.type=NNONE;
+		vertObj=vertObj2=vertObj3=horzObj=nextObj=NULL;
 		return NULL;
 	}
-	else if(line[0] == '(')
+	else if(bracketFind(line,"stop") ==0)
+	{
+		if(len>4)
+		{
+			printError("Invalid operation after stop",semicolonCount,eventReciver);
+			operation=SFAIL;
+		}
+		else operation=SSTOP;
+		vertObj=vertObj2=vertObj3=horzObj=nextObj=NULL;
+		return NULL;
+	}
+	else if(line[0] == '(' && (line[len-1]==')' || strncmp(&line[1],"float",5)==0 || strncmp(&line[1],"int",3)==0 || strncmp(&line[1],"bool",4)==0 || strncmp(&line[1],"string",6)==0))
 	{
 //		perror("bracket");
 		int pos1=bracketFind(line,")");
 		if(pos1<1)
 		{
+			printError("Closing bracket for ( not found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -2353,6 +2535,8 @@ char* Script::parse(char* line)
 				operation=SCAST;
 				value.type=NINT;
 				vertObj=new Script(this,recString1,pref,vars,eventReciver);
+				delete[]castType;
+				delete[]recString1;
 				return NULL;
 			}
 			else if(strcmp(castType,"float")==0)
@@ -2362,6 +2546,8 @@ char* Script::parse(char* line)
 				operation=SCAST;
 				value.type=NFLOAT;
 				vertObj=new Script(this,recString1,pref,vars,eventReciver);
+				delete[]castType;
+				delete[]recString1;
 				return NULL;
 			}
 			else if(strcmp(castType,"bool")==0)
@@ -2371,6 +2557,8 @@ char* Script::parse(char* line)
 				operation=SCAST;
 				value.type=NBOOL;
 				vertObj=new Script(this,recString1,pref,vars,eventReciver);
+				delete[]castType;
+				delete[]recString1;
 				return NULL;
 			}
 			else if(strcmp(castType,"string")==0)
@@ -2380,6 +2568,8 @@ char* Script::parse(char* line)
 				operation=SCAST;
 				value.type=NCHAR;
 				vertObj=new Script(this,recString1,pref,vars,eventReciver);
+				delete[]castType;
+				delete[]recString1;
 				return NULL;
 			}
 		}
@@ -2397,17 +2587,62 @@ char* Script::parse(char* line)
 			return recString2;
 		}
 	}
-	else if((line[0] == '\"' && line[len-1]=='\"'))
+	else if(line[0]>='A' && line[0]<='Z' &&len==1)
 	{
-		operation=SVALUE;
-		value.fval=NAN;
-		value.type=NCHAR;
-		value.cval=new char[len-1];
-		strcopy(value.cval,&line[1],len-2);
+		operation=SVAR;
+		var=line[0]-65;
+		eventReciver->numlen[var]=1;
 		return NULL;
 	}
-	else if((line[0] == '\"' && line[len-1]=='\"'))
+	else if(line[0]>='A' && line[0]<='Z' && line[len-1]==']')
 	{
+
+		if((pos1=bracketFind(line,"[",2))!=-1)
+		{
+			if(line[pos1-1] !=']')
+			{
+				printError("Closing brace for variable not found",semicolonCount,eventReciver);
+				operation=SFAIL;
+				return NULL;
+			}
+			char*recString1=new char[pos1-2];
+			char*recString2=new char[len-pos1-1];
+			strcopy(recString1,&line[2],pos1-3);
+			strcopy(recString2,&line[pos1+1],len-pos1-2);
+			vertObj=new Script(this,recString1,pref,vars,eventReciver);
+			vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+	//		perror(QString("index: ")+recString1);
+			delete[]recString1;
+			delete[]recString2;
+			operation=SMATRIX;
+		}
+		else {
+			char*recString1=new char[len-2];
+			strcopy(recString1,&line[2],len-3);
+			vertObj=new Script(this,recString1,pref,vars,eventReciver);
+			vertObj2=vertObj3=horzObj=nextObj=NULL;
+	//		perror(QString("index: ")+recString1);
+			delete[]recString1;
+			operation=SARRAY;
+		}
+		var=line[0]-65;
+		if(var>25 || var < 0)
+		{
+			printError("Invalid variable",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		eventReciver->numlen[var]=1;
+		return NULL;
+	}
+	else if(line[0] == '\"')
+	{
+		if(line[len-1]!='\"' || len <=1)
+		{
+			printError("Invalid String",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
 		operation=SVALUE;
 		value.fval=NAN;
 		value.type=NCHAR;
@@ -2432,6 +2667,12 @@ char* Script::parse(char* line)
 		{
 			operation=NONE;									//No script operation; use Calculate
 			horzObj=new Calculate((Math*)this,line,pref,vars);
+
+			if(horzObj->getOperation()==NONE)
+				if(isnan(horzObj->calc()))
+					printError("Unknown command",semicolonCount,eventReciver);
+			
+
 			return NULL;
 		}
 	}
@@ -2467,7 +2708,14 @@ double Script::calcHorzObj()
 
 Number Script::exec()
 {
-//	perror("Running script command: "+QString::number(operation));
+
+//	fprintf(stderr,"exec: %i",operation);
+	if(eventReciver->status)
+	{
+		if(eventReciver->bbreak || eventReciver->bcontinue)
+			return value;
+		else eventReciver->status=0;
+	}
 	
 	switch(operation)
 	{
@@ -2490,7 +2738,66 @@ Number Script::exec()
 		case SVALUE:
 			return value;
 		case SVAR:
-			return eventReciver->vars[var];
+		{
+			return eventReciver->vars[var][0];
+		}
+		case SARRAY:
+		{
+			value=vertObj->exec();
+			int index=0;
+			if(value.type==NBOOL)
+				index=(int)value.bval;
+			else if(value.type==NINT)
+				index=value.ival;
+			else if(value.type==NFLOAT)
+				index=(int)value.fval;
+			if(index<0)
+				index=0;
+			if(index>=eventReciver->numlen[var])
+			{
+				eventReciver->vars[var]=(Number*)realloc((void*)eventReciver->vars[var],sizeof(Number)*(index+1));
+				eventReciver->numlen[var]=index+1;
+			}
+			return eventReciver->vars[var][index];
+		}
+		case SMATRIX:
+		{
+			value=vertObj->exec();
+			int index=0,index2=0;
+			if(value.type==NBOOL)
+				index=(int)value.bval;
+			else if(value.type==NINT)
+				index=value.ival;
+			else if(value.type==NFLOAT)
+				index=(int)value.fval;
+			if(index<0)
+				index=0;
+			
+			value=vertObj2->exec();
+			if(value.type==NBOOL)
+				index2=(int)value.bval;
+			else if(value.type==NINT)
+				index2=value.ival;
+			else if(value.type==NFLOAT)
+				index2=(int)value.fval;
+			if(index2<0)
+				index2=0;
+			if(index>=eventReciver->numlen[var])
+			{
+				eventReciver->vars[var]=(Number*)realloc((void*)eventReciver->vars[var],sizeof(Number)*(index+1));
+				eventReciver->numlen[var]=index+1;
+				eventReciver->vars[var][index].type=NNONE;
+			}
+			else if(eventReciver->vars[var][index].type==NCHAR)
+			{
+				value.type=NINT;
+				if((signed)strlen(eventReciver->vars[var][index].cval)>index2)
+					value.ival=(long long)eventReciver->vars[var][index].cval[index2];
+				else value.ival=0;
+				return value;
+			}
+			return eventReciver->vars[var][index];
+		}
 		case SCOMPARE:
 		{
 			value.type=NBOOL;
@@ -2597,6 +2904,20 @@ Number Script::exec()
 						break;
 				else break;
 				vertObj2->exec();
+				if(eventReciver->status)
+				{
+					if(eventReciver->bbreak)
+					{
+						eventReciver->status=0;
+						eventReciver->bbreak=false;
+						break;
+					}
+					if(eventReciver->bcontinue)
+					{
+						eventReciver->status=0;
+						eventReciver->bcontinue=false;
+					}
+				}
 			}
 			if(nextObj==NULL)
 				return value;
@@ -2619,7 +2940,21 @@ Number Script::exec()
 						if(value.fval==0.0)
 							break;
 					else break;
-						horzObj->exec();
+					horzObj->exec();
+					if(eventReciver->status)
+					{
+						if(eventReciver->bbreak)
+						{
+							eventReciver->status=0;
+							eventReciver->bbreak=false;
+							break;
+						}
+						else if(eventReciver->bcontinue)
+						{
+							eventReciver->status=0;
+							eventReciver->bcontinue=false;
+						}
+					}
 				}
 			}
 			else {
@@ -2637,7 +2972,20 @@ Number Script::exec()
 							break;
 					else break;
 					horzObj->exec();
-
+					if(eventReciver->status)
+					{
+						if(eventReciver->bbreak)
+						{
+							eventReciver->status=0;
+							eventReciver->bbreak=false;
+							break;
+						}
+						else if(eventReciver->bcontinue)
+						{
+							eventReciver->status=0;
+							eventReciver->bcontinue=false;
+						}
+					}
 				}
 			}
 			if(nextObj==NULL)
@@ -2646,7 +2994,9 @@ Number Script::exec()
 		}
 		case SSET:
 		{
+			int index=0,index2=-1;
 			value=vertObj->exec();
+
 			if(value.type==NINT)
 				value.fval=(long double)value.ival;
 			else if(value.type==NFLOAT);
@@ -2654,9 +3004,107 @@ Number Script::exec()
 				value.fval=(long double)value.cval[0];
 			else if(value.type==NBOOL)
 				value.fval=(long double)value.bval;
-			
-			vars[var]=value.fval;
-			eventReciver->vars[var]=value;
+			if(vertObj2!=NULL)
+			{
+				Number nIndex=vertObj2->exec();
+				if(nIndex.type==NBOOL)
+					index=(int)nIndex.bval;
+				else if(nIndex.type==NINT)
+					index=nIndex.ival;
+				else if(nIndex.type==NFLOAT)
+					index=(int)nIndex.fval;
+				if(index<0)
+					index=0;
+			}
+			if(index>=vars[var].GetLen())
+			{
+				int addlen=index-vars[var].GetLen()+1;
+				//long double*diffItems=new long double[addlen];
+				//vars[var].NewItems(addlen,diffItems);
+				for(int c=0; c<addlen; c++)
+					vars[var].NewItem(0.0);
+			//	delete[]diffItems;
+			}
+			if(index>=eventReciver->numlen[var])
+			{
+				eventReciver->vars[var]=(Number*)realloc((void*)eventReciver->vars[var],sizeof(Number)*(index+1));
+				for(int c=eventReciver->numlen[var]; c<index+1; c++)
+					eventReciver->vars[var][c].type=NNONE;
+				eventReciver->numlen[var]=index+1;
+			}
+			if(vertObj3!=NULL && eventReciver->vars[var][index].type==NCHAR)
+			{
+				Number nIndex=vertObj3->exec();
+				if(nIndex.type==NBOOL)
+					index2=(int)nIndex.bval;
+				else if(nIndex.type==NINT)
+					index2=nIndex.ival;
+				else if(nIndex.type==NFLOAT)
+					index2=(int)nIndex.fval;
+				if(index2<0)
+					index2=0;
+				if(index2<(signed)strlen(eventReciver->vars[var][index].cval))
+				{
+					if(value.type==NINT)
+						eventReciver->vars[var][index].cval[index2]=(char)value.ival;
+					else if(value.type==NCHAR)
+					{
+						int slen=strlen(eventReciver->vars[var][index].cval);
+						int slen2=strlen(value.cval);
+						if(slen2+index2>slen)
+						{
+							char*newchar=new char[slen2+index2+1];
+							memcpy(newchar,eventReciver->vars[var][index].cval,slen);
+							memcpy(&newchar[index2],value.cval,slen2+1);
+							delete[] eventReciver->vars[var][index].cval;
+							eventReciver->vars[var][index].cval=newchar;
+						}
+						else memcpy(&(eventReciver->vars[var][index].cval[index2]),value.cval,slen2);;
+					}
+					else if(value.type==NFLOAT)
+						eventReciver->vars[var][index].cval[index2]=(char)value.fval;
+				}
+				else {
+					int slen=strlen(eventReciver->vars[var][index].cval);
+					int newlen;
+					if(value.type==NCHAR)
+						newlen=index2+strlen(value.cval)+2;
+					else newlen=index2+2;
+
+					char*newchar=new char[newlen];
+					memcpy(newchar,eventReciver->vars[var][index].cval,slen);
+					for(int c=slen; c<index2; c++)
+						newchar[c]=' ';
+					newchar[newlen-1]=(char)0;
+					if(value.type==NINT)
+						newchar[index2]=(char)value.ival;
+					else if(value.type==NFLOAT)
+						newchar[index2]=(char)value.fval;
+					else if(value.type==NBOOL)
+						newchar[index2]=(char)value.bval;
+					else if(value.type==NCHAR)
+						memcpy(&newchar[index2],value.cval,strlen(value.cval));
+					delete[] (eventReciver->vars[var][index].cval);
+					eventReciver->vars[var][index].cval=newchar;
+				}
+			}
+			else 
+			{
+				vars[var][index]=value.fval;
+				if(eventReciver->vars[var][index].type==NCHAR)
+				{
+					delete[] eventReciver->vars[var][index].cval;
+					eventReciver->vars[var][index].cval=NULL;
+				}
+				if(value.type==NCHAR)
+				{
+					eventReciver->vars[var][index].type=NCHAR;
+					int slen=strlen(value.cval);
+					eventReciver->vars[var][index].cval=new char[slen+1];
+					memcpy(eventReciver->vars[var][index].cval,value.cval,slen+1);
+				}
+				else eventReciver->vars[var][index]=value;
+			}
 			return value;
 		}
 		case SPRINT:
@@ -2789,7 +3237,7 @@ Number Script::exec()
 			}
 			else {
 				n1.bval=false;
-				n1.type==NBOOL;
+				n1.type=NBOOL;
 			}
 			if(n2.type==NBOOL)
 				;
@@ -2867,7 +3315,10 @@ Number Script::exec()
 				if(n.type==NINT)
 					value.ival+=n.ival;
 				else if(n.type==NFLOAT)
-					value.ival+=(long long)n.fval;
+				{
+					value.fval=(long double)value.ival+n.fval;
+					value.type=NFLOAT;
+				}
 				else if(n.type==NCHAR)
 					value.ival+=(long long)n.cval[0];
 				else if(n.type==NBOOL)
@@ -2899,7 +3350,15 @@ Number Script::exec()
 				else if(n.type==NFLOAT)
 					value.cval[0]+=(char)n.fval;
 				else if(n.type==NCHAR)
-					value.cval[0]+=n.cval[0];
+				{
+					int strlen1=strlen(value.cval);
+					int strlen2=strlen(n.cval);
+					char*newstring=new char[strlen1+strlen2+1];
+					memcpy(newstring,value.cval,strlen1);
+					memcpy(&newstring[strlen1],n.cval,strlen2+1);
+					delete[] value.cval;
+					value.cval=newstring;
+				}
 				else if(n.type==NBOOL)
 					value.cval[0]+=(char)n.bval;
 				else {
@@ -2910,9 +3369,15 @@ Number Script::exec()
 			else if(value.type==NBOOL)
 			{
 				if(n.type==NINT)
-					value.bval+=(bool)n.ival;
+				{
+					value.type=NINT;
+					value.ival=(long long)value.bval+n.ival;
+				}
 				else if(n.type==NFLOAT)
-					value.bval+=(bool)n.fval;
+				{
+					value.fval=(long double)value.bval+n.fval;
+					value.type=NFLOAT;
+				}
 				else if(n.type==NCHAR)
 					value.bval+=(bool)n.cval[0];
 				else if(n.type==NBOOL)
@@ -2927,6 +3392,17 @@ Number Script::exec()
 				value.fval=NAN;
 				value.type=NNONE;
 			}
+			switch(value.type)
+			{
+				case NINT:
+					value.fval=(long double)value.ival; break;
+				case NBOOL:
+					value.fval=(long double)value.bval; break;
+				case NCHAR:
+					value.fval=(long double)value.cval[0]; break;
+				case NNONE:
+					value.fval=NAN; break;
+			}
 			return value;
 		}
 		case MINUS:
@@ -2938,7 +3414,10 @@ Number Script::exec()
 				if(n.type==NINT)
 					value.ival-=n.ival;
 				else if(n.type==NFLOAT)
-					value.ival-=(long long)n.fval;
+				{
+					value.fval=(long double)value.ival-n.fval;
+					value.type=NFLOAT;
+				}
 				else if(n.type==NCHAR)
 					value.ival-=(long long)n.cval[0];
 				else if(n.type==NBOOL)
@@ -2981,9 +3460,15 @@ Number Script::exec()
 			else if(value.type==NBOOL)
 			{
 				if(n.type==NINT)
-					value.bval-=(bool)n.ival;
+				{
+					value.type=NINT;
+					value.ival=(long long)value.bval-n.ival;
+				}
 				else if(n.type==NFLOAT)
-					value.bval-=(bool)n.fval;
+				{
+					value.type=NFLOAT;
+					value.fval=(float)value.bval-n.fval;
+				}
 				else if(n.type==NCHAR)
 					value.bval-=(bool)n.cval[0];
 				else if(n.type==NBOOL)
@@ -2997,6 +3482,17 @@ Number Script::exec()
 			else {
 				value.fval=NAN;
 				value.type=NNONE;
+			}
+			switch(value.type)
+			{
+				case NINT:
+					value.fval=(long double)value.ival; break;
+				case NBOOL:
+					value.fval=(long double)value.bval; break;
+				case NCHAR:
+					value.fval=(long double)value.cval[0]; break;
+				case NNONE:
+					value.fval=NAN; break;
 			}
 			return value;
 		}
@@ -3204,6 +3700,36 @@ Number Script::exec()
 			value.fval=(long double)value.bval;
 			return value;
 		}
+		case SRUN:
+		{
+			if(eventReciver->subprograms[var]!=NULL)
+				return ((Script*)eventReciver->subprograms[var])->exec();
+			else 
+			{
+				value.type=NNONE;
+				value.fval=NAN;
+				return value;
+			}
+		}	
+		case SBREAK:
+		{
+			eventReciver->status=1;
+			eventReciver->bbreak=true;
+			return value;
+		}
+		case SCONTINUE:
+		{
+	//		perror("continue");
+			eventReciver->status=1;
+			eventReciver->bcontinue=true;
+			return value;
+		}
+		case SSTOP:
+		{
+	//		perror("stop");
+			exit(0);
+			return value;
+		}
 		case SCAST:
 		{
 			Number n=vertObj->exec();
@@ -3213,9 +3739,10 @@ Number Script::exec()
 					switch(n.type)
 					{
 						case NINT:
+							value.ival=n.ival;
 							break;
 						case NFLOAT:
-							value.ival=(int)n.fval;
+							value.ival=(long long)n.fval;
 							break;
 						case NCHAR:
 							char*end;
@@ -3235,9 +3762,10 @@ Number Script::exec()
 					switch(n.type)
 					{
 						case NINT:
-							value.fval=(float)n.ival;
+							value.fval=(long double)n.ival;
 							break;
 						case NFLOAT:
+							value.fval=n.fval;
 							break;
 						case NCHAR:
 							value.fval=strtold(n.cval,NULL);
@@ -3268,6 +3796,7 @@ Number Script::exec()
 							else value.bval=!(!((bool)strtoll(n.cval,NULL,10)));
 							break;
 						case NBOOL:
+							value.bval=n.bval;
 							break;
 						default:
 							value.bval=false;
@@ -3301,6 +3830,14 @@ Number Script::exec()
 					value.fval=NAN;
 					return value;
 			}
+		}
+		case SRAND:
+		{
+			
+			value=vertObj->exec();
+			value.type=NFLOAT;
+			value.fval=(fmod(rand(),1000000000)*value.fval)/1000000000;
+			return value;
 		}
 		case SSLEEP:
 		{
@@ -3341,6 +3878,7 @@ Number Script::exec()
 		{
 
 			fprintf(stderr,"\033[2J");
+			fprintf(stderr,"\033[1;1H");
 			if(nextObj==NULL)
 				return value;
 			else return nextObj->exec();
@@ -3366,7 +3904,11 @@ Number Script::exec()
 
 			if(tcsetattr(fileno(stdout),TCSANOW,&terminfo)!=0)
 				perror("tcsetattr fehler");
-			value.cval[0]=(char)getchar();
+			int key=getchar();
+			if(key<0)
+				key=0;
+			value.cval[0]=(char)key;
+
 			value.fval=(long double)value.cval[0];
 			
 			terminfo.c_cc[VTIME]=time;
@@ -3413,18 +3955,17 @@ Number Script::exec()
 	}
 	return value;
 }
+
 Number Script::execVertObj()
 {
 	if(vertObj != NULL)
 		return vertObj->exec();
 	else return value;
 }
+
 Number Script::execHorzObj()
 {
 	if(horzObj != NULL)
 		return horzObj->exec();
 	else return value;
 }
-
-
-

@@ -1,7 +1,7 @@
 .\" Process this file with
 .\" groff -man -Tascii calc.1
 .\"
-.TH CALC 1 "JUNE 2006" Linux "User Commands"
+.TH CALC 1 "SEPTEMBER 2006" Linux "User Commands"
 .SH NAME
 calc \- console calculator
 .SH SYNOPSIS
@@ -53,7 +53,7 @@ pi; example: sin(pi/2)
 .IP "-o, --output [output length]"
 The argument is a number between 2 and the maximal possible output length (normally 18).
 .IP "-m, --mode [calculator mode]"
-The mode can be std (default, normal scientific calculatons), base (for logic functions and base-n calculatons) or script (for executing scripts)
+The mode can be std (default, normal scientific calculatons), base (for logic functions and base-n calculatons) or script (for executing scripts). In scripting mode, the last argument must be the path to the script file.
 .IP "-b, --base [calculator base]"
 The argument must be one of hex (hexadecimal), dec (decimal, default), oct (octal) and bin (binary). This option can only be used when -m base is set.
 .IP "-a, --angle [angle type]"

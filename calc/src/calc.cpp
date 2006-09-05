@@ -3,6 +3,7 @@
 #include <sys/time.h>
 #include <float.h>
 #include <stdlib.h>
+#include "consolecalc.h"
 
 ///////////////////////////////////////Calc///////////////////////////////////////
 //  Calc is a scientific calculator for the text console.                       //
@@ -43,7 +44,10 @@
 
 int main(int argc,char**argv)
 {
-	long double *vars=new long double[27];
+	Variable *vars=new Variable[27];
+
+	for(int c=0; c<27;c++)
+		vars[c].NewItem(0.0);
 	Preferences *pref=new Preferences;
 	pref->angle=RAD;
 	pref->calcType=SCIENTIFIC;
@@ -60,12 +64,16 @@ int main(int argc,char**argv)
 #else 
 	pref->outputLength=pref->precisision=DBL_DIG;
 	int maxLength=DBL_DIG;
-#endif	
+#endif
 
 	char*homedir=getenv("HOME");
 	char*path=new char[strlen(homedir)+16];
 	memcpy(path,homedir,strlen(homedir));
 	memcpy(&path[strlen(homedir)],"/.calcvariables",16);
+
+	struct timeval rndTime;
+	gettimeofday(&rndTime,NULL);
+	srand(rndTime.tv_usec*rndTime.tv_sec);
 	
 	int fileLength;
 	struct stat fileStat;
@@ -92,9 +100,9 @@ int main(int argc,char**argv)
 				memcpy(var,&variablesString[varStart],varEnd-varStart);
 				var[varEnd-varStart]=(char)0;
 #ifdef HAVE_LONG_DOUBLE
-				vars[varCount]=strtold(var,NULL);
+				vars[varCount][0]=strtold(var,NULL);
 #else 
-				vars[varCount]=strtod(var,NULL);
+				vars[varCount][0]=strtod(var,NULL);
 #endif
 				varStart=varEnd+1;
 				varCount++;	
@@ -103,9 +111,6 @@ int main(int argc,char**argv)
 		}
 		fclose(variablesFile);
 	}
-
-
-
 
 
 
@@ -217,7 +222,7 @@ int main(int argc,char**argv)
 		}
 		else if(strcmp(argv[c],"-h")==0 || strcmp(argv[c],"--help")==0)
 		{
-			printf("Usage:\ncalc \"input\"\nFor example: calc \"2*(3+7/2)\"\n\nOptions:\n-a, --angle (deg, rad, gra)\n-m, --mode (base, std)\n-b, --base (dec, hex, bin, oct) only in base mode\n-o, --output (2-18)\n-h, --help\n-v, --version\n\nPlease use man calc for  further information\n");
+			printf("Usage:\ncalc \"input\"\nFor example: calc \"2*(3+7/2)\"\n\nOptions:\n-a, --angle (deg, rad, gra)\n-m, --mode (base, std, script)\n-b, --base (dec, hex, bin, oct) only in base mode\n-o, --output (2-18)\n-h, --help\n-v, --version\n\nPlease use man calc for  further information\n");
 			delete pref;
 			delete[] vars;
 			return 0;		
@@ -288,12 +293,23 @@ int main(int argc,char**argv)
 			return 0;
 		}		
 		input[fileinfo.st_size]=(char)0;
-		printf("program: %s\n",input);
 	}
 	char*res=checkString(input,pref,vars);
 	char*printString=new char[50];
 	if(script)
 	{
+		fprintf(stderr,"\nProcessing main file ...\n");
+		if(res==NULL)
+		{
+			fprintf(stderr,"Preprocessor Error\n");
+			delete[]input;
+			delete[]printString;
+			delete[]vars;
+			delete pref;
+			return 0;
+		}
+		scriptData.error=false;
+		
 		struct termios terminfo,oldTerminfo;
 		tcgetattr(fileno(stdout),&terminfo);
 		oldTerminfo=terminfo;
@@ -301,10 +317,45 @@ int main(int argc,char**argv)
 		terminfo.c_lflag &=~ICANON;
 		if(tcsetattr(fileno(stdout),TCSANOW,&terminfo)!=0)
 			perror("tcsetattr fehler");
+
+		scriptData.status=0;
+		scriptData.usleep=false;
+		scriptData.bbreak=false;
+		scriptData.bcontinue=false;
 		
 		scriptData.exit=false;
-		scriptData.vars=new Number[27];
+		scriptData.vars=new Number*[27];
+		for(int c=0; c<27;c++)
+		{
+			scriptData.vars[c]=(Number*)malloc(sizeof(Number));
+			scriptData.numlen[c]=1;
+			scriptData.vars[c][0].type=NNONE;
+		}
+		for(int c=0; c<27; c++)
+			scriptData.numlen[c]=0;
+		
+
+		searchScripts(input,pref,vars,&scriptData);
+		scriptData.countDifference=0;
+		initDebugging(input,&scriptData);
+
+		
 		s=new Script((Script*)NULL,res,pref,vars,&scriptData);
+		loadSubScripts(&scriptData,pref,vars,s);
+		if(scriptData.error)
+		{
+			fprintf(stderr,"Script processing failed\n");
+			delete[]input;
+			delete[]printString;
+			delete[]vars;
+			delete pref;
+			delete s;
+			if(tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo)!=0)
+				perror("tcsetattr fehler");
+			return 0;
+		}
+		
+		
 		s->exec();
 		
 		if(tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo)!=0)
@@ -314,19 +365,18 @@ int main(int argc,char**argv)
 	}	
 	else if(pref->calcType==SCIENTIFIC)
 	{
-		sprintf(printString,"%%.%iLg\n",pref->outputLength);
-		printf(printString,vars[26]=calculate(res,pref,vars));
+		printf("%.*Lg\n",pref->outputLength,vars[26][0]=calculate(res,pref,vars));
 	}
 	else {
 		
 		switch(pref->base)
 		{
 			case DEC:
-				printf("%lli\n",(long long)(vars[26]=calculate(res,pref,vars)));
+				printf("%lli\n",(long long)(vars[26][0]=calculate(res,pref,vars)));
 				break;
 			case BIN:
 			{
-				long long result=(long long)(vars[26]=calculate(res,pref,vars));
+				long long result=(long long)(vars[26][0]=calculate(res,pref,vars));
 				char*cRes=new char[65];
 				cRes[64]=(char)0;
 				for(long long c=0; c<64;c++)
@@ -345,26 +395,27 @@ int main(int argc,char**argv)
 				break;
 				}
 			case HEX:
-				printf("%LX\n",(long long)(vars[26]=calculate(res,pref,vars)));
+				printf("%LX\n",(long long)(vars[26][0]=calculate(res,pref,vars)));
 				break;
 			case OCT:
-				printf("%llo\n",(long long)(vars[26]=calculate(res,pref,vars)));
+				printf("%llo\n",(long long)(vars[26][0]=calculate(res,pref,vars)));
 				break;
 		}	
 
 	}
 
 	char*newVarString="";
-	sprintf(printString,"%%.%iLg",maxLength);
+
 	char*varString=new char[maxLength+20];
 
 
 	for(int c=0; c<27; c++)
 	{
-		sprintf(varString,printString,vars[c]);
+		sprintf(varString,"%.*Lg",maxLength,vars[c][0]);
 		newVarString=strins(newVarString,varString,strlen(newVarString));
 		newVarString=strins(newVarString,"\n",strlen(newVarString));
 	}
+	chdir(getenv("HOME"));
 	variablesFile=fopen(".calcvariables","w");
 	if(variablesFile!=NULL)
 	{
@@ -376,8 +427,165 @@ int main(int argc,char**argv)
 	delete[]input;
 	delete[]res;
 		
-	//printf("Usage:\ncalc \"input\"\nFor example: calc \"2*(3+7/2)\"\nPlease use man calc for  further information\n");
+
 	delete pref;
 	delete[] vars;
 	return 0;
 }
+
+
+
+
+
+void initDebugging(char*code,ThreadSync*scriptData)
+{
+
+	int pos1=0,pos2=0;
+	bool quote=false;
+	char* line;
+	int len=strlen(code);
+	
+	int lineLen;
+	int lineCount=0;
+	int run=1;
+	int c;
+	while(run)
+	{
+		for(c=pos1;code[c]!='\n' && c<len+1; c++);
+		pos2=c;
+		if(c>=len)
+			run=false;
+		lineCount++;
+		line=new char[pos2-pos1+1];
+		memcpy(line,&code[pos1],pos2-pos1);
+		line[pos2-pos1]=(char)0;
+		lineLen=strlen(line);
+		for(int c=0; c<lineLen && !(line[c]=='/' && line[c+1]=='/'); c++)
+		{
+			if(line[c]=='\"')
+				quote=!quote;
+			else if(!quote && line[c]==';')
+			{
+				scriptData->semicolonLines.NewItem(lineCount);
+			}
+		}
+		pos1=pos2+1;
+		delete[]line;
+	}
+}
+
+
+void searchScripts(char*code,Preferences*pref,Variable*vars,ThreadSync*scriptData)
+{
+	char*cleanString=checkString(code,pref,vars);
+	if(cleanString==NULL)
+		return;
+	char*scriptName;
+	int len=strlen(cleanString);
+	int pos=0,pos2;
+	FILE*subFile;
+	while(pos<len)
+	{
+		if(strncmp(&cleanString[pos],"run(\"",4) == 0) //run("")
+		{
+			pos2=bracketFind(cleanString,")",pos+4);
+			if(pos2-pos<7 || cleanString[pos2-1]!='\"')
+			{
+				pos++;
+				continue;
+			}
+			scriptName=new char[pos2-pos-5];
+			strcopy(scriptName,&cleanString[pos+5],pos2-pos-6);
+			bool newScript=true;
+			for(int c=0; c<scriptData->subprogramPath.GetLen(); c++)
+				if(strcmp(scriptData->subprogramPath[c],scriptName)==0)
+				{
+					newScript=false;
+					break;
+				}
+			if(newScript)
+			{
+				struct stat fileStat;
+				char*subFileContent;
+
+				if(lstat(scriptName,&fileStat)!=0)
+					;
+				else {
+					subFile=fopen(scriptName,"r");
+					if(subFile==NULL || fileStat.st_size<=0)
+						;
+					else
+					{
+						subFileContent=new char[fileStat.st_size+1];
+						subFileContent[fileStat.st_size]=(char)0;
+						fread(subFileContent,fileStat.st_size,1,subFile);
+						fclose(subFile);
+						scriptData->subprogramPath.NewItem(scriptName);
+						searchScripts(subFileContent,pref,vars,scriptData);
+						delete[]subFileContent;
+					}
+				}
+			}
+			pos=pos2+1;
+		}
+		else pos++;
+	}
+	delete[] cleanString;
+}
+
+
+void loadSubScripts(ThreadSync*scriptData,Preferences*pref,Variable*vars,Script*parent)
+{
+	struct stat fileStat;
+	char*subFileContent;
+	char*cleanSubFileContent;
+	char*filePath;
+	Script*subScript;
+	FILE*subFile;
+	for(int c=0; c<scriptData->subprogramPath.GetLen(); c++)
+	{
+		filePath=scriptData->subprogramPath[c];
+		if(lstat(filePath,&fileStat)!=0)
+			scriptData->subprograms.NewItem((Math*)NULL);
+		else {
+			subFile=fopen(filePath,"r");
+			if(subFile==NULL || fileStat.st_size<=0)
+				scriptData->subprograms.NewItem((Math*)NULL);
+			else
+			{
+				subFileContent=new char[fileStat.st_size+1];
+				subFileContent[fileStat.st_size]=(char)0;
+				fread(subFileContent,fileStat.st_size,1,subFile);
+				fclose(subFile);
+				scriptData->countDifference+=scriptData->semicolonLines.GetLen();
+				initDebugging(subFileContent,scriptData);
+				cleanSubFileContent=checkString(subFileContent,pref,vars);
+				fprintf(stderr,"\nProcessing file ");
+				fprintf(stderr,scriptData->subprogramPath[c]);
+				fprintf(stderr,"\n");
+				if(cleanSubFileContent==NULL)
+				{
+					fprintf(stderr,"Preprocessor Error\n");
+					subScript=NULL;
+				}
+				else 
+				{
+					subScript=new Script(parent,NULL,pref,vars,scriptData);
+					subScript->split(cleanSubFileContent);
+				}
+				delete[]subFileContent;
+				scriptData->subprograms.NewItem(subScript);
+			}
+		}
+	}
+
+}
+
+
+
+
+
+
+
+
+
