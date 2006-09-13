@@ -14,7 +14,7 @@
 #include "list.h"
 
 
-#define VERSIONSTRING "Version: 0.5.0 2006-09-03\nCalculator algorithm: extcalc v0.5.0 2006-08-20"
+#define VERSIONSTRING "Version: 0.5.0 2006-09-11\nCalculator algorithm: extcalc v0.5.0 2006-08-20"
 #define AUTHORSTRING "Author:\nRainer Strobel\n2006\n"
 
 
