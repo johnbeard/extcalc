@@ -226,7 +226,7 @@ MainObject() :QTabWidget()
 	appIcon=new QPixmap(QString(INSTALLDIR)+"/data/icon22.png");
 	if(!appIcon->isNull())
 		setIcon(*appIcon);
-	else MessageBox(EXTCALCH_MSG1);
+	
 	calcFocus=true;
 	calcModeChanged=false;
 	

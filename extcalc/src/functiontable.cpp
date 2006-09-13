@@ -186,7 +186,8 @@ void FunctionTable::setPref(Preferences newPref)
 	}
 
 
-	resizeEvent(NULL);
+	repaint();
+//	resizeEvent(NULL);
 	adjustColumn(0);
 	adjustColumn(1);
 	adjustColumn(2);

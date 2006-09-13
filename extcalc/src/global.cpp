@@ -1267,7 +1267,11 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		}
 		else if(strncmp(line,"rnd",3) == 0)
 		{
+#if RAND_MAX < 1000000000
+			complete=(((rand()*(1000000000/RAND_MAX))%1000000000)*calculate(&line[3],pref,vars))/1000000000;
+#else
 			complete=((rand()%1000000000)*calculate(&line[3],pref,vars))/1000000000;
+#endif
 		}
 		else if(strncmp(line,"sqrt",4) == 0)
 		{
@@ -4189,7 +4193,11 @@ Number Script::exec()
 			
 			value=vertObj->exec();
 			value.type=NFLOAT;
-			value.fval=(fmod(rand(),1000000000)*value.fval)/1000000000;
+#if RAND_MAX < 1000000000
+			value.fval=(((rand()*(1000000000/RAND_MAX))%1000000000)*value.fval)/1000000000;
+#else
+			value.fval=((rand()%1000000000)*value.fval)/1000000000;
+#endif
 			return value;
 		}
 		case SSLEEP:

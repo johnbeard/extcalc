@@ -151,6 +151,13 @@ int MainObject::readConfigFile()
 				fwrite("F"+QString::number(c+1)+"DYNAMIC=false\n",17,1,configFile);
 			fileLen=575;
 			fclose(configFile);
+			
+			if(lstat(CONFIGFILE,&fileStat) != 0)
+			{
+				MessageBox(EXTCALCC_MSG3+QString(CONFIGFILE));
+				return -3;
+			}
+				
 		}
 		else {
 			MessageBox(EXTCALCC_MSG1+QString(CONFIGFILE)+EXTCALCC_MSG2);

@@ -20,10 +20,10 @@
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.5.0\n2006-08-20\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.5.0\n2006-09-11\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.5.0\n20.8.2006\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.5.0\n11.9.2006\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\n\nRainer Strobel\n2006  \n\n"
 
