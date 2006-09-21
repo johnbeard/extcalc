@@ -63,8 +63,8 @@ Q_OBJECT
 		solveMode=false;
 		functionChanged=false;
 		changedRow=-1;
-	
-	
+
+
 		graph=new GraphOutput(this,vars);
 		standardButtons=new StandardButtons(this);
 		extButtons=new ExtButtons(this);
@@ -79,7 +79,7 @@ Q_OBJECT
 		functionType->hide();
 		solveWidget->hide();
 		inputLine=new QLineEdit(this);
-		
+
 		solveType->insertItem(GRAPHH_STR4,-2);
 		solveType->insertItem(GRAPHH_STR5,-3);
 		solveType->insertItem(GRAPHH_STR6,-3);
@@ -88,6 +88,7 @@ Q_OBJECT
 		solveType->insertItem(GRAPHH_STR9,-6);
 		solveType->insertItem(GRAPHH_STR10,-7);
 		solveType->insertItem(GRAPHH_STR11,-8);
+		solveType->insertItem("Save and modify",-9);
 		
 		functionType->insertItem(TABLEH_STR3);
 		functionType->insertItem(TABLEH_STR4);
@@ -127,6 +128,8 @@ Q_OBJECT
 		QObject::connect(functionType,SIGNAL(activated(int)),this,SLOT(functionTypeSlot(int)));
 		QObject::connect(solveWidget,SIGNAL(drawInequaityIntersection(int, int)),graph,SLOT(inequaityIntersectionSlot(int,int)));
 		QObject::connect(solveWidget,SIGNAL(redrawGraphs()),this,SLOT(drawSlot()));
+		QObject::connect(graph,SIGNAL(redrawSignal()),this,SLOT(drawSlot()));
+
 	}
 	
 void setPref(Preferences newPref)

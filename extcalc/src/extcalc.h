@@ -96,7 +96,7 @@
 //  - load and save scripts                                     (v0.5)                  ok  //
 //  - script editor window                                      (v0.5)                  ok  //
 //  - manipulating and saving images                            (v0.6)                      //
-//  - zooming and moving graphics-window                        (v0.6)                      //
+//  - zooming and moving graphics-window                        (v0.6)                  ok  //
 //  - number object for standard-parser                         (v0.7)                      //
 //  - include matrix- vector- ...-functions to standard-parser  (v0.7)                      //
 //  - accelerate Calcultate classes                             (v0.7)                      //
@@ -122,6 +122,8 @@
 //	- script editor saves unicode wrong													ok	//
 //	- calculaton repeating doesn't work with second line								ok	//
 //	- integral calculation doesn't work on periodic functions							ok	//
+//	- graph analyse window doesn't view result of integral correctly						//
+//	- graph analyse window does not allways process mouse events							//
 
 //////////////////////////used variables//////////////////////////
 //

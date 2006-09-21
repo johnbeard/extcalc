@@ -1,8 +1,8 @@
 /****************************************************************************
 ** GraphOutput meta object code from reading C++ file 'graphout.h'
 **
-** Created: Mon Sep 11 15:24:26 2006
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
+** Created: Thu Sep 21 18:58:37 2006
+**      by: The Qt MOC ($Id: moc_graphout.cpp,v 1.30 2006/09/21 17:12:33 rainer1223 Exp $)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -113,14 +113,16 @@ QMetaObject* GraphOutput::staticMetaObject()
 	{ 0, &static_QUType_double, 0, QUParameter::In }
     };
     static const QUMethod signal_1 = {"leftMButtonPressed", 2, param_signal_1 };
+    static const QUMethod signal_2 = {"redrawSignal", 0, 0 };
     static const QMetaData signal_tbl[] = {
 	{ "prefChange(Preferences)", &signal_0, QMetaData::Protected },
-	{ "leftMButtonPressed(double,double)", &signal_1, QMetaData::Protected }
+	{ "leftMButtonPressed(double,double)", &signal_1, QMetaData::Protected },
+	{ "redrawSignal()", &signal_2, QMetaData::Protected }
     };
     metaObj = QMetaObject::new_metaobject(
 	"GraphOutput", parentObject,
 	slot_tbl, 11,
-	signal_tbl, 2,
+	signal_tbl, 3,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
 	0, 0,
@@ -167,6 +169,12 @@ void GraphOutput::leftMButtonPressed( double t0, double t1 )
     activate_signal( clist, o );
 }
 
+// SIGNAL redrawSignal
+void GraphOutput::redrawSignal()
+{
+    activate_signal( staticMetaObject()->signalOffset() + 2 );
+}
+
 bool GraphOutput::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
@@ -192,6 +200,7 @@ bool GraphOutput::qt_emit( int _id, QUObject* _o )
     switch ( _id - staticMetaObject()->signalOffset() ) {
     case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
     case 1: leftMButtonPressed((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
+    case 2: redrawSignal(); break;
     default:
 	return QGLWidget::qt_emit(_id,_o);
     }

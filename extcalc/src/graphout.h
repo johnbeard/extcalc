@@ -9,6 +9,10 @@
 #include "list.h"
 #include "global.h"
 
+#define PRECISION2D 200
+#define PRECISION3D 50
+
+
 ////////////////drawRules//////////////////////////////////////////
 //
 // drawRules[4] drawRules[0] drawRules[1] drawRules[2] drawRules[3]
@@ -33,6 +37,17 @@
 //   GLuint list8
 //
 
+struct ObjectInfo
+{
+	int type;
+	bool dynamic;
+	double dynamicParameter;
+	int length;
+	char* function;
+	char* function2;
+	QColor color;
+};
+
 
 
 class GraphOutput :public QGLWidget
@@ -43,6 +58,8 @@ class GraphOutput :public QGLWidget
 	List <GLuint> objects;
 	List <GLuint> additionalObjects;
 	List <int* > drawRules;
+	List <double*> objectCoordinates;
+	List <ObjectInfo> objectInfo;
 	Variable*vars;
 	int xRotation,yRotation,mouseX,mouseY,zMove;
 	bool unlock;
@@ -53,6 +70,8 @@ class GraphOutput :public QGLWidget
 	int dynamicPos;
 	QTimer * timer;
 	int ineq1,ineq2;
+	double oldX,oldY;
+	double oldXMin,oldXMax;
 	
 Q_OBJECT
 public:
@@ -69,12 +88,14 @@ public:
 		
 		
 	}
-	void processStdFunction(QString,QColor);
-	void processPolarFunction(QString,QColor);
-	void processParameterFunction(QString,QColor);
-	void process3dFunction(QString,QColor);
-	void processInequaityFunction(QString,QColor,int,QString iFunction=QString(""),QColor iColor=QColor(0,0,0),int iType=GRAPHIEL);
+	void processStdFunction(QString);
+	void processPolarFunction(QString);
+	void processParameterFunction(QString);
+	void process3dFunction(QString);
+	void processInequaityFunction(QString,QString,int);
 	void processFunction(int);
+	bool updateFunctions(double,double);
+	GLuint generateGLList(int);
 	GLuint drawStdAxes();
 	GLuint drawPolarAxes();
 	GLuint draw3dAxes();
@@ -108,6 +129,7 @@ protected:
 signals:
 	void prefChange(Preferences);
 	void leftMButtonPressed(double,double);
+	void redrawSignal();
 
 };
 

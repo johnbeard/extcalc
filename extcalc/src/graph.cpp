@@ -240,7 +240,9 @@ void GraphWidget::solveTypeSlot(int type)
 		case 0:	//normal
 		case 1:	//polar
 		case 3:	//inequaity
-			emit solveTypeSignal(type);
+			if(type==8)
+				emit solveTypeSignal(9);
+			else emit solveTypeSignal(type);
 			break;
 		case 2:	//parameter
 			if(type==0 || type==1)
@@ -249,6 +251,8 @@ void GraphWidget::solveTypeSlot(int type)
 				emit solveTypeSignal(3);
 			else if(type==3)
 				emit solveTypeSignal(7);
+			else if(type==4)
+				emit solveTypeSignal(9);
 			break;
 		case 4:	//3D
 			if(type==0)
@@ -261,6 +265,8 @@ void GraphWidget::solveTypeSlot(int type)
 				emit solveTypeSignal(7);
 			else if(type==4)
 				emit solveTypeSignal(8);
+			else if(type==5)
+				emit solveTypeSignal(9);
 			break;
 	}
 }
@@ -310,6 +316,7 @@ void GraphWidget::functionTypeSlot(int fType)
 			solveType->insertItem(GRAPHH_STR9,-6);
 			solveType->insertItem(GRAPHH_STR10,-7);
 			solveType->insertItem(GRAPHH_STR11,-8);
+			solveType->insertItem("Save and modify",-9);
 			break;
 		case 2:	//parameter
 			solveType->clear();
@@ -317,6 +324,7 @@ void GraphWidget::functionTypeSlot(int fType)
 			solveType->insertItem(GRAPHH_STR5,-3);
 			solveType->insertItem(GRAPHH_STR7,-4);
 			solveType->insertItem(GRAPHH_STR11,-7);
+			solveType->insertItem("Save and modify",-9);
 			break;
 		case 4:	//3D
 			solveType->clear();
@@ -325,6 +333,7 @@ void GraphWidget::functionTypeSlot(int fType)
 			solveType->insertItem(GRAPHH_STR10,-7);
 			solveType->insertItem(GRAPHH_STR11,-8);
 			solveType->insertItem(GRAPHH_STR25,-9);
+			solveType->insertItem("Save and modify",-9);
 			break;
 	}
 	solveTypeSlot(solveType->currentItem());

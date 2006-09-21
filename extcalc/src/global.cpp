@@ -59,8 +59,6 @@ QString getConfigString(QString * configFile,QString objectName)
 	sign=(QChar((unsigned short)TERASTRING));
 	retObject.replace("tera",sign);
 	
-	
-	
 	return retObject;
 }
 
@@ -118,7 +116,7 @@ QString formatOutput(long double num,Preferences*pref)
 				else if(num < 1e-3 && num > -1e-3)
 				{
 					num*=1e6;
-					ret="µ";
+					ret="";
 				}
 				else if(num < 1 && num > -1)
 				{
@@ -319,17 +317,17 @@ char*checkString(QString input,Preferences*pref,Variable*vars)
 		return NULL;
 	
 	QString qstr=input;
-	qstr.replace("²"+getUnicode(ROOTSTRING),"sqrt");
+	qstr.replace("\xb2"+getUnicode(ROOTSTRING),"sqrt");
 	qstr.replace("2"+getUnicode(ROOTSTRING),"sqrt");
-	qstr.replace("³"+getUnicode(ROOTSTRING),"curt");
+	qstr.replace("\xb3"+getUnicode(ROOTSTRING),"curt");
 	qstr.replace("3"+getUnicode(ROOTSTRING),"curt");
 	qstr.replace(getUnicode(ROOTSTRING),"root");
 	
 	qstr.replace(getUnicode(PISTRING),"pi");
 	qstr.replace(getUnicode(EULERSTRING),"eu");
 	qstr.replace(getUnicode(INTEGRALSTRING),"integ");
-	qstr.replace("²","^(2)");
-	qstr.replace("³","^(3)");
+	qstr.replace("\xb2","^(2)");
+	qstr.replace("\xb3","^(3)");
 	
 	qstr.replace(getUnicode(MEGASTRING),"e6");
 	qstr.replace(getUnicode(GIGASTRING),"e9");
@@ -343,6 +341,7 @@ char*checkString(QString input,Preferences*pref,Variable*vars)
 		output[c]=qstr[c].latin1();
 		//make all changes here
 	}
+	perror("output: "+QString(output));
 	char*ret=checkStringAnsi(output,pref,vars);
 	delete[]output;
 	return ret;

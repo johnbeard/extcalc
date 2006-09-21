@@ -86,3 +86,9 @@
 - script parser shows all parse errors and their position in the code
 - improved script interpreter
 - fixed some memory leaks in script interpreter and calculator
+
+0.5.1 zooming and moving graphs
+- modified routines for graph drawing
+- standard coordinate system can be moved by pressing right mouse button
+- standard coordinate system and polar coordinate system can be zoomed by the
+mouse wheel

@@ -1,8 +1,8 @@
 /****************************************************************************
 ** CalcWidget meta object code from reading C++ file 'calcwidget.h'
 **
-** Created: Mon Sep 11 15:24:26 2006
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
+** Created: Thu Sep 21 18:58:37 2006
+**      by: The Qt MOC ($Id: moc_calcwidget.cpp,v 1.30 2006/09/21 17:12:33 rainer1223 Exp $)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/

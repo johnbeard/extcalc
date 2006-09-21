@@ -363,29 +363,60 @@ GLuint GraphOutput::draw3dAxes()
 
 void GraphOutput::mouseMoveEvent(QMouseEvent*e)
 {
-	if(e->state() == Qt::LeftButton)
+	if(e->state() == Qt::RightButton)
 	{
-		if(unlock)
+		if(pref.graphType==GRAPH3D)
 		{
-			int moveX=e->x()-mouseX;
-			int moveY=e->y()-mouseY;
-			
-			xRotation+=moveX;
-			yRotation+=moveY;
-			if(xRotation>360)
-				xRotation-=360;
-			if(yRotation>360)
-				yRotation -=360;
-			if(xRotation<0)
-			xRotation+=360;
-			if(yRotation<0)
-			yRotation+=360;
-			repaint();
-	//		MessageBox("1x: "+QString::number(xRotation)+"\ny: "+QString::number(yRotation));
+			if(unlock)
+			{
+				int moveX=e->x()-mouseX;
+				int moveY=e->y()-mouseY;
+				
+				xRotation+=moveX;
+				yRotation+=moveY;
+				if(xRotation>360)
+					xRotation-=360;
+				if(yRotation>360)
+					yRotation -=360;
+				if(xRotation<0)
+					xRotation+=360;
+				if(yRotation<0)
+					yRotation+=360;
+				repaint();
+			}
+			mouseX=e->x();
+			mouseY=e->y();
 		}
-		mouseX=e->x();
-		mouseY=e->y();
-	//	MessageBox("2x: "+QString::number(xRotation)+"\ny: "+QString::number(yRotation));
+		
+		int iX=e->x()-mouseX,iY=e->y()-mouseY;
+		double dX,dY;
+
+		
+		if(pref.graphType==GRAPHSTD)
+		{
+			double xSteps=(pref.xmax-pref.xmin)/PRECISION2D;
+	//		double ySteps=(pref.ymax-pref.ymin)/PRECISION2D;
+			dX=((pref.xmax-pref.xmin)/(double)(geometry().right()-geometry().left()))*(double)iX; 
+			dY=((pref.ymax-pref.ymin)/(double)(geometry().bottom()-geometry().top()))*(double)iY; 
+			dX-=fmod(dX,xSteps);
+		//	dY-=fmod(dY,ySteps);
+			oldXMin=pref.xmin;
+			oldXMax=pref.xmax;
+			pref.xmax-=dX;
+			pref.xmin-=dX;
+			pref.ymax+=dY;
+			pref.ymin+=dY;
+			glDeleteLists(axes,1);
+			axes=drawStdAxes();
+		//	clearGL();
+		//	emit redrawSignal();
+			if(updateFunctions(oldXMin,oldXMax))
+			{
+				mouseX=e->x();
+			}
+			mouseY=e->y();
+			repaint(); 
+		}
 		
 	}
 }
@@ -398,137 +429,126 @@ void GraphOutput::mousePressEvent(QMouseEvent*e)
 	double dX,dY;
 	double xSteps=(pref.xmax-pref.xmin)/200.0;
 	double ySteps=(pref.ymax-pref.ymin)/200.0;
-	
-	if(pref.graphType==GRAPHSTD)
+	mouseX=e->x();
+	mouseY=e->y();
+	if(e->stateAfter()==Qt::LeftButton)
 	{
-		dX=((pref.xmax-pref.xmin)/(double)(geometry().right()-geometry().left()))*(double)iX+pref.xmin; 
-		dY=((pref.ymax-pref.ymin)/(double)(geometry().bottom()-geometry().top()))*(double)((geometry().bottom()-geometry().top())-iY)+pref.ymin; 
-		dX-=fmod(dX,xSteps);
-		dY-=fmod(dY,ySteps);
-		emit leftMButtonPressed(dX,dY);
-	}
-	else if(pref.graphType==GRAPHPOLAR)
-	{
-		dX=((pref.xmax-pref.xmin)/(double)(geometry().right()-geometry().left()))*(double)iX+pref.xmin; 
-		dY=((pref.ymax-pref.ymin)/(double)(geometry().bottom()-geometry().top()))*(double)((geometry().bottom()-geometry().top())-iY)+pref.ymin; 
-		dX-=fmod(dX,xSteps);
-		dY-=fmod(dY,ySteps);
-		double angle, radius;
-		angle=atan(dY/dX);
-		radius=sqrt(dX*dX+dY*dY);
-		
-		emit leftMButtonPressed(angle,radius);
-	}
-	else if(pref.graphType==GRAPH3D)
-	{
-		if(e->stateAfter()==Qt::LeftButton)
+		if(pref.graphType==GRAPHSTD)
 		{
-			mouseX=e->x();
-			mouseY=e->y();
-			unlock=true;
+			dX=((pref.xmax-pref.xmin)/(double)(geometry().right()-geometry().left()))*(double)iX+pref.xmin; 
+			dY=((pref.ymax-pref.ymin)/(double)(geometry().bottom()-geometry().top()))*(double)((geometry().bottom()-geometry().top())-iY)+pref.ymin; 
+			dX-=fmod(dX,xSteps);
+			dY-=fmod(dY,ySteps);
+			emit leftMButtonPressed(dX,dY);
 		}
-		else unlock=false;
+		else if(pref.graphType==GRAPHPOLAR)
+		{
+			dX=((pref.xmax-pref.xmin)/(double)(geometry().right()-geometry().left()))*(double)iX+pref.xmin; 
+			dY=((pref.ymax-pref.ymin)/(double)(geometry().bottom()-geometry().top()))*(double)((geometry().bottom()-geometry().top())-iY)+pref.ymin; 
+			dX-=fmod(dX,xSteps);
+			dY-=fmod(dY,ySteps);
+			double angle, radius;
+			angle=atan(dY/dX);
+			radius=sqrt(dX*dX+dY*dY);
+			
+			emit leftMButtonPressed(angle,radius);
+		}
+	}
+	else if(e->stateAfter()==Qt::RightButton)
+	{
+		if(pref.graphType==GRAPH3D)
+		unlock=true;
 	}
 	
-	//	MessageBox("X: "+QString::number(dX)+"\nY: "+QString::number(dY));
+	// MessageBox("X: "+QString::number(dX)+"\nY: "+QString::number(dY));
 }
 
 void GraphOutput::mouseReleaseEvent(QMouseEvent*e)
 {
 	if(e->state() == Qt::LeftButton)
-		unlock=false;	
+		unlock=false;
+	if(e->state() == Qt::RightButton && pref.graphType==GRAPHSTD)
+		emit prefChange(pref);
 }
 
 void GraphOutput::wheelEvent(QWheelEvent*e)
 {
-
-	zMove+=e->delta()/120;
-	e->accept();
-	repaint();
-	if(zMove<-27)
-		zMove=-27;
+	if(pref.graphType==GRAPH3D)
+	{
+		zMove+=e->delta()/120;
+		e->accept();
+		repaint();
+		if(zMove<-27)
+			zMove=-27;
+	}
+	else if(pref.graphType==GRAPHPOLAR)
+	{
+		
+		
+		pref.radiusMax+=pref.radiusMax/(e->delta()/4);
+		pref.xmin=pref.radiusMax*-1.0;
+		pref.xmax=pref.radiusMax;
+		pref.ymin=pref.radiusMax*-1.0;
+		pref.ymax=pref.radiusMax;
+		oldXMin=pref.xmin;
+		oldXMax=pref.xmax;
+		glDeleteLists(axes,1);
+		axes=drawPolarAxes();
+		updateFunctions(pref.xmin-6*pref.radiusMax,pref.xmax-6*pref.radiusMax);
+		repaint();
+		emit prefChange(pref);
+		
+	}
+	else 
+	{
+		double xSize=(pref.xmax-pref.xmin);
+		double ySize=(pref.ymax-pref.ymin);
+		pref.xmin+=xSize/(e->delta()/4);
+		pref.xmax-=xSize/(e->delta()/4);
+		
+		pref.ymin+=ySize/(e->delta()/4);
+		pref.ymax-=ySize/(e->delta()/4);
+		oldXMin=pref.xmin;
+		oldXMax=pref.xmax;
+		glDeleteLists(axes,1);
+		axes=drawStdAxes();
+		updateFunctions(pref.xmin-3*xSize,pref.xmax-3*xSize);
+		repaint();
+		emit prefChange(pref);
+		
+	}
 
 }
 
 
-void GraphOutput::processStdFunction(QString function,QColor color)
+void GraphOutput::processStdFunction(QString function)
 {
-    GLuint list;
 	char*func;
 	func = checkString(function,&pref,vars);
 
-    list = glGenLists( 1 );
-    glNewList( list, GL_COMPILE );
 	double xStart,xStep;
 	xStart=pref.xmin;
-	xStep=(pref.xmax-pref.xmin)/200;
+	xStep=(pref.xmax-pref.xmin)/PRECISION2D;
 
+	QString num,num2;
+	Calculate ca1(NULL,func,&pref,vars);
+	struct timeval t1,t2;
 	
-	int colored=0;
-	float height=pref.ymax-pref.ymin;
-	middle=pref.ymin+height/2.0;		//calculate middle height
-	lowerMiddle=-height/4.0;
-	upperMiddle=height/4.0;
+	double* coordinates=new double[PRECISION2D*2+2];
+	objectCoordinates.NewItem(coordinates);
+	int index=objectCoordinates.GetLen()-1;
+	objectInfo[index].length=PRECISION2D;
+	objectInfo[index].function=func;
 
-	if(color==QColor(1,1,1))
-		colored=1;
-	else qglColor( color );
-	
-	double fakt;
-	if(pref.angle==DEG)
-		fakt=180.0/PI;
-	else if(pref.angle==RAD)
-		fakt=1.0;
-	else fakt=200.0/PI;
+	gettimeofday(&t1,NULL);
+	for(int c=0; c<PRECISION2D; c++)
+	{
+		vars[23][0]=xStart+(double)c*xStep;
+		objectCoordinates[index][2*c]  =vars[23][0];
+		objectCoordinates[index][2*c+1]=ca1.calc();
+	}
+	gettimeofday(&t2,NULL);
 
-
-
-	glBegin(GL_LINE_STRIP);
-		float y,oldy=0.0;
-		QString num,num2;
-		Calculate ca1(NULL,func,&pref,vars);
-		struct timeval t1,t2;
-		bool end=false;
-
-		gettimeofday(&t1,NULL);
-		for(int c=0; c<200; c++)
-		{
-			vars[23][0]=xStart+(double)c*xStep;
-			y=ca1.calc();
-	//		y=(4*pow(vars[23],3.0)-3*pow(vars[23],2.0)+4*vars[23]-3)/(pow(vars[23],5.0)-3*pow(vars[23],2)+4);
-	//		y=sin(vars[23]*fakt);
-			if(end)
-			{
-				if(y >pref.ymin && y < pref.ymax)
-				{
-					glBegin(GL_LINE_STRIP);
-					end=false;
-					if(colored)
-						setGLColor(oldy);
-					glVertex3f(xStart+(double)(c-1)*xStep,oldy,0.0f);
-					if(colored)
-						setGLColor(y);
-					glVertex3f(xStart+(double)c*xStep,y,0.0f);
-				}
-				else oldy=y;
-			}
-			else {
-				if(colored)
-					setGLColor(y);
-				glVertex3f(xStart+(double)c*xStep,y,0.0f);
-				if(y>pref.ymax || y<pref.ymin)
-				{
-					glEnd();
-					end=true;
-					oldy=y;
-				}
-			}
-			
-		}
-		gettimeofday(&t2,NULL);
-
-	glEnd();
-    glEndList();
 	int seconds,usecs;
 	seconds=t2.tv_sec-t1.tv_sec;
 	usecs=t2.tv_usec-t1.tv_usec;
@@ -537,26 +557,20 @@ void GraphOutput::processStdFunction(QString function,QColor color)
 		seconds--;
 		usecs=1000000+usecs;
 	}
-//	MessageBox(  "Sekunden:      "+QString::number(seconds)+
-//			   "\nMicrosekunden: "+QString::number(usecs));
-	perror(QString::number(seconds)+"s "+QString::number(usecs)+"us ");
-	delete[]func;
-   objects.NewItem(list);
+
+	objects.NewItem(generateGLList(index));
 }
 
 
-void GraphOutput::processPolarFunction(QString function,QColor color)
+void GraphOutput::processPolarFunction(QString function)
 {
-	GLuint list;
 	char*func;
 	func = checkString(function,&pref,vars);
 
-	list = glGenLists( 1 );
-	glNewList( list, GL_COMPILE );
 	double xStart,xStep;
 	xStart=0;
 	double multiplier=1.0;
-	xStep=pref.angleMax/200.0;
+	xStep=pref.angleMax/PRECISION2D;
 	if(pref.angle==DEG)
 	{
 		multiplier=PI/180.0;
@@ -565,70 +579,27 @@ void GraphOutput::processPolarFunction(QString function,QColor color)
 	{
 		multiplier=PI/200.0;
 	}
-	
-	int colored=0;
-	float height=pref.radiusMax*2.0;
-	middle=0.0;		//calculate middle height
-	lowerMiddle=-height/4.0;
-	upperMiddle=height/4.0;
 
-	if(color==QColor(1,1,1))
-		colored=1;
-	else qglColor( color );
+	double* coordinates=new double[PRECISION2D*2+2];
+	objectCoordinates.NewItem(coordinates);
+	int index=objectCoordinates.GetLen()-1;
+	objectInfo[index].length=PRECISION2D+1;
+	perror("Polar function index: "+QString::number(index));
 
-
-	glBegin(GL_LINE_STRIP);
-	float oldr=0.0,r,x,y,oldx=0.0,oldy=0.0;
+	float r;
 	QString num,num2;
 	Calculate ca1(NULL,func,&pref,vars);
 	struct timeval t1,t2;
-	bool end=false;
-
 	gettimeofday(&t1,NULL);
-	for(int c=0; c<=200; c++)
+	for(int c=0; c<=PRECISION2D; c++)
 	{
 		vars[23][0]=xStart+(double)c*xStep;
 		r=ca1.calc();
-		x=cos(vars[23][0]*multiplier)*r;
-		y=sin(vars[23][0]*multiplier)*r;
-		if(end)
-		{
-			if(y >pref.ymin && y < pref.ymax)
-			{
-				glBegin(GL_LINE_STRIP);
-				end=false;
-				if(colored)
-					setGLColor(oldr);
-				glVertex3f(oldx,oldy,0.0f);
-				if(colored)
-					setGLColor(r);
-				glVertex3f(x,y,0.0f);
-			}
-			else {
-				oldy=y;
-				oldx=x;
-				oldr=r;
-			}
-		}
-		else {
-			if(colored)
-				setGLColor(r);
-			glVertex3f(x,y,0.0f);
-			if(y>pref.ymax || y<pref.ymin)
-			{
-				glEnd();
-				end=true;
-				oldy=y;
-				oldx=x;
-				oldr=r;
-			}
-		}
-			
+		objectCoordinates[index][c*2]=cos(vars[23][0]*multiplier)*r;
+		objectCoordinates[index][c*2+1]=sin(vars[23][0]*multiplier)*r;
 	}
 	gettimeofday(&t2,NULL);
 
-	glEnd();
-	glEndList();
 	int seconds,usecs;
 	seconds=t2.tv_sec-t1.tv_sec;
 	usecs=t2.tv_usec-t1.tv_usec;
@@ -637,15 +608,12 @@ void GraphOutput::processPolarFunction(QString function,QColor color)
 		seconds--;
 		usecs=1000000+usecs;
 	}
-//	MessageBox(  "Sekunden:      "+QString::number(seconds)+
-//			   "\nMicrosekunden: "+QString::number(usecs));
 	delete[]func;
-	objects.NewItem(list);
+	objects.NewItem(generateGLList(index));
 }
 
-void GraphOutput::processParameterFunction(QString function,QColor color)
+void GraphOutput::processParameterFunction(QString function)
 {
-	GLuint list;
 	char*func1,*func2;
 	QString f1,f2;
 	int sep=function.find("\\");
@@ -661,58 +629,29 @@ void GraphOutput::processParameterFunction(QString function,QColor color)
 	func1 = checkString(f1,&pref,vars);
 	func2 = checkString(f2,&pref,vars);
 
-	list = glGenLists( 1 );
-	glNewList( list, GL_COMPILE );
 	double xStart,xStep;
 	xStart=pref.parameterStart;
 	xStep=(pref.parameterEnd-pref.parameterStart)/(double)pref.parameterSteps;
+	
+	double* coordinates=new double[pref.parameterSteps*2];
+	objectCoordinates.NewItem(coordinates);
+	int index=objectCoordinates.GetLen()-1;
+	objectInfo[index].length=pref.parameterSteps;
 
-	qglColor( color );
-
-	glBegin(GL_LINE_STRIP);
-	float x,y,oldx=0.0,oldy=0.0;
 	QString num,num2;
 	Calculate ca1(NULL,func1,&pref,vars);
 	Calculate ca2(NULL,func2,&pref,vars);
 	struct timeval t1,t2;
-	bool end=false;
 
 	gettimeofday(&t1,NULL);
 	for(int c=0; c<pref.parameterSteps; c++)
 	{
 		vars[19][0]=xStart+(double)c*xStep;
-		x=ca1.calc();
-		y=ca2.calc();
-		if(end)
-		{
-			if(y >pref.ymin && y < pref.ymax && x>pref.xmin && x<pref.xmax)
-			{
-				glBegin(GL_LINE_STRIP);
-				end=false;
-				glVertex3f(oldx,oldy,0.0f);
-				glVertex3f(x,y,0.0f);
-			}
-			else {
-				oldx=x;
-				oldy=y;
-			}
-		}
-		else {
-			glVertex3f(x,y,0.0f);
-			if(y>pref.ymax || y<pref.ymin || x>pref.xmax || x<pref.xmin)
-			{
-				glEnd();
-				end=true;
-				oldx=x;
-				oldy=y;
-			}
-		}
-			
+		objectCoordinates[index][2*c]=ca1.calc();
+		objectCoordinates[index][2*c+1]=ca2.calc();
 	}
 	gettimeofday(&t2,NULL);
 
-	glEnd();
-	glEndList();
 	int seconds,usecs;
 	seconds=t2.tv_sec-t1.tv_sec;
 	usecs=t2.tv_usec-t1.tv_usec;
@@ -721,11 +660,10 @@ void GraphOutput::processParameterFunction(QString function,QColor color)
 		seconds--;
 		usecs=1000000+usecs;
 	}
-//	MessageBox(  "Sekunden:      "+QString::number(seconds)+
-//			   "\nMicrosekunden: "+QString::number(usecs));
+	
 	delete[]func1;
 	delete[]func2;
-	objects.NewItem(list);
+	objects.NewItem(generateGLList(index));
 }
 
 
@@ -765,197 +703,47 @@ void GraphOutput::setGLColor(float y)
 
 
 
-void GraphOutput::process3dFunction(QString function,QColor color)
+void GraphOutput::process3dFunction(QString function)
 {
-	static int rasterSize=50;
-	GLuint list;
+
+
 	char*func;
 	func = checkString(function,&pref,vars);
-	int colored=0;
 
-	list = glGenLists( 1 );
-	glNewList( list, GL_COMPILE );
+
+
 	double xStart,xStep,zStart,zStep;
 	xStart=pref.xmin;
 	zStart=pref.zmin;
-	xStep=(pref.xmax-pref.xmin)/rasterSize;
-	zStep=(pref.zmax-pref.zmin)/rasterSize;
+	xStep=(pref.xmax-pref.xmin)/PRECISION3D;
+	zStep=(pref.zmax-pref.zmin)/PRECISION3D;
 	
-	float height=pref.ymax-pref.ymin;
-	middle=pref.ymin+height/2.0;		//calculate middle height
-	lowerMiddle=-height/4.0;
-	upperMiddle=height/4.0;
 
-	if(color==QColor(1,1,1))
-		colored=1;
-	else qglColor( color );
-
-	//Code for 3D-graphs with lines
 	
-	glBegin(GL_LINES);
-	glMatrixMode(GL_MODELVIEW);
-	float y;
-	float lastY[rasterSize+1];
+	double* coordinates=new double[PRECISION3D*PRECISION3D];
+	objectCoordinates.NewItem(coordinates);
+	int index=objectCoordinates.GetLen()-1;
+	objectInfo[index].length=PRECISION3D;
+
 	QString num,num2;
 	Calculate ca1(NULL,func,&pref,vars);
 	struct timeval t1,t2;
 
 	gettimeofday(&t1,NULL);
-	vars[25][0]=zStart;
-	vars[23][0]=xStart;
-	lastY[0]=ca1.calc();
-	for(int c=1; c<=rasterSize;c++)
-	{
-		vars[25][0]=zStart+(double)c*zStep;
-		y=ca1.calc();
-		if((y > pref.ymin&&y<pref.ymax) || (lastY[c-1] > pref.ymin && lastY[c-1] < pref.ymax))
-		{
-			double newZStep=zStep,oldZStep=0.0,newY=y,oldY=lastY[c-1];
-			if(y<pref.ymin && lastY[c-1]>pref.ymin)
-			{
-				newY=pref.ymin;
-				newZStep=zStep*(oldY-pref.ymin)/(oldY-y);
-			}
-			else if(y>pref.ymax && lastY[c-1]<pref.ymax)
-			{
-				newY=pref.ymax;
-				newZStep=zStep*(pref.ymax-oldY)/(y-oldY);
-			}
-			else if(y>pref.ymin && lastY[c-1]<pref.ymin)
-			{
-				oldY=pref.ymin;
-				oldZStep=zStep*(pref.ymin-oldY)/(y-oldY);
-			}
-			else if(y<pref.ymax && lastY[c-1]>pref.ymax)
-			{
-				oldY=pref.ymax;
-				oldZStep=zStep*(oldY-pref.ymax)/(oldY-y);
-			}
-			oldZStep+=zStep*(c-1)+zStart;
-			newZStep+=zStep*(c-1)+zStart;
-			if(colored)
-				setGLColor(oldY);
-			glVertex3f(xStart,oldY,oldZStep);
-			if(colored)
-				setGLColor(newY);
-			glVertex3f(xStart,newY,newZStep);
-		}
-		lastY[c]=y;
-	}
-	for(int c=1; c<=rasterSize; c++)
-	{
-		vars[23][0]=xStart+(double)c*xStep;
-		vars[25][0]=zStart;
-		y=ca1.calc();
-		if((y > pref.ymin&&y<pref.ymax) || (lastY[0] > pref.ymin && lastY[0] < pref.ymax))
-		{
-			double newXStep=xStep,oldXStep=0.0,newY=y,oldY=lastY[0];
-			if(y<pref.ymin && lastY[0]>pref.ymin)
-			{
-				newY=pref.ymin;
-				newXStep=xStep*(oldY-pref.ymin)/(oldY-y);
-			}
-			else if(y>pref.ymax && lastY[0]<pref.ymax)
-			{
-				newY=pref.ymax;
-				newXStep=xStep*(pref.ymax-oldY)/(y-oldY);
-			}
-			else if(y>pref.ymin && lastY[0]<pref.ymin)
-			{
-				oldY=pref.ymin;
-				oldXStep=xStep*(pref.ymin-oldY)/(y-oldY);
-			}
-			else if(y<pref.ymax && lastY[0]>pref.ymax)
-			{
-				oldY=pref.ymax;
-				oldXStep=xStep*(oldY-pref.ymax)/(oldY-y);
-			}
-			oldXStep+=xStep*(c-1)+xStart;
-			newXStep+=xStep*(c-1)+xStart;
-			if(colored)
-				setGLColor(oldY);
-			glVertex3f(oldXStep,oldY,zStart);
-			if(colored)
-				setGLColor(newY);
-			glVertex3f(newXStep,newY,zStart);
-		}
-		lastY[0]=y;
-		for(int c1=1; c1<=rasterSize; c1++)
-		{
-			vars[25][0]=zStart+(double)c1*zStep;
-			y=ca1.calc();
 
-
-			if((y > pref.ymin&&y<pref.ymax) || (lastY[c1] > pref.ymin && lastY[c1] < pref.ymax))
-			{
-				double newXStep=xStep,oldXStep=0.0,newY=y,oldY=lastY[c1];
-				if(y<pref.ymin && lastY[c1]>pref.ymin)
-				{
-					newY=pref.ymin;
-					newXStep=xStep*(oldY-pref.ymin)/(oldY-y);
-				}
-				else if(y>pref.ymax && lastY[c1]<pref.ymax)
-				{
-					newY=pref.ymax;
-					newXStep=xStep*(pref.ymax-oldY)/(y-oldY);
-				}
-				else if(y>pref.ymin && lastY[c1]<pref.ymin)
-				{
-					oldY=pref.ymin;
-					oldXStep=xStep*(pref.ymin-oldY)/(y-oldY);
-				}
-				else if(y<pref.ymax && lastY[c1]>pref.ymax)
-				{
-					oldY=pref.ymax;
-					oldXStep=xStep*(oldY-pref.ymax)/(oldY-y);
-				}
-				oldXStep+=xStep*(c-1)+xStart;
-				newXStep+=xStep*(c-1)+xStart;
-				if(colored)
-					setGLColor(oldY);
-				glVertex3f(oldXStep,oldY,zStart+c1*zStep);
-				if(colored)
-					setGLColor(newY);
-				glVertex3f(newXStep,newY,zStart+c1*zStep);
-			}
-			if((y > pref.ymin&&y<pref.ymax) || (lastY[c1-1] > pref.ymin && lastY[c1-1] < pref.ymax))
-			{
-				double newZStep=zStep,oldZStep=0.0,newY=y,oldY=lastY[c1-1];
-				if(y<pref.ymin && lastY[c1-1]>pref.ymin)
-				{
-					newY=pref.ymin;
-					newZStep=zStep*(oldY-pref.ymin)/(oldY-y);
-				}
-				else if(y>pref.ymax && lastY[c1-1]<pref.ymax)
-				{
-					newY=pref.ymax;
-					newZStep=zStep*(pref.ymax-oldY)/(y-oldY);
-				}
-				else if(y>pref.ymin && lastY[c1-1]<pref.ymin)
-				{
-					oldY=pref.ymin;
-					oldZStep=zStep*(pref.ymin-oldY)/(y-oldY);
-				}
-				else if(y<pref.ymax && lastY[c1-1]>pref.ymax)
-				{
-					oldY=pref.ymax;
-					oldZStep=zStep*(oldY-pref.ymax)/(oldY-y);
-				}
-				oldZStep+=zStep*(c1-1)+zStart;
-				newZStep+=zStep*(c1-1)+zStart;
-				if(colored)
-					setGLColor(oldY);
-				glVertex3f(c*xStep+xStart,oldY,oldZStep);
-				if(colored)
-					setGLColor(newY);
-				glVertex3f(c*xStep+xStart,newY,newZStep);
-			}
-			lastY[c1]=y;
+	for(int c=0; c<PRECISION3D; c++)
+	{
+		vars[25][0]=zStart+c*zStep;
+		for(int c1=0; c1<PRECISION3D; c1++)
+		{
+			vars[23][0]=xStart+c1*xStep;
+			coordinates[PRECISION3D*c+c1]=ca1.calc();
 		}
 	}
+
 	gettimeofday(&t2,NULL);
 
-	glEnd();
+
 	/*
 	// Code for 3D-graphs with polygons
 	glMatrixMode(GL_MODELVIEW);
@@ -1021,261 +809,86 @@ void GraphOutput::process3dFunction(QString function,QColor color)
 //	MessageBox(  "Sekunden:      "+QString::number(seconds)+
 //			   "\nMicrosekunden: "+QString::number(usecs));
 	delete[]func;
-	objects.NewItem(list);
+	objects.NewItem(generateGLList(index));
 }
 
 
-void GraphOutput::processInequaityFunction(QString function,QColor color,int type,QString iFunction,QColor iColor,int iType)
+void GraphOutput::processInequaityFunction(QString function1,QString function2,int type)
 {
-	bool showIntersection=false;
-	if(iFunction!=QString(""))
-		showIntersection=true;
-		
-    GLuint list;
-	char*func;
-	func = checkString(function,&pref,vars);
-
-    list = glGenLists( 1 );
-    glNewList( list, GL_COMPILE );
+	//types:
+	//GRAPHIEG: both greather
+	//GRAPHIEL: both less
+	//GRAPHIEGE: first greather, second less
+	
+	
+//    GLuint list;
+	char*func,*func2;
+	func = checkString(function1,&pref,vars);
+	func2= checkString(function2,&pref,vars);
+	
+//	list = glGenLists( 1 );
+//	glNewList( list, GL_COMPILE );
 	double xStart,xStep;
 	xStart=pref.xmin;
-	xStep=(pref.xmax-pref.xmin)/200;
+	xStep=(pref.xmax-pref.xmin)/PRECISION2D;
 	double endLine;
-	
-	int colored=0;
-	float height=pref.ymax-pref.ymin;
-	middle=pref.ymin+height/2.0;		//calculate middle height
-	lowerMiddle=-height/4.0;
-	upperMiddle=height/4.0;
-
-	if(color==QColor(1,1,1))
-		colored=1;
-	else qglColor( color );
 	
 	if(type==GRAPHIEGE || type==GRAPHIEG)
 		endLine=pref.ymax;
 	else endLine=pref.ymin;
 	struct timeval t1,t2;
-	if(showIntersection)
-	{
-		float y,oldy=0.0;
-		QString num,num2;
-		Calculate ca1(NULL,func,&pref,vars);
-		bool end=false;
-		
-		glBegin(GL_LINE_STRIP);
-		if(color==QColor(1,1,1))
-			colored=1;
-		else qglColor( color );
-		for(int c=0; c<200; c++)
-		{
-			vars[23][0]=xStart+(double)c*xStep;
-			y=ca1.calc();
-			if(end)
-			{
-				if(y >pref.ymin && y < pref.ymax)
-				{
-					glBegin(GL_LINE_STRIP);
-					end=false;
-					if(colored)
-						setGLColor(oldy);
-					glVertex3f(xStart+(double)(c-1)*xStep,oldy,0.0f);
-					if(colored)
-						setGLColor(y);
-					glVertex3f(xStart+(double)c*xStep,y,0.0f);
-				}
-				else oldy=y;
-			}
-			else {
-				if(colored)
-					setGLColor(y);
-				glVertex3f(xStart+(double)c*xStep,y,0.0f);
-				if(y>pref.ymax || y<pref.ymin)
-				{
-					glEnd();
-					end=true;
-					oldy=y;
-				}
-			}
-		}
-		glEnd();
-		
-		char*func2=checkString(iFunction,&pref,vars);
-		Calculate ca2(NULL,func2,&pref,vars);
-		
-		glBegin(GL_LINE_STRIP);
-		if(iColor==QColor(1,1,1))
-			colored=1;
-		else qglColor( iColor );
-		for(int c=0; c<200; c++)
-		{
-			vars[23][0]=xStart+(double)c*xStep;
-			y=ca2.calc();
-			if(end)
-			{
-				if(y >pref.ymin && y < pref.ymax)
-				{
-					glBegin(GL_LINE_STRIP);
-					end=false;
-					if(colored)
-						setGLColor(oldy);
-					glVertex3f(xStart+(double)(c-1)*xStep,oldy,0.0f);
-					if(colored)
-						setGLColor(y);
-					glVertex3f(xStart+(double)c*xStep,y,0.0f);
-				}
-				else oldy=y;
-			}
-			else {
-				if(colored)
-					setGLColor(y);
-				glVertex3f(xStart+(double)c*xStep,y,0.0f);
-				if(y>pref.ymax || y<pref.ymin)
-				{
-					glEnd();
-					end=true;
-					oldy=y;
-				}
-			}
-		}
-		glEnd();
-		qglColor(QColor(120,120,255));
-		bool sameOrientation=false;
-		if((iType==GRAPHIEGE || iType==GRAPHIEG) && (type==GRAPHIEGE || type==GRAPHIEG) ||
-				  (iType==GRAPHIELE || iType==GRAPHIEL) && (type==GRAPHIELE || type==GRAPHIEL))
-			sameOrientation=true;
-		
 
-		xStep=(pref.xmax-pref.xmin)/400;
-		glBegin(GL_TRIANGLE_STRIP);
-		end=false;
-		double y1,y2;
-		double oldy1=0.0,oldy2=0.0;
-		for(int c=0; c<400; c++)
-		{
-			vars[23][0]=xStart+(double)c*xStep;
-			y1=ca1.calc();
-			y2=ca2.calc();
 
-			if(y1<pref.ymax && y1>pref.ymin && (
-			(y1<endLine && y2>y1 && y2<pref.ymax) ||
-			(y1>endLine && y2<y1 && y2>pref.ymin) || 
-			(sameOrientation && y2<pref.ymax && y2>pref.ymin))
-			)
-			{
-				if(end)
-				{
-					glBegin(GL_TRIANGLE_STRIP);
-					if(sameOrientation)
-					{
-						if((oldy2>oldy1 && oldy2>endLine) || (oldy2<endLine && oldy1>oldy2))
-							glVertex3f(xStart+(double)(c-1)*xStep,oldy1,0.0);
-						else glVertex3f(xStart+(double)(c-1)*xStep,oldy2,0.0);
-						glVertex3f(xStart+(double)(c-1)*xStep,endLine,0.0);
-						if((y2>y1 && y2>endLine) ||  (y2<endLine && y1>y2))
-							glVertex3f(xStart+(double)c*xStep,y1,0.0);
-						else glVertex3f(xStart+(double)c*xStep,y2,0.0);
-						glVertex3f(xStart+(double)c*xStep,endLine,0.0);
-					}
-					else {
-						glVertex3f(xStart+(double)(c-1)*xStep,oldy1,0.0);
-						glVertex3f(xStart+(double)(c-1)*xStep,oldy2,0.0);
-						glVertex3f(xStart+(double)c*xStep,y1,0.0);
-						glVertex3f(xStart+(double)c*xStep,y2,0.0);
-					}
-					end=false;
-				}
-				else 
-				{					
-					if(sameOrientation)
-					{
-						if((y2>y1 && y2>endLine) ||  (y2<endLine && y1>y2))
-							glVertex3f(xStart+(double)c*xStep,y1,0.0);
-						else glVertex3f(xStart+(double)c*xStep,y2,0.0);
-						glVertex3f(xStart+(double)c*xStep,endLine,0.0);
-					}
-					else {
-						glVertex3f(xStart+(double)c*xStep,y1,0.0);
-						glVertex3f(xStart+(double)c*xStep,y2,0.0);
-					}
-				}
-			}
-			else {
-				if(end)
-				{
-					oldy1=y1;
-					oldy2=y2;
-				}
-				else 
-				{
-					glEnd();
-					oldy1=y1;
-					oldy2=y2;
-					end=true;
-				}
-			}
-		}
-		glEnd();
-		
-		glEndList();
-	}
-	else 
-	{
-		glBegin(GL_TRIANGLE_STRIP);
-			float y,oldy=0.0;
-			QString num,num2;
-			Calculate ca1(NULL,func,&pref,vars);
-			bool end=false;
+	double* coordinates;
+	if(type==GRAPHIEG || type==GRAPHIEL)
+		coordinates=new double[PRECISION2D*2+2];
+	else coordinates=new double[PRECISION2D*3+3];
+	objectCoordinates.NewItem(coordinates);
+	int index=objectCoordinates.GetLen()-1;
+	objectInfo[index].length=PRECISION2D+1;
+	objectInfo[index].function=func;
+	objectInfo[index].function2=func2;
 	
-		for(int c=0; c<200; c++)
-		{
-			vars[23][0]=xStart+(double)c*xStep;
-			y=ca1.calc();
+	float x,y1,y2;
+	QString num,num2;
+	Calculate ca1(NULL,func,&pref,vars);
+	Calculate ca2(NULL,func2,&pref,vars);
 	
-			if(colored)
-				setGLColor(y);
-
-			if(y<pref.ymin)
-				y=pref.ymin;
-			if(y>pref.ymax)
-				y=pref.ymax;
-					
-			glVertex3f(xStart+(double)c*xStep,y,0.0f);
-			glVertex3f(xStart+(double)c*xStep,endLine,0.0f);
-
-
-		}
-		glEnd();
-		glBegin(GL_LINE_STRIP);
-		glColor3f(0.0,0.0,0.0);
-		for(int c=0; c<200; c++)
+	for(int c=0; c<=PRECISION2D; c++)
+	{
+		x=xStart+(double)c*xStep;
+		vars[23][0]=x;
+		y1=ca1.calc();
+		y2=ca2.calc();
+		
+		if(type==GRAPHIEG)
 		{
-			vars[23][0]=xStart+(double)c*xStep;
-			y=ca1.calc();
-			if(end)
-			{
-				if(y >pref.ymin && y < pref.ymax)
-				{
-					glBegin(GL_LINE_STRIP);
-					end=false;
-					glVertex3f(xStart+(double)(c-1)*xStep,oldy,0.0f);
-					glVertex3f(xStart+(double)c*xStep,y,0.0f);
-				}
-				else oldy=y;
-			}
-			else {
-				glVertex3f(xStart+(double)c*xStep,y,0.0f);
-				if(y>pref.ymax || y<pref.ymin)
-				{
-					glEnd();
-					end=true;
-					oldy=y;
-				}
-			}
+			objectCoordinates[index][2*c]=x;
+			if(y1>=y2)
+				objectCoordinates[index][2*c+1]=y1;
+			else objectCoordinates[index][2*c+1]=y2;
 		}
-		glEnd();
-		glEndList();
+		else if(type==GRAPHIEL)
+		{
+			objectCoordinates[index][2*c]=x;
+			if(y1<=y2)
+				objectCoordinates[index][2*c+1]=y1;
+			else objectCoordinates[index][2*c+1]=y2;
+		}
+		else
+		{
+			if(y1<=y2)
+			{
+				objectCoordinates[index][3*c]=x;
+				objectCoordinates[index][3*c+1]=y1;
+				objectCoordinates[index][3*c+2]=y2;
+			}
+			else objectCoordinates[index][3*c+1]=objectCoordinates[index][3*c+2]=0.0;
+		}
 	}
+
+
+	
 	int seconds,usecs;
 	seconds=t2.tv_sec-t1.tv_sec;
 	usecs=t2.tv_usec-t1.tv_usec;
@@ -1286,8 +899,8 @@ void GraphOutput::processInequaityFunction(QString function,QColor color,int typ
 	}
 //	MessageBox(  "Sekunden:      "+QString::number(seconds)+
 //			   "\nMicrosekunden: "+QString::number(usecs));
-	delete[]func;
-   objects.NewItem(list);
+//	delete[]func;
+	objects.NewItem(generateGLList(index));
 }
 
 
@@ -1310,8 +923,12 @@ void GraphOutput::paintGL()
 	}
 	else 
 	{
+	//	double xSize=pref.xmax-pref.xmin,ySize=pref.ymax-pref.ymin;
 		glFrustum(-10.0,10.0,-10.0,10.0,1.0,100.0);
 		glTranslatef(0.0,0.0,-1.0);
+		
+	//	glScalef(20.0/xSize,20.0/ySize,1.0f);
+	//	glTranslatef((pref.xmin+pref.xmax)*-0.5f,(pref.ymin+pref.ymax)*-0.5,0.0f);
 	}
 
 	glCallList(axes);
@@ -1333,10 +950,7 @@ void GraphOutput::paintGL()
 		{
 			glCallList(objects[drawRules[c][drawRules[c][0]]]);
 		}
-		
-	
 	}
-		
 
 
 	qglColor(QColor(100,100,255));
@@ -1418,6 +1032,16 @@ void GraphOutput::clearGL()
 		delete[]drawRules[0];
 		drawRules.DeleteItem(0);
 	}
+	
+	while(objectInfo.GetLen() > 0)
+	{
+		objectInfo.DeleteItem(0);
+	}
+	while(objectCoordinates.GetLen() > 0)
+	{
+		delete[]objectCoordinates[0];
+		objectCoordinates.DeleteItem(0);
+	}
 	isDynamic=false;
 	timer->stop();
 
@@ -1426,53 +1050,270 @@ void GraphOutput::clearGL()
 void GraphOutput::setPref(Preferences newPref)
 {
 	pref=newPref;
+	oldXMin=pref.xmin;
+	oldXMax=pref.xmax;
 	initializeGL();
 }
 
+bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
+{
+	bool shiftRight;
+	double xStart,xStep;
+	int steps,startStep;
+	bool ret=true;
+
+	if(pref.xmin>oldXMin)
+	{
+		shiftRight=true;
+		xStart=oldXMax;
+		xStep=(pref.xmax-pref.xmin)/PRECISION2D;
+		steps=(int)((pref.xmax-oldXMax+xStep/2)/xStep);
+		if(steps>PRECISION2D)
+		{
+			steps=PRECISION2D;
+			xStart=pref.xmin;
+		}
+		startStep=PRECISION2D-steps;
+	}
+	else 
+	{
+		shiftRight=false;
+		xStart=pref.xmin;
+		xStep=(pref.xmax-pref.xmin)/PRECISION2D;
+		steps=(int)((oldXMin-pref.xmin+xStep/2)/xStep);
+		if(steps>PRECISION2D)
+			steps=PRECISION2D;
+		startStep=0;
+	}
+	if(steps <= 0)
+		ret=false;
+
+
+
+	for(int c=0; c<objectInfo.GetLen(); c++)
+	{
+		if(!ret);
+		else if(objectInfo[c].type == GRAPHSTD)
+		{
+			perror("xStart: "+QString::number(xStart)+" xStep: "+QString::number(xStep)+" shiftRight: "+QString::number(shiftRight)+" function: "+QString(objectInfo[c].function)); 
+
+			Calculate ca(NULL,objectInfo[c].function,&pref,vars);
+
+			if(shiftRight)
+				for(int c1=steps*2; c1<PRECISION2D*2; c1++)
+					objectCoordinates[c][c1-steps*2]=objectCoordinates[c][c1];
+			else for(int c1=(PRECISION2D)*2+1; c1>=0; c1--)
+						objectCoordinates[c][c1]=objectCoordinates[c][c1-steps*2];
+
+			for(int c1=0; c1<steps; c1++)
+			{
+				vars[23][0]=xStart+c1*xStep;
+				objectCoordinates[c][(startStep+c1)*2]=vars[23][0];
+				objectCoordinates[c][(startStep+c1)*2+1]=ca.calc();
+			}
+		}
+		else if(objectInfo[c].type == GRAPHIEG || objectInfo[c].type == GRAPHIEL || objectInfo[c].type == GRAPHIEGE || objectInfo[c].type == GRAPHIELE)
+		{
+			perror("xStart: "+QString::number(xStart)+" xStep: "+QString::number(xStep)+" shiftRight: "+QString::number(shiftRight)+" function: "+QString(objectInfo[c].function)); 
+
+					
+			Calculate ca(NULL,objectInfo[c].function,&pref,vars);
+			Calculate ca2(NULL,objectInfo[c].function2,&pref,vars);
+			
+			if(objectInfo[c].type == GRAPHIEG || objectInfo[c].type == GRAPHIEL)
+			{
+			if(shiftRight)
+				for(int c1=steps*2; c1<PRECISION2D*2+2; c1++)
+					objectCoordinates[c][c1-steps*2]=objectCoordinates[c][c1];
+			else for(int c1=(PRECISION2D+1)*2-1; c1>=0; c1--)
+						objectCoordinates[c][c1]=objectCoordinates[c][c1-steps*2];
+			}
+			else {
+				if(shiftRight)
+					for(int c1=steps*3; c1<PRECISION2D*3+3; c1++)
+						objectCoordinates[c][c1-steps*3]=objectCoordinates[c][c1];
+				else for(int c1=(PRECISION2D+1)*3-1; c1>=0; c1--)
+							objectCoordinates[c][c1]=objectCoordinates[c][c1-steps*3];
+			}
+			
+			double x, y1, y2;
+			if(shiftRight)
+				steps++;
+			perror("full length: "+QString::number(steps+startStep));
+			for(int c1=0; c1<steps; c1++)
+			{
+				x=xStart+(double)c1*xStep;
+				vars[23][0]=x;
+				y1=ca.calc();
+				y2=ca2.calc();
+		
+				if(objectInfo[c].type==GRAPHIEG)
+				{
+					objectCoordinates[c][2*(startStep+c1)]=x;
+					if(y1>=y2)
+						objectCoordinates[c][2*(startStep+c1)+1]=y1;
+					else objectCoordinates[c][2*(startStep+c1)+1]=y2;
+				}
+				else if(objectInfo[c].type==GRAPHIEL)
+				{
+					objectCoordinates[c][2*(startStep+c1)]=x;
+					if(y1<=y2)
+						objectCoordinates[c][2*(startStep+c1)+1]=y1;
+					else objectCoordinates[c][2*(startStep+c1)+1]=y2;
+				}
+				else
+				{
+					perror("falsch");
+					if(y1<=y2)
+					{
+						objectCoordinates[c][3*(startStep+c1)]=x;
+						objectCoordinates[c][3*(startStep+c1)+1]=y1;
+						objectCoordinates[c][3*(startStep+c1)+2]=y2;
+					}
+					else objectCoordinates[c][3*(startStep+c1)+1]=objectCoordinates[c][3*(startStep+c1)+2]=0.0;
+				}
+			}
+			if(shiftRight)
+				steps--;
+		}
+		glDeleteLists(objects[c],1);
+		objects[c]=generateGLList(c);
+	}
+	
+	return ret;
+}
 
 
 void GraphOutput::processFunction(int index)
 {
 
+	oldXMin=pref.xmin;
+	oldXMax=pref.xmax;
+	
 	int ruleIndex=drawRules.GetLen();
 	if(index==ineq2)
 		return;
-	
+
 	if(!pref.dynamicFunctions[index])
 	{
+		ObjectInfo info;
+		info.type=pref.functionTypes[index];
+		info.color=pref.functionColors[index];
+		info.dynamic=false;
+		objectInfo.NewItem(info);
+		
 		drawRules.NewItem(new int[2]);
 		drawRules[ruleIndex][0]=1;
+
 		switch(pref.functionTypes[index])
 		{
 			case GRAPHPOLAR:
-				processPolarFunction(pref.functions[index],pref.functionColors[index]);
+				processPolarFunction(pref.functions[index]);
 				drawRules[ruleIndex][1]=objects.GetLen()-1;
+				perror("polar function rule index: "+QString::number(drawRules[ruleIndex][1]));
 				break;
 			case GRAPHPARAMETER:
-				processParameterFunction(pref.functions[index],pref.functionColors[index]);
+				processParameterFunction(pref.functions[index]);
 				drawRules[ruleIndex][1]=objects.GetLen()-1;
 				break;
 			case GRAPH3D:
-				process3dFunction(pref.functions[index],pref.functionColors[index]);
+				process3dFunction(pref.functions[index]);
 				drawRules[ruleIndex][1]=objects.GetLen()-1;
 				break;
 			case GRAPHIEG:
 			case GRAPHIEGE:
 			case GRAPHIEL:
 			case GRAPHIELE:
+			{
 				if(index==ineq1)
-					processInequaityFunction(pref.functions[index],pref.functionColors[index],pref.functionTypes[index],pref.functions[ineq2],pref.functionColors[ineq2],pref.functionTypes[ineq2]);
-				else processInequaityFunction(pref.functions[index],pref.functionColors[index],pref.functionTypes[index]);
-				drawRules[ruleIndex][1]=objects.GetLen()-1;
+				{
+					if((pref.functionTypes[ineq1]==GRAPHIEG || pref.functionTypes[ineq1]==GRAPHIEGE) &&
+						(pref.functionTypes[ineq2]==GRAPHIEG || pref.functionTypes[ineq2]==GRAPHIEGE))
+					{
+						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEG;
+						objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
+						processInequaityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEG);
+						
+					}
+					else if((pref.functionTypes[ineq1]==GRAPHIEL || pref.functionTypes[ineq1]==GRAPHIELE) &&
+						(pref.functionTypes[ineq2]==GRAPHIEL || pref.functionTypes[ineq2]==GRAPHIELE))
+					{
+						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEL;
+						objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
+						processInequaityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEL);
+					}
+					else if((pref.functionTypes[ineq1]==GRAPHIEL || pref.functionTypes[ineq1]==GRAPHIELE) &&
+						(pref.functionTypes[ineq2]==GRAPHIEG || pref.functionTypes[ineq2]==GRAPHIEGE))
+					{
+						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEGE;
+						objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
+						processInequaityFunction(pref.functions[ineq2],pref.functions[ineq1],GRAPHIEGE);
+					}
+					else
+					{
+						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEGE;
+						objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
+						processInequaityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEGE);
+					}
+					drawRules[ruleIndex][1]=objects.GetLen()-1;
+					
+					info.type=GRAPHSTD;
+					info.color=pref.functionColors[ineq1];
+					info.dynamic=false;
+					objectInfo.NewItem(info);
+					drawRules.NewItem(new int[2]);
+					drawRules[ruleIndex+1][0]=1;
+					processStdFunction(pref.functions[ineq1]);
+					drawRules[ruleIndex+1][1]=objects.GetLen()-1;
+					
+					info.type=GRAPHSTD;
+					info.color=pref.functionColors[ineq2];
+					info.dynamic=false;
+					objectInfo.NewItem(info);
+					drawRules.NewItem(new int[2]);
+					drawRules[ruleIndex+2][0]=1;
+					processStdFunction(pref.functions[ineq2]);
+					drawRules[ruleIndex+2][1]=objects.GetLen()-1;
+				}
+				else 
+				{
+					if(pref.functionTypes[index]==GRAPHIEG ||pref.functionTypes[index]==GRAPHIEGE)
+					{
+						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEG;
+						processInequaityFunction(pref.functions[index],pref.functions[index],GRAPHIEG);
+					}
+					else {
+						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEL;
+						processInequaityFunction(pref.functions[index],pref.functions[index],GRAPHIEL);
+					}
+					drawRules[ruleIndex][1]=objects.GetLen()-1;
+
+					info.type=GRAPHSTD;
+					info.color=QColor(0,0,0);
+					info.dynamic=false;
+					objectInfo.NewItem(info);
+					drawRules.NewItem(new int[2]);
+					drawRules[ruleIndex+1][0]=1;
+					processStdFunction(pref.functions[index]);
+					drawRules[ruleIndex+1][1]=objects.GetLen()-1;
+				}
 				break;
+			}
 			default:
-				processStdFunction(pref.functions[index],pref.functionColors[index]);
+				processStdFunction(pref.functions[index]);
 				drawRules[ruleIndex][1]=objects.GetLen()-1;
+				perror("standard function rule index: "+QString::number(drawRules[ruleIndex][1]));
 				break;
 		}
 	}
 	else 
 	{
+		ObjectInfo info;
+		info.type=pref.functionTypes[index];
+		info.color=pref.functionColors[index];
+		info.dynamic=true;
+
+		
 		drawRules.NewItem(new int[2+dynamicSteps]);
 		drawRules[ruleIndex][0]=dynamicSteps+1;
 		isDynamic=true;
@@ -1483,7 +1324,9 @@ void GraphOutput::processFunction(int index)
 				for(int c=0; c<=dynamicSteps; c++)
 				{
 					vars[0][0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					processPolarFunction(pref.functions[index],pref.functionColors[index]);
+					info.dynamicParameter=vars[0][0];
+					objectInfo.NewItem(info);
+					processPolarFunction(pref.functions[index]);
 					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
 				}
 				break;
@@ -1491,7 +1334,9 @@ void GraphOutput::processFunction(int index)
 				for(int c=0; c<=dynamicSteps; c++)
 				{
 					vars[0][0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					processParameterFunction(pref.functions[index],pref.functionColors[index]);
+					info.dynamicParameter=vars[0][0];
+					objectInfo.NewItem(info);
+					processParameterFunction(pref.functions[index]);
 					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
 				}
 				break;
@@ -1499,7 +1344,9 @@ void GraphOutput::processFunction(int index)
 				for(int c=0; c<=dynamicSteps; c++)
 				{
 					vars[0][0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					process3dFunction(pref.functions[index],pref.functionColors[index]);
+					info.dynamicParameter=vars[0][0];
+					objectInfo.NewItem(info);
+					process3dFunction(pref.functions[index]);
 					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
 				}
 				break;
@@ -1507,32 +1354,373 @@ void GraphOutput::processFunction(int index)
 			case GRAPHIEGE:
 			case GRAPHIEL:
 			case GRAPHIELE:
+				
 				for(int c=0; c<=dynamicSteps; c++)
 				{
 					vars[0][0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
+					info.dynamicParameter=vars[0][0];
+					info.type=pref.functionTypes[index];
+					info.color=pref.functionColors[index];
+					info.dynamic=true;
+					objectInfo.NewItem(info);
+
 					if(index==ineq1)
-						processInequaityFunction(pref.functions[index],pref.functionColors[index],pref.functionTypes[index],pref.functions[ineq2],pref.functionColors[ineq2],pref.functionTypes[ineq2]);
-					else processInequaityFunction(pref.functions[index],pref.functionColors[index],pref.functionTypes[index]);
-					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
+					{
+						if((pref.functionTypes[ineq1]==GRAPHIEG || pref.functionTypes[ineq1]==GRAPHIEGE) &&
+													(pref.functionTypes[ineq2]==GRAPHIEG || pref.functionTypes[ineq2]==GRAPHIEGE))
+						{
+							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEG;
+							objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
+							processInequaityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEG);
+					
+						}
+						else if((pref.functionTypes[ineq1]==GRAPHIEL || pref.functionTypes[ineq1]==GRAPHIELE) &&
+														(pref.functionTypes[ineq2]==GRAPHIEL || pref.functionTypes[ineq2]==GRAPHIELE))
+						{
+							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEL;
+							objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
+							processInequaityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEL);
+						}
+						else if((pref.functionTypes[ineq1]==GRAPHIEL || pref.functionTypes[ineq1]==GRAPHIELE) &&
+														(pref.functionTypes[ineq2]==GRAPHIEG || pref.functionTypes[ineq2]==GRAPHIEGE))
+						{
+							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEGE;
+							objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
+							processInequaityFunction(pref.functions[ineq2],pref.functions[ineq1],GRAPHIEGE);
+						}
+						else
+						{
+							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEGE;
+							objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
+							processInequaityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEGE);
+						}
+						drawRules[ruleIndex][c+1]=objects.GetLen()-1;
+				
+						info.type=GRAPHSTD;
+						info.color=pref.functionColors[ineq1];
+						info.dynamic=false;
+						objectInfo.NewItem(info);
+						if(c==0)
+						{
+							drawRules.NewItem(new int[dynamicSteps+2]);
+							drawRules[ruleIndex+1][0]=dynamicSteps+1;
+						}
+						processStdFunction(pref.functions[ineq1]);
+						drawRules[ruleIndex+1][c+1]=objects.GetLen()-1;
+				
+						info.type=GRAPHSTD;
+						info.color=pref.functionColors[ineq2];
+						info.dynamic=false;
+						objectInfo.NewItem(info);
+						if(c==0)
+						{
+							drawRules.NewItem(new int[dynamicSteps+2]);
+							drawRules[ruleIndex+2][0]=dynamicSteps+1;
+						}
+						processStdFunction(pref.functions[ineq2]);
+						drawRules[ruleIndex+2][c+1]=objects.GetLen()-1;
+					}
+					else 
+					{
+						if(pref.functionTypes[index]==GRAPHIEG ||pref.functionTypes[index]==GRAPHIEGE)
+						{
+							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEG;
+							processInequaityFunction(pref.functions[index],pref.functions[index],GRAPHIEG);
+						}
+						else {
+							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEL;
+							processInequaityFunction(pref.functions[index],pref.functions[index],GRAPHIEL);
+						}
+						drawRules[ruleIndex][c+1]=objects.GetLen()-1;
+
+						info.type=GRAPHSTD;
+						info.color=QColor(0,0,0);
+						info.dynamic=false;
+						objectInfo.NewItem(info);
+						if(c==0)
+						{
+							drawRules.NewItem(new int[dynamicSteps+2]);
+							drawRules[ruleIndex+1][0]=dynamicSteps+1;
+						}
+						processStdFunction(pref.functions[index]);
+						drawRules[ruleIndex+1][c+1]=objects.GetLen()-1;
+					}
 				}
 				break;
 			default:
 				for(int c=0; c<=dynamicSteps; c++)
 				{
 					vars[0][0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					processStdFunction(pref.functions[index],pref.functionColors[index]);
+					info.dynamicParameter=vars[0][0];
+					objectInfo.NewItem(info);
+					processStdFunction(pref.functions[index]);
 					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
 				}
 				break;
 		}
 		timer->start(pref.dynamicDelay*10,false);
 	}
-//	perror("\n");
-//	for(int c=0; c<drawRules.GetLen(); c++)
-//		for(int c1=0; c1<drawRules[c][0]; c1++)
-//			perror("DrawRules: "+QString::number(c)+" indices: "+QString::number(drawRules[c][c1+1]));
-//	perror("\n");	
 }
+
+
+GLuint GraphOutput::generateGLList(int index)
+{
+	GLuint list;
+	
+	list = glGenLists(1);
+	glNewList( list, GL_COMPILE );
+	
+	double oldx=0.0,oldy=0.0;
+	int colored=0;
+	float height=pref.ymax-pref.ymin;
+	middle=pref.ymin+height/2.0;		//calculate middle height for colors
+	lowerMiddle=-height/4.0;
+	upperMiddle=height/4.0;
+
+	if(objectInfo[index].color==QColor(1,1,1))
+		colored=1;
+	else qglColor( objectInfo[index].color );
+	
+
+	if(objectInfo[index].type==GRAPH3D)
+	{
+		GLuint list;
+		int colored=0;
+
+		list = glGenLists( 1 );
+		glNewList( list, GL_COMPILE );
+
+		float height=pref.ymax-pref.ymin;
+		middle=pref.ymin+height/2.0;		//calculate middle height
+		lowerMiddle=-height/4.0;
+		upperMiddle=height/4.0;
+		
+		double xStart=pref.xmin,xStep=(pref.xmax-pref.xmin)/PRECISION3D;
+		double zStart=pref.zmin,zStep=(pref.zmax-pref.zmin)/PRECISION3D;
+		double z=0.0,y=0.0,x=0.0,lastY;
+
+		if(objectInfo[index].color==QColor(1,1,1))
+			colored=1;
+		else qglColor(objectInfo[index].color);
+	
+		glMatrixMode(GL_MODELVIEW);
+		for(int c=0; c<PRECISION3D; c++)
+		{
+			z=zStart+c*zStep;
+			glBegin(GL_LINES);
+			lastY=objectCoordinates[index][c*PRECISION3D];
+			for(int c1=1; c1<PRECISION3D; c1++)
+			{
+				x=xStart+c1*xStep;
+				y=objectCoordinates[index][c*PRECISION3D+c1];
+				
+				if((y > pref.ymin&&y<pref.ymax) || (lastY > pref.ymin && lastY < pref.ymax))
+				{
+					double newXStep=xStep,oldXStep=0.0,newY=y,oldY=lastY;
+					if(y<pref.ymin && lastY>pref.ymin)
+					{
+						newY=pref.ymin;
+						newXStep=xStep*(oldY-pref.ymin)/(oldY-y);
+					}
+					else if(y>pref.ymax && lastY<pref.ymax)
+					{
+						newY=pref.ymax;
+						newXStep=xStep*(pref.ymax-oldY)/(y-oldY);
+					}
+					else if(y>pref.ymin && lastY<pref.ymin)
+					{
+						oldY=pref.ymin;
+						oldXStep=xStep*(pref.ymin-oldY)/(y-oldY);
+					}
+					else if(y<pref.ymax && lastY>pref.ymax)
+					{
+						oldY=pref.ymax;
+						oldXStep=xStep*(oldY-pref.ymax)/(oldY-y);
+					}
+					oldXStep+=xStep*(c1-1)+xStart;
+					newXStep+=xStep*(c1-1)+xStart;
+					if(colored)
+						setGLColor(oldY);
+					glVertex3f(oldXStep,oldY,z);
+					if(colored)
+						setGLColor(newY);
+					glVertex3f(newXStep,newY,z);
+				}
+				lastY=y;
+			}
+			glEnd();
+		}
+		for(int c=0; c<PRECISION3D; c++)
+		{
+			x=xStart+c*xStep;
+			glBegin(GL_LINES);
+			lastY=objectCoordinates[index][c];
+			for(int c1=1; c1<PRECISION3D; c1++)
+			{
+				z=zStart+c1*zStep;
+				y=objectCoordinates[index][c1*PRECISION3D+c];
+				
+				if((y > pref.ymin&&y<pref.ymax) || (lastY > pref.ymin && lastY < pref.ymax))
+				{
+					double newZStep=zStep,oldZStep=0.0,newY=y,oldY=lastY;
+					if(y<pref.ymin && lastY>pref.ymin)
+					{
+						newY=pref.ymin;
+						newZStep=zStep*(oldY-pref.ymin)/(oldY-y);
+					}
+					else if(y>pref.ymax && lastY<pref.ymax)
+					{
+						newY=pref.ymax;
+						newZStep=zStep*(pref.ymax-oldY)/(y-oldY);
+					}
+					else if(y>pref.ymin && lastY<pref.ymin)
+					{
+						oldY=pref.ymin;
+						oldZStep=zStep*(pref.ymin-oldY)/(y-oldY);
+					}
+					else if(y<pref.ymax && lastY>pref.ymax)
+					{
+						oldY=pref.ymax;
+						oldZStep=zStep*(oldY-pref.ymax)/(oldY-y);
+					}
+					oldZStep+=zStep*(c1-1)+zStart;
+					newZStep+=zStep*(c1-1)+zStart;
+					if(colored)
+						setGLColor(oldY);
+					glVertex3f(x,oldY,oldZStep);
+					if(colored)
+						setGLColor(newY);
+					glVertex3f(x,newY,newZStep);
+				}
+				lastY=y;
+			}
+			glEnd();
+		}
+		glEndList();
+	}
+	else if(objectInfo[index].type==GRAPHIEG ||objectInfo[index].type==GRAPHIEL ||
+			   objectInfo[index].type==GRAPHIEGE ||objectInfo[index].type==GRAPHIELE)
+	{
+		bool end=true;
+		double x,y1=0.0,y2=0.0;
+		if(objectInfo[index].type==GRAPHIEG)
+			y1=pref.ymax;
+		else if(objectInfo[index].type==GRAPHIEL)
+			y2=pref.ymin;
+		for(int c=0; c<objectInfo[index].length; c++)
+		{
+			if(objectInfo[index].type==GRAPHIEG)
+			{
+				x=objectCoordinates[index][c*2];
+				y2=objectCoordinates[index][c*2+1];
+				if(y2>pref.ymax)
+					y2=pref.ymax;
+				else if(y2<pref.ymin)
+				y2=pref.ymin;
+				if(colored)
+					setGLColor(y2);
+			}
+			else if(objectInfo[index].type==GRAPHIEL)
+			{
+				x=objectCoordinates[index][c*2];
+				y1=objectCoordinates[index][c*2+1];
+				if(y1<pref.ymin)
+					y1=pref.ymin;
+				else if(y1>pref.ymax)
+					y1=pref.ymax;
+				if(colored)
+					setGLColor(y1);
+			}
+			else {
+				x=objectCoordinates[index][c*3];
+				y1=objectCoordinates[index][c*3+1];
+				y2=objectCoordinates[index][c*3+2];
+				if(y1<pref.ymin)
+					y1=pref.ymin;
+				else if(y1>pref.ymax)
+					y1=pref.ymax;
+				if(y2>pref.ymax)
+					y2=pref.ymax;
+				else if(y2<pref.ymin)
+				y2=pref.ymin;
+				
+			}
+			if(end)
+			{
+				if(y1 != y2)   
+				{
+					glBegin(GL_TRIANGLE_STRIP);
+					end=false;
+					glVertex3f(x,y1,0.0f);
+					glVertex3f(x,y2,0.0f);
+				}
+			}
+			else {
+				if(y1==y2)
+				{
+					glEnd();
+					end=true;
+				}
+				else
+				{
+					glVertex3f(x,y1,0.0f);
+					glVertex3f(x,y2,0.0f);
+				}
+			}
+		}
+		if(!end)
+			glEnd();
+		glEndList();
+	}
+	else
+	{
+		perror("print index="+QString::number(index)+" length="+QString::number(objectInfo[index].length));
+		glBegin(GL_LINE_STRIP);
+		bool end=false;
+		for(int c=0; c<objectInfo[index].length; c++)
+		{
+			if(end)
+			{
+				if(objectCoordinates[index][c*2+1] >pref.ymin && objectCoordinates[index][c*2+1] < pref.ymax && objectCoordinates[index][c*2]>pref.xmin && objectCoordinates[index][c*2]< pref.xmax)   
+				{
+					glBegin(GL_LINE_STRIP);
+					end=false;
+					if(colored)
+						setGLColor(oldy);
+					glVertex3f(oldx,oldy,0.0f);
+					if(colored)
+						setGLColor(objectCoordinates[index][c*2+1]);
+					glVertex3f(objectCoordinates[index][c*2],objectCoordinates[index][c*2+1],0.0f);
+				}
+				else {
+					oldx=objectCoordinates[index][c*2];
+					oldy=objectCoordinates[index][c*2+1];
+				}
+			}
+			else {
+				if(colored)
+					setGLColor(objectCoordinates[index][c*2+1]);
+				glVertex3f(objectCoordinates[index][c*2],objectCoordinates[index][c*2+1],0.0f);
+				if(objectCoordinates[index][c*2+1]>pref.ymax || objectCoordinates[index][c*2+1]<pref.ymin || objectCoordinates[index][c*2]>pref.xmax || objectCoordinates[index][c*2]<pref.xmin)
+				{
+					glEnd();
+					end=true;
+					oldx=objectCoordinates[index][c*2];
+					oldy=objectCoordinates[index][c*2+1];
+				}
+			}
+		}
+		if(!end)
+			glEnd();
+		glEndList();
+		perror("print end");
+	}
+	return list;
+}
+
+
+
+
 
 void GraphOutput::drawHorizontalLine(double y)
 {
@@ -1685,6 +1873,7 @@ void GraphOutput::timerSlot()
 		if(dynamicPos > dynamicSteps)
 			dynamicPos=0;
 	}
+	
 	repaint();
 }
 
