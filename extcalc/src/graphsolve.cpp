@@ -152,8 +152,34 @@ void GraphSolveWidget::resizeEvent(QResizeEvent*)
 			solveButton->setGeometry(width/2-105,height-30,100,30);
 			break;
 		}
+		case GETSCREENSHOT:
+		{
+			x2Label->setGeometry(20,0,width/2-20,20);
+			x3Label->setGeometry(30,30,20,20);
+			spinBox->setGeometry(50,30,(width/2-120)/2,20);
+			yLabel->setGeometry((width/2-120)/2+90,30,30,20);
+			spinBox2->setGeometry((width/2-120)/2+110,30,(width/2-120)/2,20);
+			formatLabel->setGeometry(20,60,100,30);
+			formatBox->setGeometry(120,60,width/2-130,30);
+			xLabel->setGeometry(20,100,60,20);
+			xLine->setGeometry(80,100,width/2-115,20);
+			openButton->setGeometry(width/2-30,100,20,20);
+			saveButton->setGeometry(width/2-105,height-30,100,30);
+			
+			penLabel->setGeometry(width/2+10,20,60,30);
+			spinBox3->setGeometry(width/2+70,20,100,30);
+			colorButton->setGeometry(width/2+190,20,110,30);
+			freeButton->setGeometry(width/2+10,75,30,30);
+			lineButton->setGeometry(width/2+50,75,30,30);
+			rectButton->setGeometry(width/2+90,75,30,30);
+			circleButton->setGeometry(width/2+130,75,30,30);
+			rubberButton->setGeometry(width/2+170,75,30,30);
+			backButton->setGeometry(width/2+10,130,90,30);
+			forwardButton->setGeometry(width/2+110,130,90,30);
+			clearButton->setGeometry(width/2+210,130,90,30);
+		}
 	}
-	if(aVisible)
+	if(aVisible && solveType!=GETSCREENSHOT)
 	{
 		aLabel->setGeometry(20,height-35,100,20);
 		aLine->setGeometry(width/2-175,height-35,60,20);
@@ -175,8 +201,26 @@ void GraphSolveWidget::resetDialog()
 	functionBox->hide();
 	functionBox2->hide();
 	spinBox->hide();
+	spinBox2->hide();
+	spinBox3->hide();
 	aLabel->hide();
 	aLine->hide();
+	formatBox->hide();
+	formatLabel->hide();
+	saveButton->hide();
+	openButton->hide();
+	backButton->hide();
+	forwardButton->hide();
+	clearButton->hide();
+	freeButton->hide();
+	rectButton->hide();
+	lineButton->hide();
+	circleButton->hide();
+	rubberButton->hide();
+	colorButton->hide();
+	penLabel->hide();
+	emit drawSignal(DRAWNONE,paintColor,1);
+	
 	if(aVisible)
 	{
 		aLabel->show();
@@ -414,6 +458,54 @@ void GraphSolveWidget::resetDialog()
 			outputTable->setNumRows(0);
 			outputTable->setColumnLabels(QStringList("z"));
 			outputTable->show();
+			break;
+		}
+		case GETSCREENSHOT:
+		{
+			xLabel->setText("Path:");
+			xLabel->show();
+			xLine->setText(getenv("HOME")+QString("/screenshot.png"));
+			xLine->show();
+			x2Label->setText("Resolution:");
+			x2Label->show();
+			x3Label->setText("x");
+			yLabel->setText("y");
+			x3Label->show();
+			yLabel->show();
+			openButton->show();
+			spinBox->setValue(512);
+			spinBox->show();
+			if(pref.autosize)
+				spinBox2->setValue((int)(512.0*(pref.ymax-pref.ymin)/(pref.xmax-pref.xmin)));
+			else spinBox2->setValue(512);
+			spinBox2->show();
+			spinBox3->show();
+			formatLabel->setText("File format:");
+			formatBox->clear();
+			formatBox->insertItem("PNG");
+			formatBox->insertItem("JPEG");
+			formatBox->insertItem("BMP");
+			formatBox->insertItem("XPM");
+//			formatBox->insertItem("GIF");
+			formatBox->show();
+			formatLabel->show();
+			saveButton->show();
+			
+			penLabel->show();
+			backButton->show();
+			forwardButton->show();
+			clearButton->show();
+			freeButton->show();
+			rectButton->show();
+			lineButton->show();
+			circleButton->show();
+			rubberButton->show();
+			colorButton->show();
+			
+			freeButtonSlot();
+			
+			
+			
 			break;
 		}
 	}
@@ -1155,11 +1247,130 @@ void GraphSolveWidget::solveButtonSlot()
 			delete[]zValues;
 			break;
 		}
+		case GETSCREENSHOT:
+		{
+			emit getScreenshotSignal(spinBox->value(),spinBox2->value());
+		}
 	}
 }
 
+void GraphSolveWidget::screenshotSlot(QPixmap*scr)
+{
+	struct stat fileInfo;
+	if(xLine->text().length() <=0)
+	{
+		ErrorBox("Please insert a valid path to save screenshot");
+		return;
+	}
+	if(lstat(xLine->text(),&fileInfo) == 0)
+	{
+		if(S_ISREG(fileInfo.st_mode))
+		{
+			if(YesNoCancelBox("Really overwrite file "+xLine->text())!=0)
+				return;
+		}
+		else 
+		{
+			ErrorBox(xLine->text()+" is no valid file.\n Can't overwrite it!");
+			return;
+		}
+	}
+	if(scr->save(xLine->text(),formatBox->currentText()))
+		MessageBox("Screenshot saved");
+	else ErrorBox("Error saving screenshot");
+}
+
+void GraphSolveWidget::openButtonSlot()
+{
+	QString path=QFileDialog::getSaveFileName(".","Images (*.png *.xpm *.jpg *.bmp)",this,
+											  "save dialog","Choose a filename to save under");
+	xLine->setText(path);
+}
 
 
+void GraphSolveWidget::colorButtonSlot()
+{
+	if(paintColor.red()==4 &&paintColor.green()==4 &&paintColor.blue()==4)
+		paintColor.setRgb(0,0,0);
+	QColor col=QColorDialog::getColor(paintColor,this,"Color Dialog");
+	paintColor=col;
+	colorIcon->fill(paintColor);
+	colorButton->setIconSet(*colorIcon);
+	if(paintColor.red()<4 &&paintColor.green()<4 &&paintColor.blue()<4)
+		paintColor.setRgb(4,4,4);
+	emit drawSignal(drawState,paintColor,spinBox3->value());
+}
+
+void GraphSolveWidget::penValueSlot(int value)
+{
+	emit drawSignal(drawState,paintColor,value);
+}
+
+void GraphSolveWidget::forwardButtonSlot()
+{
+	drawState=DRAWFORWARD;
+	emit drawSignal(DRAWFORWARD,paintColor,spinBox3->value());
+}
+void GraphSolveWidget::backButtonSlot()
+{
+	drawState=DRAWBACK;
+	emit drawSignal(DRAWBACK,paintColor,spinBox3->value());
+}
+void GraphSolveWidget::clearButtonSlot()
+{
+	drawState=DRAWCLEAR;
+	emit drawSignal(DRAWCLEAR,paintColor,spinBox3->value());
+}
+void GraphSolveWidget::freeButtonSlot()
+{
+	drawState=DRAWFREE;
+	freeButton->setOn(true);
+	lineButton->setOn(false);
+	rectButton->setOn(false);
+	circleButton->setOn(false);
+	rubberButton->setOn(false);
+	emit drawSignal(DRAWFREE,paintColor,spinBox3->value());
+}
+void GraphSolveWidget::lineButtonSlot()
+{
+	drawState=DRAWLINE;
+	freeButton->setOn(false);
+	lineButton->setOn(true);
+	rectButton->setOn(false);
+	circleButton->setOn(false);
+	rubberButton->setOn(false);
+	emit drawSignal(DRAWLINE,paintColor,spinBox3->value());
+}
+void GraphSolveWidget::rectButtonSlot()
+{
+	drawState=DRAWRECT;
+	freeButton->setOn(false);
+	lineButton->setOn(false);
+	rectButton->setOn(true);
+	circleButton->setOn(false);
+	rubberButton->setOn(false);
+	emit drawSignal(DRAWRECT,paintColor,spinBox3->value());
+}
+void GraphSolveWidget::circleButtonSlot()
+{
+	drawState=DRAWCIRCLE;
+	freeButton->setOn(false);
+	lineButton->setOn(false);
+	rectButton->setOn(false);
+	circleButton->setOn(true);
+	rubberButton->setOn(false);
+	emit drawSignal(DRAWCIRCLE,paintColor,spinBox3->value());
+}
+void GraphSolveWidget::rubberButtonSlot()
+{
+	drawState=DRAWFREE;
+	freeButton->setOn(false);
+	lineButton->setOn(false);
+	rectButton->setOn(false);
+	circleButton->setOn(false);
+	rubberButton->setOn(true);
+	emit drawSignal(DRAWFREE,QColor(0,0,0),spinBox3->value());
+}
 
 void GraphSolveWidget::setPref(Preferences newPref)
 {

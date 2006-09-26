@@ -129,6 +129,9 @@ Q_OBJECT
 		QObject::connect(solveWidget,SIGNAL(drawInequaityIntersection(int, int)),graph,SLOT(inequaityIntersectionSlot(int,int)));
 		QObject::connect(solveWidget,SIGNAL(redrawGraphs()),this,SLOT(drawSlot()));
 		QObject::connect(graph,SIGNAL(redrawSignal()),this,SLOT(drawSlot()));
+		QObject::connect(graph,SIGNAL(screenshotSignal(QPixmap*)),solveWidget,SLOT(screenshotSlot(QPixmap*)));
+		QObject::connect(solveWidget,SIGNAL(getScreenshotSignal(int,int)),graph,SLOT(screenshotSlot(int,int)));
+		QObject::connect(solveWidget,SIGNAL(drawSignal(int,QColor,int)),graph,SLOT(drawSlot(int,QColor,int)));
 
 	}
 	

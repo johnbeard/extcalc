@@ -5,7 +5,8 @@
 
 void GraphOutput::initializeGL()
 {
-	qglClearColor( white ); 
+	glClearColor( 1.0,1.0,1.0,1.0 ); 
+//	qglClearColor(white ); 
 	glDeleteLists(axes,1);
 	if(pref.graphType==GRAPHPOLAR)
 		axes=drawPolarAxes();
@@ -16,6 +17,34 @@ void GraphOutput::initializeGL()
 	dynamicStart=pref.dynamicStart;
 	dynamicEnd=pref.dynamicEnd;
 	glShadeModel( GL_SMOOTH);
+	glEnable(GL_TEXTURE_2D);
+	
+	glEnable(GL_BLEND);
+	//glBlendFunc(GL_ONE,GL_ONE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	if(texture!=0xffffffff)
+		glDeleteTextures(1,&texture);
+	glGenTextures(1,&texture);
+//	drawImage->fill(0xaaaaaaaa);
+//	(*drawImage)=drawMap->convertToImage();
+//	glBindTexture(GL_TEXTURE_2D,texture);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	
+//	glTexImage2D(GL_TEXTURE_2D, 0, 4, 512,
+//				 512, 0, GL_BGRA, GL_UNSIGNED_BYTE,
+//				 drawImage->bits());
+	generateTexture();
+	glDisable(GL_TEXTURE_2D);
+	if(drawScreenshot)
+	{
+		clearGL();
+		for(int c=0; c<20; c++)
+		{
+			if(pref.activeFunctions[c])
+				processFunction(c);
+		}
+	}
 }
 
 
@@ -65,7 +94,7 @@ GLuint GraphOutput::drawStdAxes()
 			glVertex3f(c,yNull-yLineLen,0.0f);
 			glVertex3f(c,yNull+yLineLen,0.0f);
 		}
-		for(float c=0.0; c>pref.xmin; c-=pref.rasterSizeX)
+		for(float c=0; c>pref.xmin; c-=pref.rasterSizeX)
 		{
 			glVertex3f(c,yNull-yLineLen,0.0f);
 			glVertex3f(c,yNull+yLineLen,0.0f);
@@ -361,9 +390,63 @@ GLuint GraphOutput::draw3dAxes()
 	return list;
 }
 
+
+
 void GraphOutput::mouseMoveEvent(QMouseEvent*e)
 {
-	if(e->state() == Qt::RightButton)
+	if(e->state() == Qt::LeftButton)
+	{
+		int width=geometry().right()-geometry().left();
+		int height=geometry().bottom()-geometry().top();
+				
+		QPen pen(drawColor,drawPen);
+		switch(drawState)
+		{
+			case DRAWNONE:
+				break;
+			case DRAWFREE:
+			{
+
+				draw->begin(drawMap);
+				draw->setPen(pen);
+				draw->drawLine(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width,e->y()*TEXTURESIZE/height);
+				draw->end();
+				mouseX=e->x();
+				mouseY=e->y();
+				break; 
+			}
+			case DRAWLINE:
+			{
+				copyBlt(overlayMap,0,0,drawMap,0,0,TEXTURESIZE,TEXTURESIZE);
+				draw->begin(overlayMap);
+				draw->setPen(pen);
+				draw->drawLine(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width,e->y()*TEXTURESIZE/height);
+				draw->end();
+				break;
+			}
+			case DRAWRECT:
+			{
+				copyBlt(overlayMap,0,0,drawMap,0,0,TEXTURESIZE,TEXTURESIZE);
+				draw->begin(overlayMap);
+				draw->setPen(pen);
+				draw->drawRect(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width-mouseX*TEXTURESIZE/width,e->y()*TEXTURESIZE/height-mouseY*TEXTURESIZE/height);
+				draw->end();
+				break;
+			}
+			case DRAWCIRCLE:
+			{
+				copyBlt(overlayMap,0,0,drawMap,0,0,TEXTURESIZE,TEXTURESIZE);
+				draw->begin(overlayMap);
+				draw->setPen(pen);
+				draw->drawEllipse(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width-mouseX*TEXTURESIZE/width,e->y()*TEXTURESIZE/height-mouseY*TEXTURESIZE/height);
+				draw->end();
+				break;
+			}
+		}
+		generateTexture();
+		repaint();
+	}
+	else if(e->state() == Qt::RightButton)
 	{
 		if(pref.graphType==GRAPH3D)
 		{
@@ -433,7 +516,31 @@ void GraphOutput::mousePressEvent(QMouseEvent*e)
 	mouseY=e->y();
 	if(e->stateAfter()==Qt::LeftButton)
 	{
-		if(pref.graphType==GRAPHSTD)
+		if(drawState!=DRAWNONE)
+		{
+			int width=geometry().right()-geometry().left();
+			int height=geometry().bottom()-geometry().top();
+			QPen pen(drawColor,drawPen);
+			switch(drawState)
+			{
+				case DRAWFREE:
+					draw->begin(drawMap);
+					draw->setPen(pen);
+					draw->drawPoint(e->x()*TEXTURESIZE/width,e->y()*TEXTURESIZE/height);
+					draw->end();
+					break;
+				case DRAWLINE:
+				case DRAWRECT:
+				case DRAWCIRCLE:
+					if(overlayMap!=NULL)
+						delete overlayMap;
+					overlayMap=new QPixmap(*drawMap);
+					break;
+			}
+			generateTexture();
+			repaint();
+		}
+		else if(pref.graphType==GRAPHSTD)
 		{
 			dX=((pref.xmax-pref.xmin)/(double)(geometry().right()-geometry().left()))*(double)iX+pref.xmin; 
 			dY=((pref.ymax-pref.ymin)/(double)(geometry().bottom()-geometry().top()))*(double)((geometry().bottom()-geometry().top())-iY)+pref.ymin; 
@@ -466,7 +573,42 @@ void GraphOutput::mousePressEvent(QMouseEvent*e)
 void GraphOutput::mouseReleaseEvent(QMouseEvent*e)
 {
 	if(e->state() == Qt::LeftButton)
+	{
 		unlock=false;
+		if(drawState!=DRAWNONE)
+		{
+			int width=geometry().right()-geometry().left();
+			int height=geometry().bottom()-geometry().top();
+			QPen pen(drawColor,drawPen);
+			switch(drawState)
+			{
+				case DRAWFREE:
+					break;
+				case DRAWLINE:
+					draw->begin(drawMap);
+					draw->setPen(pen);
+					draw->drawLine(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width,e->y()*TEXTURESIZE/height);
+					draw->end();
+					break;
+				case DRAWRECT:
+					draw->begin(drawMap);
+					draw->setPen(pen);
+					draw->drawRect(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width-mouseX*TEXTURESIZE/width,e->y()*TEXTURESIZE/height-mouseY*TEXTURESIZE/height);
+					draw->end();
+					break;
+				case DRAWCIRCLE:
+					draw->begin(drawMap);
+					draw->setPen(pen);
+					draw->drawEllipse(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width-mouseX*TEXTURESIZE/width,e->y()*TEXTURESIZE/height-mouseY*TEXTURESIZE/height);
+					draw->end();
+					break;
+					
+
+			}
+			generateTexture();
+			repaint();
+		}
+	}
 	if(e->state() == Qt::RightButton && pref.graphType==GRAPHSTD)
 		emit prefChange(pref);
 }
@@ -1003,6 +1145,47 @@ void GraphOutput::paintGL()
 			
 		}
 	}
+	
+	
+
+	if(drawState!=DRAWNONE)
+	{
+		if(pref.graphType==GRAPH3D)
+		{
+			double xSize=pref.xmax-pref.xmin,ySize=pref.ymax-pref.ymin;
+
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glScalef(20.0/xSize,20.0/ySize,1.0f);
+			glTranslatef((pref.xmin+pref.xmax)*-0.5f,(pref.ymin+pref.ymax)*-0.5,0.0f);
+			glDisable(GL_DEPTH_TEST);
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			glFrustum(-10.0,10.0,-10.0,10.0,1.0,100.0);
+			glTranslatef(0.0,0.0,-1.0);
+
+
+
+			
+		}
+		
+		
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D,texture);
+		glBegin(GL_QUADS);
+		glColor4f(1.0,1.0,1.0,1.0);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex3f(pref.xmin, pref.ymin, 0.0f);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex3f(pref.xmax, pref.ymin,0.0f);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex3f(pref.xmax, pref.ymax, 0.0f);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex3f(pref.xmin,pref.ymax, 0.0f);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	}
+	
 }
 
 
@@ -1850,6 +2033,43 @@ void GraphOutput::resetRotation()
 	zMove=0;
 }
 
+
+
+void GraphOutput::generateTexture()
+{
+	glEnable(GL_TEXTURE_2D);
+	if(drawState==DRAWFREE)
+		(*drawImage)=drawMap->convertToImage();
+	else if(drawState!=DRAWNONE)
+		(*drawImage)=overlayMap->convertToImage();
+	glBindTexture(GL_TEXTURE_2D,texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	unsigned char*data=drawImage->bits();
+	int c=TEXTURESIZE*TEXTURESIZE;
+	while(c--)
+		if((data[c*4]) ||(data[c*4+1]) || (data[c*4+2]))
+			data[c*4+3]=0xff;
+	else data[c*4+3]=0x00;
+		
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, TEXTURESIZE,
+				 TEXTURESIZE, 0, GL_BGRA, GL_UNSIGNED_BYTE,
+				 data);
+	glDisable(GL_TEXTURE_2D);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}
+
 void GraphOutput::timerSlot()
 {
 	static bool forward=true;
@@ -1881,6 +2101,43 @@ void GraphOutput::inequaityIntersectionSlot(int i1, int i2)
 {
 	ineq1=i1;
 	ineq2=i2;
+}
+
+void GraphOutput::screenshotSlot(int x, int y)
+{
+	drawScreenshot=true;
+	if(x<=0)
+		x=geometry().width();
+	if(y<=0)
+		y=geometry().height();
+	
+	scr=renderPixmap(x,y,false);
+	emit screenshotSignal(&scr);
+	drawScreenshot=false;
+}
+
+
+void GraphOutput::drawSlot(int state,QColor color,int pen)
+{
+
+	if(state==DRAWCLEAR)
+	{
+		drawMap->fill(QColor(0,0,0));
+		generateTexture();
+		repaint();
+	}
+	else if(state==DRAWBACK || state==DRAWFORWARD)
+	{
+		
+		//undo, redo
+		
+	}
+	else 
+	{
+		drawState=state;
+		drawColor=color;
+		drawPen=pen;
+	}
 }
 
 

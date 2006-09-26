@@ -92,3 +92,9 @@
 - standard coordinate system can be moved by pressing right mouse button
 - standard coordinate system and polar coordinate system can be zoomed by the
 mouse wheel
+
+0.5.5 save and modify graphs
+- functions for saving screenshot of graphics window added
+- support for several image formats and sizes added
+- added function for drawing into graphics window
+- support for free draw, lines, rectangles and circles included

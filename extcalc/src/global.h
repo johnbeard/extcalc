@@ -20,10 +20,10 @@
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.5.1\n2006-09-21\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.5.5\n2006-09-26\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.5.1\n21.9.2006\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.5.5\n26.9.2006\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\n\nRainer Strobel\n2006  \n\n"
 
@@ -172,6 +172,7 @@
 #define CALCINTEGRAL		6
 #define CALCDIFF			7
 #define CALCZVAL			8
+#define GETSCREENSHOT		9
 
 #define GRAPHSTD			41
 #define GRAPHPOLAR			42
@@ -188,6 +189,15 @@
 #define TABLEPARAMETER		52
 #define TABLEINEQUAITY		53
 #define TABLE3D				54
+
+#define DRAWNONE			130
+#define DRAWFREE			131
+#define DRAWLINE			132
+#define DRAWRECT			133
+#define DRAWCIRCLE			134
+#define DRAWFORWARD			135
+#define DRAWBACK			136
+#define DRAWCLEAR			137
 
 #define NNONE				0x1
 #define NFLOAT				0x2
@@ -206,8 +216,6 @@
 #define SIGKEYSTATE			50005
 #define SIGDEBUG			50006
 #define SIGFINISHED			50010
-
-
 
 #define ROOTSTRING			8730
 #define PISTRING			960

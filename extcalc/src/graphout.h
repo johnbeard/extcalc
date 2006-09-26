@@ -6,11 +6,15 @@
 #include <qwidget.h>
 #include <qapplication.h>
 #include <qtimer.h>
+#include <qpixmap.h>
+#include <qimage.h>
+#include <qpainter.h>
 #include "list.h"
 #include "global.h"
 
 #define PRECISION2D 200
 #define PRECISION3D 50
+#define TEXTURESIZE 512
 
 
 ////////////////drawRules//////////////////////////////////////////
@@ -48,6 +52,13 @@ struct ObjectInfo
 	QColor color;
 };
 
+struct DrawData
+{
+	int type;
+	float x;
+	float y;
+	QColor color;
+};
 
 
 class GraphOutput :public QGLWidget
@@ -72,11 +83,33 @@ class GraphOutput :public QGLWidget
 	int ineq1,ineq2;
 	double oldX,oldY;
 	double oldXMin,oldXMax;
+	QPixmap scr;
+	bool drawScreenshot;
+	int drawState;
+	QColor drawColor;
+	int drawPen;
+	QPixmap*drawMap,*overlayMap;
+	QImage*drawImage;
+	GLuint texture;
+	QPainter *draw;
+	
 	
 Q_OBJECT
 public:
 	GraphOutput(QWidget*parent,Variable*va) :QGLWidget(parent)
 	{
+		drawImage=new QImage(TEXTURESIZE,TEXTURESIZE,32);
+		drawImage->fill(0x77ffffff);
+		drawImage->setAlphaBuffer(true);
+		drawMap=new QPixmap(*drawImage);
+		overlayMap=NULL;
+		
+		draw=new QPainter();
+		texture=0xffffffff;
+		drawState=DRAWFREE;
+		drawPen=1;
+		drawColor=QColor(0,0,0);
+		drawScreenshot=false;
 		vars=va;
 		xRotation=yRotation=zMove=0;
 		ineq1=ineq2=-1;
@@ -99,6 +132,8 @@ public:
 	GLuint drawStdAxes();
 	GLuint drawPolarAxes();
 	GLuint draw3dAxes();
+	void generateTexture();
+
 	
 	void setPref(Preferences newPref);
 	void clearGL();
@@ -116,6 +151,8 @@ public slots:
 	void resetRotation();
 	void timerSlot();
 	void inequaityIntersectionSlot(int i1, int i2);
+	void screenshotSlot(int,int);
+	void drawSlot(int,QColor,int);
 
 protected:
 	void initializeGL();
@@ -130,6 +167,7 @@ signals:
 	void prefChange(Preferences);
 	void leftMButtonPressed(double,double);
 	void redrawSignal();
+	void screenshotSignal(QPixmap*);
 
 };
 

@@ -95,7 +95,7 @@
 //      - script debugging tool                                                         ok  //
 //  - load and save scripts                                     (v0.5)                  ok  //
 //  - script editor window                                      (v0.5)                  ok  //
-//  - manipulating and saving images                            (v0.6)                      //
+//  - manipulating and saving images                            (v0.6)                  ok  //
 //  - zooming and moving graphics-window                        (v0.6)                  ok  //
 //  - number object for standard-parser                         (v0.7)                      //
 //  - include matrix- vector- ...-functions to standard-parser  (v0.7)                      //
