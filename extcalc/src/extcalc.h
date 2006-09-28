@@ -122,8 +122,8 @@
 //	- script editor saves unicode wrong													ok	//
 //	- calculaton repeating doesn't work with second line								ok	//
 //	- integral calculation doesn't work on periodic functions							ok	//
-//	- graph analyse window doesn't view result of integral correctly						//
-//	- graph analyse window does not allways process mouse events							//
+//	- graph analyse window doesn't view result of integral correctly					ok	//
+//	- graph analyse window does not allways process mouse events						ok	//
 
 //////////////////////////used variables//////////////////////////
 //

@@ -168,7 +168,7 @@ void GraphSolveWidget::resizeEvent(QResizeEvent*)
 			
 			penLabel->setGeometry(width/2+10,20,60,30);
 			spinBox3->setGeometry(width/2+70,20,100,30);
-			colorButton->setGeometry(width/2+190,20,110,30);
+			colorButton->setGeometry(width/2+190,20,105,30);
 			freeButton->setGeometry(width/2+10,75,30,30);
 			lineButton->setGeometry(width/2+50,75,30,30);
 			rectButton->setGeometry(width/2+90,75,30,30);
@@ -176,7 +176,7 @@ void GraphSolveWidget::resizeEvent(QResizeEvent*)
 			rubberButton->setGeometry(width/2+170,75,30,30);
 			backButton->setGeometry(width/2+10,130,90,30);
 			forwardButton->setGeometry(width/2+110,130,90,30);
-			clearButton->setGeometry(width/2+210,130,90,30);
+			clearButton->setGeometry(width/2+210,130,85,30);
 		}
 	}
 	if(aVisible && solveType!=GETSCREENSHOT)
@@ -247,6 +247,7 @@ void GraphSolveWidget::resetDialog()
 				outputTable->setColumnLabels(colLabels);
 				
 				functionBox->show();
+				setFunctionBox(functionBox);
 				xLabel->setText(GRAPHSOLVEC_STR3);
 				x2Label->setText(GRAPHSOLVEC_STR1);
 				x2Label->show();
@@ -261,6 +262,7 @@ void GraphSolveWidget::resetDialog()
 				outputTable->setNumCols(1);
 				x2Label->show();
 				functionBox->show();
+				setFunctionBox(functionBox);
 				x3Label->show();
 				x2Line->show();
 				xLabel->setText(GRAPHSOLVEC_STR3);
@@ -382,6 +384,8 @@ void GraphSolveWidget::resetDialog()
 			functionBox2->show();
 			solveButton->show();
 			outputTable->setNumCols(1);
+			outputTable->setNumRows(0);
+			
 //			outputTable->setColumnReadOnly(0,true);
 			outputTable->setColumnLabels(QStringList("x"));
 			outputTable->show();
@@ -533,8 +537,8 @@ void GraphSolveWidget::calculateYVal(QString text)
 		for(int c=0; c<20; c++)
 		{
 			if(pref.functions[c].length() > 0 && pref.activeFunctions[c] &&
-			(pref.functionTypes[c]==GRAPHSTD && (pref.graphType == GRAPHSTD || pref.graphType==GRAPH3D) ||
-			 pref.functionTypes[c]==GRAPHPOLAR && pref.graphType==GRAPHPOLAR))
+			(pref.functionTypes[c]==functionType || 
+						(pref.functionTypes[c]==GRAPHIEG ||pref.functionTypes[c]==GRAPHIEL || pref.functionTypes[c]==GRAPHIEGE ||pref.functionTypes[c]==GRAPHIELE)&&functionType==GRAPHIEL))
 			{
 				char* checkedFunction=checkString(pref.functions[c],&pref,vars);
 				if(checkedFunction == NULL)
@@ -721,8 +725,10 @@ void GraphSolveWidget::showRoots(QString function,QColor color)
 	emit removeLines();
 	
 	long double*results;
-	
-	int numResults=calculateRoots(function,pref.xmin, pref.xmax,&results);
+	int numResults;
+	if(functionType==GRAPHPOLAR)
+		numResults=calculateRoots(function,0.0, pref.angleMax,&results);
+	else numResults=calculateRoots(function,pref.xmin, pref.xmax,&results);
 	
 	if(numResults <=0)
 		return;
@@ -970,6 +976,8 @@ void GraphSolveWidget::solveButtonSlot()
 			switch(functionType)
 			{
 				case GRAPHSTD:
+				case GRAPHPOLAR:
+				case GRAPHIEL:
 				{
 			
 					if(functionBox->currentItem()<0)
@@ -1151,6 +1159,7 @@ void GraphSolveWidget::solveButtonSlot()
 			outputTable->setText(0,0,QString::number(result));
 			if(functionIndices[functionBox->currentItem()]>=0 && functionIndices[functionBox->currentItem()]<20)
 				outputTable->changeColor(0,pref.functionColors[functionIndices[functionBox->currentItem()]]);
+			outputTable->adjustColumn(0);
 			break;
 		}
 		case CALCDIFF:
@@ -1303,22 +1312,24 @@ void GraphSolveWidget::colorButtonSlot()
 
 void GraphSolveWidget::penValueSlot(int value)
 {
-	emit drawSignal(drawState,paintColor,value);
+	if(rubberButton->isOn())
+		emit drawSignal(drawState,QColor(0,0,0),value);
+	else emit drawSignal(drawState,paintColor,value);
 }
 
 void GraphSolveWidget::forwardButtonSlot()
 {
-	drawState=DRAWFORWARD;
+//	drawState=DRAWFORWARD;
 	emit drawSignal(DRAWFORWARD,paintColor,spinBox3->value());
 }
 void GraphSolveWidget::backButtonSlot()
 {
-	drawState=DRAWBACK;
+//	drawState=DRAWBACK;
 	emit drawSignal(DRAWBACK,paintColor,spinBox3->value());
 }
 void GraphSolveWidget::clearButtonSlot()
 {
-	drawState=DRAWCLEAR;
+//	drawState=DRAWCLEAR;
 	emit drawSignal(DRAWCLEAR,paintColor,spinBox3->value());
 }
 void GraphSolveWidget::freeButtonSlot()
@@ -1329,6 +1340,7 @@ void GraphSolveWidget::freeButtonSlot()
 	rectButton->setOn(false);
 	circleButton->setOn(false);
 	rubberButton->setOn(false);
+	colorButton->setEnabled(true);
 	emit drawSignal(DRAWFREE,paintColor,spinBox3->value());
 }
 void GraphSolveWidget::lineButtonSlot()
@@ -1339,6 +1351,7 @@ void GraphSolveWidget::lineButtonSlot()
 	rectButton->setOn(false);
 	circleButton->setOn(false);
 	rubberButton->setOn(false);
+	colorButton->setEnabled(true);
 	emit drawSignal(DRAWLINE,paintColor,spinBox3->value());
 }
 void GraphSolveWidget::rectButtonSlot()
@@ -1349,6 +1362,7 @@ void GraphSolveWidget::rectButtonSlot()
 	rectButton->setOn(true);
 	circleButton->setOn(false);
 	rubberButton->setOn(false);
+	colorButton->setEnabled(true);
 	emit drawSignal(DRAWRECT,paintColor,spinBox3->value());
 }
 void GraphSolveWidget::circleButtonSlot()
@@ -1359,6 +1373,7 @@ void GraphSolveWidget::circleButtonSlot()
 	rectButton->setOn(false);
 	circleButton->setOn(true);
 	rubberButton->setOn(false);
+	colorButton->setEnabled(true);
 	emit drawSignal(DRAWCIRCLE,paintColor,spinBox3->value());
 }
 void GraphSolveWidget::rubberButtonSlot()
@@ -1369,12 +1384,14 @@ void GraphSolveWidget::rubberButtonSlot()
 	rectButton->setOn(false);
 	circleButton->setOn(false);
 	rubberButton->setOn(true);
-	emit drawSignal(DRAWFREE,QColor(0,0,0),spinBox3->value());
+	colorButton->setEnabled(false);
+	emit drawSignal(DRAWFREE,QColor(0,0,0),8);
 }
 
 void GraphSolveWidget::setPref(Preferences newPref)
 {
 	pref=newPref;
+
 
 //	setFunctionBox(functionBox);
 //	setFunctionBox(functionBox2);
@@ -1403,8 +1420,13 @@ void GraphSolveWidget::setPref(Preferences newPref)
 		aLine->hide();
 		aLabel->hide();
 		resizeEvent(NULL);
-	}	 
-	resetDialog();
+	}
+//	if(isShown())
+//		resetDialog();
+	if(functionBox->isShown())
+		setFunctionBox(functionBox);
+	if(functionBox2->isShown())
+		setFunctionBox(functionBox2);
 //	solveButtonSlot();
 	
 }

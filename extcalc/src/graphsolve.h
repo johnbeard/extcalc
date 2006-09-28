@@ -99,7 +99,7 @@ public:
 		circleIcon=new QPixmap(INSTALLDIR+QString("/data/circle.png"));
 		rubberIcon=new QPixmap(INSTALLDIR+QString("/data/rubber.png"));
 		colorIcon=new QPixmap(20,20);
-		paintColor.setRgb(0,0,255);
+		paintColor.setRgb(255,0,0);
 		colorIcon->fill(paintColor);
 		colorButton=new QPushButton(*colorIcon,"Color",this);
 

@@ -18,23 +18,20 @@ void GraphOutput::initializeGL()
 	dynamicEnd=pref.dynamicEnd;
 	glShadeModel( GL_SMOOTH);
 	glEnable(GL_TEXTURE_2D);
-	
 	glEnable(GL_BLEND);
-	//glBlendFunc(GL_ONE,GL_ONE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	if(texture!=0xffffffff)
-		glDeleteTextures(1,&texture);
-	glGenTextures(1,&texture);
-//	drawImage->fill(0xaaaaaaaa);
-//	(*drawImage)=drawMap->convertToImage();
-//	glBindTexture(GL_TEXTURE_2D,texture);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	
-//	glTexImage2D(GL_TEXTURE_2D, 0, 4, 512,
-//				 512, 0, GL_BGRA, GL_UNSIGNED_BYTE,
-//				 drawImage->bits());
+
+	if(texture==0xffffffff)
+	{
+		glGenTextures(1,&texture);
+		generateTexture();
+	}
+	if(drawState!=DRAWNONE)
 	generateTexture();
+	
+	
+	
 	glDisable(GL_TEXTURE_2D);
 	if(drawScreenshot)
 	{
@@ -398,15 +395,29 @@ void GraphOutput::mouseMoveEvent(QMouseEvent*e)
 	{
 		int width=geometry().right()-geometry().left();
 		int height=geometry().bottom()-geometry().top();
-				
-		QPen pen(drawColor,drawPen);
+
+		previewPen=drawPen*width/TEXTURESIZE;
+		if(previewPen<1)
+			previewPen=1;
+		QPen pen(drawColor,previewPen);
+		pen.setCapStyle(Qt::RoundCap);
+
 		switch(drawState)
 		{
 			case DRAWNONE:
 				break;
 			case DRAWFREE:
 			{
+				draw->begin(this);
+				if(drawColor.red()==0 && drawColor.green()==0 && drawColor.blue()==0)
+					pen.setColor(QColor(255,255,255));
+				draw->setPen(pen);
+				draw->drawLine(mouseX,mouseY,e->x(),e->y());
+				draw->end();
+				if(drawColor.red()==0 && drawColor.green()==0 && drawColor.blue()==0)
+					pen.setColor(QColor(0,0,0));
 
+				pen.setWidth(drawPen);
 				draw->begin(drawMap);
 				draw->setPen(pen);
 				draw->drawLine(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width,e->y()*TEXTURESIZE/height);
@@ -417,6 +428,14 @@ void GraphOutput::mouseMoveEvent(QMouseEvent*e)
 			}
 			case DRAWLINE:
 			{
+				repaint();
+				
+				draw->begin(this);
+				draw->setPen(pen);
+				draw->drawLine(mouseX,mouseY,e->x(),e->y());
+				draw->end();
+				
+				pen.setWidth(drawPen);
 				copyBlt(overlayMap,0,0,drawMap,0,0,TEXTURESIZE,TEXTURESIZE);
 				draw->begin(overlayMap);
 				draw->setPen(pen);
@@ -426,6 +445,13 @@ void GraphOutput::mouseMoveEvent(QMouseEvent*e)
 			}
 			case DRAWRECT:
 			{
+				repaint();
+				draw->begin(this);
+				draw->setPen(pen);
+				draw->drawRect(mouseX,mouseY,e->x()-mouseX,e->y()-mouseY);
+				draw->end();
+				
+				pen.setWidth(drawPen);
 				copyBlt(overlayMap,0,0,drawMap,0,0,TEXTURESIZE,TEXTURESIZE);
 				draw->begin(overlayMap);
 				draw->setPen(pen);
@@ -435,6 +461,13 @@ void GraphOutput::mouseMoveEvent(QMouseEvent*e)
 			}
 			case DRAWCIRCLE:
 			{
+				repaint();
+				draw->begin(this);
+				draw->setPen(pen);
+				draw->drawEllipse(mouseX,mouseY,e->x()-mouseX,e->y()-mouseY);
+				draw->end();
+				
+				pen.setWidth(drawPen);
 				copyBlt(overlayMap,0,0,drawMap,0,0,TEXTURESIZE,TEXTURESIZE);
 				draw->begin(overlayMap);
 				draw->setPen(pen);
@@ -443,8 +476,8 @@ void GraphOutput::mouseMoveEvent(QMouseEvent*e)
 				break;
 			}
 		}
-		generateTexture();
-		repaint();
+	//	generateTexture();
+	//	repaint();
 	}
 	else if(e->state() == Qt::RightButton)
 	{
@@ -520,10 +553,27 @@ void GraphOutput::mousePressEvent(QMouseEvent*e)
 		{
 			int width=geometry().right()-geometry().left();
 			int height=geometry().bottom()-geometry().top();
-			QPen pen(drawColor,drawPen);
+			
+			previewPen=drawPen*width/TEXTURESIZE;
+			if(previewPen<1)
+				previewPen=1;
+			QPen pen(drawColor,previewPen);
+			pen.setCapStyle(Qt::RoundCap);
+			
 			switch(drawState)
 			{
 				case DRAWFREE:
+					
+					draw->begin(this);
+					if(drawColor.red()==0 && drawColor.green()==0 && drawColor.blue()==0)
+						pen.setColor(QColor(255,255,255));
+					draw->setPen(pen);
+					draw->drawPoint(e->x(),e->y());
+					draw->end();
+					if(drawColor.red()==0 && drawColor.green()==0 && drawColor.blue()==0)
+						pen.setColor(drawColor);
+					
+					pen.setWidth(drawPen);
 					draw->begin(drawMap);
 					draw->setPen(pen);
 					draw->drawPoint(e->x()*TEXTURESIZE/width,e->y()*TEXTURESIZE/height);
@@ -538,7 +588,7 @@ void GraphOutput::mousePressEvent(QMouseEvent*e)
 					break;
 			}
 			generateTexture();
-			repaint();
+		//	repaint();
 		}
 		else if(pref.graphType==GRAPHSTD)
 		{
@@ -580,6 +630,7 @@ void GraphOutput::mouseReleaseEvent(QMouseEvent*e)
 			int width=geometry().right()-geometry().left();
 			int height=geometry().bottom()-geometry().top();
 			QPen pen(drawColor,drawPen);
+			pen.setCapStyle(Qt::RoundCap);
 			switch(drawState)
 			{
 				case DRAWFREE:
@@ -1081,7 +1132,7 @@ void GraphOutput::paintGL()
 //	for(int c=0; c<drawRules.GetLen(); c++)
 //		for(int c1=0; c1<drawRules[c][0]; c1++)
 //			perror("DrawRules: "+QString::number(c)+" indices: "+QString::number(drawRules[c][c1+1]));
-//	perror("\n");	
+//	perror("\n");
 	for(int c=0; c<drawRules.GetLen(); c++)
 	{
 		if(dynamicPos<drawRules[c][0])
@@ -1150,6 +1201,9 @@ void GraphOutput::paintGL()
 
 	if(drawState!=DRAWNONE)
 	{
+		if(texture==0xffffffff)
+			return;
+		
 		if(pref.graphType==GRAPH3D)
 		{
 			double xSize=pref.xmax-pref.xmin,ySize=pref.ymax-pref.ymin;
@@ -2037,25 +2091,78 @@ void GraphOutput::resetRotation()
 
 void GraphOutput::generateTexture()
 {
+	if(texture==0xffffffff)
+		return;
+	struct timeval t1,t2;
+	int seconds,usecs;
+//	gettimeofday(&t1,NULL);
+//	gettimeofday(&t2,NULL);
+
+	
+//	seconds=t2.tv_sec-t1.tv_sec;
+//	usecs=t2.tv_usec-t1.tv_usec;
+//	if(seconds > 0 && usecs < 0)
+//	{
+//		seconds--;
+//		usecs=1000000+usecs;
+//	}
+//	perror("convertToImage: "+QString::number(seconds)+" "+QString::number(usecs));
 	glEnable(GL_TEXTURE_2D);
+	
+	gettimeofday(&t1,NULL);
 	if(drawState==DRAWFREE)
 		(*drawImage)=drawMap->convertToImage();
 	else if(drawState!=DRAWNONE)
 		(*drawImage)=overlayMap->convertToImage();
+	
+	gettimeofday(&t2,NULL);
+	seconds=t2.tv_sec-t1.tv_sec;
+	usecs=t2.tv_usec-t1.tv_usec;
+	if(seconds > 0 && usecs < 0)
+	{
+		seconds--;
+		usecs=1000000+usecs;
+	}
+	perror("convertToImage: "+QString::number(seconds)+" "+QString::number(usecs));
+	
 	glBindTexture(GL_TEXTURE_2D,texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	gettimeofday(&t1,NULL);
 	unsigned char*data=drawImage->bits();
 	int c=TEXTURESIZE*TEXTURESIZE;
+	
 	while(c--)
 		if((data[c*4]) ||(data[c*4+1]) || (data[c*4+2]))
 			data[c*4+3]=0xff;
 	else data[c*4+3]=0x00;
+
+	
+	gettimeofday(&t2,NULL);
+	seconds=t2.tv_sec-t1.tv_sec;
+	usecs=t2.tv_usec-t1.tv_usec;
+	if(seconds > 0 && usecs < 0)
+	{
+		seconds--;
+		usecs=1000000+usecs;
+	}
+	perror("generate Transparency: "+QString::number(seconds)+" "+QString::number(usecs));
 		
 
+	gettimeofday(&t1,NULL);
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, TEXTURESIZE,
 				 TEXTURESIZE, 0, GL_BGRA, GL_UNSIGNED_BYTE,
 				 data);
+	
+	gettimeofday(&t2,NULL);
+	seconds=t2.tv_sec-t1.tv_sec;
+	usecs=t2.tv_usec-t1.tv_usec;
+	if(seconds > 0 && usecs < 0)
+	{
+		seconds--;
+		usecs=1000000+usecs;
+	}
+	perror("glTexImage2D: "+QString::number(seconds)+" "+QString::number(usecs));
 	glDisable(GL_TEXTURE_2D);
 	
 	
@@ -2134,9 +2241,15 @@ void GraphOutput::drawSlot(int state,QColor color,int pen)
 	}
 	else 
 	{
-		drawState=state;
 		drawColor=color;
 		drawPen=pen;
+		if((state==DRAWNONE || drawState==DRAWNONE) && (state != drawState))
+		{
+			drawState=state;
+			repaint();
+		}
+		else drawState=state;
+		perror("DrawSlot: "+QString::number(drawState));
 	}
 }
 

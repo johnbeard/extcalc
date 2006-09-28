@@ -82,7 +82,7 @@ int MainObject::readConfigFile()
 		if(configFile != NULL)
 		{
 			ret=-1;
-			fwrite("ANGLE=deg\n",10,1,configFile);
+			fwrite("ANGLE=rad\n",10,1,configFile);
 			fwrite("OUTPUTTYPE=variablenum\n",23,1,configFile);
 			fwrite("OUTPUTLENGTH=10\n",16,1,configFile);
 			fwrite("AXIS=true\n",10,1,configFile);
@@ -124,16 +124,19 @@ int MainObject::readConfigFile()
 			fwrite("SHOWWIN2=false\n",15,1,configFile);
 			fwrite("SHOWWIN3=true\n",14,1,configFile);
 			fwrite("SHOWWIN4=true\n",14,1,configFile);
-			fwrite("SHOWWIN5=false\n",15,1,configFile);
+			fwrite("SHOWWIN5=true\n",15,1,configFile);
 			fwrite("SHOWWIN6=false\n",15,1,configFile);
 			fwrite("SCRIPTROOT=\n",12,1,configFile);
 			fwrite("CODEPATH=\n",10,1,configFile);
 			fwrite("DATAPATH=\n",10,1,configFile);
-			for(int c=0; c<9; c++)
+			
+			fwrite("F1=sinX\n",8,1,configFile);
+			for(int c=1; c<9; c++)
 				fwrite("F"+QString::number(c+1)+"=\n",4,1,configFile);
 			for(int c=9; c<20; c++)
 				fwrite("F"+QString::number(c+1)+"=\n",5,1,configFile);
-			for(int c=0; c<9; c++)
+			fwrite("F1ACTIVE=true\n",14,1,configFile);
+			for(int c=1; c<9; c++)
 				fwrite("F"+QString::number(c+1)+"ACTIVE=false\n",15,1,configFile);
 			for(int c=9; c<20; c++)
 				fwrite("F"+QString::number(c+1)+"ACTIVE=false\n",16,1,configFile);
@@ -149,7 +152,6 @@ int MainObject::readConfigFile()
 				fwrite("F"+QString::number(c+1)+"DYNAMIC=false\n",16,1,configFile);
 			for(int c=9; c<20; c++)
 				fwrite("F"+QString::number(c+1)+"DYNAMIC=false\n",17,1,configFile);
-			fileLen=575;
 			fclose(configFile);
 			
 			if(lstat(CONFIGFILE,&fileStat) != 0)

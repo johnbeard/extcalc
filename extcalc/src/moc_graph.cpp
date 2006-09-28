@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GraphWidget meta object code from reading C++ file 'graph.h'
 **
-** Created: Tue Sep 26 19:15:11 2006
+** Created: Thu Sep 28 11:28:50 2006
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -63,7 +63,10 @@ QMetaObject* GraphWidget::staticMetaObject()
     static const QUMethod slot_1 = {"tableEditSlot", 1, param_slot_1 };
     static const QUMethod slot_2 = {"drawSlot", 0, 0 };
     static const QUMethod slot_3 = {"maximizeSlot", 0, 0 };
-    static const QUMethod slot_4 = {"solveSlot", 0, 0 };
+    static const QUParameter param_slot_4[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_4 = {"modeSlot", 1, param_slot_4 };
     static const QUParameter param_slot_5[] = {
 	{ 0, &static_QUType_QString, 0, QUParameter::In }
     };
@@ -94,7 +97,7 @@ QMetaObject* GraphWidget::staticMetaObject()
 	{ "tableEditSlot(QString)", &slot_1, QMetaData::Public },
 	{ "drawSlot()", &slot_2, QMetaData::Public },
 	{ "maximizeSlot()", &slot_3, QMetaData::Public },
-	{ "solveSlot()", &slot_4, QMetaData::Public },
+	{ "modeSlot(int)", &slot_4, QMetaData::Public },
 	{ "inputTextChanged(const QString&)", &slot_5, QMetaData::Public },
 	{ "inputTextFinished()", &slot_6, QMetaData::Public },
 	{ "buttonInputSlot(QString)", &slot_7, QMetaData::Public },
@@ -164,7 +167,7 @@ bool GraphWidget::qt_invoke( int _id, QUObject* _o )
     case 1: tableEditSlot((QString)static_QUType_QString.get(_o+1)); break;
     case 2: drawSlot(); break;
     case 3: maximizeSlot(); break;
-    case 4: solveSlot(); break;
+    case 4: modeSlot((int)static_QUType_int.get(_o+1)); break;
     case 5: inputTextChanged((const QString&)static_QUType_QString.get(_o+1)); break;
     case 6: inputTextFinished(); break;
     case 7: buttonInputSlot((QString)static_QUType_QString.get(_o+1)); break;

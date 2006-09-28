@@ -71,7 +71,7 @@ void GraphWidget::resizeEvent(QResizeEvent*)
 	standardButtons->setGeometry(20,height-220,280,200);
 	extButtons->setGeometry(width/2+10,height-180,300,160);
 	drawButton->setGeometry(width/2+15,height-220,90,35);
-	solveButton->setGeometry(width/2+115,height-220,90,35);
+	modeBox->setGeometry(width/2+115,height-220,90,35);
 	if(maximized)
 		maximizeButton->setGeometry(10,height-45,90,35);
 	else maximizeButton->setGeometry(width/2+215,height-220,90,35);
@@ -133,13 +133,13 @@ void GraphWidget::maximizeSlot()
 		maximized=false;
 		functionTable->show();
 		drawButton->show();
-		solveButton->show();
+		modeBox->show();
 		inputLine->show();
 		maximizeButton->setText(GRAPHC_STR1);
 		if(solveMode)
 		{
 			solveMode=false;
-			solveSlot();
+			modeSlot(0);
 		}
 		else {
 			standardButtons->show();
@@ -154,7 +154,7 @@ void GraphWidget::maximizeSlot()
 		extButtons->hide();
 		functionTable->hide();
 		drawButton->hide();
-		solveButton->hide();
+		modeBox->hide();
 		inputLine->hide();
 		solveType->hide();
 		functionType->hide();
@@ -164,31 +164,42 @@ void GraphWidget::maximizeSlot()
 	 }
 }
 
-void GraphWidget::solveSlot()
+void GraphWidget::modeSlot(int)
 {
-	if(solveMode)
+	switch(modeBox->currentItem())
 	{
-		solveMode=false;
-		standardButtons->show();
-		extButtons->show();
-		solveType->hide();
-		functionType->hide();
-		solveWidget->hide();
-		solveButton->setText(GRAPHC_STR3);
-		
-	}
-	else {
-		solveMode=true;
-		standardButtons->hide();
-		extButtons->hide();
-		solveType->show();
-		functionType->show();
-		solveWidget->show();
-		solveButton->setText(GRAPHC_STR4);
+		case 0:
+			solveMode=false;
+			standardButtons->show();
+			extButtons->show();
+			solveType->hide();
+			functionType->hide();
+			solveWidget->hide();
+			break;
+	
+		case 1:
+			solveMode=true;
+			standardButtons->hide();
+			extButtons->hide();
+			solveType->show();
+			functionType->show();
+			solveWidget->show();
+			solveType->setCurrentItem(0);
+			emit solveTypeSignal(0);
+			break;
+			
+		case 2:
+			solveMode=true;
+			standardButtons->hide();
+			extButtons->hide();
+			solveType->hide();
+			functionType->hide();
+			solveWidget->show();
+			emit solveTypeSignal(9);
+			break;
 	}
 	resizeEvent(NULL);
-	 
-	 
+
 }
 
 
@@ -234,7 +245,6 @@ void GraphWidget::buttonInputSlot(QString text)
 }
 void GraphWidget::solveTypeSlot(int type)
 {
-
 	switch(functionType->currentItem())
 	{
 		case 0:	//normal

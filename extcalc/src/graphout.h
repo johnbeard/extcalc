@@ -87,7 +87,7 @@ class GraphOutput :public QGLWidget
 	bool drawScreenshot;
 	int drawState;
 	QColor drawColor;
-	int drawPen;
+	int drawPen,previewPen;
 	QPixmap*drawMap,*overlayMap;
 	QImage*drawImage;
 	GLuint texture;
@@ -99,7 +99,7 @@ public:
 	GraphOutput(QWidget*parent,Variable*va) :QGLWidget(parent)
 	{
 		drawImage=new QImage(TEXTURESIZE,TEXTURESIZE,32);
-		drawImage->fill(0x77ffffff);
+		drawImage->fill(0x00000000);
 		drawImage->setAlphaBuffer(true);
 		drawMap=new QPixmap(*drawImage);
 		overlayMap=NULL;
@@ -107,7 +107,7 @@ public:
 		draw=new QPainter();
 		texture=0xffffffff;
 		drawState=DRAWFREE;
-		drawPen=1;
+		previewPen=drawPen=1;
 		drawColor=QColor(0,0,0);
 		drawScreenshot=false;
 		vars=va;

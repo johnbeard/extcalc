@@ -39,9 +39,9 @@ class GraphWidget :public QWidget
 	ExtButtons *extButtons;
 	StandardButtons *standardButtons;
 	FunctionTable* functionTable;
-	QPushButton *drawButton,*maximizeButton,*solveButton;
+	QPushButton *drawButton,*maximizeButton;
 	QLineEdit *inputLine;
-	QComboBox *solveType,*functionType;
+	QComboBox *solveType,*functionType,*modeBox;
 	GraphSolveWidget *solveWidget;
 	bool maximized;
 	bool solveMode;
@@ -71,7 +71,7 @@ Q_OBJECT
 		functionTable=new FunctionTable((QWidget*)this,pref);
 		drawButton=new QPushButton(GRAPHH_STR1,this);
 		maximizeButton=new QPushButton(GRAPHH_STR2,this);
-		solveButton=new QPushButton(GRAPHH_STR3,this);
+		modeBox=new QComboBox(this);
 		solveType=new QComboBox(this);
 		functionType=new QComboBox(this);
 		solveWidget=new GraphSolveWidget(this,pref,vars);
@@ -95,6 +95,10 @@ Q_OBJECT
 		functionType->insertItem(TABLEH_STR5);
 		functionType->insertItem(TABLEH_STR6);
 		functionType->insertItem(TABLEH_STR7);
+		modeBox->insertItem("Edit");
+		modeBox->insertItem("Anlayse");
+		modeBox->insertItem("Screenshot/Drawing");
+		modeBox->setCurrentItem(0);
 
 
 		QObject::connect(functionTable,SIGNAL(currentChanged(int,int)),this,SLOT(selectionChangedSlot(int,int)));
@@ -103,7 +107,7 @@ Q_OBJECT
 		QObject::connect(drawButton,SIGNAL(clicked()),graph,SLOT(removeLines()));
 		QObject::connect(drawButton,SIGNAL(clicked()),this,SLOT(drawSlot()));
 		QObject::connect(maximizeButton,SIGNAL(clicked()),this,SLOT(maximizeSlot()));
-		QObject::connect(solveButton,SIGNAL(clicked()),this,SLOT(solveSlot()));
+		QObject::connect(modeBox,SIGNAL(activated(int)),this,SLOT(modeSlot(int)));
 		QObject::connect(standardButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
 		QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
 		QObject::connect(standardButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
@@ -178,7 +182,7 @@ public slots:
 	void tableEditSlot(QString);
 	void drawSlot();
 	void maximizeSlot();
-	void solveSlot();
+	void modeSlot(int);
 	void inputTextChanged(const QString&);
 	void inputTextFinished();
 	void buttonInputSlot(QString);
