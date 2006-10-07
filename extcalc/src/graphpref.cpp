@@ -4,19 +4,19 @@
 
 int CoordinatePreferences::savePref()
 {
-	pref.xmin=(xmin->text()).toDouble();
-	pref.xmax=(xmax->text()).toDouble();
-	pref.ymin=(ymin->text()).toDouble();
-	pref.ymax=(ymax->text()).toDouble();
-	pref.zmin=(zmin->text()).toDouble();
-	pref.zmax=(zmax->text()).toDouble();
-	pref.radiusMax=(radius->text()).toDouble();
-	pref.angleMax=(angle->text()).toDouble();
-	pref.rasterSizeX=(rasterSizeX->text()).toDouble();
-	pref.rasterSizeY=(rasterSizeY->text()).toDouble();
-	pref.rasterSizeZ=(rasterSizeZ->text()).toDouble();
-	pref.rasterSizeRadius=(rasterSizeRadius->text()).toDouble();
-	pref.rasterSizeAngle=(rasterSizeAngle->text()).toDouble();
+	pref.xmin=runCalc(xmin->text(),&pref,vars);
+	pref.xmax=runCalc(xmax->text(),&pref,vars);
+	pref.ymin=runCalc(ymin->text(),&pref,vars);
+	pref.ymax=runCalc(ymax->text(),&pref,vars);
+	pref.zmin=runCalc(zmin->text(),&pref,vars);
+	pref.zmax=runCalc(zmax->text(),&pref,vars);
+	pref.radiusMax=runCalc(radius->text(),&pref,vars);
+	pref.angleMax=runCalc(angle->text(),&pref,vars);
+	pref.rasterSizeX=runCalc(rasterSizeX->text(),&pref,vars);
+	pref.rasterSizeY=runCalc(rasterSizeY->text(),&pref,vars);
+	pref.rasterSizeZ=runCalc(rasterSizeZ->text(),&pref,vars);
+	pref.rasterSizeRadius=runCalc(rasterSizeRadius->text(),&pref,vars);
+	pref.rasterSizeAngle=runCalc(rasterSizeAngle->text(),&pref,vars);
 	pref.axis=axis->isChecked();
 	pref.raster=raster->isChecked();
 	pref.label=label->isChecked();
@@ -241,8 +241,8 @@ void ParameterPreferences::getPref(Preferences pr)
 
 int ParameterPreferences::savePref()
 {
-	pref.parameterStart=(parameterStart->text()).toDouble();
-	pref.parameterEnd=(parameterEnd->text()).toDouble();
+	pref.parameterStart=runCalc(parameterStart->text(),&pref,vars);
+	pref.parameterEnd=runCalc(parameterEnd->text(),&pref,vars);
 	pref.parameterSteps=(parameterSteps->text()).toInt();
 
 
@@ -253,7 +253,7 @@ int ParameterPreferences::savePref()
 	}
 	if(pref.parameterSteps<=0)
 	{
-		MessageBox("Steps must be greather than 0");
+		MessageBox(GRAPHPREFC_STR14);
 		return -1;
 	}
 	
@@ -277,24 +277,26 @@ void DynamicPreferences::getPref(Preferences pr)
 
 int DynamicPreferences::savePref()
 {
-	pref.dynamicStart=parameterStart->text().toDouble();
-	pref.dynamicEnd=parameterEnd->text().toDouble();
+	pref.dynamicStart=runCalc(parameterStart->text(),&pref,vars);
+	pref.dynamicEnd=runCalc(parameterEnd->text(),&pref,vars);
 	pref.dynamicSteps=parameterSteps->text().toInt();
-	pref.dynamicDelay=time->text().toInt();
+	if(singleStepBox->isChecked())
+		pref.dynamicDelay=time->text().toInt();
+	else pref.dynamicDelay=0;
 	
 	if(pref.parameterEnd <=pref.parameterStart)
 	{
-		MessageBox("Dynamic parameter end must be greather than start!");
+		MessageBox(GRAPHPREFC_STR15);
 		return -1;
 	}
 	else if(pref.dynamicSteps <=0)
 	{
-		MessageBox("Steps must be greather than 0");
+		MessageBox(GRAPHPREFC_STR14);
 		return -1;
 	}
-	else if(pref.dynamicDelay <=0)
+	else if(pref.dynamicDelay <=0 && singleStepBox->isChecked())
 	{
-		MessageBox("Steps must be greather than 0");
+		MessageBox(GRAPHPREFC_STR16);
 		return -1;
 	}
 	

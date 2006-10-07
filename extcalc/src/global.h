@@ -20,12 +20,12 @@
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.5.8\n2006-09-28\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.0\n2006-10-07\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.5.8\n28.9.2006\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.0\n7.10.2006\n\n"+QString(DEVVERSION)
 #endif
-#define AUTHORSTRING "Autor:\n\nRainer Strobel\n2006  \n\n"
+#define AUTHORSTRING "Autor:\nRainer Strobel  2006\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
 
 #define FILEM				1
@@ -198,6 +198,7 @@
 #define DRAWFORWARD			135
 #define DRAWBACK			136
 #define DRAWCLEAR			137
+#define DRAWTEXT			138
 
 #define NNONE				0x1
 #define NFLOAT				0x2
@@ -225,6 +226,7 @@
 #define MEGASTRING			65325
 #define GIGASTRING			65319
 #define TERASTRING			65332
+#define DIFFSTRING			8706
 
 
 
@@ -257,7 +259,7 @@ struct Preferences
 	int angle;
 	int outputType;
 	int outputLength;
-	int precisision;
+	int precision;
 	bool shift;
 	bool alpha;
 	bool hyp;
@@ -290,6 +292,7 @@ struct Preferences
 	int*functionTypes;
 	bool*dynamicFunctions;
 	QColor*functionColors;
+	QString drawText;
 };
 
 struct Number
@@ -342,6 +345,7 @@ QString getUnicode(int code);
 QString formatOutput(long double num,Preferences*pref);
 QColor getColor(QString colorName);
 QString getColorName(QColor col);
+long double runCalc(QString,Preferences*,Variable*);
 void printError(const char*,int,QObject*);
 
 

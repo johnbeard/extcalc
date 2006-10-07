@@ -51,6 +51,7 @@ class GraphWidget :public QWidget
 //	QStringList colorList,graphTypeList;
 	int changedRow;
 	bool functionChanged;
+	bool dynamicStart;
 	
 	
 Q_OBJECT
@@ -63,6 +64,7 @@ Q_OBJECT
 		solveMode=false;
 		functionChanged=false;
 		changedRow=-1;
+		dynamicStart=false;
 
 
 		graph=new GraphOutput(this,vars);
@@ -88,16 +90,16 @@ Q_OBJECT
 		solveType->insertItem(GRAPHH_STR9,-6);
 		solveType->insertItem(GRAPHH_STR10,-7);
 		solveType->insertItem(GRAPHH_STR11,-8);
-		solveType->insertItem("Save and modify",-9);
+		solveType->insertItem(GRAPHH_STR26,-9);
 		
 		functionType->insertItem(TABLEH_STR3);
 		functionType->insertItem(TABLEH_STR4);
 		functionType->insertItem(TABLEH_STR5);
 		functionType->insertItem(TABLEH_STR6);
 		functionType->insertItem(TABLEH_STR7);
-		modeBox->insertItem("Edit");
-		modeBox->insertItem("Anlayse");
-		modeBox->insertItem("Screenshot/Drawing");
+		modeBox->insertItem(GRAPHH_STR27);
+		modeBox->insertItem(GRAPHH_STR28);
+		modeBox->insertItem(GRAPHH_STR29);
 		modeBox->setCurrentItem(0);
 
 
@@ -142,25 +144,28 @@ Q_OBJECT
 void setPref(Preferences newPref)
 {
 	pref=newPref;
-	if(!(functionType->currentItem() == 0 ||
-			functionType->currentItem() == 2 ||
-			functionType->currentItem() == 3) && pref.graphType==GRAPHSTD)
+	if(modeBox->currentItem()!=2)
 	{
-		solveWidget->setFunctionType(0);
-		functionType->setCurrentItem(0);
-		functionTypeSlot(0);
-	}
-	else if(functionType->currentItem() != 1 && pref.graphType==GRAPHPOLAR)
-	{
-		solveWidget->setFunctionType(1);
-		functionType->setCurrentItem(1);
-		functionTypeSlot(1);
-	}
-	else if(functionType->currentItem() != 4 && pref.graphType==GRAPH3D)
-	{
-		solveWidget->setFunctionType(4);
-		functionType->setCurrentItem(4);
-		functionTypeSlot(4);
+		if(!(functionType->currentItem() == 0 ||
+				functionType->currentItem() == 2 ||
+				functionType->currentItem() == 3) && pref.graphType==GRAPHSTD)
+		{
+			solveWidget->setFunctionType(0);
+			functionType->setCurrentItem(0);
+			functionTypeSlot(0);
+		}
+		else if(functionType->currentItem() != 1 && pref.graphType==GRAPHPOLAR)
+		{
+			solveWidget->setFunctionType(1);
+			functionType->setCurrentItem(1);
+			functionTypeSlot(1);
+		}
+		else if(functionType->currentItem() != 4 && pref.graphType==GRAPH3D)
+		{
+			solveWidget->setFunctionType(4);
+			functionType->setCurrentItem(4);
+			functionTypeSlot(4);
+		}
 	}
 	
 	

@@ -16,7 +16,7 @@
 
 
 
-
+#define INTEGRAL3DSTEPS	500
 
 
 
@@ -25,12 +25,12 @@ class GraphSolveWidget :public QWidget
 {
 
 	Preferences pref;
-	QLabel *xLabel,*x2Label,*x3Label,*yLabel,*aLabel,*formatLabel,*penLabel;
-	QLineEdit*xLine,*x2Line,*aLine;
+	QLabel *xLabel,*x2Label,*x3Label,*x4Label,*yLabel,*aLabel,*formatLabel,*penLabel;
+	QLineEdit*xLine,*x2Line,*x3Line,*x4Line,*aLine;
 	QSpinBox*spinBox,*spinBox2,*spinBox3;
 	CalcTable*outputTable;
 	QPushButton*solveButton,*saveButton,*openButton;
-	QPushButton*freeButton,*lineButton,*rectButton,*circleButton,*rubberButton;
+	QPushButton*freeButton,*lineButton,*rectButton,*circleButton,*rubberButton,*textButton;
 	QPushButton*backButton,*forwardButton,*clearButton,*colorButton;
 	QComboBox*functionBox,*functionBox2;
 	QComboBox*formatBox;
@@ -39,7 +39,7 @@ class GraphSolveWidget :public QWidget
 	int*functionIndices;
 	int functionType;
 	bool aVisible;
-	QPixmap *openIcon,*freeIcon,*lineIcon,*rectIcon,*circleIcon,*rubberIcon,*colorIcon;
+	QPixmap *openIcon,*freeIcon,*lineIcon,*rectIcon,*circleIcon,*rubberIcon,*colorIcon,*textIcon;
 	QColor paintColor;
 	int drawState;
 	
@@ -57,12 +57,15 @@ public:
 		xLabel=new QLabel(" ",this);
 		x2Label=new QLabel(" ",this);
 		x3Label=new QLabel(" ",this);
+		x4Label=new QLabel(" ",this);
 		yLabel=new QLabel(" ",this);
 		aLabel=new QLabel(GRAPHSOLVEH_STR2,this);
 		formatLabel=new QLabel(" ",this);
-		penLabel = new QLabel("Width",this);
+		penLabel = new QLabel(GRAPHSOLVEH_STR3,this);
 		xLine=new QLineEdit(this);
 		x2Line=new QLineEdit(this);
+		x3Line=new QLineEdit(this);
+		x4Line=new QLineEdit(this);
 		aLine=new QLineEdit(this);
 		drawState=DRAWNONE;
 		
@@ -76,7 +79,7 @@ public:
 		outputTable=new CalcTable(this,0);
 //		outputTable->setDragEnabled(true);
 		solveButton=new QPushButton(GRAPHSOLVEH_STR1,this);
-		saveButton=new QPushButton("Save",this);
+		saveButton=new QPushButton(GRAPHSOLVEH_STR4,this);
 		functionBox=new QComboBox(this);
 		functionBox2=new QComboBox(this);
 		formatBox=new QComboBox(this);
@@ -84,36 +87,40 @@ public:
 		openIcon=new QPixmap(INSTALLDIR+QString("/data/open.png"));
 		openButton->setPixmap(*openIcon);
 
-		backButton=new QPushButton("Undo",this);
-		forwardButton=new QPushButton("Redo",this);
-		clearButton=new QPushButton("Clear",this);
+		backButton=new QPushButton(GRAPHSOLVEH_STR5,this);
+		forwardButton=new QPushButton(GRAPHSOLVEH_STR6,this);
+		clearButton=new QPushButton(GRAPHSOLVEH_STR7,this);
 		freeButton=new QPushButton("",this);
 		rectButton=new QPushButton("",this);
 		lineButton=new QPushButton("",this);
 		circleButton=new QPushButton("",this);
 		rubberButton=new QPushButton("",this);
+		textButton=new QPushButton("",this);
 
 		freeIcon=new QPixmap(INSTALLDIR+QString("/data/free.png"));
 		rectIcon=new QPixmap(INSTALLDIR+QString("/data/rect.png"));
 		lineIcon=new QPixmap(INSTALLDIR+QString("/data/line.png"));
 		circleIcon=new QPixmap(INSTALLDIR+QString("/data/circle.png"));
 		rubberIcon=new QPixmap(INSTALLDIR+QString("/data/rubber.png"));
+		textIcon=new QPixmap(INSTALLDIR+QString("/data/text.png"));
 		colorIcon=new QPixmap(20,20);
 		paintColor.setRgb(255,0,0);
 		colorIcon->fill(paintColor);
-		colorButton=new QPushButton(*colorIcon,"Color",this);
+		colorButton=new QPushButton(*colorIcon,GRAPHSOLVEH_STR8,this);
 
 		freeButton->setToggleButton(true); 
 		rectButton->setToggleButton(true); 
 		lineButton->setToggleButton(true); 
 		circleButton->setToggleButton(true); 
 		rubberButton->setToggleButton(true); 
+		textButton->setToggleButton(true); 
 
 		freeButton->setPixmap(*freeIcon);
 		rectButton->setPixmap(*rectIcon);
 		lineButton->setPixmap(*lineIcon);
 		circleButton->setPixmap(*circleIcon);
 		rubberButton->setPixmap(*rubberIcon);
+		textButton->setPixmap(*textIcon);
 
 		solveType=CALCYVAL;
 		solveOptions=0;
@@ -131,6 +138,7 @@ public:
 		QObject::connect(rectButton,SIGNAL(clicked()),this,SLOT(rectButtonSlot()));
 		QObject::connect(circleButton,SIGNAL(clicked()),this,SLOT(circleButtonSlot()));
 		QObject::connect(rubberButton,SIGNAL(clicked()),this,SLOT(rubberButtonSlot()));
+		QObject::connect(textButton,SIGNAL(clicked()),this,SLOT(textButtonSlot()));
 		
 		resetDialog();
 	}
@@ -167,6 +175,7 @@ public slots:
 	void rectButtonSlot();
 	void circleButtonSlot();
 	void rubberButtonSlot();
+	void textButtonSlot();
 	
 signals:
 	void addVerticalLine(double x);

@@ -47,7 +47,7 @@ class CalcPreferences :public QWidget
 			outputBox=new QComboBox(false,this);
 			calcModeBox=new QComboBox(false,this);
 			baseBox=new QComboBox(false,this);
-			outputLenBox=new QSpinBox(2,pref.precisision,1,this);
+			outputLenBox=new QSpinBox(2,pref.precision,1,this);
 			angleLabel=new QLabel("Angle",this);
 			outputLabel=new QLabel("Output Type",this);
 			outputLenLabel=new QLabel("Output Digits",this);

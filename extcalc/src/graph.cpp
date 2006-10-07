@@ -106,7 +106,6 @@ void GraphWidget::tableEditSlot(QString string)
 	inputLine->setActiveWindow();
 	inputLine->setFocus();
 	functionChanged=false;
-	perror("tableEditSlot");
 }
 
 
@@ -114,15 +113,41 @@ void GraphWidget::tableEditSlot(QString string)
 
 void GraphWidget::drawSlot()
 {
+	if(dynamicStart && pref.dynamicDelay!=0)
+	{
+		dynamicStart=false;
+		graph->timerStartSlot(false);
+		drawButton->setText(GRAPHH_STR1);
+		return;
+	}
 	if(functionChanged)
 		inputTextFinished();
 	graph->clearGL();
+	dynamicStart=false;
 	for(int c=0; c<20; c++)
 	{
 		if(pref.activeFunctions[c])
+		{
 			graph->processFunction(c);
+			if(pref.dynamicFunctions[c])
+				dynamicStart=true;
+		}
 	}
-	graph->repaint(true);
+	if(dynamicStart)
+	{
+		if(pref.dynamicDelay==0)
+		{
+			graph->timerSlot();
+			drawButton->setText(GRAPHH_STR1);
+		}
+		else
+		{
+			graph->timerStartSlot(true);
+			drawButton->setText(GRAPHC_STR5);
+		}
+	}
+	else graph->repaint(true);
+	
 }
 
 
@@ -326,7 +351,7 @@ void GraphWidget::functionTypeSlot(int fType)
 			solveType->insertItem(GRAPHH_STR9,-6);
 			solveType->insertItem(GRAPHH_STR10,-7);
 			solveType->insertItem(GRAPHH_STR11,-8);
-			solveType->insertItem("Save and modify",-9);
+			solveType->insertItem(GRAPHH_STR26,-9);
 			break;
 		case 2:	//parameter
 			solveType->clear();
@@ -334,7 +359,7 @@ void GraphWidget::functionTypeSlot(int fType)
 			solveType->insertItem(GRAPHH_STR5,-3);
 			solveType->insertItem(GRAPHH_STR7,-4);
 			solveType->insertItem(GRAPHH_STR11,-7);
-			solveType->insertItem("Save and modify",-9);
+			solveType->insertItem(GRAPHH_STR26,-9);
 			break;
 		case 4:	//3D
 			solveType->clear();
@@ -343,7 +368,7 @@ void GraphWidget::functionTypeSlot(int fType)
 			solveType->insertItem(GRAPHH_STR10,-7);
 			solveType->insertItem(GRAPHH_STR11,-8);
 			solveType->insertItem(GRAPHH_STR25,-9);
-			solveType->insertItem("Save and modify",-9);
+			solveType->insertItem(GRAPHH_STR26,-9);
 			break;
 	}
 	solveTypeSlot(solveType->currentItem());

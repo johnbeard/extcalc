@@ -112,20 +112,37 @@ void GraphSolveWidget::resizeEvent(QResizeEvent*)
 			solveButton->setGeometry(width/2-105,height-30,100,30);
 			x2Label->setGeometry(20,65,width/2-25,20);
 			functionBox2->setGeometry(20,90,width/2-25,30);
+
 			
 			break;
 		}
 		case CALCINTEGRAL:
 		{
 			xLabel->setGeometry(20,0,width/2-20,20);
-			yLabel->setGeometry(width/2+5,0,width/2-20,20);
 			outputTable->setGeometry(width/2+5,30,width/2-25,height-40);
 			functionBox->setGeometry(20,30,width/2-25,30);	
-			x2Label->setGeometry(20,70,width/2-80,20);
-			xLine->setGeometry(width/2-100,70,90,20);	
-			x3Label->setGeometry(20,100,width/2-80,20);
-			x2Line->setGeometry(width/2-100,100,90,20);
 			solveButton->setGeometry(width/2-105,height-30,100,30);
+			if(functionType==GRAPH3D)
+			{
+				x2Label->setGeometry(30,70,50,20);
+				xLine->setGeometry(90,70,(width/2-160)/2,20);
+				x3Label->setGeometry((width/2-120)/2+90,70,50,20);
+				x2Line->setGeometry((width/2-120)/2+130,70,(width/2-160)/2,20);
+				
+				x4Label->setGeometry(30,100,50,20);
+				x3Line->setGeometry(90,100,(width/2-160)/2,20);
+				yLabel->setGeometry((width/2-120)/2+90,100,50,20);
+				x4Line->setGeometry((width/2-120)/2+130,100,(width/2-160)/2,20);
+
+
+			}
+			else
+			{
+				x2Label->setGeometry(20,70,width/2-80,20);
+				xLine->setGeometry(width/2-100,70,90,20);	
+				x3Label->setGeometry(20,100,width/2-80,20);
+				x2Line->setGeometry(width/2-100,100,90,20);
+			}
 			break;
 		}
 		case CALCDIFF:
@@ -133,10 +150,21 @@ void GraphSolveWidget::resizeEvent(QResizeEvent*)
 			xLabel->setGeometry(20,0,width/2-20,20);
 			yLabel->setGeometry(width/2+5,0,width/2-20,20);
 			outputTable->setGeometry(width/2+5,30,width/2-25,height-40);
-			functionBox->setGeometry(20,30,width/2-25,30);	
-			x2Label->setGeometry(20,70,width/2-25,20);
-			xLine->setGeometry(20,100,width/2-25,20);
+			functionBox->setGeometry(20,30,width/2-25,30);
 			solveButton->setGeometry(width/2-105,height-30,100,30);
+			
+			if(functionType==GRAPH3D)
+			{
+				x2Label->setGeometry(20,70,width/2-80,20);
+				xLine->setGeometry(width/2-100,70,90,20);	
+				x3Label->setGeometry(20,100,width/2-80,20);
+				x2Line->setGeometry(width/2-100,100,90,20);
+				
+			}
+			else {
+				x2Label->setGeometry(20,70,width/2-25,20);
+				xLine->setGeometry(20,100,width/2-25,20);
+			}
 			break;
 		}
 		case CALCZVAL:
@@ -173,7 +201,8 @@ void GraphSolveWidget::resizeEvent(QResizeEvent*)
 			lineButton->setGeometry(width/2+50,75,30,30);
 			rectButton->setGeometry(width/2+90,75,30,30);
 			circleButton->setGeometry(width/2+130,75,30,30);
-			rubberButton->setGeometry(width/2+170,75,30,30);
+			textButton->setGeometry(width/2+170,75,30,30);
+			rubberButton->setGeometry(width/2+210,75,30,30);
 			backButton->setGeometry(width/2+10,130,90,30);
 			forwardButton->setGeometry(width/2+110,130,90,30);
 			clearButton->setGeometry(width/2+210,130,85,30);
@@ -192,9 +221,12 @@ void GraphSolveWidget::resetDialog()
 {
 	xLine->hide();
 	x2Line->hide();
+	x3Line->hide();
+	x4Line->hide();
 	xLabel->hide();
 	x2Label->hide();
 	x3Label->hide();
+	x4Label->hide();
 	yLabel->hide();	
 	outputTable->hide();
 	solveButton->hide();
@@ -217,11 +249,12 @@ void GraphSolveWidget::resetDialog()
 	lineButton->hide();
 	circleButton->hide();
 	rubberButton->hide();
+	textButton->hide();
 	colorButton->hide();
 	penLabel->hide();
 	emit drawSignal(DRAWNONE,paintColor,1);
 	
-	if(aVisible)
+	if(aVisible && solveType!=GETSCREENSHOT)
 	{
 		aLabel->show();
 		aLine->show();
@@ -325,6 +358,7 @@ void GraphSolveWidget::resetDialog()
 			x3Label->show();
 			yLabel->show();
 			xLine->show();
+			spinBox->setValue(5);
 			spinBox->show();
 			functionBox->show();
 			solveButton->show();
@@ -368,7 +402,7 @@ void GraphSolveWidget::resetDialog()
 				x2Line->show();
 				x2Label->setText(GRAPHSOLVEC_STR21);
 				x3Label->setText(GRAPHSOLVEC_STR22);
-				outputTable->setColumnLabels(QStringList("y(x;z)"));
+				outputTable->setColumnLabels(QStringList("x"));
 
 			}
 			else outputTable->setColumnLabels(QStringList("x"));
@@ -399,48 +433,68 @@ void GraphSolveWidget::resetDialog()
 		}
 		case CALCINTEGRAL:
 		{
+			
+			setFunctionBox(functionBox);
+			xLabel->setText(GRAPHSOLVEC_STR3);
+			x2Label->setText(GRAPHSOLVEC_STR12);
+			x3Label->setText(GRAPHSOLVEC_STR13);
+			xLabel->show();
+			x2Label->show();
+			x3Label->show();
+			xLine->show();
+			x2Line->show();
+			solveButton->show();
+			functionBox->show();
+			outputTable->setNumCols(1);
+			outputTable->setNumRows(1);
+			outputTable->setColumnLabels(QStringList("F(x)"));
+			outputTable->show();
 			if(functionType==GRAPH3D)
 			{
+				x3Line->show();
+				x4Line->show();
+				x4Label->setText(GRAPHSOLVEC_STR24);
+				yLabel->setText(GRAPHSOLVEC_STR25);
+				x2Label->setText(GRAPHSOLVEC_STR26);
+				x3Label->setText(GRAPHSOLVEC_STR27);
+				x4Label->show();
+				yLabel->show();
+				outputTable->setColumnLabels(QStringList("F(x,z)"));
 			}
-			else {
-				setFunctionBox(functionBox);
-				xLabel->setText(GRAPHSOLVEC_STR3);
-				x2Label->setText(GRAPHSOLVEC_STR12);
-				x3Label->setText(GRAPHSOLVEC_STR13);
-				xLabel->show();
-				x2Label->show();
-				x3Label->show();
-				xLine->show();
-				x2Line->show();
-				solveButton->show();
-				functionBox->show();
-				outputTable->setNumCols(1);
-				outputTable->setNumRows(1);
-				outputTable->setColumnLabels(QStringList("x"));
-				outputTable->show();
-			}
+			
 			break;
 		}
 		case CALCDIFF:
 		{
+			setFunctionBox(functionBox);
+			xLabel->setText(GRAPHSOLVEC_STR3);
+			xLabel->show();
+			x2Label->show();
+			xLine->show();
+			functionBox->show();
+			solveButton->show();
+			outputTable->show();
 			if(functionType==GRAPH3D)
 			{
+				QString delta(QChar((unsigned short)DIFFSTRING));
+				outputTable->setNumCols(2);
+				outputTable->setNumRows(1);
+				QStringList colLabels;
+				colLabels+=delta+"y/"+delta+"x";
+				colLabels+=delta+"y/"+delta+"z";
+				outputTable->setColumnLabels(colLabels);
+				x3Label->show();
+				x2Line->show();
+				x2Label->setText(GRAPHSOLVEC_STR14);
+				x3Label->setText(GRAPHSOLVEC_STR22);
 			}
 			else {
-				setFunctionBox(functionBox);
-				xLabel->setText(GRAPHSOLVEC_STR3);
 				if(functionType==GRAPHPARAMETER)
 					x2Label->setText(GRAPHSOLVEC_STR23);
 				else x2Label->setText(GRAPHSOLVEC_STR14);
-				xLabel->show();
-				x2Label->show();
-				xLine->show();
-				functionBox->show();
 				outputTable->setNumCols(1);
 				outputTable->setNumRows(1);
-				solveButton->show();
-				outputTable->setColumnLabels(QStringList("x"));
-				outputTable->show();
+				outputTable->setColumnLabels(QStringList("dy/dx"));
 			}
 			break;
 		}
@@ -466,11 +520,11 @@ void GraphSolveWidget::resetDialog()
 		}
 		case GETSCREENSHOT:
 		{
-			xLabel->setText("Path:");
+			xLabel->setText(GRAPHSOLVEC_STR28);
 			xLabel->show();
 			xLine->setText(getenv("HOME")+QString("/screenshot.png"));
 			xLine->show();
-			x2Label->setText("Resolution:");
+			x2Label->setText(GRAPHSOLVEC_STR29);
 			x2Label->show();
 			x3Label->setText("x");
 			yLabel->setText("y");
@@ -484,7 +538,7 @@ void GraphSolveWidget::resetDialog()
 			else spinBox2->setValue(512);
 			spinBox2->show();
 			spinBox3->show();
-			formatLabel->setText("File format:");
+			formatLabel->setText(GRAPHSOLVEC_STR30);
 			formatBox->clear();
 			formatBox->insertItem("PNG");
 			formatBox->insertItem("JPEG");
@@ -505,6 +559,7 @@ void GraphSolveWidget::resetDialog()
 			circleButton->show();
 			rubberButton->show();
 			colorButton->show();
+			textButton->show();
 			
 			freeButtonSlot();
 			
@@ -526,7 +581,7 @@ void GraphSolveWidget::calculateYVal(QString text)
 		return;
 	outputTable->setNumRows(20);
 //	MessageBox("remove");
-	double num=text.toDouble();
+	double num=runCalc(text,&pref,vars);
 	if(num == NAN || text.length() <=0)
 	{
 		for(int c=0; c<20; c++)
@@ -587,7 +642,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 	QString cleanFunction=checkString(function,&pref,vars);
 	if(varIndex!=23)
 	{
-		cleanFunction.replace('X',"("+QString::number((double)vars[23][0])+")");
+		cleanFunction.replace('X',"("+QString::number((double)vars[23][0],'g',pref.precision)+")");
 		cleanFunction.replace((char)(varIndex+65),"X");
 	}
 	
@@ -599,7 +654,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 	cleanFunction=QString(checkString(strdfx,&pref,vars));
 	if(varIndex!=23)
 	{
-		cleanFunction.replace('X',"("+QString::number((double)vars[23][0])+")");
+		cleanFunction.replace('X',"("+QString::number((double)vars[23][0],'g',pref.precision)+")");
 		cleanFunction.replace((char)(varIndex+65),"X");
 	}
 	cleanFunction+=",X)";
@@ -764,7 +819,7 @@ void GraphSolveWidget::calculateNewton(QString function)
 
 	emit removeLines();
 	outputTable->setNumRows(spinBox->value());
-	double x1=xLine->text().toDouble(),fx1=0,dfx1=0;
+	double x1=runCalc(xLine->text(),&pref,vars),fx1=0,dfx1=0;
 	if(x1==NAN)
 		x1=0.0;
 	char* cleanFunction=checkString(function,&pref,vars);
@@ -783,12 +838,12 @@ void GraphSolveWidget::calculateNewton(QString function)
 
 	for(int c=0; c<spinBox->value(); c++)
 	{
-		outputTable->setText(c,0,QString::number(x1));
+		outputTable->setText(c,0,formatOutput(x1,&pref));
 		vars[23][0]=x1;
 		fx1=cfx.calc();
-		outputTable->setText(c,1,QString::number(fx1));
+		outputTable->setText(c,1,formatOutput(fx1,&pref));
 		dfx1=cdfx.calc();
-		outputTable->setText(c,2,QString::number(dfx1));
+		outputTable->setText(c,2,formatOutput(dfx1,&pref));
 		x1=x1-(fx1/dfx1);
 		outputTable->changeColor(c,QColor(0,0,0));
 	}
@@ -839,7 +894,7 @@ void GraphSolveWidget::solveButtonSlot()
 {
 	if(aVisible)
 	{
-		long double A=aLine->text().toDouble();
+		long double A=runCalc(aLine->text(),&pref,vars);
 		if(A==NAN)
 			A=0;
 		vars[0][0]=A;
@@ -856,7 +911,7 @@ void GraphSolveWidget::solveButtonSlot()
 				case GRAPHIEL:
 				{
 					calculateYVal(xLine->text());
-					double xVal=xLine->text().toDouble();
+					double xVal=runCalc(xLine->text(),&pref,vars);
 					if(xVal != NAN)
 					{
 						if(functionType==GRAPHPOLAR)
@@ -867,7 +922,7 @@ void GraphSolveWidget::solveButtonSlot()
 				}
 				case GRAPHPARAMETER:
 				{
-					double xVal=xLine->text().toDouble();
+					double xVal=runCalc(xLine->text(),&pref,vars);
 					if(xVal!=NAN)
 					{
 						emit addVerticalLine(xVal);
@@ -878,7 +933,7 @@ void GraphSolveWidget::solveButtonSlot()
 	
 						xFunction.replace('T',"X");
 						xFunction+="-";
-						xFunction+=QString::number(xVal);
+						xFunction+=QString::number(xVal,'g',pref.precision);
 						
 						long double*tValues;
 						int numTValues=calculateRoots(xFunction,pref.parameterStart,pref.parameterEnd,&tValues);
@@ -930,8 +985,8 @@ void GraphSolveWidget::solveButtonSlot()
 					if(functionBox->currentItem()<0)
 						break;
 					int funcIndex=functionIndices[functionBox->currentItem()];
-					double xVal=xLine->text().toDouble();
-					double zVal=x2Line->text().toDouble();
+					double xVal=runCalc(xLine->text(),&pref,vars);
+					double zVal=runCalc(x2Line->text(),&pref,vars);
 					
 					vars[23][0]=xVal;
 					vars[25][0]=zVal;
@@ -968,7 +1023,7 @@ void GraphSolveWidget::solveButtonSlot()
 			double yval;
 			if(solveType==CALCXVAL)
 			{
-				yval=(xLine->text()).toDouble();
+				yval=runCalc(xLine->text(),&pref,vars);
 				if(yval == NAN)
 					yval=0.0f;
 			}
@@ -985,7 +1040,7 @@ void GraphSolveWidget::solveButtonSlot()
 					int funcIndex=functionIndices[functionBox->currentItem()];
 					QString functionString=pref.functions[funcIndex];
 					functionString+="-";
-					functionString+=QString::number(yval);
+					functionString+=QString::number(yval,'g',pref.precision);
 					if(funcIndex>=0 && funcIndex<20)
 						showRoots(functionString,pref.functionColors[funcIndex]);
 					else showRoots(functionString,QColor(0,0,0));
@@ -1006,7 +1061,7 @@ void GraphSolveWidget::solveButtonSlot()
 			
 						yFunction.replace('T',"X");
 						yFunction+="-";
-						yFunction+=QString::number(yval);
+						yFunction+=QString::number(yval,'g',pref.precision);
 								
 						long double*tValues;
 						int numTValues=calculateRoots(yFunction,pref.parameterStart,pref.parameterEnd,&tValues);
@@ -1058,11 +1113,11 @@ void GraphSolveWidget::solveButtonSlot()
 						break;
 					int funcIndex=functionIndices[functionBox->currentItem()];
 	
-					double zVal=x2Line->text().toDouble();
+					double zVal=runCalc(x2Line->text(),&pref,vars);
 					emit add3dXLine(yval,zVal);
 			
 					QString function=pref.functions[funcIndex];
-					function+="-("+QString::number(yval)+")";
+					function+="-("+QString::number(yval,'g',pref.precision)+")";
 					vars[25][0]=zVal;
 			
 					long double*xValues;
@@ -1119,44 +1174,69 @@ void GraphSolveWidget::solveButtonSlot()
 			functionString+="(";
 			functionString+=pref.functions[functionIndices[functionBox->currentItem()]];
 			functionString+=",";
-			double start=(xLine->text()).toDouble();
+			double start=runCalc(xLine->text(),&pref,vars);
 			if(start == NAN)
 			{
 				MessageBox(GRAPHSOLVEC_STR15);
 				break;
 			}
-			double end=(x2Line->text()).toDouble();
+			double end=runCalc(x2Line->text(),&pref,vars);
 			if(end == NAN)
 			{
 				MessageBox(GRAPHSOLVEC_STR16);
 				break;
 			}
-			functionString+=QString::number(start);
+			functionString+=QString::number(start,'g',pref.precision);
 			functionString+=",";
-			functionString+=QString::number(end);
+			functionString+=QString::number(end,'g',pref.precision);
 			functionString+=")";
 			char*cleanFunc=checkString(functionString,&pref,vars);
 			if(cleanFunc == NULL)
 				return;
-			if(strlen(cleanFunc)<=0)
-				return;
-
-			double result=calculate(cleanFunc,&pref,vars);
-			delete[]cleanFunc;
 			emit removeLines();
-			if(functionType!=GRAPHPOLAR)
+			
+			double result=0.0;
+			if(functionType==GRAPH3D)
 			{
+				double zStart=runCalc(x3Line->text(),&pref,vars);
+				double zEnd=runCalc(x4Line->text(),&pref,vars);
+				if(zStart==NAN || zEnd==NAN)
+					break;
+				double zStep=(zEnd-zStart)/INTEGRAL3DSTEPS;
+				zStart+=zStep/2.0;
+				Calculate ca(NULL,cleanFunc,&pref,vars);
+				for(int c=0; c<INTEGRAL3DSTEPS; c++)
+				{
+					vars[25][0]=zStart+c*zStep;
+					result+=ca.calc()*zStep;
+				}
+				emit add3dYLine(start,zStart);
+				emit add3dYLine(start,zEnd);
+				emit add3dYLine(end,zStart);
+				emit add3dYLine(end,zEnd);
 				
-				emit addVerticalLine(start);
-				emit addVerticalLine(end);
 			}
-			else {
+			else 
+			{
+				result=calculate(cleanFunc,&pref,vars);
+			}
+			delete[]cleanFunc;
+			
+			if(functionType==GRAPHPOLAR)
+			{
 				emit addPolarLine(start);
 				emit addPolarLine(end);
+				
+			}
+			else if(functionType!=GRAPH3D)
+			{
+				emit addVerticalLine(start);
+				emit addVerticalLine(end);
+				
 			}
 			
 			
-			outputTable->setText(0,0,QString::number(result));
+			outputTable->setText(0,0,formatOutput(result,&pref));
 			if(functionIndices[functionBox->currentItem()]>=0 && functionIndices[functionBox->currentItem()]<20)
 				outputTable->changeColor(0,pref.functionColors[functionIndices[functionBox->currentItem()]]);
 			outputTable->adjustColumn(0);
@@ -1167,7 +1247,7 @@ void GraphSolveWidget::solveButtonSlot()
 			if(functionBox->currentItem()<0)
 				break;
 			int funcIndex=functionIndices[functionBox->currentItem()];
-			double pos=(xLine->text()).toDouble();
+			double pos=runCalc(xLine->text(),&pref,vars);
 			if(pos == NAN)
 			{
 				MessageBox(GRAPHSOLVEC_STR17);
@@ -1183,8 +1263,8 @@ void GraphSolveWidget::solveButtonSlot()
 				vars[23][0]=pos;
 				double xPos=calculate(checkString(xFunction,&pref,vars),&pref,vars);
 				double yPos=calculate(checkString(yFunction,&pref,vars),&pref,vars);
-				xFunction="d/dx("+xFunction+","+QString::number(pos)+")";
-				yFunction="d/dx("+yFunction+","+QString::number(pos)+")";
+				xFunction="d/dx("+xFunction+","+QString::number(pos,'g',pref.precision)+")";
+				yFunction="d/dx("+yFunction+","+QString::number(pos,'g',pref.precision)+")";
 				double xDiff=calculate(checkString(xFunction,&pref,vars),&pref,vars);
 				double yDiff=calculate(checkString(yFunction,&pref,vars),&pref,vars);
 				emit removeLines();
@@ -1192,16 +1272,40 @@ void GraphSolveWidget::solveButtonSlot()
 				emit addHorizontalLine(yPos);
 				if(funcIndex>=0 && funcIndex<20)
 					outputTable->changeColor(0,pref.functionColors[funcIndex]);
-				outputTable->setText(0,0,QString::number(yDiff/xDiff));
+				outputTable->setText(0,0,formatOutput(yDiff/xDiff,&pref));
+			}
+			else if(functionType==GRAPH3D)
+			{
+				double zVal=runCalc(x2Line->text(),&pref,vars);
+				if(zVal==NAN)
+					break;
+				emit removeLines();
+				emit add3dYLine(pos,zVal);
+				
+				vars[25][0]=zVal;
+				QString functionString="d/dx("+pref.functions[funcIndex]+","+QString::number(pos,'g',pref.precision)+")";
+				double result=calculate(checkString(functionString,&pref,vars),&pref,vars);
+				outputTable->setText(0,0,formatOutput(result,&pref));
+				functionString=pref.functions[funcIndex];
+				for(int c=0; c<(signed)functionString.length(); c++)
+					if(functionString[c]=='x')
+						if(!(c>2 && functionString.mid(c-3,4)=="d/dx"))
+							functionString[c]='X';
+				functionString.replace("X","("+QString::number(pos,'g',pref.precision)+")");
+				functionString.replace("z","X");
+				functionString.replace("Z","X");
+				functionString="d/dx("+functionString+","+QString::number(zVal,'g',pref.precision)+")";
+				result=calculate(checkString(functionString,&pref,vars),&pref,vars);
+				outputTable->setText(0,1,formatOutput(result,&pref));
 			}
 			else {
-				QString functionString="d/dx("+pref.functions[funcIndex]+","+QString::number(pos)+")";
+				QString functionString="d/dx("+pref.functions[funcIndex]+","+QString::number(pos,'g',pref.precision)+")";
 				double result=calculate(checkString(functionString,&pref,vars),&pref,vars);
 				emit removeLines();
 				if(functionType==GRAPHPOLAR)
 					emit addPolarLine(pos);
 				else emit addVerticalLine(pos);
-				outputTable->setText(0,0,QString::number(result));
+				outputTable->setText(0,0,formatOutput(result,&pref));
 			}
 			if(funcIndex>=0 && funcIndex<20)
 				outputTable->changeColor(0,pref.functionColors[funcIndex]);
@@ -1228,13 +1332,13 @@ void GraphSolveWidget::solveButtonSlot()
 				break;
 			int funcIndex=functionIndices[functionBox->currentItem()];
 			
-			double xVal=xLine->text().toDouble();
-			double yVal=x2Line->text().toDouble();
+			double xVal=runCalc(xLine->text(),&pref,vars);
+			double yVal=runCalc(x2Line->text(),&pref,vars);
 			emit add3dZLine(xVal,yVal);
 			
 			QString function=pref.functions[funcIndex];
 			vars[23][0]=xVal;
-			function+="-("+QString::number(yVal)+")";
+			function+="-("+QString::number(yVal,'g',pref.precision)+")";
 			
 			
 			long double*zValues;
@@ -1268,31 +1372,31 @@ void GraphSolveWidget::screenshotSlot(QPixmap*scr)
 	struct stat fileInfo;
 	if(xLine->text().length() <=0)
 	{
-		ErrorBox("Please insert a valid path to save screenshot");
+		ErrorBox(GRAPHSOLVEC_STR31);
 		return;
 	}
 	if(lstat(xLine->text(),&fileInfo) == 0)
 	{
 		if(S_ISREG(fileInfo.st_mode))
 		{
-			if(YesNoCancelBox("Really overwrite file "+xLine->text())!=0)
+			if(YesNoCancelBox(GRAPHSOLVEC_STR32+xLine->text()+" ?")!=0)
 				return;
 		}
 		else 
 		{
-			ErrorBox(xLine->text()+" is no valid file.\n Can't overwrite it!");
+			ErrorBox(xLine->text()+GRAPHSOLVEC_STR33);
 			return;
 		}
 	}
 	if(scr->save(xLine->text(),formatBox->currentText()))
-		MessageBox("Screenshot saved");
-	else ErrorBox("Error saving screenshot");
+		MessageBox(GRAPHSOLVEC_STR34);
+	else ErrorBox(GRAPHSOLVEC_STR35);
 }
 
 void GraphSolveWidget::openButtonSlot()
 {
-	QString path=QFileDialog::getSaveFileName(".","Images (*.png *.xpm *.jpg *.bmp)",this,
-											  "save dialog","Choose a filename to save under");
+	QString path=QFileDialog::getSaveFileName(".",GRAPHSOLVEC_STR36,this,
+											  "save dialog",GRAPHSOLVEC_STR37);
 	xLine->setText(path);
 }
 
@@ -1301,17 +1405,21 @@ void GraphSolveWidget::colorButtonSlot()
 {
 	if(paintColor.red()==4 &&paintColor.green()==4 &&paintColor.blue()==4)
 		paintColor.setRgb(0,0,0);
-	QColor col=QColorDialog::getColor(paintColor,this,"Color Dialog");
+	QColor col=QColorDialog::getColor(paintColor,this,GRAPHSOLVEC_STR38);
 	paintColor=col;
 	colorIcon->fill(paintColor);
 	colorButton->setIconSet(*colorIcon);
 	if(paintColor.red()<4 &&paintColor.green()<4 &&paintColor.blue()<4)
 		paintColor.setRgb(4,4,4);
+	if(drawState==DRAWTEXT)
+		return;
 	emit drawSignal(drawState,paintColor,spinBox3->value());
 }
 
 void GraphSolveWidget::penValueSlot(int value)
 {
+	if(drawState==DRAWTEXT)
+		return;
 	if(rubberButton->isOn())
 		emit drawSignal(drawState,QColor(0,0,0),value);
 	else emit drawSignal(drawState,paintColor,value);
@@ -1341,6 +1449,7 @@ void GraphSolveWidget::freeButtonSlot()
 	circleButton->setOn(false);
 	rubberButton->setOn(false);
 	colorButton->setEnabled(true);
+	textButton->setOn(false);
 	emit drawSignal(DRAWFREE,paintColor,spinBox3->value());
 }
 void GraphSolveWidget::lineButtonSlot()
@@ -1352,6 +1461,7 @@ void GraphSolveWidget::lineButtonSlot()
 	circleButton->setOn(false);
 	rubberButton->setOn(false);
 	colorButton->setEnabled(true);
+	textButton->setOn(false);
 	emit drawSignal(DRAWLINE,paintColor,spinBox3->value());
 }
 void GraphSolveWidget::rectButtonSlot()
@@ -1363,6 +1473,7 @@ void GraphSolveWidget::rectButtonSlot()
 	circleButton->setOn(false);
 	rubberButton->setOn(false);
 	colorButton->setEnabled(true);
+	textButton->setOn(false);
 	emit drawSignal(DRAWRECT,paintColor,spinBox3->value());
 }
 void GraphSolveWidget::circleButtonSlot()
@@ -1374,6 +1485,7 @@ void GraphSolveWidget::circleButtonSlot()
 	circleButton->setOn(true);
 	rubberButton->setOn(false);
 	colorButton->setEnabled(true);
+	textButton->setOn(false);
 	emit drawSignal(DRAWCIRCLE,paintColor,spinBox3->value());
 }
 void GraphSolveWidget::rubberButtonSlot()
@@ -1385,7 +1497,21 @@ void GraphSolveWidget::rubberButtonSlot()
 	circleButton->setOn(false);
 	rubberButton->setOn(true);
 	colorButton->setEnabled(false);
+	textButton->setOn(false);
 	emit drawSignal(DRAWFREE,QColor(0,0,0),8);
+}
+
+void GraphSolveWidget::textButtonSlot()
+{
+	drawState=DRAWTEXT;
+	freeButton->setOn(false);
+	lineButton->setOn(false);
+	rectButton->setOn(false);
+	circleButton->setOn(false);
+	rubberButton->setOn(false);
+	colorButton->setEnabled(true);
+	textButton->setOn(true);
+	emit drawSignal(DRAWTEXT,paintColor,spinBox3->value());
 }
 
 void GraphSolveWidget::setPref(Preferences newPref)
@@ -1446,7 +1572,7 @@ void GraphSolveWidget::graphLMButtonPressed(double x,double y)
 		case CALCNEWTON:
 		{
 			emit removeLines();
-			xLine->setText(QString::number(x));
+			xLine->setText(QString::number(x,'g',10));
 			if(functionType==GRAPHPOLAR)
 				emit addPolarLine(x);
 			else emit addVerticalLine(x);
@@ -1458,27 +1584,30 @@ void GraphSolveWidget::graphLMButtonPressed(double x,double y)
 			static bool firstLine=true;
 			if(firstLine)
 			{
-				xLine->setText(QString::number(x));
+				xLine->setText(QString::number(x,'g',10));
 				if(functionType==GRAPHPOLAR)
 					emit addPolarLine(x);
 				else emit addVerticalLine(x);
-				if(x2Line->text().toDouble() != NAN && x2Line->text().length()>0)
+				double x2Val=runCalc(x2Line->text(),&pref,vars);
+				if(x2Val != NAN)
 				{
 					if(functionType==GRAPHPOLAR)
-						emit addPolarLine(x2Line->text().toDouble());
-					else emit addVerticalLine(x2Line->text().toDouble());
+						emit addPolarLine(x2Val);
+					else emit addVerticalLine(x2Val);
 				}
 			}
 			else {
-				x2Line->setText(QString::number(x));
+				x2Line->setText(QString::number(x,'g',10));
 				if(functionType==GRAPHPOLAR)
 					emit addPolarLine(x);
 				else emit addVerticalLine(x);
-				if(xLine->text().toDouble() != NAN && xLine->text().length()>0)
+				
+				double xVal=runCalc(xLine->text(),&pref,vars);
+				if(xVal != NAN)
 				{
 					if(functionType==GRAPHPOLAR)
-						emit addPolarLine(xLine->text().toDouble());
-					else emit addVerticalLine(xLine->text().toDouble());
+						emit addPolarLine(xVal);
+					else emit addVerticalLine(xVal);
 				}
 			}
 			firstLine=!firstLine;
@@ -1487,7 +1616,7 @@ void GraphSolveWidget::graphLMButtonPressed(double x,double y)
 		case CALCXVAL:
 		{
 			emit removeLines();
-			xLine->setText(QString::number(y));
+			xLine->setText(QString::number(y,'g',10));
 
 			if(functionType==GRAPHPOLAR)
 				emit addCircle(y);

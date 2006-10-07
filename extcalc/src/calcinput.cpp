@@ -4,6 +4,7 @@ void CalcInput::keyPressEvent(QKeyEvent*e)
 {
 	int para;
 	int pos;
+	bool noCheck=false;
 
 	getCursorPosition(&para,&pos);
 	if(para != paragraphs()-1 && 
@@ -14,6 +15,9 @@ void CalcInput::keyPressEvent(QKeyEvent*e)
 	{
 		QString content=text(para);
 		content=content.stripWhiteSpace();
+		
+		
+		
 		if(hasSelectedText())
 		{
 			int startPara,endPara,startPos,endPos;
@@ -27,6 +31,8 @@ void CalcInput::keyPressEvent(QKeyEvent*e)
 				setSelection(-1,-1,-1,-1,0);
 				content.remove(startPos,endPos-startPos);
 				pos=startPos;
+				if(e->ascii()==8 || e->ascii()==127)
+					noCheck=true;
 			}
 		}
 
@@ -40,6 +46,7 @@ void CalcInput::keyPressEvent(QKeyEvent*e)
 		setCursorPosition(para,pos);
 	}
 
+	if(!noCheck)
 	switch(e->ascii())
 	{
 		case 13:								//enter
@@ -48,10 +55,10 @@ void CalcInput::keyPressEvent(QKeyEvent*e)
 			break;
 		}
 		case 8:									//backspace
-			backKey();
+				backKey();
 			break;
 			case 127:								//delete
-				deleteKey();
+					deleteKey();
 				break;
 				case 9:									//tab
 					insert(" ");
@@ -202,17 +209,32 @@ void CalcInput::calculateKey()
 	setAlignment(Qt::AlignLeft);
 	line="";
 	lineCursor=0;
+	delete strResult;
 }
 
 void CalcInput::deleteKey()
 {
-	textInput("");
+	if(hasSelectedText())
+	{
+		
+		textInput("");
+		return;
+	}
+	else textInput("");
+
 	del();
 	line.remove(lineCursor,1);
 }
 void CalcInput::backKey()
-{
-	textInput("");
+{	
+	if(hasSelectedText())
+	{
+		
+		textInput("");
+		return;
+	}
+	else textInput("");
+
 	int para;
 	int pos;
 	getCursorPosition(&para,&pos);
@@ -220,8 +242,10 @@ void CalcInput::backKey()
 	{
 		setCursorPosition(para,pos-1);
 		del();
+
 		line.remove(lineCursor-1,1);
 		lineCursor--;
+
 	}
 }
 void CalcInput::clearAll()

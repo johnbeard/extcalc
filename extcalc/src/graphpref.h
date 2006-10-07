@@ -38,21 +38,21 @@ class CoordinatePreferences :public QWidget
 	QComboBox*graphType;
 	QPushButton*stdButton,*angleButton;
 	Preferences pref;
-	
+	Variable*vars;
 	Q_OBJECT
 public:
-	CoordinatePreferences(Preferences p,QWidget*parent)
+	CoordinatePreferences(Preferences p,QWidget*parent,Variable*v)
 	:QWidget(parent)
 	{
 		pref=p;
-		
+		vars=v;
 		rectLabel=new QLabel(GRAPHPREFH_STR2,this);
 		xminLabel=new QLabel("x min:",this);
 		xmaxLabel=new QLabel("x max:",this);
 		yminLabel=new QLabel("y min:",this);
 		ymaxLabel=new QLabel("y max:",this);
 		zminLabel=new QLabel("z min:",this);
-		zmaxLabel=new QLabel("y max:",this);
+		zmaxLabel=new QLabel("z max:",this);
 		polarLabel=new QLabel(GRAPHPREFH_STR10,this);
 		angleLabel=new QLabel(GRAPHPREFH_STR11,this);
 		radiusLabel=new QLabel(GRAPHPREFH_STR12,this);
@@ -172,13 +172,15 @@ class ParameterPreferences :public QWidget
 	QLabel *parameterLabel,*parameterStartLabel,*parameterEndLabel,*parameterStepsLabel;
 	QLineEdit*parameterStart,*parameterEnd,*parameterSteps;
 	QPushButton*standardButton;
+	Variable*vars;
 	
 	Q_OBJECT
 	public:
-	ParameterPreferences(Preferences p,QWidget*parent)
+	ParameterPreferences(Preferences p,QWidget*parent,Variable*v)
 	:QWidget(parent)
 	{
 		pref=p;
+		vars=v;
 		setGeometry(10,10,580,360); 
 		setFixedWidth(580);
 		setFixedHeight(360);
@@ -186,8 +188,8 @@ class ParameterPreferences :public QWidget
 		parameterLabel=new QLabel(GRAPHPREFH_STR18,this);
 		parameterStartLabel=new QLabel(GRAPHPREFH_STR19,this);
 		parameterEndLabel=new QLabel(GRAPHPREFH_STR20,this);
-		parameterStepsLabel=new QLabel("Steps",this);
-		standardButton=new QPushButton("Standard",this);
+		parameterStepsLabel=new QLabel(GRAPHPREFH_STR22,this);
+		standardButton=new QPushButton(GRAPHPREFH_STR23,this);
 		
 		parameterStart=new QLineEdit(QString::number(pref.parameterStart),this);
 		parameterEnd=new QLineEdit(QString::number(pref.parameterEnd),this);
@@ -225,19 +227,22 @@ class DynamicPreferences :public QWidget
 	QLineEdit*parameterStart,*parameterEnd,*parameterSteps,*time;
 	QRadioButton*upButton,*upDownButton;
 	QButtonGroup *radioButtons;
+	QCheckBox *singleStepBox;
+	Variable*vars;
 	
 	Q_OBJECT
 	public:
-		DynamicPreferences(Preferences p,QWidget*parent)
+		DynamicPreferences(Preferences p,QWidget*parent,Variable*v)
 	:QWidget(parent)
 		{
 			pref=p;
-			
-			dynamicLabel=new QLabel("Preferences for Parameter A:",this);
-			parameterStartLabel=new QLabel("Start:",this);
-			parameterEndLabel=new QLabel("End:",this);
-			parameterStepsLabel=new QLabel("Steps:",this);
-			timeLabel=new QLabel("Delay Time (*10ms):",this);
+			vars=v;
+			dynamicLabel=new QLabel(GRAPHPREFH_STR24,this);
+			parameterStartLabel=new QLabel(GRAPHPREFH_STR25,this);
+			parameterEndLabel=new QLabel(GRAPHPREFH_STR26,this);
+			parameterStepsLabel=new QLabel(GRAPHPREFH_STR27,this);
+			timeLabel=new QLabel(GRAPHPREFH_STR28,this);
+			singleStepBox=new QCheckBox(GRAPHPREFH_STR29,this);
 			
 			parameterStart=new QLineEdit(QString::number(pref.dynamicStart),this);
 			parameterEnd=new QLineEdit(QString::number(pref.dynamicEnd),this);
@@ -245,12 +250,20 @@ class DynamicPreferences :public QWidget
 			time=new QLineEdit(QString::number(pref.dynamicDelay),this);
 			
 			radioButtons=new QButtonGroup(this);
-			upButton=new QRadioButton("Count up only",radioButtons);
-			upDownButton=new QRadioButton("Count up and down",radioButtons);
+			upButton=new QRadioButton(GRAPHPREFH_STR30,radioButtons);
+			upDownButton=new QRadioButton(GRAPHPREFH_STR31,radioButtons);
 			
 			if(pref.moveUpDown)
 				upDownButton->setChecked(true);
 			else upButton->setChecked(true);
+			
+			if(pref.dynamicDelay>0)
+				singleStepBox->setChecked(true);
+			else {
+				singleStepBox->setChecked(false);
+				time->setEnabled(false);
+				time->setText("10");
+			}
 
 			
 			dynamicLabel->setGeometry(20,30,380,20);
@@ -263,9 +276,12 @@ class DynamicPreferences :public QWidget
 			timeLabel->setGeometry(20,190,160,20);
 			time->setGeometry(180,190,170,20);
 			
-			radioButtons->setGeometry(20,240,250,60);
+			singleStepBox->setGeometry(20,240,250,20);
+			radioButtons->setGeometry(20,270,250,60);
 			upButton->setGeometry(5,5,230,20);
 			upDownButton->setGeometry(5,35,230,20);
+			
+			QObject::connect(singleStepBox,SIGNAL(toggled(bool)),time,SLOT(setEnabled(bool)));
 			
 			setGeometry(10,10,580,360); 
 			setFixedWidth(580);
@@ -295,23 +311,23 @@ class GraphPreferences :public QTabWidget
 	DynamicPreferences*dynamicWidget;
 	QPushButton*saveButton,*cancelButton;
 	Preferences pref;
-	
+	Variable*vars;
 	Q_OBJECT
 public:
 	GraphPreferences(Preferences p, QWidget*parent)
 	:QTabWidget(parent,GRAPHPREFH_STR1,Qt::WStyle_Dialog | Qt::WType_Dialog)
 	{
 		pref=p;
-		
+		vars=new Variable[27];
 		tabBar = new QTabBar(this);
 		setTabBar(tabBar);
 		
-		coordinateWidget = new CoordinatePreferences(pref,this);
-		parameterWidget = new ParameterPreferences(pref,this);
-		dynamicWidget= new DynamicPreferences(pref,this);
-		addTab(coordinateWidget,"Coordinate Systems");
-		addTab(parameterWidget,"Parameter Functions");
-		addTab(dynamicWidget,"Dynamic Functions");
+		coordinateWidget = new CoordinatePreferences(pref,this,vars);
+		parameterWidget = new ParameterPreferences(pref,this,vars);
+		dynamicWidget= new DynamicPreferences(pref,this,vars);
+		addTab(coordinateWidget,GRAPHPREFH_STR32);
+		addTab(parameterWidget,GRAPHPREFH_STR33);
+		addTab(dynamicWidget,GRAPHPREFH_STR34);
 			
 		
 		saveButton=new QPushButton(GRAPHPREFH_BTN3,this);

@@ -78,7 +78,7 @@
 //      - areas of intersection (inequaity functions)                                   ok  //
 //      - roots of inequaity functions                                                  ok  //
 //      - setting Parameter A for dynamic functions                                     ok  //
-//      - maximum and minimum values of 3D-functions  (in a later version)                  //
+//      - integral and differential of 3D-functions (in a later version)                ok  //
 //  - script interpretor                                        (v0.5)                  ok  //
 //  - script language                                           (v0.5)                  ok  //
 //      - standard commands: if, for, while                                             ok  //
@@ -124,6 +124,8 @@
 //	- integral calculation doesn't work on periodic functions							ok	//
 //	- graph analyse window doesn't view result of integral correctly					ok	//
 //	- graph analyse window does not allways process mouse events						ok	//
+//	- preferences dialogs can't process mathematical expressions						ok  //
+//	- Script editor has no Menu bar															//
 
 //////////////////////////used variables//////////////////////////
 //
@@ -138,7 +140,7 @@
 //      79        78             63                               0
 //
 //
-//		precisision: 
+//		precision: 
 //		18 digits in normal mode
 //		17 digits in trigonometric functions
 //		ca. 9 digits at integrations
@@ -291,9 +293,9 @@ MainObject() :QTabWidget()
 	
 	//standard preferences
 #ifndef NO_LONG_DOUBLE
-	pref.precisision=LDBL_DIG;
+	pref.precision=LDBL_DIG;
 #else 
-	pref.precisision=DBL_DIG;
+	pref.precision=DBL_DIG;
 #endif
 	pref.angle=DEG;
 	pref.outputType=VARIABLENUM;
@@ -350,7 +352,7 @@ MainObject() :QTabWidget()
 	QObject::connect(angleMenu,SIGNAL(activated(int)),this,SLOT(angleMenuSlot(int)));
 	
 	floatPointMenu=new QPopupMenu;
-	for(int c=2;c<=pref.precisision; c++)
+	for(int c=2;c<=pref.precision; c++)
 		floatPointMenu->insertItem(QString::number(c),c);
 
 	QObject::connect(floatPointMenu,SIGNAL(activated(int)),this,SLOT(floatPointMenuSlot(int)));
@@ -468,8 +470,8 @@ MainObject() :QTabWidget()
 
 	
 
-	calculator=new CalcWidget(this,vars);
-	calculator2=new CalcWidget(this,vars);
+	calculator=new CalcWidget(this,pref,vars);
+	calculator2=new CalcWidget(this,pref,vars);
 	graph = new GraphWidget(this,pref,vars);
 	table=new TableWidget(this,pref,vars);
 	scripting=new ScriptWidget(this,pref,vars);
@@ -528,6 +530,11 @@ MainObject() :QTabWidget()
 	}
 
 }
+
+~MainObject()
+{
+	delete[]vars;
+}
 int readConfigFile();
 void writeConfigFile();
 
@@ -556,17 +563,13 @@ void tableTypeMenuSlot(int item);
 void runScriptSlot(QString*);
 void getPref(Preferences newPref)
 {
-	for(int c=2;c<=pref.precisision;c++)
+	static bool running=false;
+	for(int c=2;c<=pref.precision;c++)
 		if(floatPointMenu->isItemChecked(c))
 			floatPointMenu->setItemChecked(c,false);
 	
 	
 
-	if(!calcFocus && newPref.calcType==BASE)
-	{
-		newPref.calcType=SCIENTIFIC;
-		calcModeChanged=true;
-	}
 	if(newPref.graphType==GRAPHPOLAR)
 	{
 		newPref.xmin=newPref.ymin=-newPref.radiusMax;
@@ -574,7 +577,9 @@ void getPref(Preferences newPref)
 		newPref.rasterSizeX=newPref.rasterSizeY=newPref.rasterSizeRadius;
 	}
 	else {
-		newPref.radiusMax=newPref.xmax;
+		if(fabs(newPref.xmax) > fabs(newPref.xmin))
+			newPref.radiusMax=fabs(newPref.xmax);
+		else newPref.radiusMax=fabs(newPref.xmin);
 		newPref.rasterSizeRadius=newPref.rasterSizeX;
 		if(newPref.angle==DEG)
 		{
@@ -592,14 +597,15 @@ void getPref(Preferences newPref)
 			newPref.angleMax=400.0;
 		}
 	}
-	if((indexOf(calculator)!=-1)!=pref.showWindows[0] ||
+	if(((indexOf(calculator)!=-1)!=pref.showWindows[0] ||
 		   (indexOf(calculator2)!=-1)!=pref.showWindows[1] ||
 		   (indexOf(graph)!=-1)!=pref.showWindows[2] ||
 		   (indexOf(table)!=-1)!=pref.showWindows[3] ||
 		   (indexOf(scripting)!=-1)!=pref.showWindows[4] || 
 		   (indexOf(scriptIO)!=-1)!=pref.showWindows[5]
-	  )
+	   ) && !running)
 	{
+		running=true;
 		if(indexOf(calculator)!=-1)
 			removePage(calculator);
 		if(indexOf(calculator2)!=-1)
@@ -625,33 +631,45 @@ void getPref(Preferences newPref)
 		if(pref.showWindows[5])
 			addTab(scriptIO,EXTCALCH_STR13);
 	}
-	
+	running=false;
+
+	if(!calcFocus && newPref.calcType==BASE)
+	{
+		newPref.calcType=SCIENTIFIC;
+		calcModeChanged=true;
+	}
+	if(calcFocus&&calcModeChanged)
+	{
+		newPref.calcType=BASE;
+		calcModeChanged=false;
+	}
+
 	graphTypeMenu->setItemChecked(GRAPHSTD,false);
 	graphTypeMenu->setItemChecked(GRAPHPOLAR,false);
 	graphTypeMenu->setItemChecked(GRAPH3D,false);
-	
+
 	angleMenu->setItemChecked(DEG,false);
 	angleMenu->setItemChecked(RAD,false);
 	angleMenu->setItemChecked(GRA,false);
-	
+
 	outputMenu->setItemChecked(FIXEDNUM,false);
 	outputMenu->setItemChecked(VARIABLENUM,false);
 	outputMenu->setItemChecked(EXPSYM,false);
-	
+
 	calcTypeMenu->setItemChecked(SCIENTIFIC,false);
 	calcTypeMenu->setItemChecked(BASE,false);
-	
+
 	baseMenu->setItemChecked(BIN,false);
 	baseMenu->setItemChecked(OCT,false);
 	baseMenu->setItemChecked(DEC,false);
 	baseMenu->setItemChecked(HEX,false);
-	
+
 	tableTypeMenu->setItemChecked(TABLENORMAL,false);
 	tableTypeMenu->setItemChecked(TABLEPARAMETER,false);
 	tableTypeMenu->setItemChecked(TABLEPOLAR,false);
 	tableTypeMenu->setItemChecked(TABLEINEQUAITY,false);
 	tableTypeMenu->setItemChecked(TABLE3D,false);
-	
+
 	pref=newPref;
 	calculator->setPref(pref);
 	calculator2->setPref(pref);
@@ -660,7 +678,7 @@ void getPref(Preferences newPref)
 	scripting->setPref(pref);
 	scriptIO->setPref(pref);
 //	savePref(&pref);
-	
+
 	angleMenu->setItemChecked(pref.angle,true);
 	outputMenu->setItemChecked(pref.outputType,true);
 	floatPointMenu->setItemChecked(pref.outputLength,true);

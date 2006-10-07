@@ -98,3 +98,10 @@ mouse wheel
 - support for several image formats and sizes added
 - added function for drawing into graphics window
 - support for free draw, lines, rectangles and circles included
+
+0.6.0 bugfixing
+- added text draw function (in graph drawing window)
+- updated menu structure
+- fixed bugs in calculator, main window, graph analysation, preferences
+dialogs
+- updated translation

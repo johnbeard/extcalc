@@ -23,7 +23,7 @@ class TablePreferences :public QWidget
 Q_OBJECT
 public:
 	TablePreferences(Preferences p,QWidget*parent) 
-	:QWidget(parent,"Table Preferences",Qt::WStyle_Dialog | Qt::WType_Dialog)
+	:QWidget(parent,TABLEPREFH_STR11,Qt::WStyle_Dialog | Qt::WType_Dialog)
 	{
 		pref=p;
 		topLabel=new QLabel(TABLEPREFH_STR1,this);
@@ -43,11 +43,11 @@ public:
 		zEnd=new QLineEdit(this);
 		xStep=new QLineEdit(this);
 		zStep=new QLineEdit(this);
-		
+
 		setGeometry(0,0,460,350);
 		setFixedWidth(460);
 		setFixedHeight(350);
-		
+
 		topLabel->setGeometry(20,10,380,20);
 		xStartLabel->setGeometry(10,50,210,20);
 		zStartLabel->setGeometry(240,50,210,20);

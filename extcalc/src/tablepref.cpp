@@ -4,6 +4,7 @@
 
 void TablePreferences::saveSlot()
 {
+	Variable*vars=new Variable[27];
 	if(typeBox->currentText()==TABLEH_STR4)
 		pref.tableType=TABLEPOLAR;
 	else if(typeBox->currentText()==TABLEH_STR5)
@@ -14,10 +15,10 @@ void TablePreferences::saveSlot()
 		pref.tableType=TABLE3D;
 	else pref.tableType=TABLENORMAL;
 	
-	pref.tableXStart=xStart->text().toDouble();
-	pref.tableXEnd=xEnd->text().toDouble();
-	pref.tableZStart=zStart->text().toDouble();
-	pref.tableZEnd=zEnd->text().toDouble();
+	pref.tableXStart=runCalc(xStart->text(),&pref,vars);
+	pref.tableXEnd=runCalc(xEnd->text(),&pref,vars);
+	pref.tableZStart=runCalc(zStart->text(),&pref,vars);
+	pref.tableZEnd=runCalc(zEnd->text(),&pref,vars);
 	pref.tableXSteps=xStep->text().toInt();
 	pref.tableZSteps=zStep->text().toInt();
 	

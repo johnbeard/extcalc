@@ -670,7 +670,7 @@ void ScriptWidget::saveSlot()
 	
 	if(!saveFile(filePath,content))
 	{
-		MessageBox("Fehler");
+		ErrorBox(SCRIPTEDITC_STR25+filePath+".");
 		return;
 	}
 	
@@ -806,6 +806,10 @@ void LineNumberView::contentsMouseMoveEvent(QMouseEvent*){}
 void LineNumberView::contentsMouseDoubleClickEvent(QMouseEvent*){}
 void LineNumberView::keyPressEvent(QKeyEvent*){}
 void LineNumberView::contentsContextMenuEvent (QContextMenuEvent*){}
+void LineNumberView::contentsDragEnterEvent(QDragEnterEvent*){setContentsPos(0,contentsY());}
+void LineNumberView::contentsDragMoveEvent(QDragMoveEvent*e){setContentsPos(0,contentsY());e->accept(geometry());}
+void LineNumberView::contentsDragLeaveEvent(QDragLeaveEvent*){setContentsPos(0,contentsY());}
+void LineNumberView::contentsDropEvent(QDropEvent*){}
 
 
 

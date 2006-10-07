@@ -27,12 +27,16 @@ public:
 	}
 	
 protected:
-	virtual void wheelEvent ( QWheelEvent * e );
-	virtual void contentsMousePressEvent ( QMouseEvent * e );
-	virtual void contentsMouseMoveEvent ( QMouseEvent *);
-	virtual void contentsMouseDoubleClickEvent ( QMouseEvent * e );
-	virtual void keyPressEvent ( QKeyEvent * e );
-	virtual void contentsContextMenuEvent (QContextMenuEvent*e);
+	virtual void wheelEvent(QWheelEvent*);
+	virtual void contentsMousePressEvent(QMouseEvent*);
+	virtual void contentsMouseMoveEvent(QMouseEvent*);
+	virtual void contentsMouseDoubleClickEvent(QMouseEvent*);
+	virtual void keyPressEvent(QKeyEvent*);
+	virtual void contentsContextMenuEvent(QContextMenuEvent*);
+	virtual void contentsDragEnterEvent(QDragEnterEvent*);
+	virtual void contentsDragMoveEvent(QDragMoveEvent*);
+	virtual void contentsDragLeaveEvent(QDragLeaveEvent*);
+	virtual void contentsDropEvent(QDropEvent*);
 };
 
 class ScriptWidget :public QWidget

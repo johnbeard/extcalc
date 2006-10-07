@@ -434,13 +434,6 @@ void GraphOutput::mouseMoveEvent(QMouseEvent*e)
 				draw->setPen(pen);
 				draw->drawLine(mouseX,mouseY,e->x(),e->y());
 				draw->end();
-				
-				pen.setWidth(drawPen);
-				copyBlt(overlayMap,0,0,drawMap,0,0,TEXTURESIZE,TEXTURESIZE);
-				draw->begin(overlayMap);
-				draw->setPen(pen);
-				draw->drawLine(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width,e->y()*TEXTURESIZE/height);
-				draw->end();
 				break;
 			}
 			case DRAWRECT:
@@ -449,13 +442,6 @@ void GraphOutput::mouseMoveEvent(QMouseEvent*e)
 				draw->begin(this);
 				draw->setPen(pen);
 				draw->drawRect(mouseX,mouseY,e->x()-mouseX,e->y()-mouseY);
-				draw->end();
-				
-				pen.setWidth(drawPen);
-				copyBlt(overlayMap,0,0,drawMap,0,0,TEXTURESIZE,TEXTURESIZE);
-				draw->begin(overlayMap);
-				draw->setPen(pen);
-				draw->drawRect(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width-mouseX*TEXTURESIZE/width,e->y()*TEXTURESIZE/height-mouseY*TEXTURESIZE/height);
 				draw->end();
 				break;
 			}
@@ -466,18 +452,25 @@ void GraphOutput::mouseMoveEvent(QMouseEvent*e)
 				draw->setPen(pen);
 				draw->drawEllipse(mouseX,mouseY,e->x()-mouseX,e->y()-mouseY);
 				draw->end();
-				
-				pen.setWidth(drawPen);
-				copyBlt(overlayMap,0,0,drawMap,0,0,TEXTURESIZE,TEXTURESIZE);
-				draw->begin(overlayMap);
+				break;
+			}
+			case DRAWTEXT:
+			{
+				repaint();
+				QFont drawFont=draw->font();
+				int oldWidth=drawFont.pixelSize();
+				drawFont.setPixelSize((8+3*drawPen)*width/TEXTURESIZE);
+				draw->begin(this);
+				draw->setFont(drawFont);
 				draw->setPen(pen);
-				draw->drawEllipse(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width-mouseX*TEXTURESIZE/width,e->y()*TEXTURESIZE/height-mouseY*TEXTURESIZE/height);
+				draw->drawText(e->x(),e->y(),drawString);
+				drawFont.setPixelSize(oldWidth);
+				draw->setFont(drawFont);
 				draw->end();
+				
 				break;
 			}
 		}
-	//	generateTexture();
-	//	repaint();
 	}
 	else if(e->state() == Qt::RightButton)
 	{
@@ -560,6 +553,14 @@ void GraphOutput::mousePressEvent(QMouseEvent*e)
 			QPen pen(drawColor,previewPen);
 			pen.setCapStyle(Qt::RoundCap);
 			
+			if(backMap[BACKSTEPS-1]!=NULL)
+				delete backMap[BACKSTEPS-1];
+			for(int c=BACKSTEPS-1; c>0; c--)
+				backMap[c]=backMap[c-1];
+			backMap[0]=drawMap;
+			drawMap=new QPixmap(drawMap[0]);
+			backCursor=0;
+			
 			switch(drawState)
 			{
 				case DRAWFREE:
@@ -582,11 +583,12 @@ void GraphOutput::mousePressEvent(QMouseEvent*e)
 				case DRAWLINE:
 				case DRAWRECT:
 				case DRAWCIRCLE:
-					if(overlayMap!=NULL)
-						delete overlayMap;
-					overlayMap=new QPixmap(*drawMap);
+				//	if(overlayMap!=NULL)
+				//		delete overlayMap;
+				//	overlayMap=new QPixmap(*drawMap);
 					break;
 			}
+			
 			generateTexture();
 		//	repaint();
 		}
@@ -653,11 +655,28 @@ void GraphOutput::mouseReleaseEvent(QMouseEvent*e)
 					draw->drawEllipse(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width-mouseX*TEXTURESIZE/width,e->y()*TEXTURESIZE/height-mouseY*TEXTURESIZE/height);
 					draw->end();
 					break;
+				case DRAWTEXT:
+				{
+					repaint();
+				
+					QFont drawFont=draw->font();
+					int oldWidth=drawFont.pixelSize();
 					
-
+					draw->begin(drawMap);
+					draw->setPen(pen);
+					drawFont.setPixelSize(8+3*drawPen);
+					draw->setFont(drawFont);
+					draw->drawText(e->x()*TEXTURESIZE/width,e->y()*TEXTURESIZE/height,drawString);
+					drawFont.setPixelSize(oldWidth);
+					draw->setFont(drawFont);
+					draw->end();
+					
+					break;
+				}
 			}
 			generateTexture();
 			repaint();
+
 		}
 	}
 	if(e->state() == Qt::RightButton && pref.graphType==GRAPHSTD)
@@ -777,7 +796,7 @@ void GraphOutput::processPolarFunction(QString function)
 	objectCoordinates.NewItem(coordinates);
 	int index=objectCoordinates.GetLen()-1;
 	objectInfo[index].length=PRECISION2D+1;
-	perror("Polar function index: "+QString::number(index));
+//	perror("Polar function index: "+QString::number(index));
 
 	float r;
 	QString num,num2;
@@ -1332,7 +1351,7 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 		if(!ret);
 		else if(objectInfo[c].type == GRAPHSTD)
 		{
-			perror("xStart: "+QString::number(xStart)+" xStep: "+QString::number(xStep)+" shiftRight: "+QString::number(shiftRight)+" function: "+QString(objectInfo[c].function)); 
+//			perror("xStart: "+QString::number(xStart)+" xStep: "+QString::number(xStep)+" shiftRight: "+QString::number(shiftRight)+" function: "+QString(objectInfo[c].function)); 
 
 			Calculate ca(NULL,objectInfo[c].function,&pref,vars);
 
@@ -1351,7 +1370,7 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 		}
 		else if(objectInfo[c].type == GRAPHIEG || objectInfo[c].type == GRAPHIEL || objectInfo[c].type == GRAPHIEGE || objectInfo[c].type == GRAPHIELE)
 		{
-			perror("xStart: "+QString::number(xStart)+" xStep: "+QString::number(xStep)+" shiftRight: "+QString::number(shiftRight)+" function: "+QString(objectInfo[c].function)); 
+//			perror("xStart: "+QString::number(xStart)+" xStep: "+QString::number(xStep)+" shiftRight: "+QString::number(shiftRight)+" function: "+QString(objectInfo[c].function)); 
 
 					
 			Calculate ca(NULL,objectInfo[c].function,&pref,vars);
@@ -1376,7 +1395,7 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 			double x, y1, y2;
 			if(shiftRight)
 				steps++;
-			perror("full length: "+QString::number(steps+startStep));
+//			perror("full length: "+QString::number(steps+startStep));
 			for(int c1=0; c1<steps; c1++)
 			{
 				x=xStart+(double)c1*xStep;
@@ -1400,7 +1419,6 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 				}
 				else
 				{
-					perror("falsch");
 					if(y1<=y2)
 					{
 						objectCoordinates[c][3*(startStep+c1)]=x;
@@ -1447,7 +1465,7 @@ void GraphOutput::processFunction(int index)
 			case GRAPHPOLAR:
 				processPolarFunction(pref.functions[index]);
 				drawRules[ruleIndex][1]=objects.GetLen()-1;
-				perror("polar function rule index: "+QString::number(drawRules[ruleIndex][1]));
+	//			perror("polar function rule index: "+QString::number(drawRules[ruleIndex][1]));
 				break;
 			case GRAPHPARAMETER:
 				processParameterFunction(pref.functions[index]);
@@ -1539,7 +1557,7 @@ void GraphOutput::processFunction(int index)
 			default:
 				processStdFunction(pref.functions[index]);
 				drawRules[ruleIndex][1]=objects.GetLen()-1;
-				perror("standard function rule index: "+QString::number(drawRules[ruleIndex][1]));
+	//			perror("standard function rule index: "+QString::number(drawRules[ruleIndex][1]));
 				break;
 		}
 	}
@@ -1695,7 +1713,7 @@ void GraphOutput::processFunction(int index)
 				}
 				break;
 		}
-		timer->start(pref.dynamicDelay*10,false);
+	//	timer->start(pref.dynamicDelay*10,false);
 	}
 }
 
@@ -1911,7 +1929,7 @@ GLuint GraphOutput::generateGLList(int index)
 	}
 	else
 	{
-		perror("print index="+QString::number(index)+" length="+QString::number(objectInfo[index].length));
+	//	perror("print index="+QString::number(index)+" length="+QString::number(objectInfo[index].length));
 		glBegin(GL_LINE_STRIP);
 		bool end=false;
 		for(int c=0; c<objectInfo[index].length; c++)
@@ -1950,7 +1968,7 @@ GLuint GraphOutput::generateGLList(int index)
 		if(!end)
 			glEnd();
 		glEndList();
-		perror("print end");
+	//	perror("print end");
 	}
 	return list;
 }
@@ -2076,7 +2094,10 @@ void GraphOutput::draw3dZLine(double x,double y)
 void GraphOutput::removeLines()
 {
 	while(additionalObjects.GetLen() > 0)
+	{
+		glDeleteLists(additionalObjects[0],1);
 		additionalObjects.DeleteItem(0);
+	}
 	ineq1=ineq2=-1;
 	repaint();
 }
@@ -2093,8 +2114,8 @@ void GraphOutput::generateTexture()
 {
 	if(texture==0xffffffff)
 		return;
-	struct timeval t1,t2;
-	int seconds,usecs;
+//	struct timeval t1,t2;
+//	int seconds,usecs;
 //	gettimeofday(&t1,NULL);
 //	gettimeofday(&t2,NULL);
 
@@ -2108,27 +2129,16 @@ void GraphOutput::generateTexture()
 //	}
 //	perror("convertToImage: "+QString::number(seconds)+" "+QString::number(usecs));
 	glEnable(GL_TEXTURE_2D);
-	
-	gettimeofday(&t1,NULL);
-	if(drawState==DRAWFREE)
+
+//	if(drawState==DRAWFREE)
 		(*drawImage)=drawMap->convertToImage();
-	else if(drawState!=DRAWNONE)
-		(*drawImage)=overlayMap->convertToImage();
-	
-	gettimeofday(&t2,NULL);
-	seconds=t2.tv_sec-t1.tv_sec;
-	usecs=t2.tv_usec-t1.tv_usec;
-	if(seconds > 0 && usecs < 0)
-	{
-		seconds--;
-		usecs=1000000+usecs;
-	}
-	perror("convertToImage: "+QString::number(seconds)+" "+QString::number(usecs));
-	
+//	else if(drawState!=DRAWNONE)
+//		(*drawImage)=overlayMap->convertToImage();
+
 	glBindTexture(GL_TEXTURE_2D,texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	gettimeofday(&t1,NULL);
+
 	unsigned char*data=drawImage->bits();
 	int c=TEXTURESIZE*TEXTURESIZE;
 	
@@ -2137,43 +2147,11 @@ void GraphOutput::generateTexture()
 			data[c*4+3]=0xff;
 	else data[c*4+3]=0x00;
 
-	
-	gettimeofday(&t2,NULL);
-	seconds=t2.tv_sec-t1.tv_sec;
-	usecs=t2.tv_usec-t1.tv_usec;
-	if(seconds > 0 && usecs < 0)
-	{
-		seconds--;
-		usecs=1000000+usecs;
-	}
-	perror("generate Transparency: "+QString::number(seconds)+" "+QString::number(usecs));
-		
-
-	gettimeofday(&t1,NULL);
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, TEXTURESIZE,
 				 TEXTURESIZE, 0, GL_BGRA, GL_UNSIGNED_BYTE,
 				 data);
-	
-	gettimeofday(&t2,NULL);
-	seconds=t2.tv_sec-t1.tv_sec;
-	usecs=t2.tv_usec-t1.tv_usec;
-	if(seconds > 0 && usecs < 0)
-	{
-		seconds--;
-		usecs=1000000+usecs;
-	}
-	perror("glTexImage2D: "+QString::number(seconds)+" "+QString::number(usecs));
+
 	glDisable(GL_TEXTURE_2D);
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }
 
@@ -2204,6 +2182,17 @@ void GraphOutput::timerSlot()
 	repaint();
 }
 
+void GraphOutput::timerStartSlot(bool start)
+{
+	if(start && isDynamic)
+	{
+		timer->start(pref.dynamicDelay*10,false);
+	}
+	else {
+		timer->stop();
+	}
+}
+
 void GraphOutput::inequaityIntersectionSlot(int i1, int i2)
 {
 	ineq1=i1;
@@ -2229,15 +2218,41 @@ void GraphOutput::drawSlot(int state,QColor color,int pen)
 
 	if(state==DRAWCLEAR)
 	{
+		if(backMap[BACKSTEPS-1]!=NULL)
+			delete backMap[BACKSTEPS-1];
+		for(int c=BACKSTEPS-1; c>0; c--)
+			backMap[c]=backMap[c-1];
+		backMap[0]=drawMap;
+		drawMap=new QPixmap(drawMap[0]);
+		backCursor=0;
+		
 		drawMap->fill(QColor(0,0,0));
 		generateTexture();
 		repaint();
 	}
-	else if(state==DRAWBACK || state==DRAWFORWARD)
+	else if(state==DRAWBACK)
 	{
-		
-		//undo, redo
-		
+		if(backCursor<BACKSTEPS && backMap[backCursor]!=NULL)
+		{
+			QPixmap*tmp=drawMap;
+			drawMap=backMap[backCursor];
+			backMap[backCursor]=tmp;
+			backCursor++;
+			generateTexture();
+			repaint();
+		}
+	}
+	else if(state==DRAWFORWARD)
+	{
+		if(backCursor>0)
+		{
+			backCursor--;
+			QPixmap*tmp=drawMap;
+			drawMap=backMap[backCursor];
+			backMap[backCursor]=tmp;
+			generateTexture();
+			repaint();
+		}
 	}
 	else 
 	{
@@ -2249,7 +2264,15 @@ void GraphOutput::drawSlot(int state,QColor color,int pen)
 			repaint();
 		}
 		else drawState=state;
-		perror("DrawSlot: "+QString::number(drawState));
+		if(drawState==DRAWTEXT)
+		{
+			bool ret;
+			drawString = QInputDialog::getText(GRAPHOUTC_STR1,GRAPHOUTC_STR2,
+					QLineEdit::Normal,drawString,&ret,this );
+			if(!ret)
+				drawString="";
+		}
+	//	perror("DrawSlot: "+QString::number(drawState));
 	}
 }
 

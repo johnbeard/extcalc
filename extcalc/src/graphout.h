@@ -9,12 +9,14 @@
 #include <qpixmap.h>
 #include <qimage.h>
 #include <qpainter.h>
+#include <qinputdialog.h>
 #include "list.h"
 #include "global.h"
 
 #define PRECISION2D 200
 #define PRECISION3D 50
 #define TEXTURESIZE 512
+#define BACKSTEPS 3
 
 
 ////////////////drawRules//////////////////////////////////////////
@@ -88,10 +90,13 @@ class GraphOutput :public QGLWidget
 	int drawState;
 	QColor drawColor;
 	int drawPen,previewPen;
-	QPixmap*drawMap,*overlayMap;
+	QPixmap*drawMap;
 	QImage*drawImage;
 	GLuint texture;
 	QPainter *draw;
+	int backCursor;
+	QPixmap**backMap;
+	QString drawString;
 	
 	
 Q_OBJECT
@@ -102,7 +107,10 @@ public:
 		drawImage->fill(0x00000000);
 		drawImage->setAlphaBuffer(true);
 		drawMap=new QPixmap(*drawImage);
-		overlayMap=NULL;
+		backCursor=0;
+		backMap=new (QPixmap*)[BACKSTEPS];
+		for(int c=0; c<BACKSTEPS; c++)
+			backMap[c]=NULL;
 		
 		draw=new QPainter();
 		texture=0xffffffff;
@@ -118,9 +126,9 @@ public:
 		dynamicPos=0;
 		timer = new QTimer(this);
 		QObject::connect(timer,SIGNAL(timeout()),this,SLOT(timerSlot()));
-		
-		
 	}
+	
+	
 	void processStdFunction(QString);
 	void processPolarFunction(QString);
 	void processParameterFunction(QString);
@@ -153,6 +161,7 @@ public slots:
 	void inequaityIntersectionSlot(int i1, int i2);
 	void screenshotSlot(int,int);
 	void drawSlot(int,QColor,int);
+	void timerStartSlot(bool);
 
 protected:
 	void initializeGL();

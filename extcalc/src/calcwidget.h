@@ -29,9 +29,10 @@ class CalcWidget :public QWidget
 
 	
 	public:
-	CalcWidget(QWidget*parent,Variable *va) :QWidget(parent)
+	CalcWidget(QWidget*parent,Preferences p,Variable *va) :QWidget(parent)
 	{
 		vars=va;
+		pref=p;
 		maximized=false;	
 		textEdit=new CalcInput(this,vars);
 //		graph=new GraphOutput(this);

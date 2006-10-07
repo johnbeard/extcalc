@@ -19,7 +19,7 @@ int main( int argc, char **argv ) {
 
 	if(german.load("data/qt_de.qm",INSTALLDIR))
 		a.installTranslator(&german);
-	else MessageBox("QT translation could not be loaded");
+	else MessageBox("QT-Sprachpaket konnte nicht geladen werden");
 #endif
 
 //root		8730
@@ -33,13 +33,6 @@ int main( int argc, char **argv ) {
 	mainObj->show();
 	return a.exec();
 }
-
-
-
-
-
-
-
 
 
 
@@ -203,8 +196,8 @@ int MainObject::readConfigFile()
 	if(outputLength.length()>0)
 	{
 		int outLen=outputLength.toInt();
-		if(outLen > pref.precisision)
-			outLen = pref.precisision;
+		if(outLen > pref.precision)
+			outLen = pref.precision;
 		if(outLen < 2)
 			outLen = 2;
 		pref.outputLength=outLen;
@@ -846,10 +839,25 @@ void MainObject::writeConfigFile()
 }
 
 
-void MainObject::tabChangeSlot(QWidget*)
+void MainObject::tabChangeSlot(QWidget*activeWidget)
 {
+	if(activeWidget==(QWidget*)calculator || activeWidget==(QWidget*)calculator2 || activeWidget==(QWidget*)scripting || activeWidget==(QWidget*)scriptIO)
+	{
+		mainMenu->setItemVisible(GRAPH,false);
+		mainMenu->setItemVisible(TABLE,false);
+	}
+	else if(activeWidget==(QWidget*)graph)
+	{
+		mainMenu->setItemVisible(GRAPH,true);
+		mainMenu->setItemVisible(TABLE,false);
+	}
+	else if(activeWidget==(QWidget*)table)
+	{
+		mainMenu->setItemVisible(GRAPH,false);
+		mainMenu->setItemVisible(TABLE,true);
+	}
 	
-	if(currentPageIndex() > 1)
+	if(activeWidget!=(QWidget*)calculator && activeWidget!=(QWidget*)calculator2)
 	{
 		if(calcFocus)
 		{
@@ -863,14 +871,14 @@ void MainObject::tabChangeSlot(QWidget*)
 		}
 	}
 	else {
+		calcFocus=true;
 		if(calcModeChanged)
 		{
-
 			pref.calcType=BASE;
 			getPref(pref);
 			calcModeChanged=false;
 		}
-		calcFocus=true;
+		
 	}
 	
 }
@@ -1101,7 +1109,7 @@ void MainObject::viewMenuSlot(int item)
 {
 
 	bool resetFocus=false;
-	
+
 	
 	switch(item)
 	{
@@ -1111,6 +1119,7 @@ void MainObject::viewMenuSlot(int item)
 			if(pref.showWindows[0])
 				showPage(calculator);
 			else {
+				
 				resetFocus=true;
 				calculator->hide();
 			}
