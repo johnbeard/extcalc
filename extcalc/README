@@ -21,8 +21,8 @@ mathmatical functions, draw graphs and work with functions. You can also calcula
 
 
 2. INSTALLATION
-- unpack archive (tar -xzf extcalc-0.5.0.tar.gz)
-- switch to directory (cd extcalc-0.5.0)
+- unpack archive (tar -xzf extcalc-0.6.0.tar.gz)
+- switch to directory (cd extcalc-0.6.0)
 - run configure (./configure)
 - compile (make)
 - become root (su)
@@ -57,7 +57,7 @@ doc/                         documentation
 	   
 	   
 4. VERSION
-Version 0.5.0
+Version 0.6.0
 
 This is a TESTING VERSION!
 Parts of the program may not work or may work wrong!
@@ -78,6 +78,9 @@ scripting functions
 script editor
 script console
 script debug messages
+zooming and moving graphs
+draw into graphics window
+save screenshots of graphics window
 
 to do:
 script commands for file usage and graphics
@@ -133,7 +136,7 @@ Needed hardware:
 CPU at about 1GHz (32Bit or 64Bit)
 enough RAM to run X
 For 3D-graphics, a 3D-graphics card is recommended
-A mouse with mousewheel is needed for rotating and zooming 3D-graphs
+A mouse with mousewheel is needed for rotating, moving and zooming graphs
 
 
 Precision:

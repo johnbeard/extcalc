@@ -105,10 +105,10 @@ Q_OBJECT
 
 		QObject::connect(functionTable,SIGNAL(currentChanged(int,int)),this,SLOT(selectionChangedSlot(int,int)));
 		QObject::connect(functionTable,SIGNAL(textEditStarted(QString)),this,SLOT(tableEditSlot(QString)));
-		QObject::connect(drawButton,SIGNAL(clicked()),graph,SLOT(resetRotation()));
-		QObject::connect(drawButton,SIGNAL(clicked()),graph,SLOT(removeLines()));
-		QObject::connect(drawButton,SIGNAL(clicked()),this,SLOT(drawSlot()));
-		QObject::connect(maximizeButton,SIGNAL(clicked()),this,SLOT(maximizeSlot()));
+		QObject::connect(drawButton,SIGNAL(released()),graph,SLOT(resetRotation()));
+		QObject::connect(drawButton,SIGNAL(released()),graph,SLOT(removeLines()));
+		QObject::connect(drawButton,SIGNAL(released()),this,SLOT(drawSlot()));
+		QObject::connect(maximizeButton,SIGNAL(released()),this,SLOT(maximizeSlot()));
 		QObject::connect(modeBox,SIGNAL(activated(int)),this,SLOT(modeSlot(int)));
 		QObject::connect(standardButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
 		QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));

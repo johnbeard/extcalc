@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GraphOutput meta object code from reading C++ file 'graphout.h'
 **
-** Created: Thu Sep 28 07:52:19 2006
+** Created: Sun Oct 8 16:30:56 2006
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -102,6 +102,10 @@ QMetaObject* GraphOutput::staticMetaObject()
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
     static const QUMethod slot_12 = {"drawSlot", 3, param_slot_12 };
+    static const QUParameter param_slot_13[] = {
+	{ 0, &static_QUType_bool, 0, QUParameter::In }
+    };
+    static const QUMethod slot_13 = {"timerStartSlot", 1, param_slot_13 };
     static const QMetaData slot_tbl[] = {
 	{ "drawHorizontalLine(double)", &slot_0, QMetaData::Public },
 	{ "drawVerticalLine(double)", &slot_1, QMetaData::Public },
@@ -115,7 +119,8 @@ QMetaObject* GraphOutput::staticMetaObject()
 	{ "timerSlot()", &slot_9, QMetaData::Public },
 	{ "inequaityIntersectionSlot(int,int)", &slot_10, QMetaData::Public },
 	{ "screenshotSlot(int,int)", &slot_11, QMetaData::Public },
-	{ "drawSlot(int,QColor,int)", &slot_12, QMetaData::Public }
+	{ "drawSlot(int,QColor,int)", &slot_12, QMetaData::Public },
+	{ "timerStartSlot(bool)", &slot_13, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -139,7 +144,7 @@ QMetaObject* GraphOutput::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"GraphOutput", parentObject,
-	slot_tbl, 13,
+	slot_tbl, 14,
 	signal_tbl, 4,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -222,6 +227,7 @@ bool GraphOutput::qt_invoke( int _id, QUObject* _o )
     case 10: inequaityIntersectionSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
     case 11: screenshotSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
     case 12: drawSlot((int)static_QUType_int.get(_o+1),(QColor)(*((QColor*)static_QUType_ptr.get(_o+2))),(int)static_QUType_int.get(_o+3)); break;
+    case 13: timerStartSlot((bool)static_QUType_bool.get(_o+1)); break;
     default:
 	return QGLWidget::qt_invoke( _id, _o );
     }

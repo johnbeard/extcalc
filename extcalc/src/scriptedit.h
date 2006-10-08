@@ -132,14 +132,14 @@ public:
 		QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(standardButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
 		QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
-		QObject::connect(maximizeButton,SIGNAL(pressed()),this,SLOT(maximizeButtonSlot()));
-		QObject::connect(runButton,SIGNAL(pressed()),this,SLOT(runButtonSlot()));		
+		QObject::connect(maximizeButton,SIGNAL(released()),this,SLOT(maximizeButtonSlot()));
+		QObject::connect(runButton,SIGNAL(released()),this,SLOT(runButtonSlot()));		
 		QObject::connect(fileBrowser,SIGNAL(selectionChanged(QListViewItem*)),this,SLOT(showFile(QListViewItem*)));
 		QObject::connect(fileBrowser,SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)),this,SLOT(createFileBrowserMenu(QListViewItem*,const QPoint&,int)));
 		QObject::connect(editor,SIGNAL(contentsMoving (int,int)),this,SLOT(lineNumSlot(int,int)));
 		QObject::connect(fileBrowserMenu,SIGNAL(activated(int)),this,SLOT(fileBrowserMenuSlot(int)));
 		QObject::connect(editor,SIGNAL(textChanged()),this,SLOT(textChangedSlot()));
-		QObject::connect(saveButton,SIGNAL(pressed()),this,SLOT(saveSlot()));
+		QObject::connect(saveButton,SIGNAL(released()),this,SLOT(saveSlot()));
 	}
 	
 	

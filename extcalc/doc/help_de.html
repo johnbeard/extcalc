@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - wissenschaftlicher Taschenrechner </h1>
-  Version 0.5.0
+  Version 0.6.0
   <br>
   <br>
   <h3>Inhalt</h3>
@@ -19,6 +19,7 @@
   <a href="#graph"><h4>3.2 Grafik</h4></a>
   <a href="#graphdraw"><h5>3.2.1 Graphen zeichnen</h5></a>
   <a href="#graphsolve"><h5>3.2.2 Graphen auswerten</h5></a>
+  <a href="#graphscreenshot"><h5>3.2.3 Screenshots abspeichern</h5></a>
   <a href="#table"><h4>3.3 Tabellen</h4></a>
   <a href="#script"><h4>3.4 Scriptprogrammierung</h4></a>
   <a href="#scriptcom"><h5>3.4.1 Allgemeines</h5></a>
@@ -31,15 +32,15 @@
   <br>
   <a name="introduction"><h2>1. Einleitung</h2></a>
   Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner.
-  Diese Hilfe wurde für die Version 0.5.0 von Extcalc geschrieben.
+  Diese Hilfe wurde für die Version 0.6.0 von Extcalc geschrieben.
   <br>
   <br>
   <br>
   <a name="install"><h2>2. Installation</h2></a>
   Dies ist die Beschreibung zur Installation von Extcalc aus dem Quellcode-Paket. Vorkompilierte Pakete müssen mit dem Paketmanager der jeweiligen
   Distribution installiert werden.<br><br>
-  - Paket auspacken (tar -xzf extcalc-0.5.0.tar.gz)<br>
-  - ins Verzeichnis wechseln (cd extcalc-0.5.0)<br>
+  - Paket auspacken (tar -xzf extcalc-0.6.0.tar.gz)<br>
+  - ins Verzeichnis wechseln (cd extcalc-0.6.0)<br>
   - konfigurieren (./configure --enable-language_de)<br>
   - kompilieren (make)<br>
   - root-rechte erlangen (su)<br>
@@ -50,7 +51,7 @@
    
   <a name="use"><h2>3. Bedienung</h2></a>
   Da dies noch eine Enticklungsversion von Extcalc ist, kann sich die Bedienoberfläche noch
-  stark ändern. Diese Informationen beziehen sich auf die Version 0.5.0. Mit dem Reiter unter der
+  stark ändern. Diese Informationen beziehen sich auf die Version 0.6.0. Mit dem Reiter unter der
   Menüleiste kann man zwischen den einzelnen Komponenten umschalten.Dies sind  ein Taschenrechner, ein Grafik-Fenster
   zum Zeichnen und analysieren verschiedner Typen von Graphen, ein Tabellen-Fenster, ein Script-Editor und eine Script-Konsole zum
   Ausführen von Scripten.
@@ -224,7 +225,7 @@
   <a name="graph"><h2>3.2 Grafik</h2></a>
   Im Grafik-Modus des Rechners kann man verschiedene Funktionsgrafen zeichnen und auswerten
   lassen. Extcalc unterstützt verschiedene Typen von Funktionen und verschiedene Koordinatensysteme.
-  Es folgt eine Liste der verfügbaren Graphen- und Koordinatensystemtypen von Version 0.5.0:<br>
+  Es folgt eine Liste der verfügbaren Graphen- und Koordinatensystemtypen:<br>
   <h4>Graphentypen</h4>
   <h5>Standardgraph y(x)=X</h5>
   Dies ist die Voreinstellung für alle Graphen. Es ist ein normaler 2D-Graph. Die zugehörige Funktion verwendet
@@ -256,15 +257,17 @@
   Das Standard-Koordinatensystem ist ein zweidimensionales kartesisches Koordinatensystem mit y- und x-Achse.
   Es zur Anzeige von normalen Graphen des Typs y(x)=X und für Parametergraphen vorgesehen. Die Wertebereiche
   der Axen können sowohl negativ als auch positiv eingestellt werden. Es können auch alle anderen Typen von 
-  Graphen in dieses Koordinatensystem eingezeichnet werden.
+  Graphen in dieses Koordinatensystem eingezeichnet werden. Wenn man die rechte Maustaste drückt, kann man
+  das Koordinatensystem mit der Maus verschieben. Mit dem Mausrad kann man hinein- und herauszoomen.
   <h5>Polarkoordinatensystem</h5>
   Dieses Koordinatensystem ist zum Anzeigen von polaren Graphen geeignet. Im Polarkoordinatensystem werden Winkel
   und Radius als Raster angezeigt. Der maximal angezeigte Winkel bzw. Radius wird immer ab dem Ursprung ins
   Postitive gerechnet. Negative Werte sind nicht möglich. Es ist ebenfalls ein zweidimensionales Koordinatensystem.
+  Mit dem Mausrad kann man das Koordinatensystem vergrößern und verkleinern.
   <h5>3D-Koordinatensystem</h5>
   Das kartesische 3D-Koordinatensystem ist zur Darstellung von 3D-Graphen geeignet. Es können aber auch alle anderen
   Typen angezeigt werden. Die x- y- und z-Achsen können sowohl negative als auch positive Werte annehmen. Das
-  Koordinatensystem kann durch drüchen der linken Maustaste mit der Maus gedreht werden. Mit dem Mausrad kann man
+  Koordinatensystem kann durch drüchen der rechten Maustaste mit der Maus gedreht werden. Mit dem Mausrad kann man
   das Bild zoomen.
   <br>
   
@@ -316,8 +319,8 @@
   <tr><td>X-Werte berechnen</td> 		  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td>x</td></tr>
   <tr><td>Schnittpunkte berechnen</td>	  <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td> </td></tr>
   <tr><td>Extremwerte berechnen</td>	  <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td> </td></tr>
-  <tr><td>Integral berechnen</td> 		  <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td> </td></tr>
-  <tr><td>Differential berechnen</td> 	  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td> </td></tr>
+  <tr><td>Integral berechnen</td> 		  <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td>x</td></tr>
+  <tr><td>Differential berechnen</td> 	  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td>x</td></tr>
   <tr><td>Z-Wert berechnen</td> 		  <td> </td>		<td> </td>	   <td> </td>		  <td> </td>		 <td>x</td></tr>
   </table>
   <br>
@@ -346,16 +349,46 @@
   Mit dieser Funktion werden alle Maximal- und Minimalwerte der ausgewählten Funktion berechnet.<br>
   Integral berechnen:<br>
   Um die Fläche unter dem Graphen zwischen zwei Punkten zu berechnen, kann man diese Operation verwenden.
-  Es muss ein Startwert und ein Endwert eingegeben werden. Nach dem Drücken des "Berechnen"-Knopfes wird das 
-  Ergebnis in der Tabelle ausgegeben.<br>
+  Es muss ein Startwert und ein Endwert eingegeben werden. Bei 3D-Funktionen wird der Raum unter dem Grafen berechnet.
+  Nach dem Drücken des "Berechnen"-Knopfes wird das Ergebnis in der Tabelle ausgegeben.<br>
   Differential berechnen.<br>
   Diese Funktion berechnet die Steigung einer Funktion an einer bestimmten Stelle. Wenn man eine Funktion ausgewählt
   und den X-Wert für die Berechnung eingegeben hat, erhält man durch drücken der "Berechnen"-Taste das Ergebnis in der
   Ausgabetabelle. Bei Parameterfunktionen wird bei diesem Punkt die kartesische Ableitung zu einem bestimmten T-Wert
-  berechnet.<br>
+  berechnet. Bei 3D-Funktionen werden die partiellen Ableitungen nach X und Z am angegebenen Punkt berechnet.<br>
   Z-Wert berechnen<br>
   Hier muss der X-Wert und der Y-Wert ausgewählt werden. Wenn man den Berechnen-Knopf drückt, werden die zugehörigen
   Z-Werte angezeigt.<br>
+  <br>
+  <a name="graphscreenshot"><h3>3.2.3 Screenshots abspeichern</h3></a>
+  Der Inhalt des Grafik-Fensters kann direkt als Bild abgespeichert werden. Dazu muss man in der Auswahl-Box unter dem Grafik-Fenster den Punkt
+  Screenshots/Zeichnen auswählen. Diese Einstellung bietet auch einige Zeichenfunktionen, mit denen man z. B. Deteils im Grafikfenster hervoreheben
+  kann.<br>
+  <img src="screenshot.jpg"></img><br>
+  <h5>Screenshot abspeichern:</h5>
+  Im oben dargestellten Fenster können Screenshots gespeichert werden.
+  Dabei kann die Größe des Screenshots, das Bildformat und der Dateiname zum Speichern eingestellt werden.
+  Zum Speichern muss man dann nur den Speichern-Knopf drücken. Dann wird das Bild im angegebenen Pfad gespeichert.
+  <br>
+  <h5>Zeichenfunktionen:</h5>
+  Falls man vor dem Abspeichern des Screenshots noch etwas anmerken oder hervorheben möchte, stellt Extcalc dazu verschiedene Zeichenfunktionen bereit.
+  <br>
+  Die gezeichnete Fläche ist von den Graphen und dem Koordinatensystem unabhängig. Wenn das Koordinatensystem geändert oder verschoben wird, bzw. die
+  Graphen neu gezeichnent werden, bleibt das gezeichnete an der selben Stelle erhalten.<br>
+  Alle Zeichenfunktionen bieten einen Vorschau-Modus. Solange man die Maustaste gedrückt hält, wird nur die Vorschau eingezeichnet. Lässt man die
+  Maustaste los, so wird die Originalgraphik berechnet. Die Strichstärke kann sich dabei etwas verändern.<br>
+  Es gibt folgende Standard-Zeichenfunktionen: Frei zeichnen, Linie, Rechteck, Kreis<br>
+  Bei diesen kann die Strichstärke und die Farbe eingestellt werden.<br>
+  Außerdem kann man noch Text einfügen. Dabei muss nach dem Drücken des Text-Knopfes der anzuzeigende Text eingegeben werden.
+  Bei gehaltener Maustaste ist wieder die Vorschau sichtbar, und beim Loslassen wird der Text eingefügt. Wenn man die Maustaste noch einmal drückt,
+  wird der selbe Text noch einmal eingefügt. Will man Textgröße, Farbe oder den Text selbst ändern, muss man den Text-Knopf noch einmal drücken.
+  Die Textgröße kann in der Box für die Strichstärke geändert werden.<br>
+  Radierer: Will man einen Teil des gezeichneten wieder entfernen, dann kann man den Radierer verwenden. Dieser macht die radierten Stellen wieder
+  transparent. In der Vorschau wird das radierte weiß gezeichnet.<br><br>
+  Außerdem können noch die letzten Schritte rückgängig gemacht werden, und das gesamte Bild kann gelöscht werden.
+  
+  <br>
+  
   <br>
   <a name="table"><h2>3.3 Tabellen</h2></a>
   Extcalc bietet auch die Möglichkeit, Wertetabellen zu Funktionen erstellen zu lassen. 
@@ -436,10 +469,10 @@
   möglich, dass das Abbrechen-Signal nicht rechtzeitig vom Script empfangen wird. Man muss dann den Abbrechen-Knopf noch einmal drücken, um
   das Programm korrekt zu Beenden.<br>
   <a name="scriptsyntax"><h3>3.4.3 Die Script-Sprache</h3></a>
-  In Version 0.5.0 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. Nähere Informationen zu den geplaten
+  In Version 0.6.0 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. Nähere Informationen zu den geplaten
   Funktionen finden Sie im <a href="#else">Kapitel 4</a>.<br>
   <h5>Probleme:</h5>
-  In der folgenden Liste sind Probleme aufgeführt, die in der Version 0.5.0 des Script-Interpreters noch vorhanden sind.<br><br>
+  In der folgenden Liste sind Probleme aufgeführt, die in der Version 0.6.0 des Script-Interpreters noch vorhanden sind.<br><br>
   1. Geschwindigkeit<br>
   Da die Programme von einem Interpreter abgearbeitet werden, laufen diese auch wesentlich langsamer, als kompilierte Programme.
   Der Interpreter wird aber in späteren Versionen noch weiter optimiert.<br><br>
@@ -898,7 +931,7 @@
   <br>
   <a name="else"><h2>4. Sonstiges</h2></a>
   <h5> Version</h5>
-  Extcalc Version 0.5.0<br>
+  Extcalc Version 0.6.0<br>
   Dies ist eine Testversion! Deshalb konnen einige Funktionen inaktiv oder fehlerhaft sein.<br>    
   <h5>Rechengenauigkeit:</h5>
   Aufgrund des Aufbaus eines PC-Prozessors und der verwendeten Variablen vom Typ long double (80 Bit)
@@ -972,6 +1005,9 @@
   Scripting-Editor<br>
   Grossteil der Scripting-Funktionen<br>
   Script-Debugging<br>
+  Verschiebbares und zoombares Graphik-Fenster<br>
+  Abspeichern von Screenshots<br>
+  Zeichnen im Graphikfenster<br>
 
   <h5>noch zu Tun</h5>
   Script-Funktionen für Graphik und Dateioperationen<br>

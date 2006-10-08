@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - Scientific Calculator </h1>
-  Version 0.5.0
+  Version 0.6.0
   <br>
   <br>
   <h3>Inhalt</h3>
@@ -19,6 +19,7 @@
   <a href="#graph"><h4>3.2 Graphics</h4></a>
   <a href="#graphdraw"><h5>3.2.1 Draw Graphs</h5></a>
   <a href="#graphsolve"><h5>3.2.2 Analyse Graphs</h5></a>
+  <a href="#screenshot"><h5>3.2.3 Screenshots</h5></a>
   <a href="#table"><h4>3.3 Tables</h4></a>
   <a href="#script"><h4>3.4 Script Programming</h4></a>
   <a href="#scriptcom"><h5>3.4.1 Introduction</h5></a>
@@ -32,15 +33,15 @@
   <a name="introduction"><h2>1. Introduction</h2></a>
   Extcalc is a scientific graphic calculator for linux. Extcalc is able to process difficult
   mathmatical functions, to draw graph and to work with them. 
-  This is the documentation for version 0.5.0. 
+  This is the documentation for version 0.6.0. 
   <br>
   <br>
   <br>
   <a name="install"><h2>2. Installation</h2></a>
   This description is only for the installation of the source code package (.tar.gz). If you install a binary package, you have to use the
   packet manager of your distribution.<br><br>
-  - extract packet (tar -xzf extcalc-0.5.0.tar.gz)<br>
-  - switch to directory (cd extcalc-0.5.0)<br>
+  - extract packet (tar -xzf extcalc-0.6.0.tar.gz)<br>
+  - switch to directory (cd extcalc-0.6.0)<br>
   - configure (./configure)<br>
   - compile (make)<br>
   - become root (su)<br>
@@ -186,7 +187,7 @@
   <a name="graph"><h2>3.2 Graphic</h2></a>
   In this window of Extcalc, you can draw and analyse different function graphs.<br>
   You can choose different types of graphs and different types of coordinate systems.<br>
-  This is a short list of the availables types of graphs in version 0.5.0 with a short description:<br>
+  This is a short list of the availables types of graphs with a short description:<br>
   <h4>Graph Types</h4>
   <h5>Standard Graphs y(x)=X</h5>
   This is the standard for drawing function graphs. This type draws a normal 2D-Graph. The function variable
@@ -212,15 +213,17 @@
   <h5>Standard Coordinate System</h5>
   This is normally used for standard graphs and also for parameter graphs. It is a cartesian 2D coordinate system
   with x-axis and y-axis. Both can be negative and positive. You can set a stadard size and a trigonometric size for
-  the coordinate system.
+  the coordinate system. This coordinate system can be moved by holding the right mouse button and moving the mouse, 
+  and it can be zoomed with the mouse wheel.
   <h5>Polar Coordinate System</h5>
   This coordinate system is mainly used for polar graphs. It has a maximum angle and a maximum radius, which can be
   set at the graph preferences dialog. Both, maximum angle and maximum radius can only be positive and start at 0.
+  The coordinate system can be zoomed with the mouse whell.
   <h5>3D Coordinate System</h5>
   This is the coordinate system for 3D-graphs, but it can also be used for all other types of graphs. It is a 
   cartesian 3D coordinate system, which has x-axes, y-axes and z-axes. They all can be positive and negative.
   The x-coorinate is horizontal, the y-coordinate is vertical and the z-coordinate is the deep. The 3D-coordinate
-  system can be zoomed by the mousewheel and it can be rotated by pressing the left mouse button and moving the
+  system can be zoomed by the mousewheel and it can be rotated by pressing the right mouse button and moving the
   cursor.
   
   
@@ -274,8 +277,8 @@
   <tr><td>Calculate X-values</td> 		  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td>x</td></tr>
   <tr><td>Points of Intersection</td>	  <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td> </td></tr>
   <tr><td>Maximum and minumum values</td> <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td> </td></tr>
-  <tr><td>calculate integral</td> 		  <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td> </td></tr>
-  <tr><td>calculate differential</td> 	  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td> </td></tr>
+  <tr><td>calculate integral</td> 		  <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td>x</td></tr>
+  <tr><td>calculate differential</td> 	  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td>x</td></tr>
   <tr><td>Calculate Z-value</td> 		  <td> </td>		<td> </td>	   <td> </td>		  <td> </td>		 <td>x</td></tr>
   </table>
 
@@ -299,13 +302,41 @@
   <h5>Maximum and minimum values:</h5>
   Choose a graph and press the calculate button and then all extreme values will be calculated.<br>
   <h5>Integral Calculation:</h5>
-  Just set a start point and an end point, then you can integrate the cosen function.<br>
+  Just set a start point and an end point, then you can integrate the cosen function. The size of the area between the graph and
+  the x-Axis is calculated. In 3D-Mode, you have to set X-Start, X-End, Z-Start and Z-End points for integration. The volume between the
+  X-Z-Plane and the graph is calculated.<br>
   <h5>Differential Calculation:</h5>
   For a differential calculation, you must choose a function and the point to calculate, then press the calculate
-  button.  It is also possible to calculate the cartesian differentiation of a parameter function.<br>
+  button.  It is also possible to calculate the cartesian differentiation of a parameter function. For 3D-Functions, you have to set a 
+  X- and a Z-Value. All partial differentials at the given point were calculated.<br>
   <h5>Calculate z-values:</h5>
   Choose a function from the box and type the x-value and the y-value into the input fields.
   Pressing the calculate-button will show you the results.<br>
+  
+  <br>
+  <a name="screenshot"><h3>3.2.3 Screenshots </h3></a>
+  If you choose the point Screenshot/Drawing in the box below the graphics area, you can save Screenshots and draw into the graphics window.<br>
+  <img src="screenshot.jpg"></img>
+  <br>
+  <h5>Saving a screenshot</h5>
+  In the window, shown above, you can save a screenshot of the graphics window. Before saving, you can change some options. You can set the size of
+  the picture, the image format and the file name. If you have set this, press the Save-button to save the image.<br>
+  <h5>Drawing</h5>
+  If you want to point out something in the screenshot or if you want to make an annotation, Extcalc provides some drawing tools.<br>
+  The drawing area is independent from the graphs and the coordinate system. That means, when you change the coordinate system or redraw graphs,
+  the drawed part will not move or disappear.<br>
+  The drawing functions have a preview mode. While you hold down the mouse button, you can only see a preview. The final view will be generated when you
+  release the mouse button.<br>
+  You can use several standard tools: free drawing, line, rect, circle<br>
+  At them, you chan change width and color.<br>
+  Text drawing: If you press the text button, you will se an input dialog where you can set the text to draw.
+  When you hold down the left mouse button, you can also see a preview. If you press the mouse button again, the text will be inserted again.
+  To change the text, text size or color, you have to press the Text-button again.<br>
+  Rubber: If you want to erase a part of the drawn things, you can use this tool. It makes the erased areas transparent. In preview mode, it is shown white.
+  <br>
+  <br>
+  Furthermore, you have an undo button and a button to clear the complete draw area.<br>
+  
   <a name="table"><h2>3.3 Tables</h2></a>
   In Extcalc, it is also possible to generate tables from functions. <br>
   <img src="table.jpg"> </img><br>
@@ -333,7 +364,7 @@
   The syntax for Extcalc scripts is similar to the C syntax, but the normal calculator commands and operations can also be used in this scripts.
   You can't use script command in the normal calculator. The scripts programs run in a seperate console, and you may the other extcalc functions 
   while running a script. Scripts can be managed, edited and started from the integrated script editor.<br>
-  In this version 0.5.0 are not all planned features included.<br><br>
+  In this version 0.6.0 are not all planned features included.<br><br>
 
   <a name="scriptedit"><h3>3.4.2 The Script-Editor</h3></a>
   <img src="scriptedit.jpg"></img>
@@ -372,10 +403,10 @@
   You can always stop a running script by pressing the "Kill"-Button at the script console window.<br>
   If the script does not stop before the timeout, an error message is displayed. You have to press the kill-button again to stop the script correctly.<br>
   <a name="scriptsyntax"><h3>3.4.3 Scripting Language</h3></a>
-  In version 0.5.0 of Extcalc, not all features are included. You can read more about the planned features 
+  In version 0.6.0 of Extcalc, not all features are included. You can read more about the planned features 
   at <a href="#else">Chapter 4</a>.<br>
   <h5>Problems:</h5>
-  This is a list of the current problems of the 0.5.0 version of the Extcalc Script Interpreter<br><br>
+  This is a list of the current problems of the 0.6.0 version of the Extcalc Script Interpreter<br><br>
   1. Speed<br>
   The extcalc scripts were ran by an Interpreter and so they run not as fast as compiled programmes, but it will be optimized in later versions.<br><br>
   2. Variables:<br>
@@ -840,9 +871,12 @@
   dynamic graphs<br>
   most scripting functions<br>
   script debugging<br>
+  zooming and moving graphics<br>
+  saving screenshots<br>
+  drawing into graphics window<br>
 
   <h5>Todo-list</h5>
-  scriptin functions for graph drawing and file usage<br> 
+  scripting functions for graph drawing and file usage<br> 
   matrix calculation<br> 
   vector calculation<br> 
   complex numbers<br> 
@@ -897,7 +931,7 @@
   CPU at about 1GHz (32Bit or 64Bit)<br> 
   enough RAM to run X<br> 
   For 3D-graphics, a 3D-graphics card is recommended<br>
-  A mouse with mousewheel is needed for zooming and rotating 3D-graphs<br>
+  A mouse with mousewheel is needed for zooming, moving and rotating graphs<br>
 
 
 

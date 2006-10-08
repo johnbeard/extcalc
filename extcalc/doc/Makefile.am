@@ -28,4 +28,5 @@ documentation_DATA = help_de.html \
 					 usevar.jpg \
 					 table.jpg \
 					 scriptedit.jpg \
-					 scriptrun.jpg
+					 scriptrun.jpg \
+					 screenshot.jpg

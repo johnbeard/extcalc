@@ -17,12 +17,6 @@
 //	- output format (const length, variable length, with eng. symbols)
 //	- output length
 //	- calculator mode (scientific, logic)
-//
-//
-//
-//
-//
-//
 
 
 
@@ -40,19 +34,18 @@ class CalcPreferences :public QWidget
 		CalcPreferences(Preferences p,QWidget*parent) :QWidget(parent,"Calculator Preferences",Qt::WStyle_Dialog | Qt::WType_Dialog)
 		{
 			pref=p;
-		
-			saveButton=new QPushButton("Save",this);
-			cancelButton=new QPushButton("Cancel",this);
+			saveButton=new QPushButton(CALCPREFH_STR1,this);
+			cancelButton=new QPushButton(CALCPREFH_STR2,this);
 			angleBox=new QComboBox(false,this);
 			outputBox=new QComboBox(false,this);
 			calcModeBox=new QComboBox(false,this);
 			baseBox=new QComboBox(false,this);
 			outputLenBox=new QSpinBox(2,pref.precision,1,this);
-			angleLabel=new QLabel("Angle",this);
-			outputLabel=new QLabel("Output Type",this);
-			outputLenLabel=new QLabel("Output Digits",this);
-			calcModeLabel=new QLabel("Mode",this);
-			baseLabel=new QLabel("Base",this);
+			angleLabel=new QLabel(CALCPREFH_STR3,this);
+			outputLabel=new QLabel(CALCPREFH_STR4,this);
+			outputLenLabel=new QLabel(CALCPREFH_STR5,this);
+			calcModeLabel=new QLabel(CALCPREFH_STR6,this);
+			baseLabel=new QLabel(CALCPREFH_STR7,this);
 			
 			setGeometry(0,0,400,260);
 			setFixedWidth(400);
@@ -75,12 +68,12 @@ class CalcPreferences :public QWidget
 			angleBox->insertItem("RAD");
 			angleBox->insertItem("GRA");
 			
-			outputBox->insertItem("Fixed Number of Digits");
-			outputBox->insertItem("Variable Number of Digits");
-			outputBox->insertItem("With Symbols");
+			outputBox->insertItem(CALCPREFH_STR8);
+			outputBox->insertItem(CALCPREFH_STR9);
+			outputBox->insertItem(CALCPREFH_STR10);
 			
-			calcModeBox->insertItem("Scientific");
-			calcModeBox->insertItem("Base");
+			calcModeBox->insertItem(CALCPREFH_STR11);
+			calcModeBox->insertItem(CALCPREFH_STR12);
 			
 			baseBox->insertItem("hex");
 			baseBox->insertItem("dec");
@@ -95,16 +88,16 @@ class CalcPreferences :public QWidget
 				angleBox->setCurrentText("RAD");
 			
 			if(pref.outputType==FIXEDNUM)
-				outputBox->setCurrentText("Fixed Number of Digits");
+				outputBox->setCurrentText(CALCPREFH_STR8);
 			else if(pref.outputType==VARIABLENUM)
-				outputBox->setCurrentText("Variable Number of Digits");
+				outputBox->setCurrentText(CALCPREFH_STR9);
 			else if(pref.outputType==EXPSYM)
-				outputBox->setCurrentText("With Symbols");
+				outputBox->setCurrentText(CALCPREFH_STR10);
 		
 			if(pref.calcType==BASE)
-				calcModeBox->setCurrentText("Base");
+				calcModeBox->setCurrentText(CALCPREFH_STR12);
 			else if(pref.calcType==SCIENTIFIC)
-				calcModeBox->setCurrentText("Scientific");
+				calcModeBox->setCurrentText(CALCPREFH_STR11);
 			
 			if(pref.base==HEX)
 				baseBox->setCurrentText("hex");

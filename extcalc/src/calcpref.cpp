@@ -2,32 +2,32 @@
 
 void CalcPreferences::saveSlot()
 {
-	if(angleBox->currentText() == "DEG")
+	if(angleBox->currentItem() == 0)
 		pref.angle=DEG;
-	else if(angleBox->currentText() == "RAD")
+	else if(angleBox->currentItem() == 1)
 		pref.angle=RAD;
-	else if(angleBox->currentText() == "GRA")
+	else if(angleBox->currentItem() == 2)
 		pref.angle=GRA;
 	
-	if(outputBox->currentText() == "Fixed Number of Digits")
+	if(outputBox->currentItem() == 0)
 		pref.outputType=FIXEDNUM;
-	else if(outputBox->currentText() == "Variable Number of Digits")
+	else if(outputBox->currentItem() == 1)
 		pref.outputType=VARIABLENUM;
-	else if(outputBox->currentText() == "With Symbols")
+	else if(outputBox->currentItem() == 2)
 		pref.outputType=EXPSYM;
 	
-	if(calcModeBox->currentText() == "Scientific")
+	if(calcModeBox->currentItem() == 0)
 		pref.calcType=SCIENTIFIC;
-	else if(calcModeBox->currentText() == "Base")
+	else if(calcModeBox->currentItem() == 1)
 		pref.calcType=BASE;
 	
-	if(baseBox->currentText() == "hex")
+	if(baseBox->currentItem() == 0)
 		pref.base=HEX;
-	else if(baseBox->currentText() == "dec")
+	else if(baseBox->currentItem() == 1)
 		pref.base=DEC;
-	else if(baseBox->currentText() == "oct")
+	else if(baseBox->currentItem() == 2)
 		pref.base=OCT;
-	else if(baseBox->currentText() == "bin")
+	else if(baseBox->currentItem() == 3)
 		pref.base=BIN;
 	
 	pref.outputLength=outputLenBox->value();

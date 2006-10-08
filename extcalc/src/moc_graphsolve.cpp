@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GraphSolveWidget meta object code from reading C++ file 'graphsolve.h'
 **
-** Created: Thu Sep 28 10:28:11 2006
+** Created: Sun Oct 8 16:30:56 2006
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -84,6 +84,7 @@ QMetaObject* GraphSolveWidget::staticMetaObject()
     static const QUMethod slot_13 = {"rectButtonSlot", 0, 0 };
     static const QUMethod slot_14 = {"circleButtonSlot", 0, 0 };
     static const QUMethod slot_15 = {"rubberButtonSlot", 0, 0 };
+    static const QUMethod slot_16 = {"textButtonSlot", 0, 0 };
     static const QMetaData slot_tbl[] = {
 	{ "solveButtonSlot()", &slot_0, QMetaData::Public },
 	{ "graphLMButtonPressed(double,double)", &slot_1, QMetaData::Public },
@@ -100,7 +101,8 @@ QMetaObject* GraphSolveWidget::staticMetaObject()
 	{ "lineButtonSlot()", &slot_12, QMetaData::Public },
 	{ "rectButtonSlot()", &slot_13, QMetaData::Public },
 	{ "circleButtonSlot()", &slot_14, QMetaData::Public },
-	{ "rubberButtonSlot()", &slot_15, QMetaData::Public }
+	{ "rubberButtonSlot()", &slot_15, QMetaData::Public },
+	{ "textButtonSlot()", &slot_16, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ "x", &static_QUType_double, 0, QUParameter::In }
@@ -172,7 +174,7 @@ QMetaObject* GraphSolveWidget::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"GraphSolveWidget", parentObject,
-	slot_tbl, 16,
+	slot_tbl, 17,
 	signal_tbl, 13,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -346,6 +348,7 @@ bool GraphSolveWidget::qt_invoke( int _id, QUObject* _o )
     case 13: rectButtonSlot(); break;
     case 14: circleButtonSlot(); break;
     case 15: rubberButtonSlot(); break;
+    case 16: textButtonSlot(); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }

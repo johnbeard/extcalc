@@ -20,8 +20,8 @@ Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner für Linux. Er unte
 
 
 2. INSTALLATION
-- auspacken (tar -xzf extcalc-0.5.0.tar.gz)
-- in Verzeichnis wechseln (cd extcalc-0.5.0)
+- auspacken (tar -xzf extcalc-0.6.0.tar.gz)
+- in Verzeichnis wechseln (cd extcalc-0.6.0)
 - konfigurieren (./configure --enable-language_de)
 - kompilieren (make)
 - root werden (su)
@@ -50,7 +50,7 @@ doc/                 Dokumentation
    
 	   
 4. VERSION
-Version 0.5.0
+Version 0.6.0
 
 Dies ist eine Testversion!
 Teile des Programms sind noch nicht fertig und deshalb inaktiv oder fehlerhaft.
@@ -70,6 +70,9 @@ Script-Sprache
 Script-Debug Nachrichten
 Script-Konsole
 Script-Editor
+Zoomen und verschieben für alle Typen von Graphen
+Zeichnen im Grafikfenster
+Abspeichern von Screenshots des Grafikfensters
 
 Noch zu tun:
 Dateisystem-Befehle und Grafik-Befehle für Script-Sprache
