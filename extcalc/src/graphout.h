@@ -108,7 +108,7 @@ public:
 		drawImage->setAlphaBuffer(true);
 		drawMap=new QPixmap(*drawImage);
 		backCursor=0;
-		backMap=new (QPixmap*)[BACKSTEPS];
+		backMap=new QPixmap*[BACKSTEPS];
 		for(int c=0; c<BACKSTEPS; c++)
 			backMap[c]=NULL;
 		

@@ -1556,7 +1556,7 @@ int Calculate::split(char* line)
 		while(true)
 		{
 			pos1=bracketFindRev(line,"+",pos);
-			if(pos1==-1)
+			if(pos1<=0)
 				break;
 			if(line[pos1-1]=='e')
 				pos=pos1-1;
@@ -1566,7 +1566,7 @@ int Calculate::split(char* line)
 		while(true)
 		{
 			pos2=bracketFindRev(line,"-",pos);
-			if(pos2==-1)
+			if(pos2<=0)
 				break;
 			if(line[pos2-1]=='e')
 				pos=pos2-1;
@@ -1575,9 +1575,9 @@ int Calculate::split(char* line)
 		
 		if(pos2>pos1)
 		{
-			if((line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
+			if((pos2>0 && line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
 			   || line[pos2-1]>='0' && line[pos2-1]<='9'
-			   || line[pos2-1]=='.' || line[pos2-1]==')'|| line[pos2-1]==']') && pos2>0)
+			   || line[pos2-1]=='.' || line[pos2-1]==')'|| line[pos2-1]==']'))
 			{
 				pos=pos2;
 				number=NAN;
@@ -1605,9 +1605,9 @@ int Calculate::split(char* line)
 		}
 		else if(pos1>pos2)
 		{
-			if((line[pos1-1] >='A' && line[pos1-1]<='Z'					//binary + operator
+			if(pos1>0 && (line[pos1-1] >='A' && line[pos1-1]<='Z'					//binary + operator
 						 || line[pos1-1]>='0' && line[pos1-1]<='9'
-						 || line[pos1-1]=='.' || line[pos1-1]==')' || line[pos1-1]==']') && pos1>0)
+						 || line[pos1-1]=='.' || line[pos1-1]==')' || line[pos1-1]==']'))
 			{
 				pos=pos1;
 				number=NAN;
