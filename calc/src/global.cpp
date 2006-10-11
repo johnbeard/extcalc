@@ -229,10 +229,10 @@ char* checkString(char* str,Preferences*pref,Variable*vars)
 			int pos=-1;
 			for(int c1=c+1; c1<calcLen; c1++)
 				if(calcString[c1]=='\n')
-				{
-					pos=c1;
-					break;
-				}
+			{
+				pos=c1;
+				break;
+			}
 			if(pos==-1)
 				return NULL;
 			else {
@@ -338,7 +338,9 @@ char* checkString(char* str,Preferences*pref,Variable*vars)
 			calcString[c]='+';
 			tmp=calcString;
 			calcString=strcut(calcString,c+1);
+			c--;
 			delete[]tmp;
+			continue;
 		}
 		if(calcString[c] == (char)0xb2)	// second power
 		{
@@ -347,12 +349,12 @@ char* checkString(char* str,Preferences*pref,Variable*vars)
 			delete[]tmp;
 			if(c>0)
 				if(calcString[c-1] == (char)0xc2)
-				{
-					tmp=calcString;
-					calcString=strcut(calcString,c-1,1);
-					delete[]tmp;
-					c--;
-				}
+			{
+				tmp=calcString;
+				calcString=strcut(calcString,c-1,1);
+				delete[]tmp;
+				c--;
+			}
 			tmp=calcString;
 			calcString=strins(calcString,"^2",c);
 			delete[]tmp;
@@ -365,12 +367,12 @@ char* checkString(char* str,Preferences*pref,Variable*vars)
 			delete[]tmp;
 			if(c>0)
 				if(calcString[c-1] == (char)0xc2)
-				{
-					tmp=calcString;
-					calcString=strcut(calcString,c-1,1);
-					delete[]tmp;
-					c--;
-				}
+			{
+				tmp=calcString;
+				calcString=strcut(calcString,c-1,1);
+				delete[]tmp;
+				c--;
+			}
 			tmp=calcString;
 			calcString=strins(calcString,"^3",c);
 			delete[]tmp;
@@ -451,12 +453,16 @@ char* checkString(char* str,Preferences*pref,Variable*vars)
 			tmp=calcString;
 			calcString=strcut(calcString,c+1);
 			delete[]tmp;
+			c--;
+			continue;
 		}
 		else if((calcString[c+1] == '+' || calcString[c+1] == '-') && calcString[c] == '+')
 		{
 			tmp=calcString;
 			calcString=strcut(calcString,c);
 			delete[]tmp;
+			c--;
+			continue;
 		}
 		calcLen=strlen(calcString);
 	}
@@ -605,10 +611,11 @@ char* checkString(char* str,Preferences*pref,Variable*vars)
 		calcLen=strlen(calcString);
 	}
 	
-
 	return calcString;
 	
 }
+
+
 
 
 
@@ -646,7 +653,7 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		while(true)
 		{
 			pos1=bracketFindRev(line,"+",pos);
-			if(pos1==-1)
+			if(pos1<=0)
 				break;
 			if(line[pos1-1]=='e')
 				pos=pos1-1;
@@ -656,7 +663,7 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		while(true)
 		{
 			pos2=bracketFindRev(line,"-",pos);
-			if(pos2==-1)
+			if(pos2<=0)
 				break;
 			if(line[pos2-1]=='e')
 				pos=pos2-1;
@@ -666,20 +673,20 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		
 		if(pos2>pos1)
 		{
-			if((line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
-			   || line[pos2-1]>='0' && line[pos2-1]<='9'
-			   || line[pos2-1]=='.' || line[pos2-1]==')') && pos2>0)
+			if( pos2>0 &&(line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
+						 || line[pos2-1]>='0' && line[pos2-1]<='9'
+						 || line[pos2-1]=='.' || line[pos2-1]==')'))
 			{
 				pos=pos2;
 
-					recString1=new char[pos+1];
-					strcopy(recString1,line,pos);
-					recString2=new char[len-pos];
-					strcopy(recString2,&line[pos+1],len-pos-1);
-					complete=calculate(recString1,pref,vars)-calculate(recString2,pref,vars);
-					delete[]recString1;
-					delete[]recString2;
-					return complete;
+				recString1=new char[pos+1];
+				strcopy(recString1,line,pos);
+				recString2=new char[len-pos];
+				strcopy(recString2,&line[pos+1],len-pos-1);
+				complete=calculate(recString1,pref,vars)-calculate(recString2,pref,vars);
+				delete[]recString1;
+				delete[]recString2;
+				return complete;
 			}
 			else if(pos2==0)								//unary - operator
 				return (long double)-1.0*calculate(&line[1],pref,vars);
@@ -687,26 +694,27 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		}
 		else if(pos1>pos2)
 		{
-			if((line[pos1-1] >='A' && line[pos1-1]<='Z'		//binary + operator
-						 || line[pos1-1]>='0' && line[pos1-1]<='9'
-						 || line[pos1-1]=='.' || line[pos1-1]==')') && pos1>0)
+			if(pos1>0 && (line[pos1-1] >='A' && line[pos1-1]<='Z'		//binary + operator
+						|| line[pos1-1]>='0' && line[pos1-1]<='9'
+						|| line[pos1-1]=='.' || line[pos1-1]==')'))
 			{
 				pos=pos1;
 
-					recString1=new char[pos+1];
-					strcopy(recString1,line,pos);
-					recString2=new char[len-pos];
-					strcopy(recString2,&line[pos+1],len-pos-1);
-					complete=calculate(recString1,pref,vars)+calculate(recString2,pref,vars);
-					delete[]recString1;
-					delete[]recString2;
-					return complete;
+				recString1=new char[pos+1];
+				strcopy(recString1,line,pos);
+				recString2=new char[len-pos];
+				strcopy(recString2,&line[pos+1],len-pos-1);
+				complete=calculate(recString1,pref,vars)+calculate(recString2,pref,vars);
+				delete[]recString1;
+				delete[]recString2;
+				return complete;
 
 			}
 			else if(pos1==0)								//unary + operator
 				return calculate(&line[1],pref,vars);
 		}
 	}
+
 	
 	if(bracketFind(line,"*") != -1 || bracketFind(line,"/") != -1)
 	{
@@ -1218,7 +1226,7 @@ int Calculate::split(char* line)
 		while(true)
 		{
 			pos1=bracketFindRev(line,"+",pos);
-			if(pos1==-1)
+			if(pos1<=0)
 				break;
 			if(line[pos1-1]=='e')
 				pos=pos1-1;
@@ -1228,7 +1236,7 @@ int Calculate::split(char* line)
 		while(true)
 		{
 			pos2=bracketFindRev(line,"-",pos);
-			if(pos2==-1)
+			if(pos2<=0)
 				break;
 			if(line[pos2-1]=='e')
 				pos=pos2-1;
@@ -1237,9 +1245,9 @@ int Calculate::split(char* line)
 		
 		if(pos2>pos1)
 		{
-			if((line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
-			   || line[pos2-1]>='0' && line[pos2-1]<='9'
-			   || line[pos2-1]=='.' || line[pos2-1]==')'|| line[pos2-1]==']') && pos2>0)
+			if((pos2>0 && line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
+						 || line[pos2-1]>='0' && line[pos2-1]<='9'
+						 || line[pos2-1]=='.' || line[pos2-1]==')'|| line[pos2-1]==']'))
 			{
 				pos=pos2;
 				number=NAN;
@@ -1267,9 +1275,9 @@ int Calculate::split(char* line)
 		}
 		else if(pos1>pos2)
 		{
-			if((line[pos1-1] >='A' && line[pos1-1]<='Z'					//binary + operator
-						 || line[pos1-1]>='0' && line[pos1-1]<='9'
-						 || line[pos1-1]=='.' || line[pos1-1]==')' || line[pos1-1]==']') && pos1>0)
+			if(pos1>0 && (line[pos1-1] >='A' && line[pos1-1]<='Z'					//binary + operator
+						|| line[pos1-1]>='0' && line[pos1-1]<='9'
+						|| line[pos1-1]=='.' || line[pos1-1]==')' || line[pos1-1]==']'))
 			{
 				pos=pos1;
 				number=NAN;
@@ -3914,8 +3922,11 @@ Number Script::exec()
 			if(tcsetattr(fileno(stdout),TCSANOW,&terminfo)!=0)
 				perror("tcsetattr fehler");
 			int key=getchar();
-			if(key<0)
+			if(key<=0)
+			{
 				key=0;
+				clearerr(stdin);
+			}
 			value.cval[0]=(char)key;
 
 			value.fval=(long double)value.cval[0];

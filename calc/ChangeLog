@@ -27,3 +27,7 @@ alpha:
 - script debug messages
 - documentation update
 - bugfixed calculator algorithms
+
+0.6.0
+- updated to Extcalc calculator algorithms v0.6.0
+- fixed bug in script interpreter (BSD)
