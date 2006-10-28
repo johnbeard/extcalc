@@ -46,6 +46,8 @@ public:
 	{
 		pref=p;
 		vars=v;
+		pref.calcType=SCIENTIFIC;
+		pref.outputLength=pref.precision=15;
 		rectLabel=new QLabel(GRAPHPREFH_STR2,this);
 		xminLabel=new QLabel("x min:",this);
 		xmaxLabel=new QLabel("x max:",this);

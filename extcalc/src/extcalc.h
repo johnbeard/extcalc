@@ -20,6 +20,7 @@
 #include <qtabdialog.h>
 #include <float.h>
 #include <qtranslator.h>
+#include <locale.h>
 
 
 //Unicode characters:
@@ -126,6 +127,7 @@
 //	- graph analyse window does not allways process mouse events						ok	//
 //	- preferences dialogs can't process mathematical expressions						ok  //
 //	- Script editor has no Menu bar															//
+//	- converting floating point values does not work for all locale settings			ok	//
 
 //////////////////////////used variables//////////////////////////
 //

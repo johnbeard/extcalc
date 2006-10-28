@@ -64,7 +64,7 @@ int CoordinatePreferences::savePref()
 	}
 	else if(pref.rasterSizeAngle <=0.0)
 	{
-		MessageBox(GRAPHPREFC_STR9);
+		MessageBox(GRAPHPREFC_STR9+rasterSizeAngle->text());
 		return -1;
 	}
 	else if(pref.rasterSizeRadius <=0.0)

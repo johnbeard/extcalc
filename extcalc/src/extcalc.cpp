@@ -13,6 +13,7 @@ int main( int argc, char **argv ) {
 	QFont stdFont("Helvetica");
 	stdFont.setPixelSize(14);
 	a.setFont(stdFont);
+	setlocale(LC_NUMERIC,"C");	//use . for floating point values in every language
 	
 #ifdef LANGUAGE_DE
 	QTranslator german(NULL);
@@ -117,7 +118,7 @@ int MainObject::readConfigFile()
 			fwrite("SHOWWIN2=false\n",15,1,configFile);
 			fwrite("SHOWWIN3=true\n",14,1,configFile);
 			fwrite("SHOWWIN4=true\n",14,1,configFile);
-			fwrite("SHOWWIN5=true\n",15,1,configFile);
+			fwrite("SHOWWIN5=true\n",14,1,configFile);
 			fwrite("SHOWWIN6=false\n",15,1,configFile);
 			fwrite("SCRIPTROOT=\n",12,1,configFile);
 			fwrite("CODEPATH=\n",10,1,configFile);
