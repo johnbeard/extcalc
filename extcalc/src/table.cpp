@@ -95,7 +95,7 @@ void TableWidget::calculateButtonSlot()
 			{
 				outputTable->setNumCols(outputTable->numCols()+1);
 				outputTable->horizontalHeader()->setLabel(outputTable->numCols()-1,"y"+QString::number(c+1)+"(x)");
-				char*cleanString=checkString(pref.functions[c],&pref,vars);
+				char*cleanString=checkString(pref.functions[c],&pref);
 				Calculate ca(NULL,cleanString,&pref,vars);
 				
 				for(int c=0; c<=pref.tableXSteps;c++)
@@ -114,7 +114,7 @@ void TableWidget::calculateButtonSlot()
 			{
 				outputTable->setNumCols(outputTable->numCols()+1);
 				outputTable->horizontalHeader()->setLabel(outputTable->numCols()-1,"r"+QString::number(c+1)+"(x)");
-				char*cleanString=checkString(pref.functions[c],&pref,vars);
+				char*cleanString=checkString(pref.functions[c],&pref);
 				Calculate ca(NULL,cleanString,&pref,vars);
 				for(int c=0; c<=pref.tableXSteps;c++)
 				{
@@ -133,8 +133,8 @@ void TableWidget::calculateButtonSlot()
 				outputTable->setNumCols(outputTable->numCols()+2);
 				outputTable->horizontalHeader()->setLabel(outputTable->numCols()-2,"X"+QString::number(c+1)+"(T)");
 				outputTable->horizontalHeader()->setLabel(outputTable->numCols()-1,"Y"+QString::number(c+1)+"(T)");
-				char*cleanStringX=checkString(pref.functions[c].left(pref.functions[c].find("\\")),&pref,vars);
-				char*cleanStringY=checkString(pref.functions[c].right(pref.functions[c].length()-1-pref.functions[c].find("\\")),&pref,vars);
+				char*cleanStringX=checkString(pref.functions[c].left(pref.functions[c].find("\\")),&pref);
+				char*cleanStringY=checkString(pref.functions[c].right(pref.functions[c].length()-1-pref.functions[c].find("\\")),&pref);
 				Calculate caX(NULL,cleanStringX,&pref,vars);
 				Calculate caY(NULL,cleanStringY,&pref,vars);
 				for(int c=0; c<=pref.tableXSteps;c++)
@@ -157,7 +157,7 @@ void TableWidget::calculateButtonSlot()
 			{
 				outputTable->setNumCols(outputTable->numCols()+1);
 				outputTable->horizontalHeader()->setLabel(outputTable->numCols()-1,"y"+QString::number(c+1)+"(x)");
-				char*cleanString=checkString(pref.functions[c],&pref,vars);
+				char*cleanString=checkString(pref.functions[c],&pref);
 				Calculate ca(NULL,cleanString,&pref,vars);
 				for(int c=0; c<=pref.tableXSteps;c++)
 				{
@@ -176,7 +176,7 @@ void TableWidget::calculateButtonSlot()
 				outputTable->setNumCols(outputTable->numCols()+10);
 				for(int c1=0; c1<pref.tableZSteps;c1++)
 					outputTable->horizontalHeader()->setLabel(outputTable->numCols()-10+c1,"y"+QString::number(c+1)+"(x"+QString::number((double)c1*tableZStep+pref.tableZStart)+")");
-				char*cleanString=checkString(pref.functions[c],&pref,vars);
+				char*cleanString=checkString(pref.functions[c],&pref);
 				Calculate ca(NULL,cleanString,&pref,vars);
 				for(int c=0; c<=pref.tableXSteps;c++)
 				{

@@ -101,10 +101,10 @@ void ExtButtons::buttonSlot(int num)
 			break;
 		case 7:
 			if(pref.shift)
-				emit emitText("³");
+				emit emitText("\xb3");
 			else if(pref.alpha)
 				emit emitText(find(num)->text());
-			else emit emitText("²");
+			else emit emitText("\xb2");
 			break;
 		case 8:
 

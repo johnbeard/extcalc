@@ -57,24 +57,24 @@ void CalcInput::keyPressEvent(QKeyEvent*e)
 		case 8:									//backspace
 				backKey();
 			break;
-			case 127:								//delete
-					deleteKey();
-				break;
-				case 9:									//tab
-					insert(" ");
-					line.append(" ");
-					lineCursor++;
-					break;
-					case 0:									//special keys
-						if(e->key() == Qt::Key_Right)
-							cursorKey(1);
-						if(e->key() == Qt::Key_Left)
-							cursorKey(3);
-						if(e->key() == Qt::Key_Up)
-							cursorKey(0);
-						if(e->key() == Qt::Key_Down && para < paragraphs())
-							cursorKey(2);
-						break;
+		case 127:								//delete
+			deleteKey();
+			break;
+		case 9:									//tab
+			insert(" ");
+			line.append(" ");
+			lineCursor++;
+			break;
+		case 0:									//special keys
+			if(e->key() == Qt::Key_Right)
+				cursorKey(1);
+			if(e->key() == Qt::Key_Left)
+				cursorKey(3);
+			if(e->key() == Qt::Key_Up)
+				cursorKey(0);
+			if(e->key() == Qt::Key_Down && para < paragraphs())
+				cursorKey(2);
+			break;
 		default:
 		{
 			setBold(false);
@@ -180,19 +180,19 @@ void CalcInput::calculateKey()
 		for(c=resultParagraphs.GetLen()-1; c>=1; c--)
 			if(resultParagraphs[c]-1 != resultParagraphs[c-1])
 			{
-				cleanString=checkString(text(resultParagraphs[c]-1),&pref,vars);
+				cleanString=checkString(text(resultParagraphs[c]-1),&pref);
 				break;
 			}
 		if(c<=0)
-			cleanString=checkString(text(0),&pref,vars);
-		result=calculate(cleanString,&pref,vars);
+			cleanString=checkString(text(0),&pref);
+		result=calculate(cleanString,&pref,vars,vecs);
 		delete[]cleanString;
 		setCursorPosition(paragraphs()-1,0);
 	}
 	else {
 		insert(QString("\n"));
-		char*cleanString=checkString(text(para),&pref,vars);
-		result=calculate(cleanString,&pref,vars);
+		char*cleanString=checkString(text(para),&pref);
+		result=calculate(cleanString,&pref,vars,vecs);
 		delete[]cleanString;
 	}
 	

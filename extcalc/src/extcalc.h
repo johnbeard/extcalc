@@ -218,6 +218,7 @@ class MainObject :public QTabWidget
 	QLabel*versionInfo;
 	QPixmap*appIcon;
 	Variable *vars;
+	Vector *vecs;
 	bool calcFocus;
 	bool calcModeChanged;
 
@@ -229,6 +230,13 @@ MainObject() :QTabWidget()
 	vars=new Variable [27];
 	for(int c=0; c<27;c++)
 		vars[c].NewItem(0.0);
+	Number n0;
+	n0.type=NFLOAT;
+	n0.fval=0.0;
+	vecs=new Vector [27];
+	for(int c=0; c<27;c++)
+		vecs[c].NewItem(n0);
+	
 	appIcon=new QPixmap(QString(INSTALLDIR)+"/data/icon22.png");
 	if(!appIcon->isNull())
 		setIcon(*appIcon);
@@ -472,8 +480,8 @@ MainObject() :QTabWidget()
 
 	
 
-	calculator=new CalcWidget(this,pref,vars);
-	calculator2=new CalcWidget(this,pref,vars);
+	calculator=new CalcWidget(this,pref,vars,vecs);
+	calculator2=new CalcWidget(this,pref,vars,vecs);
 	graph = new GraphWidget(this,pref,vars);
 	table=new TableWidget(this,pref,vars);
 	scripting=new ScriptWidget(this,pref,vars);

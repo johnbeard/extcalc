@@ -116,7 +116,7 @@ QString formatOutput(long double num,Preferences*pref)
 				else if(num < 1e-3 && num > -1e-3)
 				{
 					num*=1e6;
-					ret="";
+					ret="\xb5";
 				}
 				else if(num < 1 && num > -1)
 				{
@@ -223,8 +223,9 @@ QColor getColor(QString colorName)
 	else if(colorName == GRAPHH_COL11)
 		return QColor(1,1,1);
 	else return QColor(0,0,0);
-	
 }
+
+
 QString getColorName(QColor col)
 {
 	if(col == QColor(0,0,0))
@@ -255,12 +256,21 @@ QString getColorName(QColor col)
 
 long double runCalc(QString line,Preferences*pref,Variable*vars)
 {
-	char*cleanString=checkString(line,pref,vars);
+	Vector*vecs=new Vector[27];
+	Number n;
+	n.type=NFLOAT;
+	for(int c=0; c<27; c++)
+	{
+		n.fval=vars[c][0];
+		vecs[c].NewItem(n);
+	}
+	
+	char*cleanString=checkString(line,pref);
 	if(cleanString==NULL)
 		return NAN;
 	else 
 	{
-		long double ret= calculate(cleanString,pref,vars);
+		long double ret= calculate(cleanString,pref,vars,vecs);
 		delete[]cleanString;
 		return ret;
 	}
@@ -322,7 +332,7 @@ int YesNoBox(QString text)
 
 }
 
-char*checkString(QString input,Preferences*pref,Variable*vars)
+char*checkString(QString input,Preferences*pref)
 {
 
 	if(input.length()<=0)
@@ -353,7 +363,7 @@ char*checkString(QString input,Preferences*pref,Variable*vars)
 		output[c]=qstr[c].latin1();
 		//make all changes here
 	}
-	char*ret=checkStringAnsi(output,pref,vars);
+	char*ret=checkStringAnsi(output,pref);
 	delete[]output;
 	return ret;
 }
@@ -511,7 +521,7 @@ int strcopy(char*dest,char*src,int len)
 }
 
 
-char* checkStringAnsi(char* str,Preferences*pref,Variable*vars)
+char* checkStringAnsi(char* str,Preferences*pref)
 {
 	char* calcString=new char[strlen(str)+1];
 	char*tmp;
@@ -850,7 +860,7 @@ char* checkStringAnsi(char* str,Preferences*pref,Variable*vars)
 			continue;
 		if(strncmp(&calcString[c],"ans",3) == 0)
 		{
-			tmp=calcString;
+/*			tmp=calcString;
 			calcString=strcut(calcString,c,3);
 			delete[]tmp;
 			char*lastRes=new char[60];
@@ -875,6 +885,13 @@ char* checkStringAnsi(char* str,Preferences*pref,Variable*vars)
 			}
 			
 			delete[]lastRes;
+			*/
+			tmp=calcString;
+			calcString=strcut(calcString,c,3);
+			delete[]tmp;
+			tmp=calcString;
+			calcString=strins(calcString,"$A",c);
+			delete[]tmp;
 		}
 		if(strncmp(&calcString[c],"pi",2) == 0)
 		{
@@ -951,7 +968,7 @@ char* checkStringAnsi(char* str,Preferences*pref,Variable*vars)
 
 
 
-long double calculate(char* line,Preferences*pref,Variable*vars)
+long double calculate(char* line,Preferences*pref,Variable*vars,Vector*vecs)
 {
 //	perror(line);
 	if(line == NULL)
@@ -974,7 +991,7 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 
 		recString1=new char[pos1];
 		strcopy(recString1,line,pos1-1);
-		vars[var][0]=calculate(recString1,pref,vars);
+		vars[var][0]=calculate(recString1,pref,vars,vecs);
 		delete[]recString1;
 		return vars[var][0];
 	}
@@ -1014,13 +1031,13 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 					strcopy(recString1,line,pos);
 					recString2=new char[len-pos];
 					strcopy(recString2,&line[pos+1],len-pos-1);
-					complete=calculate(recString1,pref,vars)-calculate(recString2,pref,vars);
+					complete=calculate(recString1,pref,vars,vecs)-calculate(recString2,pref,vars,vecs);
 					delete[]recString1;
 					delete[]recString2;
 					return complete;
 			}
 			else if(pos2==0)								//unary - operator
-				return (long double)-1.0*calculate(&line[1],pref,vars);
+				return (long double)-1.0*calculate(&line[1],pref,vars,vecs);
 			
 		}
 		else if(pos1>pos2)
@@ -1035,14 +1052,14 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 					strcopy(recString1,line,pos);
 					recString2=new char[len-pos];
 					strcopy(recString2,&line[pos+1],len-pos-1);
-					complete=calculate(recString1,pref,vars)+calculate(recString2,pref,vars);
+					complete=calculate(recString1,pref,vars,vecs)+calculate(recString2,pref,vars,vecs);
 					delete[]recString1;
 					delete[]recString2;
 					return complete;
 
 			}
 			else if(pos1==0)								//unary + operator
-				return calculate(&line[1],pref,vars);
+				return calculate(&line[1],pref,vars,vecs);
 		}
 	}
 	
@@ -1061,7 +1078,7 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 			strcopy(recString1,line,pos);
 			recString2=new char[len-pos];
 			strcopy(recString2,&line[pos+1],len-pos-1);
-			complete=calculate(recString1,pref,vars)/calculate(recString2,pref,vars);
+			complete=calculate(recString1,pref,vars,vecs)/calculate(recString2,pref,vars,vecs);
 			delete[]recString1;
 			delete[]recString2;
 			return complete;
@@ -1073,7 +1090,7 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 			strcopy(recString1,line,pos);
 			recString2=new char[len-pos];
 			strcopy(recString2,&line[pos+1],len-pos-1);
-			complete=calculate(recString1,pref,vars)*calculate(recString2,pref,vars);
+			complete=calculate(recString1,pref,vars,vecs)*calculate(recString2,pref,vars,vecs);
 			delete[]recString1;
 			delete[]recString2;
 			return complete;
@@ -1086,7 +1103,7 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		strcopy(recString1,line,pos);
 		recString2=new char[len-pos];
 		strcopy(recString2,&line[pos+1],len-pos-1);
-		complete=fmodl(calculate(recString1,pref,vars),calculate(recString2,pref,vars));
+		complete=fmodl(calculate(recString1,pref,vars,vecs),calculate(recString2,pref,vars,vecs));
 		delete[]recString1;
 		delete[]recString2;
 		return complete;
@@ -1100,8 +1117,8 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		strcopy(recString1,line,pos);
 		recString2=new char[len-pos-1];
 		strcopy(recString2,&line[pos+2],len-pos-2);
-		int num1=(int)calculate(recString1,pref,vars);
-		int num2=(int)calculate(recString2,pref,vars);
+		int num1=(int)calculate(recString1,pref,vars,vecs);
+		int num2=(int)calculate(recString2,pref,vars,vecs);
 		delete[]recString1;
 		delete[]recString2;
 		if(num1==0 && num2==0)
@@ -1115,8 +1132,8 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		strcopy(recString1,line,pos);
 		recString2=new char[len-pos-1];
 		strcopy(recString2,&line[pos+2],len-pos-2);
-		int num1=(int)calculate(recString1,pref,vars);
-		int num2=(int)calculate(recString2,pref,vars);
+		int num1=(int)calculate(recString1,pref,vars,vecs);
+		int num2=(int)calculate(recString2,pref,vars,vecs);
 		delete[]recString1;
 		delete[]recString2;
 		if(num1==0 || num2==0)
@@ -1130,8 +1147,8 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		strcopy(recString1,line,pos);
 		recString2=new char[len-pos-1];
 		strcopy(recString2,&line[pos+2],len-pos-2);
-		long long num1=(long long)calculate(recString1,pref,vars);
-		long long num2=(long long)calculate(recString2,pref,vars);
+		long long num1=(long long)calculate(recString1,pref,vars,vecs);
+		long long num2=(long long)calculate(recString2,pref,vars,vecs);
 		delete[]recString1;
 		delete[]recString2;
 		return (long double)(num1>>num2);
@@ -1143,8 +1160,8 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		strcopy(recString1,line,pos);
 		recString2=new char[len-pos-1];
 		strcopy(recString2,&line[pos+2],len-pos-2);
-		long long num1=(long long)calculate(recString1,pref,vars);
-		long long num2=(long long)calculate(recString2,pref,vars);
+		long long num1=(long long)calculate(recString1,pref,vars,vecs);
+		long long num2=(long long)calculate(recString2,pref,vars,vecs);
 		delete[]recString1;
 		delete[]recString2;
 		return (long double)(num1<<num2);
@@ -1156,8 +1173,8 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		strcopy(recString1,line,pos);
 		recString2=new char[len-pos];
 		strcopy(recString2,&line[pos+1],len-pos-1);
-		long long num1=(long long)calculate(recString1,pref,vars);
-		long long num2=(long long)calculate(recString2,pref,vars);
+		long long num1=(long long)calculate(recString1,pref,vars,vecs);
+		long long num2=(long long)calculate(recString2,pref,vars,vecs);
 		delete[]recString1;
 		delete[]recString2;
 		return(long double)(num1^num2);
@@ -1169,8 +1186,8 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		strcopy(recString1,line,pos);
 		recString2=new char[len-pos];
 		strcopy(recString2,&line[pos+1],len-pos-1);
-		long long num1=(long long)calculate(recString1,pref,vars);
-		long long num2=(long long)calculate(recString2,pref,vars);
+		long long num1=(long long)calculate(recString1,pref,vars,vecs);
+		long long num2=(long long)calculate(recString2,pref,vars,vecs);
 		delete[]recString1;
 		delete[]recString2;
 		return(long double)(num1|num2);
@@ -1182,8 +1199,8 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		strcopy(recString1,line,pos);
 		recString2=new char[len-pos];
 		strcopy(recString2,&line[pos+1],len-pos-1);
-		long long num1=(long long)calculate(recString1,pref,vars);
-		long long num2=(long long)calculate(recString2,pref,vars);
+		long long num1=(long long)calculate(recString1,pref,vars,vecs);
+		long long num2=(long long)calculate(recString2,pref,vars,vecs);
 		delete[]recString1;
 		delete[]recString2;
 		return(long double)(num1&num2);
@@ -1198,7 +1215,7 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		strcopy(recString1,line,pos1);
 		recString2=new char[len-pos1];
 		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		complete=powl(calculate(recString1,pref,vars),calculate(recString2,pref,vars));
+		complete=powl(calculate(recString1,pref,vars,vecs),calculate(recString2,pref,vars,vecs));
 		delete[] recString1;
 		delete[] recString2;
 	}
@@ -1211,7 +1228,7 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		strcopy(recString1,line,pos);
 		strcopy(recString2,&line[pos+2],len-pos-2);
 		
-		complete=powl(calculate(recString2,pref,vars),1.0/calculate(recString1,pref,vars));
+		complete=powl(calculate(recString2,pref,vars,vecs),1.0/calculate(recString1,pref,vars,vecs));
 		delete[]recString1;
 		delete[]recString2;
 		return complete;
@@ -1226,79 +1243,79 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 
 		if(strncmp(line,"asinh",5) == 0)
 		{
-			complete=asinhl(calculate(&line[5],pref,vars));
+			complete=asinhl(calculate(&line[5],pref,vars,vecs));
 		}
 		else if(strncmp(line,"acosh",5) == 0)
 		{
-			complete=acoshl(calculate(&line[5],pref,vars));
+			complete=acoshl(calculate(&line[5],pref,vars,vecs));
 		}
 		else  if(strncmp(line,"atanh",5) == 0)
 		{
-			complete=atanhl(calculate(&line[5],pref,vars));
+			complete=atanhl(calculate(&line[5],pref,vars,vecs));
 		}
 		else  if(strncmp(line,"asin",4) == 0)
 		{
-			complete=asinl(calculate(&line[4],pref,vars))/mult;
+			complete=asinl(calculate(&line[4],pref,vars,vecs))/mult;
 		}
 		else if(strncmp(line,"acos",4) == 0)
 		{
-			complete=acosl(calculate(&line[4],pref,vars))/mult;
+			complete=acosl(calculate(&line[4],pref,vars,vecs))/mult;
 		}
 		else if(strncmp(line,"atan",4) == 0)
 		{
-			complete=atanl(calculate(&line[4],pref,vars))/mult;
+			complete=atanl(calculate(&line[4],pref,vars,vecs))/mult;
 		}
 		else if(strncmp(line,"sinh",4) == 0)
 		{
-			complete=sinhl(calculate(&line[4],pref,vars));
+			complete=sinhl(calculate(&line[4],pref,vars,vecs));
 		}
 		else if(strncmp(line,"cosh",4) == 0)
 		{
-			complete=coshl(calculate(&line[4],pref,vars));
+			complete=coshl(calculate(&line[4],pref,vars,vecs));
 		}
 		else if(strncmp(line,"tanh",4) == 0)
 		{
-			complete=tanhl(calculate(&line[4],pref,vars));
+			complete=tanhl(calculate(&line[4],pref,vars,vecs));
 		}
 		else if(strncmp(line,"sin",3) == 0)
 		{
-			complete=sinl(calculate(&line[3],pref,vars)*mult);
+			complete=sinl(calculate(&line[3],pref,vars,vecs)*mult);
 		}
 		else if(strncmp(line,"cos",3) == 0)
 		{
-			complete=cosl(calculate(&line[3],pref,vars)*mult);
+			complete=cosl(calculate(&line[3],pref,vars,vecs)*mult);
 		}
 		else if(strncmp(line,"tan",3) == 0)
 		{
-			complete=tanl(calculate(&line[3],pref,vars)*mult);
+			complete=tanl(calculate(&line[3],pref,vars,vecs)*mult);
 		}
 		else if(strncmp(line,"log",3) == 0)
 		{
-			complete=logl(calculate(&line[3],pref,vars))/log(10);
+			complete=logl(calculate(&line[3],pref,vars,vecs))/log(10);
 		}
 		else if(strncmp(line,"ln",2) == 0)
 		{
-			complete=logl(calculate(&line[2],pref,vars));
+			complete=logl(calculate(&line[2],pref,vars,vecs));
 		}
 		else if(strncmp(line,"rnd",3) == 0)
 		{
 #if RAND_MAX < 1000000000
-			complete=(((rand()*(1000000000/RAND_MAX))%1000000000)*calculate(&line[3],pref,vars))/1000000000;
+			complete=(((rand()*(1000000000/RAND_MAX))%1000000000)*calculate(&line[3],pref,vars,vecs))/1000000000;
 #else
-			complete=((rand()%1000000000)*calculate(&line[3],pref,vars))/1000000000;
+			complete=((rand()%1000000000)*calculate(&line[3],pref,vars,vecs))/1000000000;
 #endif
 		}
 		else if(strncmp(line,"sqrt",4) == 0)
 		{
-			complete=sqrtl(calculate(&line[4],pref,vars));
+			complete=sqrtl(calculate(&line[4],pref,vars,vecs));
 		}
 		else if(strncmp(line,"curt",4) == 0)
 		{
-			complete=powl(calculate(&line[4],pref,vars),(long double)(1.0/3.0));
+			complete=powl(calculate(&line[4],pref,vars,vecs),(long double)(1.0/3.0));
 		}
 		else if(line[0]=='n')
 		{
-			int num=(int)calculate(&line[1],pref,vars);
+			int num=(int)calculate(&line[1],pref,vars,vecs);
 			if(num==0)
 				return(1.0);
 			else return(0.0);
@@ -1313,7 +1330,7 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 	}
 	else if(line[0]=='~')
 	{
-		long long num=(long long)calculate(&line[1],pref,vars);
+		long long num=(long long)calculate(&line[1],pref,vars,vecs);
 		num=~num;
 		return (long double)num;
 	}
@@ -1321,7 +1338,7 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 	{
 		recString1=new char[len];
 		strcopy(recString1,line,len-1);
-		long double end=calculate(recString1,pref,vars);
+		long double end=calculate(recString1,pref,vars,vecs);
 		delete[]recString1;
 		if(end<0.0)
 			return NAN;
@@ -1366,8 +1383,8 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		strcopy(startStr,&line[pos1+1],pos2-pos1-1);
 		strcopy(endStr,&line[pos2+1],len-pos2-2);
 		
-		start=calculate(startStr,pref,vars);
-		end=calculate(endStr,pref,vars);
+		start=calculate(startStr,pref,vars,vecs);
+		end=calculate(endStr,pref,vars,vecs);
 		Calculate integ(NULL,function,pref,vars);
 		if(start>end)
 		{
@@ -1448,7 +1465,7 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 		strcopy(function,&line[3],pos1-3);
 		strcopy(startStr,&line[pos1+1],len-pos1-2);
 //	startStr=checkString(startStr);
-		pos=calculate(startStr,pref,vars);
+		pos=calculate(startStr,pref,vars,vecs);
 		Calculate diff(NULL,function,pref,vars);
 		double step=(pos*(double)1e-6);
 		if(step<1e-6)
@@ -1473,13 +1490,14 @@ long double calculate(char* line,Preferences*pref,Variable*vars)
 			recString1=new char[len];
 			strcopy(recString1,&line[1],len-1);
 		}
-		complete=calculate(recString1,pref,vars);
+		complete=calculate(recString1,pref,vars,vecs);
 		delete[] recString1;
 	}
-	else if((pref->calcType == SCIENTIFIC && line[0]>='A' || line[0]>='G') && line[0]<='Z')
+	else if((pref->calcType == SCIENTIFIC && line[0]>='A' || line[0]>='G') && line[0]<='Z' || strncmp(line,"$A",2)==0)
 	{
-
-		complete=vars[(int)line[0]-65][0];
+		if(strncmp(line,"$A",2)==0)
+			complete=vars[26][0];
+		else complete=vars[(int)line[0]-65][0];
 
 	}
 	else if(line[0] == '\\')

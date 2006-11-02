@@ -595,7 +595,7 @@ void GraphSolveWidget::calculateYVal(QString text)
 			(pref.functionTypes[c]==functionType || 
 						(pref.functionTypes[c]==GRAPHIEG ||pref.functionTypes[c]==GRAPHIEL || pref.functionTypes[c]==GRAPHIEGE ||pref.functionTypes[c]==GRAPHIELE)&&functionType==GRAPHIEL))
 			{
-				char* checkedFunction=checkString(pref.functions[c],&pref,vars);
+				char* checkedFunction=checkString(pref.functions[c],&pref);
 				if(checkedFunction == NULL)
 					return;
 				if(strlen(checkedFunction)<=0)
@@ -639,7 +639,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 		step=1e-308;
 	if(exactStep== 0.0)
 		exactStep=1e-308;
-	QString cleanFunction=checkString(function,&pref,vars);
+	QString cleanFunction=checkString(function,&pref);
 	if(varIndex!=23)
 	{
 		cleanFunction.replace('X',"("+QString::number((double)vars[23][0],'g',pref.precision)+")");
@@ -651,7 +651,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 	char*modifiedFunction=(char*)cleanFunction.ascii();
 	Calculate cfx(NULL,modifiedFunction,&pref,vars);
 	QString strdfx("d/dx("+function+"");
-	cleanFunction=QString(checkString(strdfx,&pref,vars));
+	cleanFunction=QString(checkString(strdfx,&pref));
 	if(varIndex!=23)
 	{
 		cleanFunction.replace('X',"("+QString::number((double)vars[23][0],'g',pref.precision)+")");
@@ -822,14 +822,14 @@ void GraphSolveWidget::calculateNewton(QString function)
 	double x1=runCalc(xLine->text(),&pref,vars),fx1=0,dfx1=0;
 	if(x1==NAN)
 		x1=0.0;
-	char* cleanFunction=checkString(function,&pref,vars);
+	char* cleanFunction=checkString(function,&pref);
 	if(cleanFunction == NULL)
 		return;
 	if(strlen(cleanFunction)<=0)
 		return;
 	Calculate cfx(NULL,cleanFunction,&pref,vars);
 	QString strdfx("d/dx("+QString(cleanFunction)+",X)");
-	cleanFunction=checkString(strdfx,&pref,vars);
+	cleanFunction=checkString(strdfx,&pref);
 	if(cleanFunction == NULL)
 		return;
 	if(strlen(cleanFunction)<=0)
@@ -949,7 +949,7 @@ void GraphSolveWidget::solveButtonSlot()
 						outputTable->setNumRows(numTValues);
 												
 						QString yFunction=pref.functions[funcIndex].right(pref.functions[funcIndex].length()-1-pref.functions[funcIndex].find("\\"));
-						char*cleanFunc=checkString(yFunction,&pref,vars);
+						char*cleanFunc=checkString(yFunction,&pref);
 						Calculate cyf(NULL,cleanFunc,&pref,vars);
 						for(int c=0; c<numTValues; c++)
 						{
@@ -990,7 +990,7 @@ void GraphSolveWidget::solveButtonSlot()
 					
 					vars[23][0]=xVal;
 					vars[25][0]=zVal;
-					double result=calculate(checkString(pref.functions[funcIndex],&pref,vars),&pref,vars);
+					double result=runCalc(pref.functions[funcIndex],&pref,vars);
 					QString yString;
 					if(pref.outputType==FIXEDNUM)
 						yString=QString::number(result,'e',pref.outputLength);
@@ -1077,7 +1077,7 @@ void GraphSolveWidget::solveButtonSlot()
 						outputTable->setNumCols(2);
 						outputTable->setNumRows(numTValues);
 														
-						char*cleanFunc=checkString(xFunction,&pref,vars);
+						char*cleanFunc=checkString(xFunction,&pref);
 						Calculate cxf(NULL,cleanFunc,&pref,vars);
 						for(int c=0; c<numTValues; c++)
 						{
@@ -1190,7 +1190,7 @@ void GraphSolveWidget::solveButtonSlot()
 			functionString+=",";
 			functionString+=QString::number(end,'g',pref.precision);
 			functionString+=")";
-			char*cleanFunc=checkString(functionString,&pref,vars);
+			char*cleanFunc=checkString(functionString,&pref);
 			if(cleanFunc == NULL)
 				return;
 			emit removeLines();
@@ -1218,7 +1218,7 @@ void GraphSolveWidget::solveButtonSlot()
 			}
 			else 
 			{
-				result=calculate(cleanFunc,&pref,vars);
+				result=runCalc(functionString,&pref,vars);
 			}
 			delete[]cleanFunc;
 			
@@ -1261,12 +1261,12 @@ void GraphSolveWidget::solveButtonSlot()
 				xFunction.replace('T',"X");
 				yFunction.replace('T',"X");
 				vars[23][0]=pos;
-				double xPos=calculate(checkString(xFunction,&pref,vars),&pref,vars);
-				double yPos=calculate(checkString(yFunction,&pref,vars),&pref,vars);
+				double xPos=runCalc(xFunction,&pref,vars);
+				double yPos=runCalc(yFunction,&pref,vars);
 				xFunction="d/dx("+xFunction+","+QString::number(pos,'g',pref.precision)+")";
 				yFunction="d/dx("+yFunction+","+QString::number(pos,'g',pref.precision)+")";
-				double xDiff=calculate(checkString(xFunction,&pref,vars),&pref,vars);
-				double yDiff=calculate(checkString(yFunction,&pref,vars),&pref,vars);
+				double xDiff=runCalc(xFunction,&pref,vars);
+				double yDiff=runCalc(yFunction,&pref,vars);
 				emit removeLines();
 				emit addVerticalLine(xPos);
 				emit addHorizontalLine(yPos);
@@ -1284,7 +1284,7 @@ void GraphSolveWidget::solveButtonSlot()
 				
 				vars[25][0]=zVal;
 				QString functionString="d/dx("+pref.functions[funcIndex]+","+QString::number(pos,'g',pref.precision)+")";
-				double result=calculate(checkString(functionString,&pref,vars),&pref,vars);
+				double result=runCalc(functionString,&pref,vars);
 				outputTable->setText(0,0,formatOutput(result,&pref));
 				functionString=pref.functions[funcIndex];
 				for(int c=0; c<(signed)functionString.length(); c++)
@@ -1295,12 +1295,12 @@ void GraphSolveWidget::solveButtonSlot()
 				functionString.replace("z","X");
 				functionString.replace("Z","X");
 				functionString="d/dx("+functionString+","+QString::number(zVal,'g',pref.precision)+")";
-				result=calculate(checkString(functionString,&pref,vars),&pref,vars);
+				result=runCalc(functionString,&pref,vars);
 				outputTable->setText(0,1,formatOutput(result,&pref));
 			}
 			else {
 				QString functionString="d/dx("+pref.functions[funcIndex]+","+QString::number(pos,'g',pref.precision)+")";
-				double result=calculate(checkString(functionString,&pref,vars),&pref,vars);
+				double result=runCalc(functionString,&pref,vars);
 				emit removeLines();
 				if(functionType==GRAPHPOLAR)
 					emit addPolarLine(pos);

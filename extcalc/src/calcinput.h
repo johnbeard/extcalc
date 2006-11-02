@@ -47,6 +47,7 @@ class CalcInput :public QTextEdit
 	QFont *stdFont;
 	int lineCount;
 	Variable*vars;
+	Vector*vecs;
 	bool scriptExec;
 	List <int>resultParagraphs; 
 //	ScriptThread*script;
@@ -56,9 +57,10 @@ class CalcInput :public QTextEdit
 	
 	Q_OBJECT
 	public:
-		CalcInput(QWidget*parentWin,Variable*va) :QTextEdit((QWidget*)parentWin)
+		CalcInput(QWidget*parentWin,Variable*va,Vector*ve) :QTextEdit((QWidget*)parentWin)
 		{
 			vars=va;
+			vecs=ve;
 			scriptExec=false;
 	//		script=NULL;
 			stdFont=new QFont("Courier");

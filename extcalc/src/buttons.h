@@ -91,7 +91,7 @@ public:
 	void setShiftSet()
 	{
 		QString buttonName[] ={	"M",	"G",	"T",	"DEL",	"AC",
-								"µ",	"m",	"k",	"*",	"/",
+								"\xb5",	"m",	"k",	"*",	"/",
 								"f",	"p",	"n",	"+",	"-",
 								"0",	".",	"EXP",	"ANS",	"=",
 		};
@@ -190,7 +190,7 @@ public:
 	void setStandardSet()
 	{
 		QString buttonName[] ={	"Shift","Rand",	"!",	"",		"i",	"",
-								"Alpha","x²",	"²",	"^",	"x",	"^-1",
+								"Alpha","x\xb2","\xb2",	"^",	"x",	"^-1",
 								"log",	"ln",	"hyp",	"sin",	"cos",	"tan",
 								"a/b",	"X",	"(",	")",	",",	"->",
 		};
@@ -211,7 +211,7 @@ public:
 	void setShiftSet()
 	{
 		QString buttonName[] ={	"Shift","Rand",	"!",	"d/dx",	"i",	"",
-								"Alpha","x³",	"³",	"^",	"x",	"^-1",
+								"Alpha","x\xb3","\xb3",	"^",	"x",	"^-1",
 								"10^",	"^",	"hyp",	"asin",	"acos",	"atan",
 								"a/b",	"X",	"(",	")",	",",	"->",
 		};
@@ -291,7 +291,7 @@ public:
 	void setBaseShiftSet()
 	{
 		QString buttonName[] ={	"Shift","Rand",	"!",	"%",	"x",	"^",
-								"Alpha","x³",	"&&&&",	"||",	"n",	"xor",
+								"Alpha","x\xb3","&&&&",	"||",	"n",	"xor",
 								"dec",	"bin",	"hex",	"oct",	"<<",	">>",
 								"a/b",	"X",	"(",	")",	",",	"->",
 		};

@@ -254,6 +254,7 @@ class Math;
 
 typedef List<long double> Variable;
 
+
 struct Preferences
 {
 	int angle;
@@ -306,6 +307,8 @@ struct Number
 	int type;
 };
 
+typedef List<Number> Vector;
+
 struct ThreadSync
 {
 	QMutex*mutex;
@@ -328,19 +331,19 @@ struct ThreadSync
 
 
 //Standard Calculator functions
-long double calculate(char*,Preferences*pref,Variable*vars);
+long double calculate(char*,Preferences*pref,Variable*vars,Vector*vecs);
 int bracketFind(char* string,char* searchString, int start=0);
 int bracketFindRev(char* string,char* searchString, int start=-1);
 char*strcut(char*src,int index,int len=1);
 char*strins(char*dest,const char*src,int index);
 int strcopy(char*dest,char*src,int len);
-char* checkStringAnsi(char*calcString,Preferences*pref,Variable*vars);		//same as checkString in Calc
+char* checkStringAnsi(char*calcString,Preferences*pref);		//same as checkString in Calc
 void MessageBox(QString text);
 int YesNoBox(QString text);
  int YesNoCancelBox(QString text);
  void WarningBox(QString text);
  void ErrorBox(QString text);
-char* checkString(QString calcString,Preferences*pref,Variable*vars);		//Removes Unicode and runs checkStringAnsi
+char* checkString(QString calcString,Preferences*pref);		//Removes Unicode and runs checkStringAnsi
 QString getConfigString(QString*,QString);
 QString cleanConfigString(QString,QString);
 QString getUnicode(int code);

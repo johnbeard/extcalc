@@ -19,6 +19,7 @@ class CalcWidget :public QWidget
 	QComboBox*prefBox;
 	bool maximized;
 	Variable *vars;
+	Vector *vecs;
 	
 	Q_OBJECT
 
@@ -29,12 +30,13 @@ class CalcWidget :public QWidget
 
 	
 	public:
-	CalcWidget(QWidget*parent,Preferences p,Variable *va) :QWidget(parent)
+	CalcWidget(QWidget*parent,Preferences p,Variable *va,Vector *ve) :QWidget(parent)
 	{
 		vars=va;
+		vecs=ve;
 		pref=p;
 		maximized=false;	
-		textEdit=new CalcInput(this,vars);
+		textEdit=new CalcInput(this,vars,vecs);
 //		graph=new GraphOutput(this);
 		calcButtons=new  StandardButtons(this);
 		extButtons=new ExtButtons(this);

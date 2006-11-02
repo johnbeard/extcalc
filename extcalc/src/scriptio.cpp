@@ -653,7 +653,7 @@ void ScriptIOWidget::runScript(QString*code)
 	initDebugging(code);
 
 
-	char*cleanString=checkString(*code,&pref,vars);
+	char*cleanString=checkString(*code,&pref);
 
 	delete scriptObject;
 	insert(SCRIPTIO_STR8);
@@ -717,7 +717,7 @@ void ScriptIOWidget::runSlot()
 
 void ScriptIOWidget::searchScripts(QString*code)
 {
-	char*cleanString=checkString(*code,&pref,vars);
+	char*cleanString=checkString(*code,&pref);
 	if(cleanString==NULL)
 		return;
 	char*scriptName;
@@ -804,7 +804,7 @@ void ScriptIOWidget::loadSubScripts()
 				qSubFileContent=QString(subFileContent);
 				countDifference+=semicolonLines.GetLen();
 				initDebugging(&qSubFileContent);
-				cleanSubFileContent=checkString(qSubFileContent,&pref,vars);
+				cleanSubFileContent=checkString(qSubFileContent,&pref);
 				qApp->processEvents();
 				insert(SCRIPTIO_STR9);
 				insert(threadData->subprogramPath[c]);

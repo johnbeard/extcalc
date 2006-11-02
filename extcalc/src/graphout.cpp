@@ -736,7 +736,7 @@ void GraphOutput::wheelEvent(QWheelEvent*e)
 void GraphOutput::processStdFunction(QString function)
 {
 	char*func;
-	func = checkString(function,&pref,vars);
+	func = checkString(function,&pref);
 
 	double xStart,xStep;
 	xStart=pref.xmin;
@@ -777,7 +777,7 @@ void GraphOutput::processStdFunction(QString function)
 void GraphOutput::processPolarFunction(QString function)
 {
 	char*func;
-	func = checkString(function,&pref,vars);
+	func = checkString(function,&pref);
 
 	double xStart,xStep;
 	xStart=0;
@@ -838,8 +838,8 @@ void GraphOutput::processParameterFunction(QString function)
 		f1=function.left(sep);
 		f2=function.right(function.length()-1-sep);
 	}
-	func1 = checkString(f1,&pref,vars);
-	func2 = checkString(f2,&pref,vars);
+	func1 = checkString(f1,&pref);
+	func2 = checkString(f2,&pref);
 
 	double xStart,xStep;
 	xStart=pref.parameterStart;
@@ -920,7 +920,7 @@ void GraphOutput::process3dFunction(QString function)
 
 
 	char*func;
-	func = checkString(function,&pref,vars);
+	func = checkString(function,&pref);
 
 
 
@@ -1035,8 +1035,8 @@ void GraphOutput::processInequaityFunction(QString function1,QString function2,i
 	
 //    GLuint list;
 	char*func,*func2;
-	func = checkString(function1,&pref,vars);
-	func2= checkString(function2,&pref,vars);
+	func = checkString(function1,&pref);
+	func2= checkString(function2,&pref);
 	
 //	list = glGenLists( 1 );
 //	glNewList( list, GL_COMPILE );
