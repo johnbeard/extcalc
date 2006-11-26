@@ -11,7 +11,6 @@
 #include "list.h"
 
 /*
-
 class ScriptThread :public QThread
 {
 	Script* script;
@@ -23,16 +22,12 @@ public:
 		script=s;
 		parent=p;
 	}
-
-
 protected:
 	virtual void run()
 	{
 		script->exec();
 	}
 };
-
-
 */
 
 
@@ -52,6 +47,7 @@ class CalcInput :public QTextEdit
 	List <int>resultParagraphs; 
 //	ScriptThread*script;
 	Script*scriptObject;
+	ThreadSync*threadData;
 
 	Preferences pref;
 	
@@ -62,12 +58,30 @@ class CalcInput :public QTextEdit
 			vars=va;
 			vecs=ve;
 			scriptExec=false;
-	//		script=NULL;
+//			script=NULL;
 			stdFont=new QFont("Courier");
 			stdFont->setPixelSize(16);
 			stdFont->setFixedPitch(true);
 			setFont(*stdFont);
 			setTextFormat(Qt::PlainText);
+
+			threadData=new ThreadSync;
+			threadData->mutex=NULL;
+			threadData->eventReciver=this;
+			threadData->status=0;
+			threadData->exit=false;
+			threadData->usleep=false;
+			threadData->bbreak=false;
+			threadData->bcontinue=false;
+			threadData->data=NULL;
+			threadData->sleepTime=1000;
+			threadData->vars=new Number*[27];
+			for(int c=0; c<27;c++)
+			{
+				threadData->vars[c]=(Number*)malloc(sizeof(Number));
+				threadData->numlen[c]=1;
+				threadData->vars[c][0].type=NNONE;
+			}
 
 			QFontMetrics fontSize=fontMetrics();
 			charLength=fontSize.size(0,QString("m")).width();

@@ -87,7 +87,7 @@ class ScriptIOWidget :public QWidget
 	Q_OBJECT
 
 	public:
-		ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va) :QWidget(parent)
+		ScriptIOWidget(QWidget*parent,Preferences pr,Variable *) :QWidget(parent)
 		{
 		//	vars=va;
 			vars=new Variable [27];

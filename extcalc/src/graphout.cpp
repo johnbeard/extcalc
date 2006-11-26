@@ -205,7 +205,7 @@ GLuint GraphOutput::drawPolarAxes()
 		}
 
 		glBegin(GL_LINES);
-		double outRadius=pref.radiusMax*sqrt(2);
+		double outRadius=pref.radiusMax*sqrt(2.0);
 		for(double c=0.0; c<pref.angleMax+angleStep; c+=pref.rasterSizeAngle)
 		{
 			glVertex3f(0.0f,0.0f,0.0f);

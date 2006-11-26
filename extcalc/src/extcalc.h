@@ -98,7 +98,7 @@
 //  - script editor window                                      (v0.5)                  ok  //
 //  - manipulating and saving images                            (v0.6)                  ok  //
 //  - zooming and moving graphics-window                        (v0.6)                  ok  //
-//  - number object for standard-parser                         (v0.7)                      //
+//  - number object for standard-parser                         (v0.7)                  ok  //
 //  - include matrix- vector- ...-functions to standard-parser  (v0.7)                      //
 //  - accelerate Calcultate classes                             (v0.7)                      //
 //  - window for vector calculations                            (v0.8)                      //

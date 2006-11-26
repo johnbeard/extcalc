@@ -167,9 +167,10 @@ void CalcInput::calculateKey()
 	int para;
 	int pos;
 	getCursorPosition(&para,&pos);
+	Number nResult;
 	
 	setCursorPosition(para,paragraphLength(para));
-	QString *strResult;
+	QString strResult;
 	setBold(true);
 	if(text(para).length() <= 1)
 	{
@@ -185,31 +186,68 @@ void CalcInput::calculateKey()
 			}
 		if(c<=0)
 			cleanString=checkString(text(0),&pref);
-		result=calculate(cleanString,&pref,vars,vecs);
-		delete[]cleanString;
+		Script s(NULL,cleanString,&pref,vars,threadData);
+		nResult=s.exec();
+		result=nResult.fval;
+		if(cleanString!=NULL)
+			delete[]cleanString;
 		setCursorPosition(paragraphs()-1,0);
 	}
 	else {
 		insert(QString("\n"));
 		char*cleanString=checkString(text(para),&pref);
-		result=calculate(cleanString,&pref,vars,vecs);
-		delete[]cleanString;
+		Script s(NULL,cleanString,&pref,vars,threadData);
+		nResult=s.exec();
+		result=nResult.fval;
+		if(cleanString!=NULL)
+			delete[]cleanString;
 	}
 	
-	strResult=new QString(formatOutput(result,&pref));
+/*	switch(nResult.type)
+	{
+		case NINT:
+			strResult=new QString("(int)");
+			*strResult+=formatOutput((long double)nResult.ival,&pref);
+			break;
+		case NFLOAT:
+		case NCOMPLEX:
+			
+			strResult=new QString("(float complex)");
+			
+			*strResult+=formatOutput(real(nResult.cfval),&pref);
+			*strResult+=" ";
+			*strResult+=formatOutput(imag(nResult.cfval),&pref);
+			*strResult+="i";
+			break;
+
+		case NBOOL:
+			strResult=new QString("(bool)");
+			*strResult+=formatOutput((long double)nResult.bval,&pref);
+			break;
+		case NCHAR:
+			strResult=new QString("(string)");
+			*strResult+=QString(nResult.cval);
+			break;
+			
+		default:
+			strResult=new QString("(invalid)");
+			*strResult+=formatOutput(result,&pref);
+			break;
+}*/
 	
-	vars[26][0]=result;
+	strResult=formatOutput(nResult,&pref);
+	
+	threadData->vars[26][0]=nResult;
 //	while(strResult->length() < (unsigned)(lineLength-3))
 //		strResult->insert(0,' ');
 	setAlignment(Qt::AlignRight);
-	insert(*strResult);
+	insert(strResult);
 	resultParagraphs.NewItem(paragraphs()-1);
 	setBold(false);
 	insert(QString("\n"));
 	setAlignment(Qt::AlignLeft);
 	line="";
 	lineCursor=0;
-	delete strResult;
 }
 
 void CalcInput::deleteKey()

@@ -87,7 +87,7 @@ void ExtButtons::buttonSlot(int num)
 			{
 				if(pref.alpha)
 					emit emitText(find(num)->text());
-				else ; // i button
+				else emit emitText(find(num)->text());; // i button
 			}
 			else {
 				if(pref.alpha)

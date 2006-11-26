@@ -1062,7 +1062,7 @@ void MainObject::prefMenuSlot(int item)
 		case GPREF:
 			if(grPref != NULL)
 				delete grPref;
-			grPref=new GraphPreferences(pref,(QWidget*)this);
+			grPref=new GraphPreferences(pref,vars,(QWidget*)this);
 			QObject::connect(grPref,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 
 			grPref->show();

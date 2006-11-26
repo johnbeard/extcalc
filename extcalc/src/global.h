@@ -14,16 +14,19 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <math.h>
+#include <complex>
 #include "list.h"
 #include "calclocale.h"
+
+using namespace std;
 
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.6.0\n2006-10-28\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.2\n2006-11-19\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.6.0\n28.10.2006\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.2\n19.11.2006\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2006\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -125,6 +128,9 @@
 #define INTEGRAL			23
 #define MODULO				116
 #define ARRAY				129
+#define RSHIFT				139
+#define LSHIFT				140
+#define XOR					141
 
 #define SSEMICOLON			83
 #define SCOMPARE			84
@@ -162,6 +168,10 @@
 #define SCONTINUE			126
 #define SSTOP				127
 #define SRUN				128
+#define SBAND				142
+#define SBOR				143
+#define SFAK				144
+#define SBNOT				145
 
 #define CALCYVAL			0
 #define CALCZEROS			1
@@ -301,6 +311,7 @@ struct Number
 	long double fval;
 	long double *fvector;		//complex, vector
 	int dimension;				//vector size
+	complex <long double> cfval;
 	long long ival;
 	bool bval;
 	char*cval;
@@ -308,6 +319,7 @@ struct Number
 };
 
 typedef List<Number> Vector;
+typedef complex <long double> Complex;
 
 struct ThreadSync
 {
@@ -331,7 +343,6 @@ struct ThreadSync
 
 
 //Standard Calculator functions
-long double calculate(char*,Preferences*pref,Variable*vars,Vector*vecs);
 int bracketFind(char* string,char* searchString, int start=0);
 int bracketFindRev(char* string,char* searchString, int start=-1);
 char*strcut(char*src,int index,int len=1);
@@ -348,6 +359,7 @@ QString getConfigString(QString*,QString);
 QString cleanConfigString(QString,QString);
 QString getUnicode(int code);
 QString formatOutput(long double num,Preferences*pref);
+QString formatOutput(Number num,Preferences*pref);
 QColor getColor(QString colorName);
 QString getColorName(QColor col);
 long double runCalc(QString,Preferences*,Variable*);

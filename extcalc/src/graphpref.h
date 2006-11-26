@@ -21,7 +21,6 @@
 //	- Raster size
 //	- coordinate system types: standard, polar, 3D
 //
-//
 
 
 
@@ -316,11 +315,12 @@ class GraphPreferences :public QTabWidget
 	Variable*vars;
 	Q_OBJECT
 public:
-	GraphPreferences(Preferences p, QWidget*parent)
+	GraphPreferences(Preferences p,Variable*v, QWidget*parent)
 	:QTabWidget(parent,GRAPHPREFH_STR1,Qt::WStyle_Dialog | Qt::WType_Dialog)
 	{
 		pref=p;
-		vars=new Variable[27];
+		vars=v;
+		
 		tabBar = new QTabBar(this);
 		setTabBar(tabBar);
 		
