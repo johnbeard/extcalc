@@ -99,6 +99,7 @@
 //  - manipulating and saving images                            (v0.6)                  ok  //
 //  - zooming and moving graphics-window                        (v0.6)                  ok  //
 //  - number object for standard-parser                         (v0.7)                  ok  //
+//  - support for complex numbers in standard parser            (v0.7)                  ok  //
 //  - include matrix- vector- ...-functions to standard-parser  (v0.7)                      //
 //  - accelerate Calcultate classes                             (v0.7)                      //
 //  - window for vector calculations                            (v0.8)                      //
@@ -128,6 +129,8 @@
 //	- preferences dialogs can't process mathematical expressions						ok  //
 //	- Script editor has no Menu bar															//
 //	- converting floating point values does not work for all locale settings			ok	//
+//	- asymptotes are not alsways shown correctly											//
+//	- Size of output-table in GraphSolveWidget is not resized								//
 
 //////////////////////////used variables//////////////////////////
 //
@@ -482,7 +485,7 @@ MainObject() :QTabWidget()
 
 	calculator=new CalcWidget(this,pref,vars,vecs);
 	calculator2=new CalcWidget(this,pref,vars,vecs);
-	graph = new GraphWidget(this,pref,vars);
+	graph = new GraphWidget(this,pref,vars,vecs);
 	table=new TableWidget(this,pref,vars);
 	scripting=new ScriptWidget(this,pref,vars);
 	scriptIO=new ScriptIOWidget(this,pref,vars);

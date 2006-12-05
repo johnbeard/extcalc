@@ -203,37 +203,7 @@ void CalcInput::calculateKey()
 			delete[]cleanString;
 	}
 	
-/*	switch(nResult.type)
-	{
-		case NINT:
-			strResult=new QString("(int)");
-			*strResult+=formatOutput((long double)nResult.ival,&pref);
-			break;
-		case NFLOAT:
-		case NCOMPLEX:
-			
-			strResult=new QString("(float complex)");
-			
-			*strResult+=formatOutput(real(nResult.cfval),&pref);
-			*strResult+=" ";
-			*strResult+=formatOutput(imag(nResult.cfval),&pref);
-			*strResult+="i";
-			break;
 
-		case NBOOL:
-			strResult=new QString("(bool)");
-			*strResult+=formatOutput((long double)nResult.bval,&pref);
-			break;
-		case NCHAR:
-			strResult=new QString("(string)");
-			*strResult+=QString(nResult.cval);
-			break;
-			
-		default:
-			strResult=new QString("(invalid)");
-			*strResult+=formatOutput(result,&pref);
-			break;
-}*/
 	
 	strResult=formatOutput(nResult,&pref);
 	

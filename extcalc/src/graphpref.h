@@ -8,6 +8,7 @@
 #include <qtabbar.h>
 #include <qradiobutton.h>
 #include <qbuttongroup.h>
+#include <qspinbox.h>
 #include "global.h"
 
 //possible preferences:
@@ -167,68 +168,113 @@ signals:
 	
 };
 
-class ParameterPreferences :public QWidget
+
+
+class PerformancePreferences :public QWidget
 {
 	Preferences pref;
-	QLabel *parameterLabel,*parameterStartLabel,*parameterEndLabel,*parameterStepsLabel;
-	QLineEdit*parameterStart,*parameterEnd,*parameterSteps;
+	QLabel *steps2dLabel,*steps3dLabel,*stepsParamLabel,*stepsNyquistLabel,*solvePrecisionLabel;
+	QSpinBox*steps2d,*steps3d,*stepsParam,*stepsNyquist;
 	QPushButton*standardButton;
+	QComboBox*solvePrecisionBox;
+	QCheckBox*polygon3dBox;
 	Variable*vars;
-	
+
 	Q_OBJECT
 	public:
-	ParameterPreferences(Preferences p,QWidget*parent,Variable*v)
+		PerformancePreferences(Preferences p,QWidget*parent,Variable*v)
 	:QWidget(parent)
-	{
-		pref=p;
-		vars=v;
-		setGeometry(10,10,580,360); 
-		setFixedWidth(580);
-		setFixedHeight(360);
-		
-		parameterLabel=new QLabel(GRAPHPREFH_STR18,this);
-		parameterStartLabel=new QLabel(GRAPHPREFH_STR19,this);
-		parameterEndLabel=new QLabel(GRAPHPREFH_STR20,this);
-		parameterStepsLabel=new QLabel(GRAPHPREFH_STR22,this);
-		standardButton=new QPushButton(GRAPHPREFH_STR23,this);
-		
-		parameterStart=new QLineEdit(QString::number(pref.parameterStart),this);
-		parameterEnd=new QLineEdit(QString::number(pref.parameterEnd),this);
-		parameterSteps=new QLineEdit(QString::number(pref.parameterSteps),this);
-		
-		parameterLabel->setGeometry(20,30,380,20);
-		parameterStartLabel->setGeometry(20,70,100,20);
-		parameterStart->setGeometry(180,70,170,20);
-		parameterEndLabel->setGeometry(20,110,100,20);
-		parameterEnd->setGeometry(180,110,170,20);
-		parameterStepsLabel->setGeometry(20,150,100,20);
-		parameterSteps->setGeometry(180,150,170,20);
-		standardButton->setGeometry(40,190,80,25);
-		QObject::connect(standardButton,SIGNAL(clicked()),this,SLOT(standardButtonSlot()));
-	}
+		{
 
-	int savePref();
+			pref=p;
+			vars=v;
+
+			setGeometry(10,10,580,360);
+			setFixedWidth(580);
+			setFixedHeight(360);
+
+			steps2dLabel=new QLabel("Calculation steps for 2D-Graphs",this);
+			steps3dLabel=new QLabel("Calculation steps for 3D-Graphs",this);
+			stepsParamLabel=new QLabel("Parameter graph steps",this);
+			stepsNyquistLabel=new QLabel("Steps for Nyquist Plot",this);
+			solvePrecisionLabel=new QLabel("Graph Analysation Precision",this);
+
+			steps2d=new QSpinBox(10,100000,1,this);
+			steps3d=new QSpinBox(10,100000,1,this);
+			stepsParam=new QSpinBox(10,100000,1,this);
+			stepsNyquist=new QSpinBox(10,100000,1,this);
+
+			steps2d->setValue(pref.prec2dSteps);
+			steps3d->setValue(pref.prec3dSteps);
+			stepsParam->setValue(pref.parameterSteps);
+			stepsNyquist->setValue(pref.nyquistSteps);
+
+			standardButton=new QPushButton("Standard",this);
+
+			solvePrecisionBox=new QComboBox(this);
+
+			polygon3dBox=new QCheckBox("Draw 3D-Graphs as Grid",this);
+			if(pref.show3dGrid)
+				polygon3dBox->setChecked(true);
+			else polygon3dBox->setChecked(false);
+
+			steps2dLabel->setGeometry(20,30,300,20);
+			steps2d->setGeometry(320,30,100,20);
+			
+			steps3dLabel->setGeometry(20,60,300,20);
+			steps3d->setGeometry(320,60,100,20);
+			polygon3dBox->setGeometry(20,90,400,20);
+
+			stepsParamLabel->setGeometry(20,140,300,20);
+			stepsParam->setGeometry(320,140,100,20);
+			stepsNyquistLabel->setGeometry(20,170,300,20);
+			stepsNyquist->setGeometry(320,170,100,20);
+
+			solvePrecisionLabel->setGeometry(20,220,230,30);
+			solvePrecisionBox->setGeometry(250,220,170,30);
+			
+			standardButton->setGeometry(270,280,150,30);
+
+
+			QObject::connect(standardButton,SIGNAL(clicked()),this,SLOT(standardButtonSlot()));
+		}
+
+		int savePref();
 		
 	public slots:
 	
 
-	void getPref(Preferences pref);
-	void standardButtonSlot();
+		void getPref(Preferences pref);
+		void standardButtonSlot();
 	
 	signals:
 		void prefChange(Preferences);
 	
 };
 
+
+
+
+
+
 class DynamicPreferences :public QWidget
 {
+
 	Preferences pref;
-	QLabel *dynamicLabel,*parameterStartLabel,*parameterEndLabel;
-	QLabel *parameterStepsLabel,*timeLabel;
-	QLineEdit*parameterStart,*parameterEnd,*parameterSteps,*time;
+	
+	QLabel *parameterLabel,*parameterStartLabel,*parameterEndLabel;
+	QLineEdit*parameterStart,*parameterEnd;
+	
+	QLabel *nyquistLabel,*nyquistStartLabel,*nyquistEndLabel;
+	QLineEdit*nyquistStart,*nyquistEnd;
+	
+	QLabel *dynamicLabel,*dynamicStartLabel,*dynamicEndLabel;
+	QLabel *dynamicStepsLabel,*timeLabel;
+	QLineEdit*dynamicStart,*dynamicEnd,*dynamicSteps,*time;
 	QRadioButton*upButton,*upDownButton;
 	QButtonGroup *radioButtons;
 	QCheckBox *singleStepBox;
+	QPushButton*standardButton;
 	Variable*vars;
 	
 	Q_OBJECT
@@ -238,22 +284,43 @@ class DynamicPreferences :public QWidget
 		{
 			pref=p;
 			vars=v;
+			
+			
+			
+			
+			parameterLabel=new QLabel(GRAPHPREFH_STR18,this);
+			parameterStartLabel=new QLabel(GRAPHPREFH_STR19,this);
+			parameterEndLabel=new QLabel(GRAPHPREFH_STR20,this);
+			standardButton=new QPushButton(GRAPHPREFH_STR23,this);
+		
+			parameterStart=new QLineEdit(QString::number(pref.parameterStart),this);
+			parameterEnd=new QLineEdit(QString::number(pref.parameterEnd),this);
+			
+			
+			nyquistLabel=new QLabel("Parameter Z for Nyquist plots (2D only)",this);
+			nyquistStartLabel=new QLabel("Start value:",this);
+			nyquistEndLabel=new QLabel("End value:",this);
+		
+			nyquistStart=new QLineEdit(QString::number(pref.nyquistStart),this);
+			nyquistEnd=new QLineEdit(QString::number(pref.nyquistEnd),this);
+			
+			
 			dynamicLabel=new QLabel(GRAPHPREFH_STR24,this);
-			parameterStartLabel=new QLabel(GRAPHPREFH_STR25,this);
-			parameterEndLabel=new QLabel(GRAPHPREFH_STR26,this);
-			parameterStepsLabel=new QLabel(GRAPHPREFH_STR27,this);
+			dynamicStartLabel=new QLabel(GRAPHPREFH_STR25,this);
+			dynamicEndLabel=new QLabel(GRAPHPREFH_STR26,this);
+			dynamicStepsLabel=new QLabel(GRAPHPREFH_STR27,this);
 			timeLabel=new QLabel(GRAPHPREFH_STR28,this);
 			singleStepBox=new QCheckBox(GRAPHPREFH_STR29,this);
-			
-			parameterStart=new QLineEdit(QString::number(pref.dynamicStart),this);
-			parameterEnd=new QLineEdit(QString::number(pref.dynamicEnd),this);
-			parameterSteps=new QLineEdit(QString::number(pref.dynamicSteps),this);
+
+			dynamicStart=new QLineEdit(QString::number(pref.dynamicStart),this);
+			dynamicEnd=new QLineEdit(QString::number(pref.dynamicEnd),this);
+			dynamicSteps=new QLineEdit(QString::number(pref.dynamicSteps),this);
 			time=new QLineEdit(QString::number(pref.dynamicDelay),this);
-			
+
 			radioButtons=new QButtonGroup(this);
 			upButton=new QRadioButton(GRAPHPREFH_STR30,radioButtons);
 			upDownButton=new QRadioButton(GRAPHPREFH_STR31,radioButtons);
-			
+
 			if(pref.moveUpDown)
 				upDownButton->setChecked(true);
 			else upButton->setChecked(true);
@@ -266,23 +333,43 @@ class DynamicPreferences :public QWidget
 				time->setText("10");
 			}
 
+			parameterLabel->setGeometry(20,30,380,20);
 			
-			dynamicLabel->setGeometry(20,30,380,20);
-			parameterStartLabel->setGeometry(20,70,100,20);
-			parameterStart->setGeometry(180,70,170,20);
-			parameterEndLabel->setGeometry(20,110,100,20);
-			parameterEnd->setGeometry(180,110,170,20);
-			parameterStepsLabel->setGeometry(20,150,100,20);
-			parameterSteps->setGeometry(180,150,170,20);
-			timeLabel->setGeometry(20,190,160,20);
-			time->setGeometry(180,190,170,20);
+			parameterStartLabel->setGeometry(20,60,140,20);
+			parameterStart->setGeometry(160,60,100,20);
+			parameterEndLabel->setGeometry(270,60,140,20);
+			parameterEnd->setGeometry(410,60,100,20);
 			
-			singleStepBox->setGeometry(20,240,250,20);
-			radioButtons->setGeometry(20,270,250,60);
+			nyquistLabel->setGeometry(20,105,380,20);
+			
+			nyquistStartLabel->setGeometry(20,135,140,20);
+			nyquistStart->setGeometry(160,135,100,20);
+			nyquistEndLabel->setGeometry(270,135,140,20);
+			nyquistEnd-> setGeometry(410,135,100,20);
+			
+			
+			dynamicLabel->setGeometry(20,180,380,20);
+			
+			dynamicStartLabel->setGeometry(20,210,140,20);
+			dynamicStart->setGeometry(160,210,100,20);
+			dynamicEndLabel->setGeometry(270,210,140,20);
+			dynamicEnd->setGeometry(410,210,100,20);
+			
+			dynamicStepsLabel->setGeometry(20,240,140,20);
+			dynamicSteps->setGeometry(160,240,100,20);
+			timeLabel->setGeometry(270,240,140,20);
+			time-> setGeometry(410,240,100,20);
+			
+			singleStepBox->setGeometry(270,270,250,20);
+			radioButtons->setGeometry(20,270,240,60);
 			upButton->setGeometry(5,5,230,20);
 			upDownButton->setGeometry(5,35,230,20);
 			
+			standardButton->setGeometry(390,300,150,25);
+			
+			
 			QObject::connect(singleStepBox,SIGNAL(toggled(bool)),time,SLOT(setEnabled(bool)));
+			QObject::connect(standardButton,SIGNAL(clicked()),this,SLOT(standardButtonSlot()));
 			
 			setGeometry(10,10,580,360); 
 			setFixedWidth(580);
@@ -294,6 +381,7 @@ class DynamicPreferences :public QWidget
 	public slots:
 	
 		void getPref(Preferences pref);
+		void standardButtonSlot();
 	
 	signals:
 		void prefChange(Preferences);
@@ -308,8 +396,9 @@ class GraphPreferences :public QTabWidget
 
 	QTabBar *tabBar;
 	CoordinatePreferences*coordinateWidget;
-	ParameterPreferences*parameterWidget;
+//	ParameterPreferences*parameterWidget;
 	DynamicPreferences*dynamicWidget;
+	PerformancePreferences*performanceWidget;
 	QPushButton*saveButton,*cancelButton;
 	Preferences pref;
 	Variable*vars;
@@ -325,11 +414,13 @@ public:
 		setTabBar(tabBar);
 		
 		coordinateWidget = new CoordinatePreferences(pref,this,vars);
-		parameterWidget = new ParameterPreferences(pref,this,vars);
+//		parameterWidget = new ParameterPreferences(pref,this,vars);
 		dynamicWidget= new DynamicPreferences(pref,this,vars);
+		performanceWidget=new PerformancePreferences(pref,this,vars);
 		addTab(coordinateWidget,GRAPHPREFH_STR32);
-		addTab(parameterWidget,GRAPHPREFH_STR33);
+//		addTab(parameterWidget,GRAPHPREFH_STR33);
 		addTab(dynamicWidget,GRAPHPREFH_STR34);
+		addTab(performanceWidget,"Precision/Performance");
 			
 		
 		saveButton=new QPushButton(GRAPHPREFH_BTN3,this);
@@ -344,9 +435,10 @@ public:
 		QObject::connect(saveButton,SIGNAL(clicked()),this,SLOT(saveButtonSlot()));
 		QObject::connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 		QObject::connect(coordinateWidget,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-		QObject::connect(parameterWidget,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+//		QObject::connect(parameterWidget,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(dynamicWidget,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-
+		QObject::connect(performanceWidget,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+		
 	}
 	
 	protected:
@@ -359,8 +451,9 @@ public slots:
 	{
 		pref=pr;
 		coordinateWidget->getPref(pref);
-		parameterWidget->getPref(pref);
+//		parameterWidget->getPref(pref);
 		dynamicWidget->getPref(pref);
+		performanceWidget->getPref(pref);
 		emit prefChange(pref);
 	}
 	

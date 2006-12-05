@@ -28,6 +28,10 @@ void FunctionTable::cellChangedSlot(int row,int)
 		pref.functionTypes[tableFunctionMap[row]]=GRAPHIEG;
 	else if(typeItem->currentText() == GRAPHH_STR22)
 		pref.functionTypes[tableFunctionMap[row]]=GRAPHIEGE;
+	else if(typeItem->currentText() == "Nyquist Plot")
+		pref.functionTypes[tableFunctionMap[row]]=GRAPHCOMPLEX;
+	else if(typeItem->currentText() == "3D Nyquist Plot")
+		pref.functionTypes[tableFunctionMap[row]]=GRAPHCOMP3D;
 	else pref.functionTypes[tableFunctionMap[row]]=GRAPHSTD;
 	
 	
@@ -85,6 +89,10 @@ void FunctionTable::setPref(Preferences newPref)
 			(verticalHeader())->setLabel(c,"y"+QString::number(tableFunctionMap[c]+1)+"(x,z)");
 		else if(pref.functionTypes[tableFunctionMap[c]]==GRAPHSTD)
 			(verticalHeader())->setLabel(c,"y"+QString::number(tableFunctionMap[c]+1)+"(x)");
+		else if(pref.functionTypes[tableFunctionMap[c]]==GRAPHSTD)
+			(verticalHeader())->setLabel(c,"y"+QString::number(tableFunctionMap[c]+1)+"(x)");
+		else if(pref.functionTypes[tableFunctionMap[c]]==GRAPHCOMPLEX || pref.functionTypes[tableFunctionMap[c]]==GRAPHCOMP3D)
+			(verticalHeader())->setLabel(c,"F"+QString::number(tableFunctionMap[c]+1)+"(Z)");
 		
 	}
 	for(int c=0;c<tableFunctionMap.GetLen(); c++)

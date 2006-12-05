@@ -85,6 +85,8 @@ public:
 		graphTypeList+=GRAPHH_STR21;
 		graphTypeList+=GRAPHH_STR22;
 		graphTypeList+=GRAPHH_STR23;
+		graphTypeList+="Nyquist Plot";
+		graphTypeList+="3D Nyquist Plot";
 		for(int c=0; c<tableFunctionMap.GetLen(); c++)
 			setItem(c,3,new QComboTableItem(this,graphTypeList));
 			

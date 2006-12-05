@@ -215,7 +215,8 @@ QString formatOutput(Number num,Preferences*pref)
 			if(num.cfval.imag()!=0.0)
 			{
 				if(num.cfval.imag()>0.0)
-					ret+="+";
+					ret+=" +";
+				else ret+=" ";
 				ret+=formatOutput(imag(num.cfval),pref);
 				ret+="i";
 			}
@@ -2116,12 +2117,12 @@ char* Script::parse(char* line)
 		delete[]recString2;
 		return NULL;
 	}
-	pos1=0;
-	while((pos1=bracketFind(line,"-",pos1)) != -1)
+	pos1=-1;
+	while((pos1=bracketFindRev(line,"-",pos1)) != -1)
 	{		
-		if(pos1>1 && line[pos1-1]=='e')
+		if(pos1>1 && !(line[pos1-1]>='A' && line[pos1-1]<='Z' || line[pos1-1]>='0' && line[pos1-1]<='9' || line[pos1-1]=='i' || line[pos1-1]==')'||line[pos1-1]==')'|| line[pos1-1]=='!') )
 		{
-			pos1++;
+			pos1--;
 			continue;
 		}
 		operation=MINUS;
@@ -2133,16 +2134,7 @@ char* Script::parse(char* line)
 		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
 		delete[]recString1;
 		delete[]recString2;
-		if(vertObj->getOperation()==NONE || vertObj->getOperation()==SFAIL)
-		{
-			pos1++;
-			operation=NONE;
-			delete vertObj;
-			delete vertObj2;
-			vertObj=vertObj2=NULL;
-			
-		}
-		else return NULL;
+		return NULL;
 	}
 	if((pos1=bracketFind(line,"*")) != -1)
 	{
@@ -2321,7 +2313,7 @@ char* Script::parse(char* line)
 		delete[]recString1;
 		return NULL;
 	}
-	else if((pos1=bracketFind(line,"^")) != -1)
+	else if((pos1=bracketFindRev(line,"^")) != -1)
 	{
 		operation=SFAIL;
 		char*recString1=new char[pos1+1];
@@ -2693,6 +2685,32 @@ char* Script::parse(char* line)
 			operation=ROOT;
 			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
 			vertObj2=new Script(this,"3",pref,vars,eventReciver);
+		}
+		else if(strncmp(line,"real",4) == 0)
+		{
+			operation=SREAL;
+			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj2=new Script(this,"3",pref,vars,eventReciver);
+		}
+		else if(strncmp(line,"imag",4) == 0)
+		{
+			operation=SIMAG;
+			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+		}
+		else if(strncmp(line,"abs",3) == 0)
+		{
+			operation=SABS;
+			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+		}
+		else if(strncmp(line,"arg",3) == 0)
+		{
+			operation=SARG;
+			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+		}
+		else if(strncmp(line,"conj",4) == 0)
+		{
+			operation=SCONJ;
+			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
 		}
 		else if(strncmp(line,"i",1) == 0)
 		{
@@ -4367,6 +4385,91 @@ Number Script::exec()
 			}
 
 			value.cfval=log10(value.cfval);
+			return value;
+		}
+		case SREAL:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(value.cfval.real(),0.0);
+			return value;
+		}
+		case SIMAG:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(value.cfval.imag(),0.0);
+			return value;
+		}
+		case SABS:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(abs(value.cfval),0.0);
+			return value;
+		}
+		case SARG:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(arg(value.cfval),0.0);
+			return value;
+		}
+		case SCONJ:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=conj(value.cfval);
 			return value;
 		}
 		case SFAK:

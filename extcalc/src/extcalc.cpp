@@ -83,6 +83,7 @@ int MainObject::readConfigFile()
 			fwrite("RASTER=true\n",12,1,configFile);
 			fwrite("LABEL=false\n",12,1,configFile);
 			fwrite("AUTOSIZE=false\n",15,1,configFile);
+			fwrite("3DGRID=true\n",12,1,configFile);
 			fwrite("XMIN=-10.0\n",11,1,configFile);
 			fwrite("XMAX=10.0\n",10,1,configFile);
 			fwrite("YMIN=-10.0\n",11,1,configFile);
@@ -99,6 +100,11 @@ int MainObject::readConfigFile()
 			fwrite("PARAMETERSTART=0\n",17,1,configFile);
 			fwrite("PARAMETEREND=10\n",16,1,configFile);
 			fwrite("PARAMETERSTEPS=200\n",19,1,configFile);
+			fwrite("NYQUISTSTART=0\n",15,1,configFile);
+			fwrite("NYQUISTEND=100\n",15,1,configFile);
+			fwrite("NYQUISTSTEPS=200\n",17,1,configFile);
+			fwrite("GRAPH3DSTEPS=50\n",16,1,configFile);
+			fwrite("GRAPH2DSTEPS=200\n",17,1,configFile);
 			fwrite("DYNAMICSTART=0\n",15,1,configFile);
 			fwrite("DYNAMICEND=10\n",14,1,configFile);
 			fwrite("DYNAMICSTEPS=10\n",16,1,configFile);
@@ -411,6 +417,22 @@ int MainObject::readConfigFile()
 			tableEndZ=0.0;
 		pref.tableZEnd=tableEndZ;
 	}
+	QString nyquistStartStr=getConfigString(&confFile,"NYQUISTSTART");
+	if(nyquistStartStr.length()>0)
+	{
+		double tableStartZ=nyquistStartStr.toDouble();
+		if(tableStartZ == NAN)
+			tableStartZ=0.0;
+		pref.nyquistStart=tableStartZ;
+	}
+	QString nyquistEndStr=getConfigString(&confFile,"NYQUISTEND");
+	if(nyquistEndStr.length()>0)
+	{
+		double tableEndZ=nyquistEndStr.toDouble();
+		if(tableEndZ == NAN || tableEndZ<=pref.nyquistStart)
+			tableEndZ=pref.nyquistStart+10.0;
+		pref.nyquistEnd=tableEndZ;
+	}
 	QString tableStepsXStr=getConfigString(&confFile,"TABLESTEPSX");
 	if(tableStepsXStr.length()>0)
 	{
@@ -427,6 +449,36 @@ int MainObject::readConfigFile()
 			tableZSteps=10;
 		pref.tableZSteps=tableZSteps;
 	}
+	
+	QString nyquistStepsStr=getConfigString(&confFile,"NYQUISTSTEPS");
+	if(nyquistStepsStr.length()>0)
+	{
+		int nyquistSteps=nyquistStepsStr.toInt();
+		if(nyquistSteps <10)
+			nyquistSteps=200;
+		pref.nyquistSteps=nyquistSteps;
+	}
+	QString graph2dStepsStr=getConfigString(&confFile,"GRAPH2DSTEPS");
+	if(graph2dStepsStr.length()>0)
+	{
+		int graph2dSteps=graph2dStepsStr.toInt();
+		if(graph2dSteps <10)
+			graph2dSteps=200;
+		pref.prec2dSteps=graph2dSteps;
+	}
+	QString graph3dStepsStr=getConfigString(&confFile,"GRAPH3DSTEPS");
+	if(graph3dStepsStr.length()>0)
+	{
+		int tableZSteps=graph3dStepsStr.toInt();
+		if(tableZSteps <10)
+			tableZSteps=50;
+		pref.prec3dSteps=tableZSteps;
+	}
+	
+	
+	
+	
+	
 	QString rasterStr=getConfigString(&confFile,"RASTER");
 	if(rasterStr.length()>0)
 	{
@@ -458,6 +510,8 @@ int MainObject::readConfigFile()
 			pref.autosize=true;
 		else pref.autosize=false;
 	}	
+	
+	
 	QString moveStr=getConfigString(&confFile,"DYNAMICMOVEUPDOWN");
 	if(moveStr.length()>0)
 	{
@@ -465,6 +519,16 @@ int MainObject::readConfigFile()
 			pref.moveUpDown=true;
 		else pref.moveUpDown=false;
 	}	
+	
+	
+	QString gridStr=getConfigString(&confFile,"3DGRID");
+	if(moveStr.length()>0)
+	{
+		if(gridStr.lower() != "flse")
+			pref.show3dGrid=false;
+		else pref.moveUpDown=true;
+	}	
+	
 	QString graphType=getConfigString(&confFile,"GRAPHTYPE");
 	if(graphType.length()>0)
 	{
@@ -672,6 +736,10 @@ void MainObject::writeConfigFile()
 	configuration+=QString::number(pref.rasterSizeAngle);
 	configuration+="\nRASTERSIZERADIUS=";
 	configuration+=QString::number(pref.rasterSizeRadius);
+	configuration+="\nNYQUISTSTART=";
+	configuration+=QString::number(pref.nyquistStart);
+	configuration+="\nNYQUISTEND=";
+	configuration+=QString::number(pref.nyquistEnd);
 	configuration+="\nPARAMETERSTART=";
 	configuration+=QString::number(pref.parameterStart);
 	configuration+="\nPARAMETEREND=";
@@ -698,6 +766,12 @@ void MainObject::writeConfigFile()
 	configuration+=QString::number(pref.tableXSteps);
 	configuration+="\nTABLESTEPSZ=";
 	configuration+=QString::number(pref.tableZSteps);
+	configuration+="\nGRAPH2DSTEPS=";
+	configuration+=QString::number(pref.prec2dSteps);
+	configuration+="\nGRAPH3DSTEPS=";
+	configuration+=QString::number(pref.prec3dSteps);
+	configuration+="\nNYQUISTSTEPS=";
+	configuration+=QString::number(pref.nyquistSteps);
 	configuration+="\nSCRIPTROOT=";
 	configuration+=pref.scriptPath;
 	configuration+="\nCODEPATH=";
@@ -722,6 +796,10 @@ void MainObject::writeConfigFile()
 	else configuration+="false";
 	configuration+="\nDYNAMICMOVEUPDOWN=";
 	if(pref.moveUpDown == true)
+		configuration+="true";
+	else configuration+="false";
+	configuration+="\n3DGRID=";
+	if(pref.show3dGrid == true)
 		configuration+="true";
 	else configuration+="false";
 	configuration+="\nGRAPHTYPE=";

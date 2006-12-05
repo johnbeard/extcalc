@@ -233,40 +233,19 @@ void CoordinatePreferences::getPref(Preferences pr)
 
 
 
-void ParameterPreferences::getPref(Preferences pr)
-{
-	pref=pr;
-}
-
-
-int ParameterPreferences::savePref()
-{
-	pref.parameterStart=runCalc(parameterStart->text(),&pref,vars);
-	pref.parameterEnd=runCalc(parameterEnd->text(),&pref,vars);
-	pref.parameterSteps=(parameterSteps->text()).toInt();
-
-
-	if(pref.parameterStart>=pref.parameterEnd)
-	{
-		MessageBox(GRAPHPREFC_STR11);
-		return -1;
-	}
-	if(pref.parameterSteps<=0)
-	{
-		MessageBox(GRAPHPREFC_STR14);
-		return -1;
-	}
-	
-	
-	emit prefChange(pref);
-	return 0;
-}
-
-void ParameterPreferences::standardButtonSlot()
+void DynamicPreferences::standardButtonSlot()
 {
 	parameterStart->setText("0");
 	parameterEnd->setText("10");
-	parameterSteps->setText("200");
+	
+	nyquistStart->setText("0");
+	nyquistEnd->setText("100");
+	
+	dynamicSteps->setText("10");
+	dynamicStart->setText("1");
+	dynamicEnd->setText("10");
+	time->setText("10");
+	
 }
 
 void DynamicPreferences::getPref(Preferences pr)
@@ -274,17 +253,41 @@ void DynamicPreferences::getPref(Preferences pr)
 	pref=pr;
 }
 
+int PerformancePreferences::savePref()
+{
+	pref.prec2dSteps=steps2d->value();
+	pref.prec3dSteps=steps3d->value();
+	pref.parameterSteps=stepsParam->value();
+	pref.nyquistSteps=stepsNyquist->value();
+	pref.show3dGrid=polygon3dBox->isChecked();
+	emit prefChange(pref);
+	return 0;
+}
+
+void PerformancePreferences::standardButtonSlot()
+{
+	steps2d->setValue(200);
+	steps3d->setValue(50);
+	stepsParam->setValue(200);
+	stepsNyquist->setValue(200);
+	polygon3dBox->setChecked(true);
+}
+
+void PerformancePreferences::getPref(Preferences pr)
+{
+	pref=pr;
+}
 
 int DynamicPreferences::savePref()
 {
-	pref.dynamicStart=runCalc(parameterStart->text(),&pref,vars);
-	pref.dynamicEnd=runCalc(parameterEnd->text(),&pref,vars);
-	pref.dynamicSteps=parameterSteps->text().toInt();
+	pref.dynamicStart=runCalc(dynamicStart->text(),&pref,vars);
+	pref.dynamicEnd=runCalc(dynamicEnd->text(),&pref,vars);
+	pref.dynamicSteps=dynamicSteps->text().toInt();
 	if(singleStepBox->isChecked())
 		pref.dynamicDelay=time->text().toInt();
 	else pref.dynamicDelay=0;
 	
-	if(pref.parameterEnd <=pref.parameterStart)
+	if(pref.dynamicEnd <=pref.dynamicStart)
 	{
 		MessageBox(GRAPHPREFC_STR15);
 		return -1;
@@ -300,6 +303,27 @@ int DynamicPreferences::savePref()
 		return -1;
 	}
 	
+	pref.parameterStart=runCalc(parameterStart->text(),&pref,vars);
+	pref.parameterEnd=runCalc(parameterEnd->text(),&pref,vars);
+
+	if(pref.parameterStart>=pref.parameterEnd)
+	{
+		MessageBox(GRAPHPREFC_STR11);
+		return -1;
+	}
+
+	
+	pref.nyquistStart=runCalc(nyquistStart->text(),&pref,vars);
+	pref.nyquistEnd=runCalc(nyquistEnd->text(),&pref,vars);
+
+	if(pref.nyquistStart>=pref.nyquistEnd)
+	{
+		MessageBox(GRAPHPREFC_STR11);
+		return -1;
+	}
+
+	
+	
 	if(upButton->isChecked())
 		pref.moveUpDown=false;
 	else pref.moveUpDown=true;
@@ -312,9 +336,10 @@ int DynamicPreferences::savePref()
 void GraphPreferences::saveButtonSlot()
 {
 	if(coordinateWidget->savePref() >=0)
-		if(parameterWidget->savePref()>=0)
+//		if(parameterWidget->savePref()>=0)
 			if(dynamicWidget->savePref()>=0)
-				close();
+				if(performanceWidget->savePref()>=0)
+					close();
 }
 
 void GraphPreferences::windowActivationChange(bool)

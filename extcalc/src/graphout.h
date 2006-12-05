@@ -74,6 +74,7 @@ class GraphOutput :public QGLWidget
 	List <double*> objectCoordinates;
 	List <ObjectInfo> objectInfo;
 	Variable*vars;
+	ThreadSync*threadData;
 	int xRotation,yRotation,mouseX,mouseY,zMove;
 	bool unlock;
 	float middle, lowerMiddle,upperMiddle;
@@ -101,7 +102,7 @@ class GraphOutput :public QGLWidget
 	
 Q_OBJECT
 public:
-	GraphOutput(QWidget*parent,Variable*va) :QGLWidget(parent)
+	GraphOutput(QWidget*parent,Variable*va,Vector*ve) :QGLWidget(parent)
 	{
 		drawImage=new QImage(TEXTURESIZE,TEXTURESIZE,32);
 		drawImage->fill(0x00000000);
@@ -119,6 +120,24 @@ public:
 		drawColor=QColor(0,0,0);
 		drawScreenshot=false;
 		vars=va;
+		threadData=new ThreadSync;
+		threadData->mutex=NULL;
+		threadData->eventReciver=this;
+		threadData->status=0;
+		threadData->exit=false;
+		threadData->usleep=false;
+		threadData->bbreak=false;
+		threadData->bcontinue=false;
+		threadData->data=NULL;
+		threadData->sleepTime=1000;
+		threadData->vars=new Number*[27];
+		for(int c=0; c<27;c++)
+		{
+			threadData->vars[c]=(Number*)malloc(sizeof(Number));
+			threadData->numlen[c]=1;
+			threadData->vars[c][0].type=NNONE;
+		}
+
 		xRotation=yRotation=zMove=0;
 		ineq1=ineq2=-1;
 		unlock=false;
@@ -134,6 +153,7 @@ public:
 	void processParameterFunction(QString);
 	void process3dFunction(QString);
 	void processInequaityFunction(QString,QString,int);
+	void processComplexFunction(QString,bool);
 	void processFunction(int);
 	bool updateFunctions(double,double);
 	GLuint generateGLList(int);

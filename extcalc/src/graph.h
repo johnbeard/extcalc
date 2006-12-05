@@ -46,6 +46,7 @@ class GraphWidget :public QWidget
 	bool maximized;
 	bool solveMode;
 	Variable*vars;
+	Vector*vecs;
 //	List<int>tableFunctionMap;
 //	QStringList colors;
 //	QStringList colorList,graphTypeList;
@@ -56,10 +57,11 @@ class GraphWidget :public QWidget
 	
 Q_OBJECT
 	public:
-	GraphWidget(QWidget*parent,Preferences pr,Variable*va) :QWidget(parent)
+	GraphWidget(QWidget*parent,Preferences pr,Variable*va,Vector*ve) :QWidget(parent)
 	{
 		pref=pr;
 		vars=va;
+		vecs=ve;
 		maximized=false;
 		solveMode=false;
 		functionChanged=false;
@@ -67,7 +69,7 @@ Q_OBJECT
 		dynamicStart=false;
 
 
-		graph=new GraphOutput(this,vars);
+		graph=new GraphOutput(this,vars,vecs);
 		standardButtons=new StandardButtons(this);
 		extButtons=new ExtButtons(this);
 		functionTable=new FunctionTable((QWidget*)this,pref);

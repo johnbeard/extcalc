@@ -23,10 +23,10 @@ using namespace std;
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.6.2\n2006-11-19\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.2\n2006-12-02\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.6.2\n19.11.2006\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.2\n2.12.2006\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2006\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -172,6 +172,11 @@ using namespace std;
 #define SBOR				143
 #define SFAK				144
 #define SBNOT				145
+#define SABS				148
+#define SCONJ				149
+#define SREAL				150
+#define SIMAG				151
+#define SARG				152
 
 #define CALCYVAL			0
 #define CALCZEROS			1
@@ -193,6 +198,8 @@ using namespace std;
 #define GRAPHIEG			47
 #define GRAPHIEGE			48
 #define GRAPH3D				49
+#define GRAPHCOMPLEX		146
+#define GRAPHCOMP3D			147
 
 #define TABLENORMAL			50
 #define TABLEPOLAR			51
@@ -281,16 +288,21 @@ struct Preferences
 	double rasterSizeRadius,rasterSizeAngle;
 	double parameterStart,parameterEnd;
 	double dynamicStart,dynamicEnd;
+	double nyquistStart,nyquistEnd;
 	double tableXStart,tableXEnd,tableZStart,tableZEnd;
 	int parameterSteps;
 	int dynamicSteps;
 	int dynamicDelay;
+	int nyquistSteps;
+	int prec2dSteps;
+	int prec3dSteps;
 	int tableXSteps,tableZSteps;
 	bool raster;
 	bool axis;
 	bool label;
 	bool autosize;
 	bool moveUpDown;
+	bool show3dGrid;
 	int graphType;
 	int calcType;
 	int tableType;
