@@ -238,8 +238,15 @@ void DynamicPreferences::standardButtonSlot()
 	parameterStart->setText("0");
 	parameterEnd->setText("10");
 	
-	nyquistStart->setText("0");
-	nyquistEnd->setText("100");
+	if(logNyquistBox->isChecked())
+	{
+		nyquistStart->setText("-3");
+		nyquistEnd->setText("3");		
+	}
+	else {
+		nyquistStart->setText("0");
+		nyquistEnd->setText("100");
+	}
 	
 	dynamicSteps->setText("10");
 	dynamicStart->setText("1");
@@ -322,7 +329,7 @@ int DynamicPreferences::savePref()
 		return -1;
 	}
 
-	
+	pref.logNyquistSteps=logNyquistBox->isChecked();
 	
 	if(upButton->isChecked())
 		pref.moveUpDown=false;

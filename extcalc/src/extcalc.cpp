@@ -84,6 +84,7 @@ int MainObject::readConfigFile()
 			fwrite("LABEL=false\n",12,1,configFile);
 			fwrite("AUTOSIZE=false\n",15,1,configFile);
 			fwrite("3DGRID=true\n",12,1,configFile);
+			fwrite("LOGNYQUISTSTEPS=true\n",21,1,configFile);
 			fwrite("XMIN=-10.0\n",11,1,configFile);
 			fwrite("XMAX=10.0\n",10,1,configFile);
 			fwrite("YMIN=-10.0\n",11,1,configFile);
@@ -100,8 +101,8 @@ int MainObject::readConfigFile()
 			fwrite("PARAMETERSTART=0\n",17,1,configFile);
 			fwrite("PARAMETEREND=10\n",16,1,configFile);
 			fwrite("PARAMETERSTEPS=200\n",19,1,configFile);
-			fwrite("NYQUISTSTART=0\n",15,1,configFile);
-			fwrite("NYQUISTEND=100\n",15,1,configFile);
+			fwrite("NYQUISTSTART=-3\n",16,1,configFile);
+			fwrite("NYQUISTEND=3\n",13,1,configFile);
 			fwrite("NYQUISTSTEPS=200\n",17,1,configFile);
 			fwrite("GRAPH3DSTEPS=50\n",16,1,configFile);
 			fwrite("GRAPH2DSTEPS=200\n",17,1,configFile);
@@ -112,10 +113,11 @@ int MainObject::readConfigFile()
 			fwrite("DYNAMICMOVEUPDOWN=true\n",23,1,configFile);
 			fwrite("TABLESTARTX=0\n",14,1,configFile);
 			fwrite("TABLESTARTZ=0\n",14,1,configFile);
-			fwrite("TABLEENDX=10\n",12,1,configFile);
-			fwrite("TABLEENDZ=10\n",12,1,configFile);
-			fwrite("TABLESTEPSX=11\n",14,1,configFile);
-			fwrite("TABLESTEPSZ=11\n",14,1,configFile);
+			fwrite("TABLEENDX=10\n",13,1,configFile);
+			fwrite("TABLEENDZ=10\n",13,1,configFile);
+			fwrite("TABLESTEPSX=11\n",15,1,configFile);
+			fwrite("TABLESTEPSZ=11\n",15,1,configFile);
+			fwrite("ANALYSEPRECISION=1\n",19,1,configFile);
 			fwrite("GRAPHTYPE=std\n",14,1,configFile);
 			fwrite("CALCTYPE=scientific\n",20,1,configFile);
 			fwrite("TABLETYPE=normal\n",17,1,configFile);
@@ -450,6 +452,15 @@ int MainObject::readConfigFile()
 		pref.tableZSteps=tableZSteps;
 	}
 	
+	QString solvePrecStr=getConfigString(&confFile,"ANALYSEPRECISION");
+	if(solvePrecStr.length()>0)
+	{
+		int solvePrec=solvePrecStr.toInt();
+		if(solvePrec <0 || solvePrec>2)
+			solvePrec=1;
+		pref.solvePrec=solvePrec;
+	}
+		
 	QString nyquistStepsStr=getConfigString(&confFile,"NYQUISTSTEPS");
 	if(nyquistStepsStr.length()>0)
 	{
@@ -522,11 +533,19 @@ int MainObject::readConfigFile()
 	
 	
 	QString gridStr=getConfigString(&confFile,"3DGRID");
-	if(moveStr.length()>0)
+	if(gridStr.length()>0)
 	{
-		if(gridStr.lower() != "flse")
+		if(gridStr.lower() == "false")
 			pref.show3dGrid=false;
-		else pref.moveUpDown=true;
+		else pref.show3dGrid=true;
+	}
+	
+	QString logStr=getConfigString(&confFile,"LOGNYQUISTSTEPS");
+	if(logStr.length()>0)
+	{
+		if(logStr.lower() == "false")
+			pref.logNyquistSteps=false;
+		else pref.logNyquistSteps=true;
 	}	
 	
 	QString graphType=getConfigString(&confFile,"GRAPHTYPE");
@@ -669,6 +688,10 @@ int MainObject::readConfigFile()
 				types[c]=GRAPHIEG;
 			else if(typeString.lower() == "iege")
 				types[c]=GRAPHIEGE;
+			else if(typeString.lower() == "nyquist2d")
+				types[c]=GRAPHCOMPLEX;
+			else if(typeString.lower() == "nyquist3d")
+				types[c]=GRAPHCOMP3D;
 		}
 		else types[c]=GRAPHSTD;
 	}
@@ -772,6 +795,8 @@ void MainObject::writeConfigFile()
 	configuration+=QString::number(pref.prec3dSteps);
 	configuration+="\nNYQUISTSTEPS=";
 	configuration+=QString::number(pref.nyquistSteps);
+	configuration+="\nANALYSEPRECISION=";
+	configuration+=QString::number(pref.solvePrec);
 	configuration+="\nSCRIPTROOT=";
 	configuration+=pref.scriptPath;
 	configuration+="\nCODEPATH=";
@@ -800,6 +825,10 @@ void MainObject::writeConfigFile()
 	else configuration+="false";
 	configuration+="\n3DGRID=";
 	if(pref.show3dGrid == true)
+		configuration+="true";
+	else configuration+="false";
+	configuration+="\nLOGNYQUISTSTEPS=";
+	if(pref.logNyquistSteps == true)
 		configuration+="true";
 	else configuration+="false";
 	configuration+="\nGRAPHTYPE=";
@@ -905,6 +934,12 @@ void MainObject::writeConfigFile()
 				break;
 			case GRAPHIEGE:
 				configuration+="iege";
+				break;
+			case GRAPHCOMPLEX:
+				configuration+="nyquist2d";
+				break;
+			case GRAPHCOMP3D:
+				configuration+="nyquist3d";
 				break;
 			default:
 				configuration+="std";

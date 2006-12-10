@@ -23,10 +23,10 @@ using namespace std;
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.6.2\n2006-12-02\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.3\n2006-12-10\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.6.2\n2.12.2006\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.3\n10.12.2006\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2006\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -296,6 +296,7 @@ struct Preferences
 	int nyquistSteps;
 	int prec2dSteps;
 	int prec3dSteps;
+	int solvePrec;
 	int tableXSteps,tableZSteps;
 	bool raster;
 	bool axis;
@@ -303,6 +304,7 @@ struct Preferences
 	bool autosize;
 	bool moveUpDown;
 	bool show3dGrid;
+	bool logNyquistSteps;
 	int graphType;
 	int calcType;
 	int tableType;
@@ -549,7 +551,6 @@ public:
 			delete nextObj;
 			nextObj=NULL;
 		}
-		
 	}
 	char*parse(char*line);
 	virtual int split(char* line);

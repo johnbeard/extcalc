@@ -1122,16 +1122,17 @@ void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
 	func = checkString(function,&pref);
 
 	double zStart,zStep;
-	zStart=pref.parameterStart;
 	double* coordinates;
 	if(draw3D)
 	{
-		coordinates=new double[PRECISION2D*3+3];
-		zStep=(pref.parameterEnd-pref.parameterStart)/PRECISION2D;
+		zStart=pref.zmin;
+		coordinates=new double[pref.nyquistSteps*3+3];
+		zStep=(pref.zmax-pref.zmin)/(double)pref.nyquistSteps;
 	}
 	else {
-		coordinates=new double[pref.parameterSteps*2+2];
-		zStep=(pref.parameterEnd-pref.parameterStart)/(double)pref.parameterSteps;
+		zStart=pref.nyquistStart;
+		coordinates=new double[pref.nyquistSteps*2+2];
+		zStep=(pref.nyquistEnd-pref.nyquistStart)/(double)pref.nyquistSteps;
 	}
 
 	QString num,num2;
@@ -1143,16 +1144,14 @@ void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
 
 	objectCoordinates.NewItem(coordinates);
 	int index=objectCoordinates.GetLen()-1;
-	if(draw3D)
-		objectInfo[index].length=PRECISION2D;
-	else objectInfo[index].length=pref.parameterSteps;
+	objectInfo[index].length=pref.nyquistSteps;
 	objectInfo[index].function=func;
 
 	gettimeofday(&t1,NULL);
 	threadData->vars[25][0].type=NFLOAT;
 	if(draw3D)
 	{
-		for(int c=0; c<=PRECISION2D; c++)
+		for(int c=0; c<=pref.nyquistSteps; c++)
 		{
 			
 			threadData->vars[25][0].cfval=Complex(zStart+(double)c*zStep,0.0);
@@ -1163,9 +1162,11 @@ void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
 		}
 	}
 	else {
-		for(int c=0; c<=pref.parameterSteps; c++)
+		for(int c=0; c<=pref.nyquistSteps; c++)
 		{
-			threadData->vars[25][0].cfval=Complex(zStart+(double)c*zStep,0.0);
+			if(pref.logNyquistSteps)
+				threadData->vars[25][0].cfval=Complex(pow(10,zStart+(double)c*zStep),0.0);
+			else threadData->vars[25][0].cfval=Complex(zStart+(double)c*zStep,0.0);
 			result=ca1.exec();
 			objectCoordinates[index][2*c]=result.cfval.real();
 			objectCoordinates[index][2*c+1]=result.cfval.imag();
@@ -1347,6 +1348,8 @@ void GraphOutput::resizeGL( int w, int h )
 
 void GraphOutput::clearGL()
 {
+	current3dSteps=pref.prec3dSteps;
+	current2dSteps=pref.prec2dSteps;
 	while(objects.GetLen() > 0)
 	{
 		glDeleteLists(objects[0],1);
@@ -1677,6 +1680,8 @@ void GraphOutput::processFunction(int index)
 				{
 					threadData->vars[0][0].type=NFLOAT;
 					threadData->vars[0][0].cfval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
+					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
+					objectInfo.NewItem(info);
 					processComplexFunction(pref.functions[index]);
 					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
 				}
@@ -1686,7 +1691,9 @@ void GraphOutput::processFunction(int index)
 				{
 					threadData->vars[0][0].type=NFLOAT;
 					threadData->vars[0][0].cfval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
-					processComplexFunction(pref.functions[index]);
+					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
+					objectInfo.NewItem(info);
+					processComplexFunction(pref.functions[index],true);
 					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
 				}
 				break;
@@ -1815,10 +1822,10 @@ void GraphOutput::processFunction(int index)
 GLuint GraphOutput::generateGLList(int index)
 {
 	GLuint list;
-	
+
 	list = glGenLists(1);
 	glNewList( list, GL_COMPILE );
-	
+
 	double oldx=0.0,oldy=0.0;
 	int colored=0;
 	float height=pref.ymax-pref.ymin;
@@ -1829,21 +1836,19 @@ GLuint GraphOutput::generateGLList(int index)
 	if(objectInfo[index].color==QColor(1,1,1))
 		colored=1;
 	else qglColor( objectInfo[index].color );
-	
 
 	if(objectInfo[index].type==GRAPH3D)
 	{
 //		GLuint list;
-		int colored=0;
 
 //		list = glGenLists( 1 );
 //		glNewList( list, GL_COMPILE );
 
-		float height=pref.ymax-pref.ymin;
-		middle=pref.ymin+height/2.0;		//calculate middle height
-		lowerMiddle=-height/4.0;
-		upperMiddle=height/4.0;
-		
+//		float height=pref.ymax-pref.ymin;
+//		middle=pref.ymin+height/2.0;		//calculate middle height
+//		lowerMiddle=-height/4.0;
+//		upperMiddle=height/4.0;
+
 		double xStart=pref.xmin,xStep=(pref.xmax-pref.xmin)/PRECISION3D;
 		double zStart=pref.zmin,zStep=(pref.zmax-pref.zmin)/PRECISION3D;
 		double z=0.0,y=0.0,x=0.0,lastY;
@@ -1851,7 +1856,7 @@ GLuint GraphOutput::generateGLList(int index)
 	//	if(objectInfo[index].color==QColor(1,1,1))
 	//		colored=1;
 	//	else qglColor(objectInfo[index].color);
-	
+
 		glMatrixMode(GL_MODELVIEW);
 		for(int c=0; c<PRECISION3D; c++)
 		{
@@ -2003,7 +2008,13 @@ GLuint GraphOutput::generateGLList(int index)
 					z=objectCoordinates[index][(c-1)*3+2]+(z-objectCoordinates[index][(c-1)*3+2])*fakt;
 					end=true;
 				}
+				if(colored)
+					setGLColor(y);
+
+					
+				
 				glVertex3f(x,y,z);
+				
 				if(end)
 					glEnd();
 				
@@ -2041,7 +2052,11 @@ GLuint GraphOutput::generateGLList(int index)
 					x=objectCoordinates[index][(c-1)*3]+(x-objectCoordinates[index][(c-1)*3])*fakt;
 					z=objectCoordinates[index][(c-1)*3+2]+(z-objectCoordinates[index][(c-1)*3+2])*fakt;
 				}
+				if(colored)
+					setGLColor(y);
 				glVertex3f(x,y,z);
+				if(colored)
+					setGLColor(tmpY);
 				glVertex3f(tmpX,tmpY,tmpZ);
 			}
 		}

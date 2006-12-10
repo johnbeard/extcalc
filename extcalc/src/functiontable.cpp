@@ -135,6 +135,12 @@ void FunctionTable::setPref(Preferences newPref)
 				case GRAPHIEGE:
 					typeItem->setCurrentItem(GRAPHH_STR22);
 					break;
+				case GRAPHCOMPLEX:
+					typeItem->setCurrentItem("Nyquist Plot");
+					break;
+				case GRAPHCOMP3D:
+					typeItem->setCurrentItem("3D Nyquist Plot");
+					break;
 			}
 		}
 	}

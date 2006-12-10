@@ -1,7 +1,7 @@
 /****************************************************************************
 ** CoordinatePreferences meta object code from reading C++ file 'graphpref.h'
 **
-** Created: Mon Dec 4 16:11:36 2006
+** Created: Sun Dec 10 08:59:03 2006
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
 **
 ** WARNING! All changes made in this file will be lost!

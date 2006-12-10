@@ -13,8 +13,8 @@
 #include "list.h"
 #include "global.h"
 
-#define PRECISION2D 200
-#define PRECISION3D 50
+#define PRECISION2D current2dSteps
+#define PRECISION3D current3dSteps
 #define TEXTURESIZE 512
 #define BACKSTEPS 3
 
@@ -98,6 +98,8 @@ class GraphOutput :public QGLWidget
 	int backCursor;
 	QPixmap**backMap;
 	QString drawString;
+	int current3dSteps;
+	int current2dSteps;
 	
 	
 Q_OBJECT
@@ -115,6 +117,8 @@ public:
 		
 		draw=new QPainter();
 		texture=0xffffffff;
+		current2dSteps=200;
+		current3dSteps=50;
 		drawState=DRAWFREE;
 		previewPen=drawPen=1;
 		drawColor=QColor(0,0,0);

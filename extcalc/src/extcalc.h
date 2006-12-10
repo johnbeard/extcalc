@@ -129,7 +129,7 @@
 //	- preferences dialogs can't process mathematical expressions						ok  //
 //	- Script editor has no Menu bar															//
 //	- converting floating point values does not work for all locale settings			ok	//
-//	- asymptotes are not alsways shown correctly											//
+//	- asymptotes are not alsways shown correctly										ok	//
 //	- Size of output-table in GraphSolveWidget is not resized								//
 
 //////////////////////////used variables//////////////////////////
@@ -347,6 +347,14 @@ MainObject() :QTabWidget()
 	pref.base=DEC;
 	pref.dynamicStart=0.0;
 	pref.dynamicEnd=10.0;
+	pref.nyquistStart=-3.0;
+	pref.nyquistEnd=3.0;
+	pref.nyquistSteps=200;
+	pref.prec2dSteps=200;
+	pref.prec3dSteps=50;
+	pref.solvePrec=1;
+	pref.show3dGrid=true;
+	pref.logNyquistSteps=true;
 	pref.dynamicSteps=10;
 	pref.dynamicDelay=1;
 	pref.moveUpDown=false;

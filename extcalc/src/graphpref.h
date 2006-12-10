@@ -273,7 +273,7 @@ class DynamicPreferences :public QWidget
 	QLineEdit*dynamicStart,*dynamicEnd,*dynamicSteps,*time;
 	QRadioButton*upButton,*upDownButton;
 	QButtonGroup *radioButtons;
-	QCheckBox *singleStepBox;
+	QCheckBox *singleStepBox,*logNyquistBox;
 	QPushButton*standardButton;
 	Variable*vars;
 	
@@ -311,6 +311,7 @@ class DynamicPreferences :public QWidget
 			dynamicStepsLabel=new QLabel(GRAPHPREFH_STR27,this);
 			timeLabel=new QLabel(GRAPHPREFH_STR28,this);
 			singleStepBox=new QCheckBox(GRAPHPREFH_STR29,this);
+			logNyquistBox=new QCheckBox("Use logarithmic scale (10^Z)",this);
 
 			dynamicStart=new QLineEdit(QString::number(pref.dynamicStart),this);
 			dynamicEnd=new QLineEdit(QString::number(pref.dynamicEnd),this);
@@ -324,6 +325,7 @@ class DynamicPreferences :public QWidget
 			if(pref.moveUpDown)
 				upDownButton->setChecked(true);
 			else upButton->setChecked(true);
+			logNyquistBox->setChecked(pref.logNyquistSteps);
 			
 			if(pref.dynamicDelay>0)
 				singleStepBox->setChecked(true);
@@ -333,19 +335,20 @@ class DynamicPreferences :public QWidget
 				time->setText("10");
 			}
 
-			parameterLabel->setGeometry(20,30,380,20);
+			parameterLabel->setGeometry(20,10,380,20);
 			
-			parameterStartLabel->setGeometry(20,60,140,20);
-			parameterStart->setGeometry(160,60,100,20);
-			parameterEndLabel->setGeometry(270,60,140,20);
-			parameterEnd->setGeometry(410,60,100,20);
+			parameterStartLabel->setGeometry(20,40,140,20);
+			parameterStart->setGeometry(160,40,100,20);
+			parameterEndLabel->setGeometry(270,40,140,20);
+			parameterEnd->setGeometry(410,40,100,20);
 			
-			nyquistLabel->setGeometry(20,105,380,20);
+			nyquistLabel->setGeometry(20,80,380,20);
 			
-			nyquistStartLabel->setGeometry(20,135,140,20);
-			nyquistStart->setGeometry(160,135,100,20);
-			nyquistEndLabel->setGeometry(270,135,140,20);
-			nyquistEnd-> setGeometry(410,135,100,20);
+			nyquistStartLabel->setGeometry(20,110,140,20);
+			nyquistStart->setGeometry(160,110,100,20);
+			nyquistEndLabel->setGeometry(270,110,140,20);
+			nyquistEnd-> setGeometry(410,110,100,20);
+			logNyquistBox->setGeometry(20,140,400,20);
 			
 			
 			dynamicLabel->setGeometry(20,180,380,20);
@@ -420,7 +423,7 @@ public:
 		addTab(coordinateWidget,GRAPHPREFH_STR32);
 //		addTab(parameterWidget,GRAPHPREFH_STR33);
 		addTab(dynamicWidget,GRAPHPREFH_STR34);
-		addTab(performanceWidget,"Precision/Performance");
+		addTab(performanceWidget,GRAPHPREFH_STR33);
 			
 		
 		saveButton=new QPushButton(GRAPHPREFH_BTN3,this);
