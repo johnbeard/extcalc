@@ -19,7 +19,7 @@ class CalcWidget :public QWidget
 	QComboBox*prefBox;
 	bool maximized;
 	Variable *vars;
-	Vector *vecs;
+	ThreadSync*threadData;
 	
 	Q_OBJECT
 
@@ -30,13 +30,13 @@ class CalcWidget :public QWidget
 
 	
 	public:
-	CalcWidget(QWidget*parent,Preferences p,Variable *va,Vector *ve) :QWidget(parent)
+	CalcWidget(QWidget*parent,Preferences p,Variable *va,ThreadSync*td) :QWidget(parent)
 	{
 		vars=va;
-		vecs=ve;
+		threadData=td;
 		pref=p;
 		maximized=false;	
-		textEdit=new CalcInput(this,vars,vecs);
+		textEdit=new CalcInput(this,vars,threadData);
 //		graph=new GraphOutput(this);
 		calcButtons=new  StandardButtons(this);
 		extButtons=new ExtButtons(this);

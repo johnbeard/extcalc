@@ -42,7 +42,6 @@ class CalcInput :public QTextEdit
 	QFont *stdFont;
 	int lineCount;
 	Variable*vars;
-	Vector*vecs;
 	bool scriptExec;
 	List <int>resultParagraphs; 
 //	ScriptThread*script;
@@ -53,10 +52,11 @@ class CalcInput :public QTextEdit
 	
 	Q_OBJECT
 	public:
-		CalcInput(QWidget*parentWin,Variable*va,Vector*ve) :QTextEdit((QWidget*)parentWin)
+		CalcInput(QWidget*parentWin,Variable*va,ThreadSync*td
+				 ) :QTextEdit((QWidget*)parentWin)
 		{
 			vars=va;
-			vecs=ve;
+			threadData=td;
 			scriptExec=false;
 //			script=NULL;
 			stdFont=new QFont("Courier");
@@ -65,23 +65,6 @@ class CalcInput :public QTextEdit
 			setFont(*stdFont);
 			setTextFormat(Qt::PlainText);
 
-			threadData=new ThreadSync;
-			threadData->mutex=NULL;
-			threadData->eventReciver=this;
-			threadData->status=0;
-			threadData->exit=false;
-			threadData->usleep=false;
-			threadData->bbreak=false;
-			threadData->bcontinue=false;
-			threadData->data=NULL;
-			threadData->sleepTime=1000;
-			threadData->vars=new Number*[27];
-			for(int c=0; c<27;c++)
-			{
-				threadData->vars[c]=(Number*)malloc(sizeof(Number));
-				threadData->numlen[c]=1;
-				threadData->vars[c][0].type=NNONE;
-			}
 
 			QFontMetrics fontSize=fontMetrics();
 			charLength=fontSize.size(0,QString("m")).width();

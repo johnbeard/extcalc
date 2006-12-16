@@ -130,7 +130,9 @@
 //	- Script editor has no Menu bar															//
 //	- converting floating point values does not work for all locale settings			ok	//
 //	- asymptotes are not alsways shown correctly										ok	//
-//	- Size of output-table in GraphSolveWidget is not resized								//
+//	- calculator keys must be sorted													ok	//
+//	- Size of output-table in GraphSolveWidget is not resized							ok	//
+//	- text copying does not work in script console											//
 
 //////////////////////////used variables//////////////////////////
 //
@@ -224,6 +226,7 @@ class MainObject :public QTabWidget
 	Vector *vecs;
 	bool calcFocus;
 	bool calcModeChanged;
+	ThreadSync*threadData;
 
 Q_OBJECT
 public:
@@ -350,7 +353,7 @@ MainObject() :QTabWidget()
 	pref.nyquistStart=-3.0;
 	pref.nyquistEnd=3.0;
 	pref.nyquistSteps=200;
-	pref.prec2dSteps=200;
+	pref.prec2dSteps=400;
 	pref.prec3dSteps=50;
 	pref.solvePrec=1;
 	pref.show3dGrid=true;
@@ -364,6 +367,25 @@ MainObject() :QTabWidget()
 	pref.tableType=TABLENORMAL;
 	pref.showWindows[0]=pref.showWindows[2]=pref.showWindows[3]=pref.showWindows[4]=true;
 	pref.showWindows[1]=pref.showWindows[5]=false;
+	
+	
+	threadData=new ThreadSync;
+	threadData->mutex=NULL;
+	threadData->eventReciver=this;
+	threadData->status=0;
+	threadData->exit=false;
+	threadData->usleep=false;
+	threadData->bbreak=false;
+	threadData->bcontinue=false;
+	threadData->data=NULL;
+	threadData->sleepTime=1000;
+	threadData->vars=new Number*[27];
+	for(int c=0; c<27;c++)
+	{
+		threadData->vars[c]=(Number*)malloc(sizeof(Number));
+		threadData->numlen[c]=1;
+		threadData->vars[c][0].type=NNONE;
+	}
 	
 
 	angleMenu=new QPopupMenu;
@@ -491,9 +513,9 @@ MainObject() :QTabWidget()
 
 	
 
-	calculator=new CalcWidget(this,pref,vars,vecs);
-	calculator2=new CalcWidget(this,pref,vars,vecs);
-	graph = new GraphWidget(this,pref,vars,vecs);
+	calculator=new CalcWidget(this,pref,vars,threadData);
+	calculator2=new CalcWidget(this,pref,vars,threadData);
+	graph = new GraphWidget(this,pref,vars,threadData);
 	table=new TableWidget(this,pref,vars);
 	scripting=new ScriptWidget(this,pref,vars);
 	scriptIO=new ScriptIOWidget(this,pref,vars);
@@ -564,6 +586,7 @@ void writeConfigFile();
 protected:
 
 virtual void closeEvent(QCloseEvent*);
+virtual void customEvent(QCustomEvent*);
 
 public slots:
 void fileMenuSlot(int item);

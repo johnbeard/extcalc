@@ -66,12 +66,28 @@ void ExtButtons::buttonSlot(int num)
 			break;
 		case 1:
 		{
-			if(pref.alpha)
-				emit emitText(find(num)->text());
-			else emit emitText("rnd");
+			if(pref.calcType==SCIENTIFIC && !pref.shift && !pref.alpha)
+				emit emitText(getUnicode(INTEGRALSTRING)+"(");
+			else if(pref.calcType==SCIENTIFIC && pref.shift && !pref.alpha ||pref.calcType==BASE && !pref.alpha)
+				emit emitText("rnd(");
+			else emit emitText(find(num)->text());
 			break;
 		}
-		case 3:
+		case 2:
+		{
+			if(pref.calcType==SCIENTIFIC && !pref.shift && !pref.alpha)
+				emit emitText("d/dx(");
+			else emit emitText(find(num)->text());
+			break;
+		}
+		case 4:
+		{
+			if(pref.calcType==BASE && !pref.alpha)
+				emit emitText(getUnicode(ROOTSTRING));
+			else emit emitText(find(num)->text());
+			break;
+		}
+	/*	case 3:
 			if(pref.calcType==SCIENTIFIC)
 			{
 				if(pref.alpha)
@@ -95,7 +111,7 @@ void ExtButtons::buttonSlot(int num)
 				else emit emitText(getUnicode(ROOTSTRING));
 			}
 			break;
-		case 6:
+	*/	case 6:
 			pref.alpha=!pref.alpha;
 			emit prefChange(pref);
 			break;
@@ -109,7 +125,13 @@ void ExtButtons::buttonSlot(int num)
 		case 8:
 
 			if(pref.calcType==SCIENTIFIC)
-				emit emitText(find(num)->text());
+			{
+				if(pref.shift)
+					emit emitText(find(num)->text());
+				else if(pref.alpha)
+					emit emitText(find(num)->text());
+				else emit emitText("^");
+			}
 			else {
 				if(pref.shift)
 					emit emitText("&&");
@@ -118,19 +140,13 @@ void ExtButtons::buttonSlot(int num)
 				else emit emitText("&");
 				}
 			break;
-		case 10:
-			if(pref.calcType==SCIENTIFIC)
-			{
-				if(pref.alpha)
-					emit emitText(find(num)->text());
-				else emit emitText(getUnicode(ROOTSTRING));
-			}
-			else emit emitText(find(num)->text());
-			break;
 		case 11:
 			if(pref.calcType==BASE &&!pref.alpha)
 				emit emitText("x");
+			else if(pref.calcType==SCIENTIFIC && !pref.alpha && !pref.shift)
+				emit emitText(getUnicode(ROOTSTRING));
 			else emit emitText(find(num)->text());
+				
 			break;
 		case 14:
 			
@@ -141,11 +157,7 @@ void ExtButtons::buttonSlot(int num)
 				emit prefChange(pref);
 			}
 			break;
-		case 18:
-			if(pref.alpha)
-				emit emitText(find(num)->text());
-			else ; // a/b button
-			break;
+
 		default:
 			emit emitText(find(num)->text());
 			break;

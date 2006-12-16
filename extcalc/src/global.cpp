@@ -2120,7 +2120,7 @@ char* Script::parse(char* line)
 	pos1=-1;
 	while((pos1=bracketFindRev(line,"-",pos1)) != -1)
 	{		
-		if(pos1>1 && !(line[pos1-1]>='A' && line[pos1-1]<='Z' || line[pos1-1]>='0' && line[pos1-1]<='9' || line[pos1-1]=='i' || line[pos1-1]==')'||line[pos1-1]==')'|| line[pos1-1]=='!') )
+		if(pos1>1 && !(line[pos1-1]>='A' && line[pos1-1]<='Z' || line[pos1-1]>='0' && line[pos1-1]<='9' || line[pos1-1]=='i' || line[pos1-1]==')'||line[pos1-1]==']'|| line[pos1-1]=='!') )
 		{
 			pos1--;
 			continue;
@@ -2486,7 +2486,7 @@ char* Script::parse(char* line)
 		strcopy(startStr,&line[pos1+1],len-pos1-2);
 
 
-		horzObj=new Calculate(this,function,pref,vars);
+		horzObj=new Script(this,function,pref,vars,eventReciver);
 		vertObj=new Script(this,startStr,pref,vars,eventReciver);
 		delete[]function;
 		delete[]startStr;
@@ -2677,14 +2677,14 @@ char* Script::parse(char* line)
 		else if(strncmp(line,"sqrt",4) == 0)
 		{
 			operation=ROOT;
-			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
-			vertObj2=new Script(this,"2",pref,vars,eventReciver);
+			vertObj2=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj=new Script(this,"2",pref,vars,eventReciver);
 		}
 		else if(strncmp(line,"curt",4) == 0)
 		{
 			operation=ROOT;
-			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
-			vertObj2=new Script(this,"3",pref,vars,eventReciver);
+			vertObj2=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj=new Script(this,"3",pref,vars,eventReciver);
 		}
 		else if(strncmp(line,"real",4) == 0)
 		{
@@ -4115,7 +4115,7 @@ Number Script::exec()
 					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
 			}
 
-			value.cfval=pow(value.cfval,Complex(1.0)/n.cfval);
+			value.cfval=pow(n.cfval,Complex(1.0)/value.cfval);
 			return value;
 		}
 		case SIN:
@@ -4740,16 +4740,38 @@ Number Script::exec()
 				default:
 					pos=value.fval; break;
 			}
-			
-			double step=(pos*(double)1e-6);
-			if(step<1e-6)
-				step=1e-6;
-			vars[23][0]=pos-step;
-			double w1=horzObj->calc();
-			vars[23][0]=pos+step;
-			double w2=horzObj->calc();
 			value.type=NFLOAT;
-			value.cfval=Complex((w2-w1)/((double)2.0*step),0.0);
+			double step=(pos*(double)1e-8);
+			if(step<1e-8)
+				step=1e-8;
+			eventReciver->vars[23][0].type=NFLOAT;
+			eventReciver->vars[23][0].cfval=Complex(pos-step,0.0);
+			Number w1=horzObj->exec();
+			switch(w1.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)w1.bval,0.0); break;
+				case NFLOAT:
+					value.cfval=w1.cfval; break;
+				case NINT:
+					value.cfval=Complex((long double)w1.ival,0.0);  break;
+				default:
+					value.cfval=value.cfval;  break;
+			}
+			eventReciver->vars[23][0].cfval=Complex(pos+step,0.0);
+			Number w2=horzObj->exec();
+			switch(w2.type)
+			{
+				case NBOOL:
+					value.cfval=(Complex(w2.bval,0.0)-value.cfval)/Complex(2.0*step); break;
+				case NFLOAT:
+					value.cfval=(w2.cfval-value.cfval)/Complex(2.0*step); break;
+				case NINT:
+					value.cfval=(Complex(w2.ival,0.0)-value.cfval)/Complex(2.0*step);  break;
+				default:
+					value.cfval=(w2.cfval-value.cfval)/Complex(2.0*step); break;
+			}
+		//	value.cfval=Complex((w2-w1)/((double)2.0*step),0.0);
 		
 			return value;
 		}

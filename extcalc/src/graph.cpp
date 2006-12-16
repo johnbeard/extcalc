@@ -303,23 +303,31 @@ void GraphWidget::solveTypeSlot(int type)
 			else if(type==5)
 				emit solveTypeSignal(9);
 			break;
+		case 5: //nyquist
+			if(type==0 || type==1)
+				emit solveTypeSignal(type);
+			else if(type==2)
+				emit solveTypeSignal(3);
+			else if(type==3)
+				emit solveTypeSignal(9);
+			break;
 	}
 }
 
 void GraphWidget::functionTypeSlot(int fType)
 {
-	//		y-value						normal	polar	parameter	inequaity	3D
+	//		y-value						normal	polar	parameter	inequaity	3D	nyquist
 	//		extreme values				normal	polar				inequaity	3D
 	//		integral					normal	polar				inequaity	3D
 	//		differential				normal	polar	parameter	inequaity	3D
-	//		roots						normal	polar	parameter	inequaity
-	//		x-value						normal	polar	parameter	inequaity
+	//		roots						normal	polar	parameter	inequaity		nyquist
+	//		x-value						normal	polar	parameter	inequaity		nyquist
 	//		newton's method				normal	polar				inequaity
 	//		points of intersection		normal	polar				inequaity
 
 
 //	functionType->setCurrentItem(fType);
-	if(fType==0 || fType == 2 || fType == 3 && pref.graphType!=GRAPHSTD)
+	if(fType==0 || fType == 2 || fType == 3 || (fType==5 &&pref.graphType!=GRAPHPOLAR && pref.graphType!=GRAPH3D) && pref.graphType!=GRAPHSTD)
 	{
 		pref.graphType=GRAPHSTD;
 		emit prefChange(pref);
@@ -368,6 +376,13 @@ void GraphWidget::functionTypeSlot(int fType)
 			solveType->insertItem(GRAPHH_STR10,-7);
 			solveType->insertItem(GRAPHH_STR11,-8);
 			solveType->insertItem(GRAPHH_STR25,-9);
+			solveType->insertItem(GRAPHH_STR26,-9);
+			break;
+		case 5: // nyquist
+			solveType->clear();
+			solveType->insertItem(GRAPHH_STR4,-2);
+			solveType->insertItem(GRAPHH_STR5,-3);
+			solveType->insertItem(GRAPHH_STR7,-4);
 			solveType->insertItem(GRAPHH_STR26,-9);
 			break;
 	}

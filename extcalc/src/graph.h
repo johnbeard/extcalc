@@ -46,7 +46,7 @@ class GraphWidget :public QWidget
 	bool maximized;
 	bool solveMode;
 	Variable*vars;
-	Vector*vecs;
+	ThreadSync*threadData;
 //	List<int>tableFunctionMap;
 //	QStringList colors;
 //	QStringList colorList,graphTypeList;
@@ -57,11 +57,11 @@ class GraphWidget :public QWidget
 	
 Q_OBJECT
 	public:
-	GraphWidget(QWidget*parent,Preferences pr,Variable*va,Vector*ve) :QWidget(parent)
+	GraphWidget(QWidget*parent,Preferences pr,Variable*va,ThreadSync*td) :QWidget(parent)
 	{
 		pref=pr;
 		vars=va;
-		vecs=ve;
+		threadData=td;
 		maximized=false;
 		solveMode=false;
 		functionChanged=false;
@@ -69,7 +69,7 @@ Q_OBJECT
 		dynamicStart=false;
 
 
-		graph=new GraphOutput(this,vars,vecs);
+		graph=new GraphOutput(this,vars,threadData);
 		standardButtons=new StandardButtons(this);
 		extButtons=new ExtButtons(this);
 		functionTable=new FunctionTable((QWidget*)this,pref);
@@ -78,7 +78,7 @@ Q_OBJECT
 		modeBox=new QComboBox(this);
 		solveType=new QComboBox(this);
 		functionType=new QComboBox(this);
-		solveWidget=new GraphSolveWidget(this,pref,vars);
+		solveWidget=new GraphSolveWidget(this,pref,vars,threadData);
 		solveType->hide();
 		functionType->hide();
 		solveWidget->hide();
@@ -99,6 +99,7 @@ Q_OBJECT
 		functionType->insertItem(TABLEH_STR5);
 		functionType->insertItem(TABLEH_STR6);
 		functionType->insertItem(TABLEH_STR7);
+		functionType->insertItem("Nyquist Plots");
 		modeBox->insertItem(GRAPHH_STR27);
 		modeBox->insertItem(GRAPHH_STR28);
 		modeBox->insertItem(GRAPHH_STR29);

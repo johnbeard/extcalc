@@ -7,7 +7,7 @@ void GraphSolveWidget::setState(int newSolveType)
 {
 	solveType=newSolveType;
 	resetDialog();
-}     
+}
 
 
 void GraphSolveWidget::resizeEvent(QResizeEvent*)
@@ -19,7 +19,7 @@ void GraphSolveWidget::resizeEvent(QResizeEvent*)
 	{
 		case CALCYVAL:
 		{
-			if(functionType==GRAPHPARAMETER)
+			if(functionType==GRAPHPARAMETER || functionType==GRAPHCOMPLEX)
 			{
 				xLabel->setGeometry(20,0,width/2-20,20);
 				yLabel->setGeometry(width/2+5,0,width/2-20,20);
@@ -219,6 +219,11 @@ void GraphSolveWidget::resizeEvent(QResizeEvent*)
 
 void GraphSolveWidget::resetDialog()
 {
+	xLine->setText("");
+	x2Line->setText("");
+	x3Line->setText("");
+	x4Line->setText("");
+	aLine->setText("");	
 	xLine->hide();
 	x2Line->hide();
 	x3Line->hide();
@@ -271,7 +276,7 @@ void GraphSolveWidget::resetDialog()
 			solveButton->show();
 			outputTable->setNumRows(20);
 			outputTable->show();
-			if(functionType==GRAPHPARAMETER)
+			if(functionType==GRAPHPARAMETER || functionType==GRAPHCOMPLEX)
 			{
 				outputTable->setNumCols(2);
 				QStringList colLabels;
@@ -334,7 +339,7 @@ void GraphSolveWidget::resetDialog()
 			functionBox->show();
 			solveButton->show();
 			outputTable->setNumCols(1);
-			if(functionType==GRAPHPARAMETER)
+			if(functionType==GRAPHPARAMETER|| functionType==GRAPHCOMPLEX)
 			{
 				outputTable->setNumCols(2);
 				QStringList colLabels;
@@ -387,7 +392,7 @@ void GraphSolveWidget::resetDialog()
 			functionBox->show();
 			solveButton->show();
 			outputTable->setNumCols(1);
-			if(functionType==GRAPHPARAMETER)
+			if(functionType==GRAPHPARAMETER || functionType==GRAPHCOMPLEX)
 			{
 				outputTable->setNumCols(2);
 				QStringList colLabels;
@@ -579,16 +584,13 @@ void GraphSolveWidget::calculateYVal(QString text)
 
 	if(pref.functions == NULL || pref.activeFunctions == NULL)
 		return;
-	outputTable->setNumRows(20);
+	outputTable->setNumRows(0);
 //	MessageBox("remove");
 	double num=runCalc(text,&pref,vars);
-	if(num == NAN || text.length() <=0)
+	if(num != NAN && text.length()>0)
 	{
-		for(int c=0; c<20; c++)
-			outputTable->setText(c,0,"");
-	}
-	else {
 		double oldX=vars[23][0];
+		int count=0;
 		for(int c=0; c<20; c++)
 		{
 			if(pref.functions[c].length() > 0 && pref.activeFunctions[c] &&
@@ -606,13 +608,14 @@ void GraphSolveWidget::calculateYVal(QString text)
 
 				double y=cal.calc();
 				QString result;
-
+				outputTable->setNumRows(count+1);
 				result=formatOutput(y,&pref);
-				outputTable->setText(c,0,result);
-				outputTable->changeColor(c,pref.functionColors[c]);
-
+				outputTable->verticalHeader()->setLabel(count,"y"+QString::number(c+1));
+				outputTable->setText(count,0,result);
+				outputTable->changeColor(count,pref.functionColors[c]);
+				count++;
 			}
-			else outputTable->setText(c,0,"");
+
 
 		}
 		vars[23][0]=oldX;
@@ -625,9 +628,8 @@ void GraphSolveWidget::calculateYVal(QString text)
 
 
 
-int GraphSolveWidget::calculateRoots(QString function,long double startValue, long double endValue,long double**dResults,int varIndex=23)
+int GraphSolveWidget::calculateRoots(QString function,long double startValue, long double endValue,long double**dResults,int varIndex=23,bool forceScript=false)
 {
-
 	if(endValue <= startValue || endValue==NAN || startValue==NAN)
 		return -1;
 	if(varIndex<0 || varIndex>25)
@@ -649,7 +651,12 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 	if(cleanFunction.length()<=0)
 		return -1;
 	char*modifiedFunction=(char*)cleanFunction.ascii();
-	Calculate cfx(NULL,modifiedFunction,&pref,vars);
+	Calculate *cfx=NULL;
+	Script*sfx=NULL;
+	if(forceScript)
+		sfx=new Script(NULL,modifiedFunction,&pref,vars,threadData);
+	else cfx=new Calculate(NULL,modifiedFunction,&pref,vars);
+	
 	QString strdfx("d/dx("+function+"");
 	cleanFunction=QString(checkString(strdfx,&pref));
 	if(varIndex!=23)
@@ -662,14 +669,34 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 		return -1;
 	modifiedFunction=(char*)cleanFunction.ascii();
 	
-	Calculate cdfx(NULL,modifiedFunction,&pref,vars);
+	Calculate *cdfx=NULL;
+	Script*sdfx=NULL;
+	if(forceScript)
+		sdfx=new Script(NULL,modifiedFunction,&pref,vars,threadData);
+	else cdfx=new Calculate(NULL,modifiedFunction,&pref,vars);
 	List <long double> results;
 
-	vars[23][0]=scanPos;
-	double fx1=cfx.calc(),dfx1=cdfx.calc();
-	double oldfx1=0,olddfx1=0;
-	double x1=0,nfx1=0,ndfx1=0;
-	double startPos=0,endPos=0;
+	perror("function: "+QString(function));
+	perror("differential function: "+QString(modifiedFunction));
+
+	long double fx1,dfx1;
+	if(forceScript)
+	{
+		threadData->vars[23][0].type=NFLOAT;
+		threadData->vars[23][0].cfval=Complex(scanPos,0.0);
+		fx1=sfx->exec().cfval.real();
+		dfx1=sdfx->exec().cfval.real();
+	}
+	else
+	{
+		vars[23][0]=scanPos;
+		fx1=cfx->calc();
+		dfx1=cdfx->calc();
+	}
+	
+	long double oldfx1=0,olddfx1=0;
+	long double x1=0,nfx1=0,ndfx1=0;
+	long double startPos=0,endPos=0;
 	bool fail=false;
 	
 	while(scanPos<endValue)
@@ -678,9 +705,19 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 		oldfx1=fx1;
 		olddfx1=dfx1;
 		scanPos+=step;
-		vars[23][0]=scanPos;
-		fx1=cfx.calc();
-		dfx1=cdfx.calc();
+		if(forceScript)
+		{
+			
+			threadData->vars[23][0].cfval=Complex(scanPos,0.0);
+			fx1=sfx->exec().cfval.real();
+			dfx1=sdfx->exec().cfval.real();
+		}
+		else {
+			
+			vars[23][0]=scanPos;
+			fx1=cfx->calc();
+			dfx1=cdfx->calc();
+		}
 		
 		if(oldfx1*fx1 <= (double)0.0 || olddfx1*dfx1<= (double)0.0)
 		{
@@ -688,27 +725,52 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 			endPos=scanPos+exactStep;
 			scanPos-=(step+exactStep);
 			startPos=scanPos;
-			vars[23][0]=scanPos;
-			fx1=cfx.calc();
-			dfx1=cdfx.calc();
+			if(forceScript)
+			{
+				threadData->vars[23][0].cfval=Complex(scanPos,0.0);
+				fx1=sfx->exec().cfval.real();
+				dfx1=sdfx->exec().cfval.real();
+			}
+			else {
+				vars[23][0]=scanPos;
+				fx1=cfx->calc();
+				dfx1=cdfx->calc();
+			}
 			while(scanPos<endPos)
 			{
 				oldfx1=fx1;
 				olddfx1=dfx1;
 				scanPos+=exactStep;
-				vars[23][0]=scanPos;
-				fx1=cfx.calc();
-				dfx1=cdfx.calc();
+				if(forceScript)
+				{
+					threadData->vars[23][0].cfval=Complex(scanPos,0.0);
+					fx1=sfx->exec().cfval.real();
+					dfx1=sdfx->exec().cfval.real();
+				}
+				else {
+					vars[23][0]=scanPos;
+					fx1=cfx->calc();
+					dfx1=cdfx->calc();
+				}
 				if(olddfx1*dfx1<= (double)0.0)			//Newton; for double-roots
 				{
 					fail=false;
 					x1=scanPos;
 					for(int c=0; c<100; c++)
 					{
-						vars[23][0]=scanPos;
-						nfx1=cfx.calc();
-						ndfx1=cdfx.calc();
-						if(nfx1<1e-50 && nfx1>-1e-50)
+						if(forceScript)
+						{
+							threadData->vars[23][0].cfval=Complex(x1,0.0);
+							nfx1=sfx->exec().cfval.real();
+							ndfx1=sdfx->exec().cfval.real();
+						}
+						else {
+							vars[23][0]=x1;
+							nfx1=cfx->calc();
+							ndfx1=cdfx->calc();
+						}
+						perror("x1 "+QString::number((double)x1)+" nfx1 "+QString::number((double)nfx1)+" ndfx1 "+QString::number((double)ndfx1));
+						if(nfx1<1e-30 && nfx1>-1e-30)
 							break;
 						if(ndfx1<1e-50 && ndfx1>-1e-50)
 						{
@@ -735,30 +797,58 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 					endPos=scanPos+exactStep;
 					scanPos-=(step+exactStep);
 					startPos=scanPos;
-					double rfXEnd=endPos,rfXStart=startPos;
-					double rfYEnd,rfYStart;
+					long double rfXEnd=endPos,rfXStart=startPos;
+					long double rfYEnd,rfYStart;
 					int c=0;
 					while(true)
 					{
 						c++;
-						vars[23][0]=rfXStart;
-						rfYStart=cfx.calc();
-						vars[23][0]=rfXEnd;
-						rfYEnd=cfx.calc();
+						if(forceScript)
+						{
+							threadData->vars[23][0].cfval=Complex(rfXStart,0.0);
+							rfYStart=sfx->exec().cfval.real();
+							threadData->vars[23][0].cfval=Complex(rfXEnd,0.0);
+							rfYEnd=sfx->exec().cfval.real();
+						}
+						else {
+							vars[23][0]=rfXStart;
+							rfYStart=cfx->calc();
+							vars[23][0]=rfXEnd;
+							rfYEnd=cfx->calc();
+						}
 						x1=rfXEnd-rfYEnd*(rfXEnd-rfXStart)/(rfYEnd-rfYStart);
-						vars[23][0]=x1;
-						fx1=cfx.calc();
+						
+						if(forceScript)
+						{
+							threadData->vars[23][0].cfval=Complex(x1,0.0);
+							fx1=sfx->exec().cfval.real();
+						}
+						else {
+							vars[23][0]=x1;
+							fx1=cfx->calc();
+						}
+						
 						if(fx1*rfYEnd < (double)0.0)
 							rfXStart=x1;
 						else if(fx1*rfYStart < (double)0.0)
 							rfXEnd=x1;
+						
 						if((fx1>-1e-14 && fx1<1e-14) || c>100)
 						{
 							results.NewItem(x1);
 							scanPos=endPos;
-							vars[23][0]=scanPos;
-							fx1=cfx.calc();
-							dfx1=cdfx.calc();
+							
+							if(forceScript)
+							{
+								threadData->vars[23][0].cfval=Complex(scanPos,0.0);
+								fx1=sfx->exec().cfval.real();
+								dfx1=sdfx->exec().cfval.real();
+							}
+							else {
+								vars[23][0]=scanPos;
+								fx1=cfx->calc();
+								dfx1=cdfx->calc();
+							}
 							break;
 						}
 					}
@@ -783,7 +873,7 @@ void GraphSolveWidget::showRoots(QString function,QColor color)
 	int numResults;
 	if(functionType==GRAPHPOLAR)
 		numResults=calculateRoots(function,0.0, pref.angleMax,&results);
-	else numResults=calculateRoots(function,pref.xmin, pref.xmax,&results);
+	else numResults=calculateRoots(function,pref.xmin, pref.xmax,&results,23,true);
 	
 	if(numResults <=0)
 		return;
@@ -866,7 +956,7 @@ void GraphSolveWidget::setFunctionBox(QComboBox*fBox)
 		int functionCount=0;
 		for(int c=0; c<20; c++)
 		{
-			if(pref.activeFunctions[c] && (pref.functionTypes[c] == functionType ||
+			if(pref.activeFunctions[c] && (pref.functionTypes[c] == functionType || pref.functionTypes[c]==GRAPHCOMP3D && functionType==GRAPHCOMPLEX ||
 			functionType==GRAPHIEL && (pref.functionTypes[c] == GRAPHIEG ||
 						pref.functionTypes[c] == GRAPHIEGE ||
 						pref.functionTypes[c] == GRAPHIELE)))
@@ -921,22 +1011,46 @@ void GraphSolveWidget::solveButtonSlot()
 					break;
 				}
 				case GRAPHPARAMETER:
+				case GRAPHCOMPLEX:
 				{
 					double xVal=runCalc(xLine->text(),&pref,vars);
 					if(xVal!=NAN)
 					{
-						emit addVerticalLine(xVal);
+						
+						
 						if(functionBox->currentItem()<0)
 							break;
 						int funcIndex=functionIndices[functionBox->currentItem()];
-						QString xFunction=pref.functions[funcIndex].left(pref.functions[funcIndex].find("\\"));
-	
-						xFunction.replace('T',"X");
-						xFunction+="-";
-						xFunction+=QString::number(xVal,'g',pref.precision);
-						
+						QString xFunction;
+						if(solveType==GRAPHPARAMETER)
+						{
+							xFunction=pref.functions[funcIndex].left(pref.functions[funcIndex].find("\\"));
+							xFunction.replace('T',"X");
+							xFunction+="-";
+							xFunction+=QString::number(xVal,'g',pref.precision);
+						}
+						else {
+							xFunction="real("+pref.functions[funcIndex]+")-";
+							xFunction+=QString::number(xVal,'g',pref.precision);
+						}
 						long double*tValues;
-						int numTValues=calculateRoots(xFunction,pref.parameterStart,pref.parameterEnd,&tValues);
+						int numTValues;
+						if(solveType==GRAPHPARAMETER)
+						{
+							numTValues=calculateRoots(xFunction,pref.parameterStart,pref.parameterEnd,&tValues);
+							emit addVerticalLine(xVal);
+						}
+						else 
+						{
+							if(pref.functionTypes[funcIndex]==GRAPHCOMP3D)
+								numTValues=calculateRoots(xFunction,pref.zmin,pref.zmax,&tValues,25,true);
+							else {
+								emit addVerticalLine(xVal);
+								if(pref.logNyquistSteps)
+									numTValues=calculateRoots(xFunction,pow(10,pref.nyquistStart),pow(10,pref.nyquistEnd),&tValues,25,true);
+								else numTValues=calculateRoots(xFunction,pref.nyquistStart,pref.nyquistEnd,&tValues,25,true);
+							}
+						}
 						long double*yValues;
 						if(numTValues>0)
 							yValues=new long double[numTValues];
@@ -948,26 +1062,49 @@ void GraphSolveWidget::solveButtonSlot()
 						outputTable->setNumCols(2);
 						outputTable->setNumRows(numTValues);
 												
-						QString yFunction=pref.functions[funcIndex].right(pref.functions[funcIndex].length()-1-pref.functions[funcIndex].find("\\"));
-						char*cleanFunc=checkString(yFunction,&pref);
-						Calculate cyf(NULL,cleanFunc,&pref,vars);
+						QString yFunction;
+						Calculate*cyf=NULL;
+						Script*syf=NULL;
+						if(solveType == GRAPHPARAMETER)
+						{
+							yFunction=pref.functions[funcIndex].right(pref.functions[funcIndex].length()-1-pref.functions[funcIndex].find("\\"));
+							char*cleanFunc=checkString(yFunction,&pref);
+							cyf=new Calculate(NULL,cleanFunc,&pref,vars);
+						}
+						else {
+							yFunction="imag("+pref.functions[funcIndex]+")";
+							char*cleanFunc=checkString(yFunction,&pref);
+							syf=new Script(NULL,cleanFunc,&pref,vars,threadData);
+							threadData->vars[25][0].type=NFLOAT;
+						}
+						
+						
+						
 						for(int c=0; c<numTValues; c++)
 						{
-							vars[19][0]=tValues[c];
-							yValues[c]=cyf.calc();
+							if(solveType==GRAPHPARAMETER)
+							{
+								vars[19][0]=tValues[c];
+								yValues[c]=cyf->calc();
+								emit addHorizontalLine(yValues[c]);
+							}
+							else {
+								threadData->vars[25][0].cfval=Complex(tValues[c]);
+								yValues[c]=syf->exec().cfval.real();
+								if(pref.functionTypes[funcIndex]==GRAPHCOMP3D)
+								{
+									emit add3dXLine(yValues[c],tValues[c]);
+									emit add3dYLine(xVal,tValues[c]);
+									emit add3dZLine(xVal,yValues[c]);
+								}
+								else emit addHorizontalLine(yValues[c]);
+							}
 							
 							
 							QString yString,tString;
-							if(pref.outputType==FIXEDNUM)
-							{
-								yString=QString::number(yValues[c],'e',pref.outputLength);
-								tString=QString::number(tValues[c],'e',pref.outputLength);
-							}
-							else {
-								yString=QString::number(yValues[c],'g',pref.outputLength);
-								tString=QString::number(tValues[c],'g',pref.outputLength);
-							}
-							emit addHorizontalLine(yValues[c]);
+							yString=formatOutput(yValues[c],&pref);
+							tString=formatOutput(tValues[c],&pref);
+							
 							outputTable->setText(c,0,yString);
 							outputTable->setText(c,1,tString);
 							outputTable->changeColor(c,pref.functionColors[funcIndex]);
@@ -1050,21 +1187,40 @@ void GraphSolveWidget::solveButtonSlot()
 					break;
 				}
 				case GRAPHPARAMETER:
+				case GRAPHCOMPLEX:
 				{
 					if(yval!=NAN)
 					{
-						emit addHorizontalLine(yval);
+					
 						if(functionBox->currentItem()<0)
 							break;
 						int funcIndex=functionIndices[functionBox->currentItem()];
 						QString yFunction=pref.functions[funcIndex].right(pref.functions[funcIndex].length()-1-pref.functions[funcIndex].find("\\"));
-			
-						yFunction.replace('T',"X");
-						yFunction+="-";
-						yFunction+=QString::number(yval,'g',pref.precision);
-								
+						
 						long double*tValues;
-						int numTValues=calculateRoots(yFunction,pref.parameterStart,pref.parameterEnd,&tValues);
+						int numTValues;
+						if(solveType==GRAPHPARAMETER)
+						{
+							yFunction.replace('T',"X");
+							yFunction+="-";
+							yFunction+=QString::number(yval,'g',pref.precision);
+							numTValues=calculateRoots(yFunction,pref.parameterStart,pref.parameterEnd,&tValues);
+							emit addHorizontalLine(yval);
+						}
+						else {
+							yFunction="imag("+pref.functions[funcIndex]+")-";
+							yFunction+=QString::number(yval,'g',pref.precision);
+							
+							if(pref.functionTypes[funcIndex]==GRAPHCOMP3D)
+								numTValues=calculateRoots(yFunction,pref.zmin,pref.zmax,&tValues,25,true);
+							else {
+								emit addHorizontalLine(yval);
+								if(pref.logNyquistSteps)
+									numTValues=calculateRoots(yFunction,pow(10,pref.nyquistStart),pow(10,pref.nyquistEnd),&tValues,25,true);
+								else numTValues=calculateRoots(yFunction,pref.nyquistStart,pref.nyquistEnd,&tValues,25,true);
+							}
+						}
+						
 						long double*xValues;
 						if(numTValues>0)
 							xValues=new long double[numTValues];
@@ -1072,30 +1228,52 @@ void GraphSolveWidget::solveButtonSlot()
 							outputTable->setNumRows(0);
 							break;
 						}
-						QString xFunction=pref.functions[funcIndex].left(pref.functions[funcIndex].find("\\"));
-								
+						
+						Calculate *cxf;
+						Script* sxf;
+						if(solveType==GRAPHPARAMETER)
+						{
+							QString xFunction=pref.functions[funcIndex].left(pref.functions[funcIndex].find("\\"));
+							char*cleanFunc=checkString(xFunction,&pref);
+							cxf=new Calculate(NULL,cleanFunc,&pref,vars);
+						}
+						else {
+							yFunction="real("+pref.functions[funcIndex]+")";
+							char*cleanFunc=checkString(yFunction,&pref);
+							sxf=new Script(NULL,cleanFunc,&pref,vars,threadData);
+							threadData->vars[25][0].type=NFLOAT;
+						}
+
 						outputTable->setNumCols(2);
 						outputTable->setNumRows(numTValues);
-														
-						char*cleanFunc=checkString(xFunction,&pref);
-						Calculate cxf(NULL,cleanFunc,&pref,vars);
+
+
 						for(int c=0; c<numTValues; c++)
 						{
-							vars[19][0]=tValues[c];
-							xValues[c]=cxf.calc();
-									
-									
-							QString xString,tString;
-							if(pref.outputType==FIXEDNUM)
+							if(solveType==GRAPHPARAMETER)
 							{
-								xString=QString::number(xValues[c],'e',pref.outputLength);
-								tString=QString::number(tValues[c],'e',pref.outputLength);
+								vars[19][0]=tValues[c];
+								xValues[c]=cxf->calc();
+								emit addVerticalLine(xValues[c]);
 							}
 							else {
-								xString=QString::number(xValues[c],'g',pref.outputLength);
-								tString=QString::number(tValues[c],'g',pref.outputLength);
+								threadData->vars[25][0].cfval=Complex(tValues[c]);
+								xValues[c]=sxf->exec().cfval.real();
+								
+								if(pref.functionTypes[funcIndex]==GRAPHCOMP3D)
+								{
+									emit add3dXLine(yval,tValues[c]);
+									emit add3dYLine(xValues[c],tValues[c]);
+									emit add3dZLine(xValues[c],yval);
+								}
+								else emit addVerticalLine(xValues[c]);
 							}
-							emit addVerticalLine(xValues[c]);
+
+							QString xString,tString;
+							xString=formatOutput(xValues[c],&pref);
+							tString=formatOutput(tValues[c],&pref);
+
+							
 							outputTable->setText(c,0,xString);
 							outputTable->setText(c,1,tString);
 							outputTable->changeColor(c,pref.functionColors[funcIndex]);
@@ -1646,6 +1824,9 @@ void GraphSolveWidget::setFunctionType(int fType)
 			break;
 		case 4:
 			functionType=GRAPH3D;
+			break;
+		case 5:
+			functionType=GRAPHCOMPLEX;
 			break;
 	}
 	setPref(pref);

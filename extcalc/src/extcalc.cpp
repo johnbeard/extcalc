@@ -47,7 +47,82 @@ void MainObject::closeEvent(QCloseEvent*e)
 		e->accept();
 		delete[] pref.functions;
 	}
+}
+
+
+void MainObject::customEvent(QCustomEvent*ev)
+{
+
+	switch(ev->type())
+	{
+		case SIGPRINT:	
+			free(ev->data());
+			break;
+		case SIGCLEARTEXT:
+			break;
+		case SIGGETKEY:
+		{
+
+			char*strBuf=new char[2];
+			strBuf[1]=(char)0;
+			strBuf[0]=(char)0;
+			threadData->data=strBuf;
+			break;
+		}
+		case SIGKEYSTATE:
+		{
+			char*strBuf=new char[1];
+			strBuf[0]=(char)0;
+			threadData->data=strBuf;
+			break;
+		}
+		case SIGGETLINE:
+		{
+			char*strBuf=new char[2];
+			strBuf[1]=(char)0;
+			strBuf[0]=(char)0;
+			threadData->data=strBuf;
+			break;
+		}
+		case SIGSETTEXTPOS:
+			free(ev->data());
+			break;
+		case SIGFINISHED:		//script stopped
+		{
+			break;
+		}
+		case SIGDEBUG:
+		{
+/*			errorFlag=true;
+			if(!t->isActive())
+				t->start(30,true);
+			
+			int*index=(int*)ev->data();
+			if(*index >=semicolonLines.GetLen())
+				insert("\nEnd of File            ");
+			else 
+			{
+				if((*index>0) && semicolonLines[*index-1]< semicolonLines[*index]-1)
+					insert("\nBefore or in line ");
+				else insert("\nIn line           ");
 	
+				QString lineNum=QString::number(semicolonLines[*index]);
+				while(lineNum.length()<5)lineNum.insert(0," ");
+	
+				insert(lineNum);
+			}
+			char*text=(char*)ev->data()+4;
+			insert(": ");
+			insert(text);
+			*/
+			free(ev->data());
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
 
 }
 

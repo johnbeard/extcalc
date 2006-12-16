@@ -189,16 +189,23 @@ public:
 
 	void setStandardSet()
 	{
-		QString buttonName[] ={	"Shift","Rand",	"!",	"",		"i",	"",
-								"Alpha","x\xb2","\xb2",	"^",	"x",	"^-1",
+	//	QString buttonName[] ={	"Shift","Rand",	"!",	"",		"i",	"",
+	//							"Alpha","x\xb2","\xb2",	"^",	"x",	"^-1",
+	//							"log",	"ln",	"hyp",	"sin",	"cos",	"tan",
+	//							"a/b",	"X",	"(",	")",	",",	"->",
+	//	};
+		QString buttonName[] ={	"Shift","","d/dx",	"i",	"",		"",
+								"Alpha","x\xb2","^x",	"^-1",	"\xb2",	"x",
 								"log",	"ln",	"hyp",	"sin",	"cos",	"tan",
-								"a/b",	"X",	"(",	")",	",",	"->",
+								";",	"X",	"(",	")",	",",	"->"
 		};
-		buttonName[3].insert(1,getUnicode(INTEGRALSTRING));
-		buttonName[8].insert(1,getUnicode(ROOTSTRING));
+		
+		buttonName[1].insert(0,getUnicode(INTEGRALSTRING));
 		buttonName[10].insert(1,getUnicode(ROOTSTRING));
-		buttonName[5].insert(0,getUnicode(PISTRING));
-	//	buttons[14].setToggleButton(true);
+		buttonName[11].insert(1,getUnicode(ROOTSTRING));
+		buttonName[4].insert(0,getUnicode(PISTRING));
+		buttonName[5].insert(0,getUnicode(EULERSTRING));
+
 		((QPushButton*)find(14))->setToggleButton(true);
 
 		QPushButton *currentButton;
@@ -210,16 +217,16 @@ public:
 	}
 	void setShiftSet()
 	{
-		QString buttonName[] ={	"Shift","Rand",	"!",	"d/dx",	"i",	"",
-								"Alpha","x\xb3","\xb3",	"^",	"x",	"^-1",
+		QString buttonName[] ={	"Shift","Rand",	"!",	"i",	"",		"",
+								"Alpha","x\xb3","\xb3",	"abs",	"arg",	"conj",
 								"10^",	"^",	"hyp",	"asin",	"acos",	"atan",
-								"a/b",	"X",	"(",	")",	",",	"->",
+								"==",	"[",	"{",	"}",	"]",	"!=",
 		};
 
 		buttonName[8].insert(1,getUnicode(ROOTSTRING));
-		buttonName[10].insert(1,getUnicode(ROOTSTRING));
+		buttonName[13].insert(0,getUnicode(EULERSTRING));
+		buttonName[4].insert(0,getUnicode(PISTRING));
 		buttonName[5].insert(0,getUnicode(EULERSTRING));
-		buttonName[9].insert(0,getUnicode(EULERSTRING));
 	//	buttons[14].setToggleButton(true);
 		((QPushButton*)find(14))->setToggleButton(true);
 
@@ -275,7 +282,7 @@ public:
 		QString buttonName[] ={	"Shift","Rand",	"!",	"%",	"x",	"^",
 								"Alpha","x²",	"&&",	"|",	"~",	"xor",
 								"A",	"B",	"C",	"D",	"E",	"F",
-								"a/b",	"X",	"(",	")",	",",	"->",
+								"==",	"X",	"(",	")",	",",	"->",
 		};
 
 		buttonName[4].insert(1,getUnicode(ROOTSTRING));
@@ -290,10 +297,10 @@ public:
 	}
 	void setBaseShiftSet()
 	{
-		QString buttonName[] ={	"Shift","Rand",	"!",	"%",	"x",	"^",
-								"Alpha","x\xb3","&&&&",	"||",	"n",	"xor",
+		QString buttonName[] ={	"Shift","Rand",	">",	"%",	"x",	"^",
+								"Alpha","x\xb3","&&&&",	"||",	"<",	"xor",
 								"dec",	"bin",	"hex",	"oct",	"<<",	">>",
-								"a/b",	"X",	"(",	")",	",",	"->",
+								"!=",	"X",	"(",	")",	",",	"->",
 		};
 
 		buttonName[4].insert(1,getUnicode(ROOTSTRING));

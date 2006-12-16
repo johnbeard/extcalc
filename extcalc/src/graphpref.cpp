@@ -267,6 +267,13 @@ int PerformancePreferences::savePref()
 	pref.parameterSteps=stepsParam->value();
 	pref.nyquistSteps=stepsNyquist->value();
 	pref.show3dGrid=polygon3dBox->isChecked();
+	
+	if(solvePrecisionBox->currentText()=="Low")
+		pref.solvePrec=0;
+	else if(solvePrecisionBox->currentText()=="High")
+		pref.solvePrec=2;
+	else pref.solvePrec=1;
+	
 	emit prefChange(pref);
 	return 0;
 }
@@ -277,6 +284,7 @@ void PerformancePreferences::standardButtonSlot()
 	steps3d->setValue(50);
 	stepsParam->setValue(200);
 	stepsNyquist->setValue(200);
+	solvePrecisionBox->setCurrentText("Standard");
 	polygon3dBox->setChecked(true);
 }
 

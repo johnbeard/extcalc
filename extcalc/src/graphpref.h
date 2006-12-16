@@ -212,6 +212,15 @@ class PerformancePreferences :public QWidget
 			standardButton=new QPushButton("Standard",this);
 
 			solvePrecisionBox=new QComboBox(this);
+			solvePrecisionBox->insertItem("Low");
+			solvePrecisionBox->insertItem("Standard");
+			solvePrecisionBox->insertItem("High");
+			if(pref.solvePrec==0)
+				solvePrecisionBox->setCurrentText("Low");
+			else if(pref.solvePrec==2)
+				solvePrecisionBox->setCurrentText("High");
+			else solvePrecisionBox->setCurrentText("Standard");
+			
 
 			polygon3dBox=new QCheckBox("Draw 3D-Graphs as Grid",this);
 			if(pref.show3dGrid)
