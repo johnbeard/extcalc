@@ -7,7 +7,8 @@ void GraphOutput::initializeGL()
 {
 	glClearColor( 1.0,1.0,1.0,1.0 ); 
 //	qglClearColor(white ); 
-	glDeleteLists(axes,1);
+	if(axes!=0xffffffff)
+		glDeleteLists(axes,1);
 	if(pref.graphType==GRAPHPOLAR)
 		axes=drawPolarAxes();
 	else if(pref.graphType==GRAPH3D)
@@ -49,6 +50,15 @@ void GraphOutput::initializeGL()
 
 GLuint GraphOutput::drawStdAxes()
 {
+		
+	double xSize=pref.xmax-pref.xmin,ySize=pref.ymax-pref.ymin;
+	int xSteps=(int)(xSize/pref.rasterSizeX);
+	if(xSteps>200)
+		pref.rasterSizeX=xSize/200;
+	int ySteps=(int)(ySize/pref.rasterSizeY);
+	if(ySteps>200)
+		pref.rasterSizeY=ySize/200;
+	
     GLuint list;
 	glDisable(GL_DEPTH_TEST);
     list = glGenLists( 1 );
@@ -56,7 +66,7 @@ GLuint GraphOutput::drawStdAxes()
     glNewList( list, GL_COMPILE );
 	//Koordinatensystem
 
-	double xSize=pref.xmax-pref.xmin,ySize=pref.ymax-pref.ymin;
+
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -161,6 +171,9 @@ GLuint GraphOutput::drawStdAxes()
 
 GLuint GraphOutput::drawPolarAxes()
 {
+
+
+	
 	GLuint list;
 
 	list = glGenLists( 1 );
@@ -181,7 +194,12 @@ GLuint GraphOutput::drawPolarAxes()
 	else if(pref.angle==GRA)
 		multiplier=PI/200.0;
 
-	
+	int radiusSteps=(int)(pref.radiusMax/pref.rasterSizeRadius);
+	if(radiusSteps>200)
+		pref.rasterSizeRadius=pref.radiusMax/200.0;
+	int angleSteps=(int)(pref.angleMax/pref.rasterSizeAngle);
+	if(angleSteps>200)
+		pref.rasterSizeAngle=pref.angleMax/200.0;	
 
 	
 
@@ -243,7 +261,18 @@ GLuint GraphOutput::drawPolarAxes()
 
 GLuint GraphOutput::draw3dAxes()
 {
-	GLuint list;
+	
+		double xSize=pref.xmax-pref.xmin,ySize=pref.ymax-pref.ymin,zSize=pref.zmax-pref.zmin;
+		int xSteps=(int)(xSize/pref.rasterSizeX);
+		if(xSteps>200)
+			pref.rasterSizeX=xSize/200;
+		int ySteps=(int)(ySize/pref.rasterSizeY);
+		if(ySteps>200)
+			pref.rasterSizeY=ySize/200;
+		int zSteps=(int)(zSize/pref.rasterSizeZ);
+		if(zSteps>200)
+			pref.rasterSizeZ=zSize/200;
+		GLuint list;
 	
 	//reset rotation
 
@@ -252,84 +281,47 @@ GLuint GraphOutput::draw3dAxes()
 	glNewList( list, GL_COMPILE );
 	//Koordinatensystem
 
-	double xSize=pref.xmax-pref.xmin,ySize=pref.ymax-pref.ymin,zSize=pref.zmax-pref.zmin;
 
 	
 	//tanslate and scale to coordinate system preferences
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	glTranslatef(-pref.xmax-pref.xmin,-pref.ymax-pref.ymin,-pref.zmax-pref.zmin);
-	glScalef(20.0/xSize,20.0/ySize,20.0/zSize);
-	
+	//glTranslatef(-pref.xmax-pref.xmin,-pref.ymax-pref.ymin,-pref.zmax-pref.zmin);
+//	glTranslatef(-xSize/2-pref.xmin,-ySize/2-pref.ymin,-zSize/2-pref.zmin);
+//	glScalef(20.0/xSize,20.0/ySize,20.0/zSize);
 	
 	glBegin(GL_LINES);
 	
 	//Raster
 	if(pref.raster)
 	{
-		qglColor( QColor(220,220,220) );	
-		for(float c=0.0; c<pref.xmax; c+=pref.rasterSizeX)		//back side
+
+		double coord;
+		qglColor( QColor(220,220,220) );
+
+		for(float c=pref.xmin-fmod(pref.xmin,pref.rasterSizeX)+pref.rasterSizeX; c<pref.xmax; c+=pref.rasterSizeX)		
 		{
-			glVertex3f(c,pref.ymin,pref.zmax);
+			glVertex3f(c,pref.ymin,pref.zmax);//back side
 			glVertex3f(c,pref.ymax,pref.zmax);
-		}
-		for(float c=0.0; c>pref.xmin; c-=pref.rasterSizeX)
-		{
+			glVertex3f(c,pref.ymin,pref.zmin);// bottom side
 			glVertex3f(c,pref.ymin,pref.zmax);
-			glVertex3f(c,pref.ymax,pref.zmax);
 		}
-		for(float c=0.0; c<pref.ymax; c+=pref.rasterSizeY)
+
+		for(float c=pref.ymin-fmod(pref.ymin,pref.rasterSizeY)+pref.rasterSizeY; c<pref.ymax; c+=pref.rasterSizeY)			
 		{
-			glVertex3f(pref.xmin,c,pref.zmax);
+			glVertex3f(pref.xmin,c,pref.zmax);//back side
 			glVertex3f(pref.xmax,c,pref.zmax);
-		}
-		for(float c=0.0; c>pref.ymin; c-=pref.rasterSizeY)
-		{
+			glVertex3f(pref.xmin,c,pref.zmin);//left side
 			glVertex3f(pref.xmin,c,pref.zmax);
-			glVertex3f(pref.xmax,c,pref.zmax);
 		}
-		
-		for(float c=0.0; c<pref.xmax; c+=pref.rasterSizeX)	// bottom side
+
+		for(float c=pref.zmin-fmod(pref.zmin,pref.rasterSizeZ)+pref.rasterSizeZ; c<pref.zmax; c+=pref.rasterSizeZ)	
 		{
-			glVertex3f(c,pref.ymin,pref.zmin);
-			glVertex3f(c,pref.ymin,pref.zmax);
-		}
-		for(float c=0.0; c>pref.xmin; c-=pref.rasterSizeX)
-		{
-			glVertex3f(c,pref.ymin,pref.zmin);
-			glVertex3f(c,pref.ymin,pref.zmax);
-		}
-		for(float c=0.0; c<pref.zmax; c+=pref.rasterSizeZ)
-		{
-			glVertex3f(pref.xmin,pref.ymin,c);
+			glVertex3f(pref.xmin,pref.ymin,c);// bottom side
 			glVertex3f(pref.xmax,pref.ymin,c);
-		}
-		for(float c=0.0; c>pref.zmin; c-=pref.rasterSizeZ)
-		{
-			glVertex3f(pref.xmin,pref.ymin,c);
-			glVertex3f(pref.xmax,pref.ymin,c);
-		}
-		
-		for(float c=0.0; c<pref.zmax; c+=pref.rasterSizeZ)	//left side
-		{
-			glVertex3f(pref.xmin,pref.ymin,c);
+			glVertex3f(pref.xmin,pref.ymin,c);//left side
 			glVertex3f(pref.xmin,pref.ymax,c);
-		}
-		for(float c=0.0; c>pref.zmin; c-=pref.rasterSizeZ)
-		{
-			glVertex3f(pref.xmin,pref.ymin,c);
-			glVertex3f(pref.xmin,pref.ymax,c);
-		}
-		for(float c=0.0; c<pref.ymax; c+=pref.rasterSizeY)
-		{
-			glVertex3f(pref.xmin,c,pref.zmin);
-			glVertex3f(pref.xmin,c,pref.zmax);
-		}
-		for(float c=0.0; c>pref.ymin; c-=pref.rasterSizeY)
-		{
-			glVertex3f(pref.xmin,c,pref.zmin);
-			glVertex3f(pref.xmin,c,pref.zmax);
 		}
 	}
 	
@@ -1022,7 +1014,10 @@ void GraphOutput::process3dFunction(QString function)
 //	MessageBox(  "Sekunden:      "+QString::number(seconds)+
 //			   "\nMicrosekunden: "+QString::number(usecs));
 	delete[]func;
-	objects.NewItem(generateGLList(index));
+	GLuint newList=generateGLList(index);
+	delete[]coordinates;
+	objectCoordinates[objectCoordinates.GetLen()-1]=NULL;
+	objects.NewItem(newList);
 }
 
 
@@ -1202,7 +1197,10 @@ void GraphOutput::paintGL()
 		glScalef(1.0,1.0,-0.05);
 		glTranslatef(0.0,0.0,37.0+(float)zMove);
 		glRotatef(xRotation,0.0f,1.0f,0.0f);
-		glRotatef(yRotation,1.0f,0.0f,0.0f);
+		glRotatef(yRotation,1.0f,0.0f,0.0f);	
+		glScalef(20.0/(pref.xmax-pref.xmin),20.0/(pref.ymax-pref.ymin),20.0/(pref.zmax-pref.zmin));
+		glTranslatef(((pref.xmax-pref.xmin)/2+pref.xmin)*-1,((pref.ymax-pref.ymin)/2+pref.ymin)*-1,((pref.zmax-pref.zmin)/2+pref.zmin)*-1);
+
 	}
 	else 
 	{
@@ -1250,6 +1248,14 @@ void GraphOutput::paintGL()
 		double xTrans=(pref.xmax-pref.xmin)/80;
 		double yTrans=(pref.ymax-pref.ymin)/80;
 		double staticX=xTrans,staticY=yTrans;
+		double zTrans=(pref.zmax-pref.zmin)/80;
+		double staticZ=zTrans;
+		if(pref.zmax < zTrans)
+			staticZ=pref.zmax-3*zTrans;
+		else if(pref.zmin > -zTrans)
+			staticZ=pref.zmin+zTrans;
+				
+			
 		if(pref.xmax < xTrans)
 			staticX=pref.xmax-3*xTrans;
 		else if(pref.xmin > -xTrans)
@@ -1258,9 +1264,17 @@ void GraphOutput::paintGL()
 			staticY=pref.ymax-3*yTrans;
 		else if(pref.ymin > -yTrans)
 			staticY=pref.ymin+yTrans;
+		if(pref.graphType!=GRAPH3D)
+			staticZ=0.0;
 				
 		qglColor( QColor(220,220,220) );
-		for(float c=0; c<pref.xmax; c+=pref.rasterSizeX)
+		
+		for(float c=pref.xmin-fmod(pref.xmin,pref.rasterSizeX)+pref.rasterSizeX; c<pref.xmax; c+=pref.rasterSizeX)
+			renderText(c-xTrans,staticY,staticZ,QString::number(c,'g',3),stdFont);
+		for(float c=pref.ymin-fmod(pref.ymin,pref.rasterSizeY)+pref.rasterSizeY; c<pref.ymax; c+=pref.rasterSizeY)
+			renderText(staticX,c-yTrans,staticZ,QString::number(c,'g',3),stdFont);
+		
+/*		for(float c=0; c<pref.xmax; c+=pref.rasterSizeX)
 			renderText(c-xTrans,staticY,0.0f,QString::number(c,'g',3),stdFont);
 		for(float c=0; c>pref.xmin; c-=pref.rasterSizeX)
 			renderText(c-xTrans,staticY,0.0f,QString::number(c,'g',3),stdFont);
@@ -1269,20 +1283,19 @@ void GraphOutput::paintGL()
 			renderText(staticX,c-yTrans,0.0f,QString::number(c,'g',3),stdFont);
 		for(float c=0; c>pref.ymin; c-=pref.rasterSizeY)
 			renderText(staticX,c-yTrans,0.0f,QString::number(c,'g',3),stdFont);
-		
+*/
+				
 		if(pref.graphType == GRAPH3D)
 		{
-			double zTrans=(pref.zmax-pref.zmin)/80;
-			double staticZ=zTrans;
-			if(pref.zmax < zTrans)
-				staticZ=pref.zmax-3*zTrans;
-			else if(pref.zmin > -zTrans)
+
 				staticZ=pref.zmin+zTrans;
-			for(float c=0; c<pref.zmax; c+=pref.rasterSizeZ)
+			for(float c=pref.zmin-fmod(pref.zmin,pref.rasterSizeZ)+pref.rasterSizeZ; c<pref.zmax; c+=pref.rasterSizeZ)
+				renderText(staticX,staticY,c-zTrans,QString::number(c,'g',3),stdFont);
+/*			for(float c=0; c<pref.zmax; c+=pref.rasterSizeZ)
 				renderText(staticX,staticY,c-zTrans,QString::number(c,'g',3),stdFont);
 			for(float c=0; c>pref.zmin; c-=pref.rasterSizeZ)
 				renderText(staticX,staticY,c-zTrans,QString::number(c,'g',3),stdFont);	
-			
+*/			
 			
 		}
 	}
@@ -1367,7 +1380,8 @@ void GraphOutput::clearGL()
 	}
 	while(objectCoordinates.GetLen() > 0)
 	{
-		delete[]objectCoordinates[0];
+		if(objectCoordinates[0]!=NULL)
+			delete[]objectCoordinates[0];
 		objectCoordinates.DeleteItem(0);
 	}
 	isDynamic=false;
@@ -1378,6 +1392,22 @@ void GraphOutput::clearGL()
 void GraphOutput::setPref(Preferences newPref)
 {
 	pref=newPref;
+	if(pref.solvePrec!=currentSolvePrec)
+	{
+		delete drawImage;
+		delete drawMap;
+		delete[] backMap;
+		drawImage=new QImage(TEXTURESIZE,TEXTURESIZE,32);
+		drawImage->fill(0x00000000);
+		drawImage->setAlphaBuffer(true);
+		drawMap=new QPixmap(*drawImage);
+		backCursor=0;
+		backMap=new QPixmap*[BACKSTEPS];
+		for(int c=0; c<BACKSTEPS; c++)
+			backMap[c]=NULL;
+		
+	}
+	currentSolvePrec=pref.solvePrec;
 	oldXMin=pref.xmin;
 	oldXMax=pref.xmax;
 	initializeGL();
@@ -1503,8 +1533,11 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 			if(shiftRight)
 				steps--;
 		}
-		glDeleteLists(objects[c],1);
-		objects[c]=generateGLList(c);
+		if(objectInfo[c].type!=GRAPH3D)
+		{
+			glDeleteLists(objects[c],1);
+			objects[c]=generateGLList(c);
+		}
 	}
 	
 	return ret;
@@ -1519,6 +1552,9 @@ void GraphOutput::processFunction(int index)
 	
 	int ruleIndex=drawRules.GetLen();
 	if(index==ineq2)
+		return;
+	
+	if(pref.functionTypes[index]==GRAPH3D && pref.graphType!=GRAPH3D)
 		return;
 
 	if(!pref.dynamicFunctions[index])
@@ -1856,99 +1892,101 @@ GLuint GraphOutput::generateGLList(int index)
 	//	if(objectInfo[index].color==QColor(1,1,1))
 	//		colored=1;
 	//	else qglColor(objectInfo[index].color);
-
-		glMatrixMode(GL_MODELVIEW);
-		for(int c=0; c<PRECISION3D; c++)
+		if(objectCoordinates[index]!=NULL)
 		{
-			z=zStart+c*zStep;
-			glBegin(GL_LINES);
-			lastY=objectCoordinates[index][c*PRECISION3D];
-			for(int c1=1; c1<PRECISION3D; c1++)
+			glMatrixMode(GL_MODELVIEW);
+			for(int c=0; c<PRECISION3D; c++)
 			{
-				x=xStart+c1*xStep;
-				y=objectCoordinates[index][c*PRECISION3D+c1];
-				
-				if((y > pref.ymin&&y<pref.ymax) || (lastY > pref.ymin && lastY < pref.ymax))
+				z=zStart+c*zStep;
+				glBegin(GL_LINES);
+				lastY=objectCoordinates[index][c*PRECISION3D];
+				for(int c1=1; c1<PRECISION3D; c1++)
 				{
-					double newXStep=xStep,oldXStep=0.0,newY=y,oldY=lastY;
-					if(y<pref.ymin && lastY>pref.ymin)
+					x=xStart+c1*xStep;
+					y=objectCoordinates[index][c*PRECISION3D+c1];
+					
+					if((y > pref.ymin&&y<pref.ymax) || (lastY > pref.ymin && lastY < pref.ymax))
 					{
-						newY=pref.ymin;
-						newXStep=xStep*(oldY-pref.ymin)/(oldY-y);
+						double newXStep=xStep,oldXStep=0.0,newY=y,oldY=lastY;
+						if(y<pref.ymin && lastY>pref.ymin)
+						{
+							newY=pref.ymin;
+							newXStep=xStep*(oldY-pref.ymin)/(oldY-y);
+						}
+						else if(y>pref.ymax && lastY<pref.ymax)
+						{
+							newY=pref.ymax;
+							newXStep=xStep*(pref.ymax-oldY)/(y-oldY);
+						}
+						else if(y>pref.ymin && lastY<pref.ymin)
+						{
+							oldY=pref.ymin;
+							oldXStep=xStep*(pref.ymin-oldY)/(y-oldY);
+						}
+						else if(y<pref.ymax && lastY>pref.ymax)
+						{
+							oldY=pref.ymax;
+							oldXStep=xStep*(oldY-pref.ymax)/(oldY-y);
+						}
+						oldXStep+=xStep*(c1-1)+xStart;
+						newXStep+=xStep*(c1-1)+xStart;
+						if(colored)
+							setGLColor(oldY);
+						glVertex3f(oldXStep,oldY,z);
+						if(colored)
+							setGLColor(newY);
+						glVertex3f(newXStep,newY,z);
 					}
-					else if(y>pref.ymax && lastY<pref.ymax)
-					{
-						newY=pref.ymax;
-						newXStep=xStep*(pref.ymax-oldY)/(y-oldY);
-					}
-					else if(y>pref.ymin && lastY<pref.ymin)
-					{
-						oldY=pref.ymin;
-						oldXStep=xStep*(pref.ymin-oldY)/(y-oldY);
-					}
-					else if(y<pref.ymax && lastY>pref.ymax)
-					{
-						oldY=pref.ymax;
-						oldXStep=xStep*(oldY-pref.ymax)/(oldY-y);
-					}
-					oldXStep+=xStep*(c1-1)+xStart;
-					newXStep+=xStep*(c1-1)+xStart;
-					if(colored)
-						setGLColor(oldY);
-					glVertex3f(oldXStep,oldY,z);
-					if(colored)
-						setGLColor(newY);
-					glVertex3f(newXStep,newY,z);
+					lastY=y;
 				}
-				lastY=y;
+				glEnd();
 			}
-			glEnd();
-		}
-		for(int c=0; c<PRECISION3D; c++)
-		{
-			x=xStart+c*xStep;
-			glBegin(GL_LINES);
-			lastY=objectCoordinates[index][c];
-			for(int c1=1; c1<PRECISION3D; c1++)
+			for(int c=0; c<PRECISION3D; c++)
 			{
-				z=zStart+c1*zStep;
-				y=objectCoordinates[index][c1*PRECISION3D+c];
-				
-				if((y > pref.ymin&&y<pref.ymax) || (lastY > pref.ymin && lastY < pref.ymax))
+				x=xStart+c*xStep;
+				glBegin(GL_LINES);
+				lastY=objectCoordinates[index][c];
+				for(int c1=1; c1<PRECISION3D; c1++)
 				{
-					double newZStep=zStep,oldZStep=0.0,newY=y,oldY=lastY;
-					if(y<pref.ymin && lastY>pref.ymin)
+					z=zStart+c1*zStep;
+					y=objectCoordinates[index][c1*PRECISION3D+c];
+					
+					if((y > pref.ymin&&y<pref.ymax) || (lastY > pref.ymin && lastY < pref.ymax))
 					{
-						newY=pref.ymin;
-						newZStep=zStep*(oldY-pref.ymin)/(oldY-y);
+						double newZStep=zStep,oldZStep=0.0,newY=y,oldY=lastY;
+						if(y<pref.ymin && lastY>pref.ymin)
+						{
+							newY=pref.ymin;
+							newZStep=zStep*(oldY-pref.ymin)/(oldY-y);
+						}
+						else if(y>pref.ymax && lastY<pref.ymax)
+						{
+							newY=pref.ymax;
+							newZStep=zStep*(pref.ymax-oldY)/(y-oldY);
+						}
+						else if(y>pref.ymin && lastY<pref.ymin)
+						{
+							oldY=pref.ymin;
+							oldZStep=zStep*(pref.ymin-oldY)/(y-oldY);
+						}
+						else if(y<pref.ymax && lastY>pref.ymax)
+						{
+							oldY=pref.ymax;
+							oldZStep=zStep*(oldY-pref.ymax)/(oldY-y);
+						}
+						oldZStep+=zStep*(c1-1)+zStart;
+						newZStep+=zStep*(c1-1)+zStart;
+						if(colored)
+							setGLColor(oldY);
+						glVertex3f(x,oldY,oldZStep);
+						if(colored)
+							setGLColor(newY);
+						glVertex3f(x,newY,newZStep);
 					}
-					else if(y>pref.ymax && lastY<pref.ymax)
-					{
-						newY=pref.ymax;
-						newZStep=zStep*(pref.ymax-oldY)/(y-oldY);
-					}
-					else if(y>pref.ymin && lastY<pref.ymin)
-					{
-						oldY=pref.ymin;
-						oldZStep=zStep*(pref.ymin-oldY)/(y-oldY);
-					}
-					else if(y<pref.ymax && lastY>pref.ymax)
-					{
-						oldY=pref.ymax;
-						oldZStep=zStep*(oldY-pref.ymax)/(oldY-y);
-					}
-					oldZStep+=zStep*(c1-1)+zStart;
-					newZStep+=zStep*(c1-1)+zStart;
-					if(colored)
-						setGLColor(oldY);
-					glVertex3f(x,oldY,oldZStep);
-					if(colored)
-						setGLColor(newY);
-					glVertex3f(x,newY,newZStep);
+					lastY=y;
 				}
-				lastY=y;
+				glEnd();
 			}
-			glEnd();
 		}
 		glEndList();
 	}

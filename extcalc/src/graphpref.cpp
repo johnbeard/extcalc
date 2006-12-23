@@ -268,9 +268,9 @@ int PerformancePreferences::savePref()
 	pref.nyquistSteps=stepsNyquist->value();
 	pref.show3dGrid=polygon3dBox->isChecked();
 	
-	if(solvePrecisionBox->currentText()=="Low")
+	if(solvePrecisionBox->currentText()==GRAPHPREFH_STR40)
 		pref.solvePrec=0;
-	else if(solvePrecisionBox->currentText()=="High")
+	else if(solvePrecisionBox->currentText()==GRAPHPREFH_STR42)
 		pref.solvePrec=2;
 	else pref.solvePrec=1;
 	
@@ -278,13 +278,33 @@ int PerformancePreferences::savePref()
 	return 0;
 }
 
+void PerformancePreferences::lowButtonSlot()
+{
+	steps2d->setValue(100);
+	steps3d->setValue(30);
+	stepsParam->setValue(100);
+	stepsNyquist->setValue(100);
+	solvePrecisionBox->setCurrentText(GRAPHPREFH_STR40);
+	polygon3dBox->setChecked(true);
+}
+
 void PerformancePreferences::standardButtonSlot()
 {
-	steps2d->setValue(200);
+	steps2d->setValue(400);
 	steps3d->setValue(50);
-	stepsParam->setValue(200);
-	stepsNyquist->setValue(200);
-	solvePrecisionBox->setCurrentText("Standard");
+	stepsParam->setValue(400);
+	stepsNyquist->setValue(400);
+	solvePrecisionBox->setCurrentText(GRAPHPREFH_STR41);
+	polygon3dBox->setChecked(true);
+}
+
+void PerformancePreferences::highButtonSlot()
+{
+	steps2d->setValue(1000);
+	steps3d->setValue(80);
+	stepsParam->setValue(1000);
+	stepsNyquist->setValue(1000);
+	solvePrecisionBox->setCurrentText(GRAPHPREFH_STR42);
 	polygon3dBox->setChecked(true);
 }
 

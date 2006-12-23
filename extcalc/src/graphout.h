@@ -15,12 +15,13 @@
 
 #define PRECISION2D current2dSteps
 #define PRECISION3D current3dSteps
-#define TEXTURESIZE 512
+#define TEXTURESIZE (256<<pref.solvePrec)
 #define BACKSTEPS 3
 
 
 ////////////////drawRules//////////////////////////////////////////
 //
+// objectInfo[4]objectInfo[0]objectInfo[1]objectInfo[2]objectInfo[3]
 // drawRules[4] drawRules[0] drawRules[1] drawRules[2] drawRules[3]
 //                  |            |             |            |
 //                  1            3             1            3
@@ -100,12 +101,15 @@ class GraphOutput :public QGLWidget
 	QString drawString;
 	int current3dSteps;
 	int current2dSteps;
+	int currentSolvePrec;
 	
 	
 Q_OBJECT
 public:
 	GraphOutput(QWidget*parent,Variable*va,ThreadSync*td) :QGLWidget(parent)
 	{
+		axes=0xffffffff;
+		pref.solvePrec=currentSolvePrec=1;
 		drawImage=new QImage(TEXTURESIZE,TEXTURESIZE,32);
 		drawImage->fill(0x00000000);
 		drawImage->setAlphaBuffer(true);

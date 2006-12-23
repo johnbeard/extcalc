@@ -15,9 +15,7 @@ void CalcInput::keyPressEvent(QKeyEvent*e)
 	{
 		QString content=text(para);
 		content=content.stripWhiteSpace();
-		
-		
-		
+
 		if(hasSelectedText())
 		{
 			int startPara,endPara,startPos,endPos;
@@ -109,8 +107,11 @@ void CalcInput::keyPressEvent(QKeyEvent*e)
 							   e->text() == "-" || e->text() == getUnicode(ROOTSTRING) ||
 							   e->text() == "%" || e->text() == "!"))
 				{
-					if(text(para).length()<=1)
+					if(!ansDone && ansAvailable)
+					{
 						insert("ans");
+						ansDone=true;
+					}
 				}
 				if(e->state()==Qt::Keypad && e->ascii()==',')
 					insert(".");
@@ -162,6 +163,8 @@ void CalcInput::menuSlot(int item)
 
 void CalcInput::calculateKey()
 {
+	ansAvailable=true;
+	ansDone=false;
 	long double result;
 	textInput("");
 	int para;
@@ -258,6 +261,7 @@ void CalcInput::backKey()
 }
 void CalcInput::clearAll()
 {
+	ansAvailable=false;
 	while(paragraphs() > 1)
 		removeParagraph(0);
 	removeParagraph(0);
@@ -373,13 +377,16 @@ void CalcInput::textInput(QString inputText)
 		insert(content);
 		setCursorPosition(para,pos);
 	}
-	if(pos==0 && ( inputText == "+" || inputText == "^" || inputText == "*" ||
+	if(pos==0 && ( inputText == "+" || inputText[0] == '^' || inputText == "*" ||
 		  inputText == "/" || inputText == "²" || inputText == "³" ||
-		  inputText == "-" || inputText == getUnicode(ROOTSTRING) ||
+		  inputText[0] == '-' || inputText == getUnicode(ROOTSTRING) ||
 		  inputText == "%" || inputText == "!"))
 	{
-		if(text(para).length() <=1)
+		if(!ansDone && ansAvailable)
+		{
 			insert("ans");
+			ansDone=true;
+		}
 	}
 	
 	insert(inputText);

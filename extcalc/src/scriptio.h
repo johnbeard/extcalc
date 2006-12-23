@@ -111,6 +111,7 @@ class ScriptIOWidget :public QWidget
 			threadData->usleep=false;
 			threadData->bbreak=false;
 			threadData->bcontinue=false;
+			threadData->calcMode=false;
 			threadData->data=NULL;
 			threadData->sleepTime=1000;
 			threadData->vars=new Number*[27];

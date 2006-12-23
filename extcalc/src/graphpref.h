@@ -175,7 +175,7 @@ class PerformancePreferences :public QWidget
 	Preferences pref;
 	QLabel *steps2dLabel,*steps3dLabel,*stepsParamLabel,*stepsNyquistLabel,*solvePrecisionLabel;
 	QSpinBox*steps2d,*steps3d,*stepsParam,*stepsNyquist;
-	QPushButton*standardButton;
+	QPushButton*standardButton,*highButton,*lowButton;
 	QComboBox*solvePrecisionBox;
 	QCheckBox*polygon3dBox;
 	Variable*vars;
@@ -193,11 +193,11 @@ class PerformancePreferences :public QWidget
 			setFixedWidth(580);
 			setFixedHeight(360);
 
-			steps2dLabel=new QLabel("Calculation steps for 2D-Graphs",this);
-			steps3dLabel=new QLabel("Calculation steps for 3D-Graphs",this);
-			stepsParamLabel=new QLabel("Parameter graph steps",this);
-			stepsNyquistLabel=new QLabel("Steps for Nyquist Plot",this);
-			solvePrecisionLabel=new QLabel("Graph Analysation Precision",this);
+			steps2dLabel=new QLabel(GRAPHPREFH_STR35,this);
+			steps3dLabel=new QLabel(GRAPHPREFH_STR36,this);
+			stepsParamLabel=new QLabel(GRAPHPREFH_STR37,this);
+			stepsNyquistLabel=new QLabel(GRAPHPREFH_STR38,this);
+			solvePrecisionLabel=new QLabel(GRAPHPREFH_STR39,this);
 
 			steps2d=new QSpinBox(10,100000,1,this);
 			steps3d=new QSpinBox(10,100000,1,this);
@@ -209,20 +209,22 @@ class PerformancePreferences :public QWidget
 			stepsParam->setValue(pref.parameterSteps);
 			stepsNyquist->setValue(pref.nyquistSteps);
 
-			standardButton=new QPushButton("Standard",this);
+			lowButton=new QPushButton(GRAPHPREFH_STR40,this);
+			standardButton=new QPushButton(GRAPHPREFH_STR41,this);
+			highButton=new QPushButton(GRAPHPREFH_STR42,this);
 
 			solvePrecisionBox=new QComboBox(this);
-			solvePrecisionBox->insertItem("Low");
-			solvePrecisionBox->insertItem("Standard");
-			solvePrecisionBox->insertItem("High");
+			solvePrecisionBox->insertItem(GRAPHPREFH_STR40);
+			solvePrecisionBox->insertItem(GRAPHPREFH_STR41);
+			solvePrecisionBox->insertItem(GRAPHPREFH_STR42);
 			if(pref.solvePrec==0)
-				solvePrecisionBox->setCurrentText("Low");
+				solvePrecisionBox->setCurrentText(GRAPHPREFH_STR40);
 			else if(pref.solvePrec==2)
-				solvePrecisionBox->setCurrentText("High");
-			else solvePrecisionBox->setCurrentText("Standard");
+				solvePrecisionBox->setCurrentText(GRAPHPREFH_STR42);
+			else solvePrecisionBox->setCurrentText(GRAPHPREFH_STR41);
 			
 
-			polygon3dBox=new QCheckBox("Draw 3D-Graphs as Grid",this);
+			polygon3dBox=new QCheckBox(GRAPHPREFH_STR43,this);
 			if(pref.show3dGrid)
 				polygon3dBox->setChecked(true);
 			else polygon3dBox->setChecked(false);
@@ -242,10 +244,14 @@ class PerformancePreferences :public QWidget
 			solvePrecisionLabel->setGeometry(20,220,230,30);
 			solvePrecisionBox->setGeometry(250,220,170,30);
 			
-			standardButton->setGeometry(270,280,150,30);
+			lowButton->setGeometry(310,280,80,30);
+			standardButton->setGeometry(220,280,80,30);
+			highButton->setGeometry(130,280,80,30);
 
 
+			QObject::connect(lowButton,SIGNAL(clicked()),this,SLOT(lowButtonSlot()));
 			QObject::connect(standardButton,SIGNAL(clicked()),this,SLOT(standardButtonSlot()));
+			QObject::connect(highButton,SIGNAL(clicked()),this,SLOT(highButtonSlot()));
 		}
 
 		int savePref();
@@ -254,7 +260,9 @@ class PerformancePreferences :public QWidget
 	
 
 		void getPref(Preferences pref);
+		void lowButtonSlot();
 		void standardButtonSlot();
+		void highButtonSlot();
 	
 	signals:
 		void prefChange(Preferences);
@@ -306,9 +314,9 @@ class DynamicPreferences :public QWidget
 			parameterEnd=new QLineEdit(QString::number(pref.parameterEnd),this);
 			
 			
-			nyquistLabel=new QLabel("Parameter Z for Nyquist plots (2D only)",this);
-			nyquistStartLabel=new QLabel("Start value:",this);
-			nyquistEndLabel=new QLabel("End value:",this);
+			nyquistLabel=new QLabel(GRAPHPREFH_STR44,this);
+			nyquistStartLabel=new QLabel(GRAPHPREFH_STR45,this);
+			nyquistEndLabel=new QLabel(GRAPHPREFH_STR46,this);
 		
 			nyquistStart=new QLineEdit(QString::number(pref.nyquistStart),this);
 			nyquistEnd=new QLineEdit(QString::number(pref.nyquistEnd),this);
@@ -320,7 +328,7 @@ class DynamicPreferences :public QWidget
 			dynamicStepsLabel=new QLabel(GRAPHPREFH_STR27,this);
 			timeLabel=new QLabel(GRAPHPREFH_STR28,this);
 			singleStepBox=new QCheckBox(GRAPHPREFH_STR29,this);
-			logNyquistBox=new QCheckBox("Use logarithmic scale (10^Z)",this);
+			logNyquistBox=new QCheckBox(GRAPHPREFH_STR47,this);
 
 			dynamicStart=new QLineEdit(QString::number(pref.dynamicStart),this);
 			dynamicEnd=new QLineEdit(QString::number(pref.dynamicEnd),this);

@@ -1,7 +1,7 @@
 /****************************************************************************
 ** StandardButtons meta object code from reading C++ file 'buttons.h'
 **
-** Created: Sat Dec 16 19:04:11 2006
+** Created: Sun Dec 17 08:37:18 2006
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
 **
 ** WARNING! All changes made in this file will be lost!

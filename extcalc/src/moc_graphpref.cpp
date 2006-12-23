@@ -1,7 +1,7 @@
 /****************************************************************************
 ** CoordinatePreferences meta object code from reading C++ file 'graphpref.h'
 **
-** Created: Sat Dec 16 09:22:58 2006
+** Created: Sat Dec 23 07:38:41 2006
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -181,10 +181,14 @@ QMetaObject* PerformancePreferences::staticMetaObject()
 	{ "pref", &static_QUType_ptr, "Preferences", QUParameter::In }
     };
     static const QUMethod slot_0 = {"getPref", 1, param_slot_0 };
-    static const QUMethod slot_1 = {"standardButtonSlot", 0, 0 };
+    static const QUMethod slot_1 = {"lowButtonSlot", 0, 0 };
+    static const QUMethod slot_2 = {"standardButtonSlot", 0, 0 };
+    static const QUMethod slot_3 = {"highButtonSlot", 0, 0 };
     static const QMetaData slot_tbl[] = {
 	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
-	{ "standardButtonSlot()", &slot_1, QMetaData::Public }
+	{ "lowButtonSlot()", &slot_1, QMetaData::Public },
+	{ "standardButtonSlot()", &slot_2, QMetaData::Public },
+	{ "highButtonSlot()", &slot_3, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -195,7 +199,7 @@ QMetaObject* PerformancePreferences::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"PerformancePreferences", parentObject,
-	slot_tbl, 2,
+	slot_tbl, 4,
 	signal_tbl, 1,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -230,7 +234,9 @@ bool PerformancePreferences::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
     case 0: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 1: standardButtonSlot(); break;
+    case 1: lowButtonSlot(); break;
+    case 2: standardButtonSlot(); break;
+    case 3: highButtonSlot(); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }

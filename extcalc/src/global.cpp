@@ -1750,6 +1750,14 @@ char* Script::parse(char* line)
 			number=NAN;
 			return NULL;
 		}
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
 		char*recString1=new char[pos2-5];
 		strcopy(recString1,&line[6],pos2-6);
 		vertObj=new Script(this,recString1,pref,vars,eventReciver);
@@ -1774,6 +1782,14 @@ char* Script::parse(char* line)
 		{
 			printError("Invalid usage of for",semicolonCount,eventReciver->eventReciver);
 			operation=SFAIL;
+			return NULL;
+		}
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
 			return NULL;
 		}
 		
@@ -2403,6 +2419,14 @@ char* Script::parse(char* line)
 	else if((pos1=bracketFind(line,"sleep(")) == 0)
 	{
 //		perror("sleep");
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
 		operation=SSLEEP;
 		int pos2=bracketFind(line,")");
 		if(pos2<7)
@@ -2436,6 +2460,14 @@ char* Script::parse(char* line)
 
 	else if((pos1=bracketFind(line,"run(")) == 0)
 	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
 		operation=SRUN;
 		
 		if(line[len-1]!=')')
@@ -4131,6 +4163,9 @@ Number Script::exec()
 				case NCHAR:
 					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
 			}
+			value.cfval=Complex(value.cfval.real()/number,value.cfval.imag());
+			perror(QString::number(number));
+			
 
 			value.cfval=sin(value.cfval);
 			return value;
@@ -4148,7 +4183,7 @@ Number Script::exec()
 				case NCHAR:
 					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
 			}
-
+			value.cfval=Complex(value.cfval.real()/number,value.cfval.imag());
 			value.cfval=cos(value.cfval);
 			return value;
 			
@@ -4166,7 +4201,7 @@ Number Script::exec()
 				case NCHAR:
 					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
 			}
-
+			value.cfval=Complex(value.cfval.real()/number,value.cfval.imag());
 			value.cfval=tan(value.cfval);
 			return value;
 			
@@ -4189,7 +4224,7 @@ Number Script::exec()
 			}
 
 			value.cfval=Complex(asinl(value.fval),imag(value.cfval));
-			
+			value.cfval=Complex(value.cfval.real()*number,value.cfval.imag());
 			return value;
 			
 		}
@@ -4211,6 +4246,7 @@ Number Script::exec()
 			}
 
 			value.cfval=Complex(acosl(value.fval),imag(value.cfval));
+			value.cfval=Complex(value.cfval.real()*number,value.cfval.imag());
 			return value;
 			
 		}
@@ -4232,6 +4268,7 @@ Number Script::exec()
 			}
 
 			value.cfval=Complex(atanl(value.fval),imag(value.cfval));
+			value.cfval=Complex(value.cfval.real()*number,value.cfval.imag());
 			return value;
 			
 		}

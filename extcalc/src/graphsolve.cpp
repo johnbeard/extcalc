@@ -280,14 +280,25 @@ void GraphSolveWidget::resetDialog()
 			{
 				outputTable->setNumCols(2);
 				QStringList colLabels;
-				colLabels+="y";
-				colLabels+="T";
-				outputTable->setColumnLabels(colLabels);
 				
 				functionBox->show();
 				setFunctionBox(functionBox);
 				xLabel->setText(GRAPHSOLVEC_STR3);
-				x2Label->setText(GRAPHSOLVEC_STR1);
+
+				if(functionType==GRAPHPARAMETER)
+				{
+					x2Label->setText(GRAPHSOLVEC_STR1);
+					colLabels+="y";
+					colLabels+="T";
+				}
+				else 
+				{
+					x2Label->setText(GRAPHSOLVEC_STR39);
+					yLabel->setText(GRAPHSOLVEC_STR40);
+					colLabels+="Im(Y)";
+					colLabels+="Z";	
+				}
+				outputTable->setColumnLabels(colLabels);
 				x2Label->show();
 			}
 			else if (functionType==GRAPHSTD || functionType==GRAPHPOLAR || functionType==GRAPHIEL)
@@ -343,8 +354,16 @@ void GraphSolveWidget::resetDialog()
 			{
 				outputTable->setNumCols(2);
 				QStringList colLabels;
-				colLabels+="x";
-				colLabels+="T";
+				if(functionType==GRAPHPARAMETER)
+				{
+					colLabels+="x";
+					colLabels+="T";
+				}
+				else 
+				{
+					colLabels+="Re(Y)";
+					colLabels+="Z";
+				}
 				outputTable->setColumnLabels(colLabels);
 			}
 			else outputTable->setColumnLabels(QStringList("x"));
@@ -383,16 +402,16 @@ void GraphSolveWidget::resetDialog()
 		{
 			setFunctionBox(functionBox);
 			xLabel->setText(GRAPHSOLVEC_STR3);
-			yLabel->setText(GRAPHSOLVEC_STR7);
 			xLabel->show();
 			yLabel->show();
+			yLabel->setText(GRAPHSOLVEC_STR7);
 			x2Label->setText(GRAPHSOLVEC_STR8);
 			x2Label->show();
 			xLine->show();
 			functionBox->show();
 			solveButton->show();
 			outputTable->setNumCols(1);
-			if(functionType==GRAPHPARAMETER || functionType==GRAPHCOMPLEX)
+			if(functionType==GRAPHPARAMETER)
 			{
 				outputTable->setNumCols(2);
 				QStringList colLabels;
@@ -400,6 +419,17 @@ void GraphSolveWidget::resetDialog()
 				colLabels+="T";
 				outputTable->setColumnLabels(colLabels);
 			}
+			else if(functionType==GRAPHCOMPLEX)
+			{
+			
+				yLabel->setText(GRAPHSOLVEC_STR41);
+				x2Label->setText(GRAPHSOLVEC_STR42);
+				outputTable->setNumCols(2);
+				QStringList colLabels;
+				colLabels+="Re(Y)";
+				colLabels+="Z";
+				outputTable->setColumnLabels(colLabels);
+			}				
 			else if (functionType==GRAPH3D)
 			{
 
@@ -536,15 +566,16 @@ void GraphSolveWidget::resetDialog()
 			x3Label->show();
 			yLabel->show();
 			openButton->show();
-			spinBox->setValue(512);
+			spinBox->setValue(TEXTURESIZE);
 			spinBox->show();
 			if(pref.autosize)
-				spinBox2->setValue((int)(512.0*(pref.ymax-pref.ymin)/(pref.xmax-pref.xmin)));
-			else spinBox2->setValue(512);
+				spinBox2->setValue((int)((double)TEXTURESIZE*(pref.ymax-pref.ymin)/(pref.xmax-pref.xmin)));
+			else spinBox2->setValue(TEXTURESIZE);
 			spinBox2->show();
 			spinBox3->show();
 			formatLabel->setText(GRAPHSOLVEC_STR30);
 			formatBox->clear();
+			formatBox->insertItem(GRAPHSOLVEC_STR43);
 			formatBox->insertItem("PNG");
 			formatBox->insertItem("JPEG");
 			formatBox->insertItem("BMP");
@@ -634,12 +665,16 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 		return -1;
 	if(varIndex<0 || varIndex>25)
 		return -1;
-	double scanPos=startValue;
-	double step=(endValue-startValue)/1000;
-	double exactStep=step/100;
-	if(step== 0.0)
+	if(pref.solvePrec>1)
+		forceScript=true;
+	
+	
+	long double scanPos=startValue;
+	long double step=(endValue-startValue)/ANALYSESTEPS;
+	long double exactStep=step/EXACTANALYSESTEPS;
+	if(step<= 0.0)
 		step=1e-308;
-	if(exactStep== 0.0)
+	if(exactStep<= 0.0)
 		exactStep=1e-308;
 	QString cleanFunction=checkString(function,&pref);
 	if(varIndex!=23)
@@ -756,7 +791,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 				{
 					fail=false;
 					x1=scanPos;
-					for(int c=0; c<100; c++)
+					for(int c=0; c<EXACTANALYSESTEPS; c++)
 					{
 						if(forceScript)
 						{
@@ -833,7 +868,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 						else if(fx1*rfYStart < (double)0.0)
 							rfXEnd=x1;
 						
-						if((fx1>-1e-14 && fx1<1e-14) || c>100)
+						if((fx1>-1e-14 && fx1<1e-14) || c>EXACTANALYSESTEPS)
 						{
 							results.NewItem(x1);
 							scanPos=endPos;
@@ -873,7 +908,7 @@ void GraphSolveWidget::showRoots(QString function,QColor color)
 	int numResults;
 	if(functionType==GRAPHPOLAR)
 		numResults=calculateRoots(function,0.0, pref.angleMax,&results);
-	else numResults=calculateRoots(function,pref.xmin, pref.xmax,&results,23,true);
+	else numResults=calculateRoots(function,pref.xmin, pref.xmax,&results);
 	
 	if(numResults <=0)
 		return;
@@ -1229,8 +1264,8 @@ void GraphSolveWidget::solveButtonSlot()
 							break;
 						}
 						
-						Calculate *cxf;
-						Script* sxf;
+						Calculate *cxf=NULL;
+						Script* sxf=NULL;
 						if(solveType==GRAPHPARAMETER)
 						{
 							QString xFunction=pref.functions[funcIndex].left(pref.functions[funcIndex].find("\\"));
@@ -1566,7 +1601,20 @@ void GraphSolveWidget::screenshotSlot(QPixmap*scr)
 			return;
 		}
 	}
-	if(scr->save(xLine->text(),formatBox->currentText()))
+	QString format;
+	if(formatBox->currentText() == GRAPHSOLVEC_STR43)
+	{
+		format= xLine->text().right(3).upper();
+		if(format=="JPG" ||  xLine->text().right(4).upper()=="JPEG")
+			format=QString("JPEG");
+		else if(format!="PNG" && format!="BMP" && format!="XPM")
+		{
+			WarningBox(GRAPHSOLVEC_STR44);
+			format=QString("PNG");
+		}
+	}
+	else format=formatBox->currentText();
+	if(scr->save(xLine->text(),format))
 		MessageBox(GRAPHSOLVEC_STR34);
 	else ErrorBox(GRAPHSOLVEC_STR35);
 }

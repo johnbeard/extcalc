@@ -16,8 +16,10 @@
 
 
 
-#define INTEGRAL3DSTEPS	500
-
+#define INTEGRAL3DSTEPS	(250<<pref.solvePrec)
+#define TEXTURESIZE	(256<<pref.solvePrec)
+#define ANALYSESTEPS (1000<<pref.solvePrec)
+#define EXACTANALYSESTEPS (100<<pref.solvePrec)
 
 
 

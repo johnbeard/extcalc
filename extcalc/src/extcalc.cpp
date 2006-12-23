@@ -175,12 +175,12 @@ int MainObject::readConfigFile()
 			fwrite("RASTERSIZEANGLE=15\n",19,1,configFile);
 			fwrite("PARAMETERSTART=0\n",17,1,configFile);
 			fwrite("PARAMETEREND=10\n",16,1,configFile);
-			fwrite("PARAMETERSTEPS=200\n",19,1,configFile);
+			fwrite("PARAMETERSTEPS=400\n",19,1,configFile);
 			fwrite("NYQUISTSTART=-3\n",16,1,configFile);
 			fwrite("NYQUISTEND=3\n",13,1,configFile);
-			fwrite("NYQUISTSTEPS=200\n",17,1,configFile);
+			fwrite("NYQUISTSTEPS=400\n",17,1,configFile);
 			fwrite("GRAPH3DSTEPS=50\n",16,1,configFile);
-			fwrite("GRAPH2DSTEPS=200\n",17,1,configFile);
+			fwrite("GRAPH2DSTEPS=400\n",17,1,configFile);
 			fwrite("DYNAMICSTART=0\n",15,1,configFile);
 			fwrite("DYNAMICEND=10\n",14,1,configFile);
 			fwrite("DYNAMICSTEPS=10\n",16,1,configFile);

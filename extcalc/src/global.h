@@ -23,10 +23,10 @@ using namespace std;
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.6.4\n2006-12-16\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.4\n2006-12-23\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.6.4\n16.12.2006\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.4\n23.12.2006\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2006\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -347,6 +347,7 @@ struct ThreadSync
 	bool exit;
 	bool bbreak;
 	bool bcontinue;
+	bool calcMode;
 	int numlen[27];
 	Number**vars;
 	List <Math*>subprograms;

@@ -133,6 +133,12 @@
 //	- calculator keys must be sorted													ok	//
 //	- Size of output-table in GraphSolveWidget is not resized							ok	//
 //	- text copying does not work in script console											//
+//	- changing angle type does not work													ok	//
+//	- changing analyse precision does not work											ok	//
+//	- some script commands may cause problems in calculator mode						ok	//
+//	- recalculaton of 3d-graphs and parameter graphs is not needed							//
+//	- automatic ans inserting does not work corectly							//
+
 
 //////////////////////////used variables//////////////////////////
 //
@@ -344,7 +350,7 @@ MainObject() :QTabWidget()
 	pref.angleMax=360.0;
 	pref.parameterStart=0.0;
 	pref.parameterEnd=10.0;
-	pref.parameterSteps=200;
+	pref.parameterSteps=400;
 	pref.graphType=GRAPHSTD;
 	pref.calcType=SCIENTIFIC;
 	pref.base=DEC;
@@ -352,7 +358,7 @@ MainObject() :QTabWidget()
 	pref.dynamicEnd=10.0;
 	pref.nyquistStart=-3.0;
 	pref.nyquistEnd=3.0;
-	pref.nyquistSteps=200;
+	pref.nyquistSteps=400;
 	pref.prec2dSteps=400;
 	pref.prec3dSteps=50;
 	pref.solvePrec=1;
@@ -377,6 +383,7 @@ MainObject() :QTabWidget()
 	threadData->usleep=false;
 	threadData->bbreak=false;
 	threadData->bcontinue=false;
+	threadData->calcMode=true;
 	threadData->data=NULL;
 	threadData->sleepTime=1000;
 	threadData->vars=new Number*[27];

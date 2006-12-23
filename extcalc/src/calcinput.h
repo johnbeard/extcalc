@@ -47,6 +47,7 @@ class CalcInput :public QTextEdit
 //	ScriptThread*script;
 	Script*scriptObject;
 	ThreadSync*threadData;
+	bool ansAvailable,ansDone;
 
 	Preferences pref;
 	
@@ -64,6 +65,8 @@ class CalcInput :public QTextEdit
 			stdFont->setFixedPitch(true);
 			setFont(*stdFont);
 			setTextFormat(Qt::PlainText);
+			ansAvailable=false;
+			ansDone=false;
 
 
 			QFontMetrics fontSize=fontMetrics();
