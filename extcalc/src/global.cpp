@@ -207,7 +207,7 @@ QString formatOutput(Number num,Preferences*pref)
 	{
 		case NINT:
 			ret=formatOutput((long double)num.ival,pref);
-			ret+="(int)";
+//			ret+="(int)";
 			break;
 		case NFLOAT:
 		case NCOMPLEX:
@@ -220,15 +220,15 @@ QString formatOutput(Number num,Preferences*pref)
 				ret+=formatOutput(imag(num.cfval),pref);
 				ret+="i";
 			}
-			ret+="(float)";
+//			ret+="(float)";
 			break;
 		case NBOOL:
 			ret=formatOutput((long double)num.bval,pref);
-			ret+="(bool)";
+//			ret+="(bool)";
 			break;
 		case NCHAR:
 			ret+=QString(num.cval);
-			ret+="(string)";
+//			ret+="(string)";
 			break;
 		default:
 			ret=formatOutput(num.fval,pref);
@@ -1013,7 +1013,7 @@ int Calculate::split(char* line)
 		return -1;
 //	perror("split: "+QString(line));
 
-	if(bracketFind(line," ") != -1)	//Leeroperation
+	if(bracketFind(line," ") != -1)	//none operation
 	{
 		operation=NONE;
 		var=-1;
@@ -1054,7 +1054,7 @@ int Calculate::split(char* line)
 		
 		if(pos2>pos1)
 		{
-			if((pos2>0 && line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
+			if(pos2>0 && (line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
 			   || line[pos2-1]>='0' && line[pos2-1]<='9'
 			   || line[pos2-1]=='.' || line[pos2-1]==')'|| line[pos2-1]==']'))
 			{
@@ -1375,7 +1375,7 @@ int Calculate::split(char* line)
 		operation=NONE;
 		var=-1;
 		char*recString1;
-		if(line[len-1] == ')')
+		if(len>0 && line[len-1] == ')')
 		{
 			recString1=new char[len-1];
 			strcopy(recString1,&line[1],len-2);
@@ -2329,46 +2329,6 @@ char* Script::parse(char* line)
 		delete[]recString1;
 		return NULL;
 	}
-	else if((pos1=bracketFindRev(line,"^")) != -1)
-	{
-		operation=SFAIL;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		if(pos1<1)
-			printError("First operand of ^ invalid",semicolonCount,eventReciver->eventReciver);
-		else if(len-pos1<2)
-			printError("Second operand of ^ invalid",semicolonCount,eventReciver->eventReciver);
-		else operation=POW;
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-			
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
-	}
-	else if(bracketFind(line,"$r") != -1)
-	{
-		pos1=bracketFindRev(line,"$r")-1;
-		operation=SFAIL;
-		if(pos1<1)
-			printError("First operand of root invalid",semicolonCount,eventReciver->eventReciver);
-		else if(len-pos1<3)
-			printError("Second operand of root invalid",semicolonCount,eventReciver->eventReciver);
-		else operation=ROOT;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1-1];
-
-		
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+2],len-pos1-2);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
-	}
 	else if((pos1=bracketFind(line,"print(")) == 0)
 	{
 //		perror("print");
@@ -2766,7 +2726,7 @@ char* Script::parse(char* line)
 		if(len<2)
 		{
 				operation=SFAIL;
-				printError("No argument for ! set",semicolonCount,eventReciver->eventReciver);
+				printError("No argument for ~ set",semicolonCount,eventReciver->eventReciver);
 		}
 		else operation=SBNOT;
 		
@@ -2776,6 +2736,47 @@ char* Script::parse(char* line)
 		delete[]recString1;
 		return NULL;
 	}
+	else if((pos1=bracketFindRev(line,"^")) != -1)
+	{
+		operation=SFAIL;
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1];
+		if(pos1<1)
+			printError("First operand of ^ invalid",semicolonCount,eventReciver->eventReciver);
+		else if(len-pos1<2)
+			printError("Second operand of ^ invalid",semicolonCount,eventReciver->eventReciver);
+		else operation=POW;
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+1],len-pos1-1);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+			
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}
+	else if(bracketFind(line,"$r") != -1)
+	{
+		pos1=bracketFindRev(line,"$r")-1;
+		operation=SFAIL;
+		if(pos1<1)
+			printError("First operand of root invalid",semicolonCount,eventReciver->eventReciver);
+		else if(len-pos1<3)
+			printError("Second operand of root invalid",semicolonCount,eventReciver->eventReciver);
+		else operation=ROOT;
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1-1];
+
+		
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+2],len-pos1-2);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}	
+	
 	else if(line[0] == '(' && (line[len-1]==')' || strncmp(&line[1],"float",5)==0 || strncmp(&line[1],"int",3)==0 || strncmp(&line[1],"bool",4)==0 || strncmp(&line[1],"string",6)==0))
 	{
 //		perror("bracket");
@@ -4118,8 +4119,16 @@ Number Script::exec()
 				case NCHAR:
 					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
 			}
-
-			value.cfval=pow(value.cfval,n.cfval);
+			if(value.cfval.imag()!=0.0)
+				perror("value");
+			if(n.cfval.imag()!=0.0)
+				perror("n");
+			if(value.cfval.imag()==0.0 && n.cfval.imag()==0.0)
+			{
+				value.cfval=Complex(powl(value.cfval.real(),n.cfval.real()));
+				perror("real");
+			}
+			else value.cfval=pow(value.cfval,n.cfval);
 			return value;
 		}
 		case ROOT:

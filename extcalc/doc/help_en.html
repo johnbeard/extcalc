@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - Scientific Calculator </h1>
-  Version 0.6.0
+  Version 0.6.5
   <br>
   <br>
   <h3>Inhalt</h3>
@@ -33,22 +33,22 @@
   <a name="introduction"><h2>1. Introduction</h2></a>
   Extcalc is a scientific graphic calculator for linux. Extcalc is able to process difficult
   mathmatical functions, to draw graph and to work with them. 
-  This is the documentation for version 0.6.0. 
+  This is the documentation for version 0.6.5. 
   <br>
   <br>
   <br>
   <a name="install"><h2>2. Installation</h2></a>
   This description is only for the installation of the source code package (.tar.gz). If you install a binary package, you have to use the
   packet manager of your distribution.<br><br>
-  - extract packet (tar -xzf extcalc-0.6.0.tar.gz)<br>
-  - switch to directory (cd extcalc-0.6.0)<br>
+  - extract packet (tar -xzf extcalc-0.6.5.tar.gz)<br>
+  - switch to directory (cd extcalc-0.6.5)<br>
   - configure (./configure)<br>
   - compile (make)<br>
   - become root (su)<br>
   - install (make install)<br>
  
   <h5>Languages</h5>
-  To choose german as installation laguage, please type "./configure --enable-language_de"
+  To choose german as installation language, please type "./configure --enable-language_de"
   instead of "./configure"<br>    
 
  
@@ -85,24 +85,28 @@
   hyp<br>
   Use this button for hyperbolic functions.<br>
   ANS<br>
-  This is the answer-memory. Use this key to recall the last result.<br><br>
-  The following buttons don't work in this version:<br> 
-  a/b (fractions)<br>
-  i (for complex numbers)<br>
+  This is the answer-memory. Use this key to recall the last result.<br>
   <br>
   <h5>Calculation Priority:</h5>
-  Highest Priority: brackets<br> 
-  Next: integration, differentiation<br>
-  Next: sin, cos, log, ...<br>
-  Next: root, power, ...<br> 
-  Next: *, /<br>
-  Last: +, -<br> <br>
+  Highest is first<br>
+  1. Brackets<br> 
+  2. Special operations: integration, differentiation<br>
+  3. Binary operators 1: root, power, ...<br> 
+  3. Unary operators: sin, cos, log, ...<br>
+  4. Bit operations: &amp;, |, ...<br>
+  5. Binary operators 2: *, /<br>
+  6. Binary operators 3: +, -<br>
+  7. Compare operations: ==, !=, ...<br>
+  8. Set operations: -&gt;, =<br>
+  9. Logic operations: &amp;&amp;, ||, ...<br>
+  <br>
+  
   <h5>Syntax - How to input calculation formulas</h5> 
   Root operation<br>
   You can use the root operation only with the integrated buttons.<br>
   Square Root:<br>
   <img src="sqrtbutton.jpg"></img>Sqare root button<br>
-  Formula:<img src="sqrt.jpg"></img><br>
+  Example: <img src="sqrt.jpg"></img><br>
   <img src="sqrtbracket.jpg"></img>Use brackets for calculations under a root<br>
   To use the square root operation first press the sqare root button an then insert
   the argument<br>
@@ -110,20 +114,20 @@
   <img src="curoot.jpg"></img><br>
   Other Roots:<br>
   <img src="nrootbutton.jpg"></img>Button for other Roots<br>
-  <img src="nroot.jpg"></img>Formula example<br>
+  Example: <img src="nroot.jpg"></img><br>
   To use this operation, first type the degree of the root and then type the argument.<br>
   <br>
   Random Number Generator:<br>
   Use this operation to generate random numbers<br>
   <img src="randbutton.jpg"></img> random number key<br>
-  <img src="random.jpg"></img> Usage (Number between 0 and 10)<br>
+  Example (Number between 0 and 10): <img src="random.jpg"></img><br>
   The number after the "rnd" is the maximum value of the random number.<br>
   <br>
   Differentiation:<br>
   The program can only calculate an approximated value of the differentiation.
   The Precisision is about +/-1e-8<br>
- Use this keys for differentiation: <img src="shift.jpg"></img>+<img src="diffbutton.jpg"></img> <br>
-  <img src="diff.jpg"></img> Formula example<br>
+ Use this key for differentiation: <img src="diffbutton.jpg"></img> <br>
+  Example: <img src="diff.jpg"></img><br>
   Usage: d/dx(function,x-value)<br>
   The function parameter must be X. Example: 2X^3-3X+3<br>
   The result is the is the gradient of the function at the given x-value.<br>
@@ -133,7 +137,7 @@
   An integral calculation will fail if there is a vertical asymptote between start and end point.
   The Precisision is about +/-1e-9.<br>
   The integral key:<img src="integralbutton.jpg"></img><br>
-  Fromula example:<img src="integral.jpg"></img><br>
+  Example:<img src="integral.jpg"></img><br>
   Usage: Integralsign(function,start value,end value)<br>
   The function parameter must be X. Example: sin(X)*3<br>
   The area below the graph of "function" between "start value" and "end value" is calculated.<br>
@@ -146,6 +150,64 @@
   A stored value can be used like any other number. Unused variables are set to 0.
   <br>
   <br>
+  <br>
+  <h5>Function Catalog</h5>
+  
+  Unary operators with operand right:<br>
+	- <br>
+	sin cos tan<br>
+	asin acos atan<br>
+	sinh cosh tanh<br>
+	asinh acosh atanh<br>
+	log ln<br>
+	sqrt curt<br>
+	real imag abs arg conj<br>
+	! (not)<br>
+	~<br>
+	(int) (float) (bool) (string)<br><br>
+	
+	Unary operators with operand left:<br>
+	! (Faculty)<br><br>
+	
+	Binary operators:<br>
+	;<br>
+	&amp;&amp; ||<br>
+	-&gt; =<br>
+	== != &gt;= &lt;= &gt; &lt;<br>
+	+ - * / %<br>
+	&lt;&lt; &gt;&gt;<br>
+	x &amp; |<br>
+	^<br>
+	root<br><br>
+	
+	Script commands:<br>
+	if else<br>
+	while for<br>
+	print() clear setcursor(,)<br>
+	sleep()<br>
+	rnd()<br>
+	run()<br>
+	d/dx(,) integ(,,)<br>
+	getline getkey keystate<br>
+	break continue stop<br><br>
+	
+	brackts: <br>
+	( )<br>
+	{}<br><br>
+	
+	values:<br>
+	345<br>
+	786.899<br>
+	-76e-8<br>
+	786i<br>
+	"lkasdjl"<br><br>
+	
+	variables:<br>
+	A<br>
+	A[]<br>
+	A[][]<br>
+
+  <br><br><br>
   <a name="calcstd"><h3>3.1.1 Standard Mode</h3></a>
   This is the mode for normal scientific calculatons. All input and output numbers are decimal floating point numbers.
   All scientific functions can be used here. In the quick preferences box, you can choose the angle type for trigonometric
@@ -177,14 +239,15 @@
   The following functions can be used:<br>
   Logic functions:<br>
   These functions return only true or false as a result. 0 is false and everything different ot 0 is true.<br>
-  &amp&amp (and), || (or), n (not)<br>
+  &amp&amp (and), || (or), ! (not)<br>
   Binary functions:<br>
   These functions modify every single bit of a number.<br>
   &amp (and), | (or), ~ (not), &lt&lt (left shift), &gt&gt (right shift), xor<br>   
   
   <br>
   <br> 
-  <a name="graph"><h2>3.2 Graphic</h2></a>
+  <a name="graph"><h2>3.2 Graphic</h2></a> 
+<br><img src="graph.jpg"></img><br><br>
   In this window of Extcalc, you can draw and analyse different function graphs.<br>
   You can choose different types of graphs and different types of coordinate systems.<br>
   This is a short list of the availables types of graphs with a short description:<br>
@@ -204,6 +267,11 @@
   <h5>3D Graphs y(x,z)=XZ</h5>
   This is the graph type for standard 3D-graphs. You need a 3D-coordinate system to show this type of graph.
   The 3D-function contains the two variable X and Z. The Y-coordinate is calculated by this function containing X and Z.
+  <h5>Nyquist plots and 3D-Nyquist plots Y=Zi+Z</h5>
+  Both graph types can be used to show complex function graphs. The X-Axis represents the Real part of Y and the Y-Axis shows 
+  the Imaginary part of Y. The function parameter ist always Z. But at the normal Nyquist plot, the range of Z must be set by the
+  graph preferences dialog. At the 3D-Nyquist plot, the Z range is equal to the Z range of the coordinate system. Thist type of
+  Nyquist plot shows the Z-Value as a third Axis.
   <h5> Dynamic graphs</h5>
   All above described types of graphs can be used in a dynamic mode. For this dynamic graphs, an extra parameter A must
   exist in your function. This parameter depends on the time. So you can show moving graphs.
@@ -230,7 +298,7 @@
   <br>
   <br>
   <a name="graphdraw"><h3>3.2.1 Draw Graphs </h3></a>
-  <img src="graph.jpg"></img>
+ 
   <img src="3dgraph.jpg"></img>
   <br>
   The graphics window of Extcalc consists of three partes: function table, output window and keyboard.
@@ -270,16 +338,16 @@
   shows you the different analysation methods and the function types needed for
   this methods.<br>
   <table>
-  <tr><td></td>					 		  <td>standard</td> <td>polar</td> <td>parameter</td> <td>inequaity</td> <td>3D</td></tr>
-  <tr><td>Calculate Y-value</td> 		  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td>x</td></tr>
-  <tr><td>Calculate roots</td> 			  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td> </td></tr>
-  <tr><td>Newton's Method</td> 			  <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td> </td></tr>
-  <tr><td>Calculate X-values</td> 		  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td>x</td></tr>
-  <tr><td>Points of Intersection</td>	  <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td> </td></tr>
-  <tr><td>Maximum and minumum values</td> <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td> </td></tr>
-  <tr><td>calculate integral</td> 		  <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td>x</td></tr>
-  <tr><td>calculate differential</td> 	  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td>x</td></tr>
-  <tr><td>Calculate Z-value</td> 		  <td> </td>		<td> </td>	   <td> </td>		  <td> </td>		 <td>x</td></tr>
+  <tr><td></td>					 		  <td>standard</td> <td>polar</td> <td>parameter</td> <td>inequaity</td> <td>3D-graph</td>	<td>Nyquist plot</td></tr>
+  <tr><td>Calculate Y-value</td> 		  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td>x</td>	 		<td>x</td></tr>
+  <tr><td>Calculate roots</td> 			  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td> </td>	 		<td>x</td></tr>
+  <tr><td>Newton's Method</td> 			  <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td> </td>	 		<td> </td></tr>
+  <tr><td>Calculate X-values</td> 		  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td>x</td>			<td>x</td></tr>
+  <tr><td>Points of Intersection</td>	  <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td> </td>			<td> </td></tr>
+  <tr><td>Maximum and minumum values</td> <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td> </td>			<td> </td></tr>
+  <tr><td>calculate integral</td> 		  <td>x</td>		<td>x</td>	   <td> </td>		  <td>x</td>		 <td>x</td>			<td> </td></tr>
+  <tr><td>calculate differential</td> 	  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td>x</td>			<td> </td></tr>
+  <tr><td>Calculate Z-value</td> 		  <td> </td>		<td> </td>	   <td> </td>		  <td> </td>		 <td>x</td>			<td> </td></tr>
   </table>
 
   Here is a short description of the analysation methods:<br>
@@ -364,7 +432,7 @@
   The syntax for Extcalc scripts is similar to the C syntax, but the normal calculator commands and operations can also be used in this scripts.
   You can't use script command in the normal calculator. The scripts programs run in a seperate console, and you may the other extcalc functions 
   while running a script. Scripts can be managed, edited and started from the integrated script editor.<br>
-  In this version 0.6.0 are not all planned features included.<br><br>
+  In this version 0.6.5 are not all planned features included.<br><br>
 
   <a name="scriptedit"><h3>3.4.2 The Script-Editor</h3></a>
   <img src="scriptedit.jpg"></img>
@@ -403,10 +471,10 @@
   You can always stop a running script by pressing the "Kill"-Button at the script console window.<br>
   If the script does not stop before the timeout, an error message is displayed. You have to press the kill-button again to stop the script correctly.<br>
   <a name="scriptsyntax"><h3>3.4.3 Scripting Language</h3></a>
-  In version 0.6.0 of Extcalc, not all features are included. You can read more about the planned features 
+  In version 0.6.5 of Extcalc, not all features are included. You can read more about the planned features 
   at <a href="#else">Chapter 4</a>.<br>
   <h5>Problems:</h5>
-  This is a list of the current problems of the 0.6.0 version of the Extcalc Script Interpreter<br><br>
+  This is a list of the current problems of the 0.6.5 version of the Extcalc Script Interpreter<br><br>
   1. Speed<br>
   The extcalc scripts were ran by an Interpreter and so they run not as fast as compiled programmes, but it will be optimized in later versions.<br><br>
   2. Variables:<br>
@@ -684,7 +752,6 @@
   [] index operator
 
   All other operators can be used like in the calculater.
-  They always return an integer value.
   </pre>
   The operators can also be used together.<br>
   <pre>
@@ -874,12 +941,12 @@
   zooming and moving graphics<br>
   saving screenshots<br>
   drawing into graphics window<br>
+  complex numbers<br> 
 
   <h5>Todo-list</h5>
   scripting functions for graph drawing and file usage<br> 
   matrix calculation<br> 
   vector calculation<br> 
-  complex numbers<br> 
   statistic functions<br>
  
          
@@ -925,7 +992,7 @@
   Linux<br> 
   GCC 3 or GCC 4 (dosn't work on GCC 2.xx)<br> 
   QT3.1 or higher (no QT 4)<br> 
-  OpenGL<br> 
+  OpenGL<br>
 
   <h5>Needed hardware:</h5>
   CPU at about 1GHz (32Bit or 64Bit)<br> 

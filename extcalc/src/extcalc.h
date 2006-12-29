@@ -392,6 +392,7 @@ MainObject() :QTabWidget()
 		threadData->vars[c]=(Number*)malloc(sizeof(Number));
 		threadData->numlen[c]=1;
 		threadData->vars[c][0].type=NNONE;
+		threadData->vars[c][0].cfval=Complex(0.0,0.0);
 	}
 	
 

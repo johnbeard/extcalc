@@ -776,5 +776,5 @@
 #define SCRIPTPREFC_STR7 "Invalid data subdirectory name"
 #define SCRIPTPREFC_STR8 "Choose a directory"
 
-#endif     
+#endif
 

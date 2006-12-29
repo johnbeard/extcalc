@@ -672,11 +672,13 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 	long double scanPos=startValue;
 	long double step=(endValue-startValue)/ANALYSESTEPS;
 	long double exactStep=step/EXACTANALYSESTEPS;
-	if(step<= 0.0)
-		step=1e-308;
-	if(exactStep<= 0.0)
-		exactStep=1e-308;
-	QString cleanFunction=checkString(function,&pref);
+	if(step<= 1e-15)
+		step=1e-15;
+	if(exactStep<= 1e-15)
+		exactStep=1e-15;
+	char*cf=checkString(function,&pref);
+	QString cleanFunction(cf);
+	delete[]cf;
 	if(varIndex!=23)
 	{
 		cleanFunction.replace('X',"("+QString::number((double)vars[23][0],'g',pref.precision)+")");
@@ -693,7 +695,9 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 	else cfx=new Calculate(NULL,modifiedFunction,&pref,vars);
 	
 	QString strdfx("d/dx("+function+"");
-	cleanFunction=QString(checkString(strdfx,&pref));
+	cf=checkString(strdfx,&pref);
+	cleanFunction=QString(cf);
+	delete[]cf;
 	if(varIndex!=23)
 	{
 		cleanFunction.replace('X',"("+QString::number((double)vars[23][0],'g',pref.precision)+")");
@@ -735,8 +739,9 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 	bool fail=false;
 	
 	while(scanPos<endValue)
-	{	if(x1==NAN)
-		x1=scanPos;
+	{
+		if(x1==NAN)
+			x1=scanPos;
 		oldfx1=fx1;
 		olddfx1=dfx1;
 		scanPos+=step;
@@ -773,6 +778,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 			}
 			while(scanPos<endPos)
 			{
+				//perror("scanPos: "+QString::number((double)scanPos));
 				oldfx1=fx1;
 				olddfx1=dfx1;
 				scanPos+=exactStep;
@@ -804,7 +810,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 							nfx1=cfx->calc();
 							ndfx1=cdfx->calc();
 						}
-						perror("x1 "+QString::number((double)x1)+" nfx1 "+QString::number((double)nfx1)+" ndfx1 "+QString::number((double)ndfx1));
+						//perror("x1 "+QString::number((double)x1)+" nfx1 "+QString::number((double)nfx1)+" ndfx1 "+QString::number((double)ndfx1));
 						if(nfx1<1e-30 && nfx1>-1e-30)
 							break;
 						if(ndfx1<1e-50 && ndfx1>-1e-50)
@@ -872,6 +878,11 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 						{
 							results.NewItem(x1);
 							scanPos=endPos;
+							if(results.GetLen() > 50)
+							{
+								scanPos=endValue+1.0;
+								break;
+							}
 							
 							if(forceScript)
 							{
@@ -928,6 +939,7 @@ void GraphSolveWidget::showRoots(QString function,QColor color)
 		outputTable->setText(c,0,result);
 		outputTable->changeColor(c,color);
 	}
+	delete[]results;
 
 	outputTable->adjustColumn(0);
 	
