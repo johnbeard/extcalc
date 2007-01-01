@@ -14,7 +14,7 @@ calc \- console calculator
 .B calc
 calculates the given input term and returns the result as text.
 Please use \" \" at the given expression because otherwise you
-will have problemswith the shell interpretor. If you give 
+will have problems with the shell interpretor. If you give 
 .B calc
 more than one expression, all expression will be put
 together.
@@ -33,7 +33,7 @@ curt8
 .IP "trigonometric functions and logarithms"
 sin3.64+ln5
 .IP "other roots"
-fourth root of nine: root(9,4)
+fourth root of nine: 4root9 
 .IP "differential calculation"
 differential calculation of 2x^2-3x+3 at x=9: d/dx(2x^2-3x+3,9)
 .IP integration
@@ -49,6 +49,14 @@ The last result is saved in the answer memory: ans+1
 euler constant
 .IP pi
 pi; example: sin(pi/2)
+.SH NUMBERS
+.IP standard
+12.34
+.IP "with exponent"
+12.23e-5
+.IP complex
+12i-5
+
 .SH OPTIONS
 .IP "-o, --output [output length]"
 The argument is a number between 2 and the maximal possible output length (normally 18).

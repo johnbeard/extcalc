@@ -11,11 +11,14 @@
 #include <termios.h>
 #include <unistd.h>
 #include <errno.h>
+#include <complex>
 #include "list.h"
 
+using namespace std;
 
-#define VERSIONSTRING "Version: 0.6.0 2006-10-11\nCalculator algorithm: extcalc v0.6.0 2006-10-10"
-#define AUTHORSTRING "Author:\nRainer Strobel\n2006\n"
+
+#define VERSIONSTRING "Version: 0.6.5 2007-01-01\nCalculator algorithm: extcalc v0.6.0 2006-12-29"
+#define AUTHORSTRING "Author:\nRainer Strobel\nhttp://extcalc-linux.sourceforge.net\n2007\n"
 
 
 #define SSEMICOLON			83
@@ -54,7 +57,15 @@
 #define SCONTINUE			126
 #define SSTOP				127
 #define SRUN				128
-
+#define SBAND				142
+#define SBOR				143
+#define SFAK				144
+#define SBNOT				145
+#define SABS				148
+#define SCONJ				149
+#define SREAL				150
+#define SIMAG				151
+#define SARG				152
 
 
 #define NNONE				0x1
@@ -91,6 +102,9 @@
 #define INTEGRAL			23
 #define MODULO				116
 #define ARRAY				129
+#define RSHIFT				139
+#define LSHIFT				140
+#define XOR					141
 
 #define RAD					6
 #define DEG					7
@@ -124,6 +138,10 @@
 #define NAN (HUGE_VAL/HUGE_VAL)
 #endif
 
+typedef List<long double> Variable;
+typedef complex <long double> Complex;
+
+
 class Math;
 
 struct Preferences
@@ -141,21 +159,25 @@ struct Preferences
 struct Number
 {
 	long double fval;
+	long double *fvector;		//complex, vector
+	int dimension;				//vector size
+	complex <long double> cfval;
 	long long ival;
 	bool bval;
 	char*cval;
 	int type;
 };
-
 struct ThreadSync
 {
 
 	int status;
+	int sleepTime;
 	bool usleep;
 	bool exit;
 	bool bbreak;
 	bool bcontinue;
 	bool error;
+	bool calcMode;
 	int numlen[27];
 	Number**vars;
 	List <Math*>subprograms;
@@ -164,7 +186,6 @@ struct ThreadSync
 	int countDifference;
 };
 
-typedef List<long double> Variable;
 
 
 //Standard Calculator functions
@@ -174,7 +195,7 @@ int bracketFindRev(char* string,char* searchString, int start=-1);
 char*strcut(char*src,int index,int len=1);
 char*strins(char*dest,const char*src,int index);
 int strcopy(char*dest,char*src,int len);
-char* checkString(char*calcString,Preferences*pref,Variable*vars);
+char* checkString(char*calcString,Preferences*pref);
 void printError(const char*,int,ThreadSync*);
 
 

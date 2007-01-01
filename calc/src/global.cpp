@@ -3,6 +3,10 @@
 
 void printError(const char*string,int semicolonCount,ThreadSync*data)
 {
+	data->error=true;
+	if(data->calcMode)
+		return;
+	
 	int index=semicolonCount-data->countDifference;
 	if(index>=data->semicolonLines.GetLen())
 		fprintf(stderr,"End of File            : ");
@@ -20,8 +24,6 @@ void printError(const char*string,int semicolonCount,ThreadSync*data)
 	
 	fprintf(stderr,string);
 	fprintf(stderr,"\n");
-
-	data->error=true;
 }
 
 
@@ -178,7 +180,13 @@ int strcopy(char*dest,char*src,int len)
 }
 
 
-char* checkString(char* str,Preferences*pref,Variable*vars)
+
+
+
+
+
+
+char* checkString(char* str,Preferences*pref)
 {
 	char* calcString=new char[strlen(str)+1];
 	char*tmp;
@@ -194,8 +202,6 @@ char* checkString(char* str,Preferences*pref,Variable*vars)
 			quote=!quote;
 		if(quote)
 		{
-
-				
 			if(calcString[c]=='\\')
 			{
 				if(calcString[c+1]=='n')
@@ -517,31 +523,38 @@ char* checkString(char* str,Preferences*pref,Variable*vars)
 			continue;
 		if(strncmp(&calcString[c],"ans",3) == 0)
 		{
-			tmp=calcString;
+/*			tmp=calcString;
 			calcString=strcut(calcString,c,3);
 			delete[]tmp;
 			char*lastRes=new char[60];
 			if(pref->calcType == SCIENTIFIC)
 			{
-				sprintf(lastRes,"%'.40Lg",vars[26][0]);
-				tmp=calcString;
-				calcString=strins(calcString,"()",c);
-				delete[]tmp;
-				tmp=calcString;
-				calcString=strins(calcString,lastRes,c+1);
-				delete[]tmp;
-			}
+			sprintf(lastRes,"%'.40Lg",vars[26][0]);
+			tmp=calcString;
+			calcString=strins(calcString,"()",c);
+			delete[]tmp;
+			tmp=calcString;
+			calcString=strins(calcString,lastRes,c+1);
+			delete[]tmp;
+		}
 			else {
-				sprintf(lastRes,"\\c%lli",(long long)vars[26][0]);
-				tmp=calcString;
-				calcString=strins(calcString,"()",c);
-				delete[]tmp;
-				tmp=calcString;
-				calcString=strins(calcString,lastRes,c+1);
-				delete[]tmp;
-			}
+			sprintf(lastRes,"\\c%lli",(long long)vars[26][0]);
+			tmp=calcString;
+			calcString=strins(calcString,"()",c);
+			delete[]tmp;
+			tmp=calcString;
+			calcString=strins(calcString,lastRes,c+1);
+			delete[]tmp;
+		}
 			
 			delete[]lastRes;
+			*/
+			tmp=calcString;
+			calcString=strcut(calcString,c,3);
+			delete[]tmp;
+			tmp=calcString;
+			calcString=strins(calcString,"$A",c);
+			delete[]tmp;
 		}
 		if(strncmp(&calcString[c],"pi",2) == 0)
 		{
@@ -610,580 +623,7 @@ char* checkString(char* str,Preferences*pref,Variable*vars)
 		
 		calcLen=strlen(calcString);
 	}
-	
 	return calcString;
-	
-}
-
-
-
-
-
-
-long double calculate(char* line,Preferences*pref,Variable*vars)
-{
-//	perror(line);
-	if(line == NULL)
-		return (NAN);
-	int len=strlen(line);
-	if(len <=0)
-		return (NAN);
-	long double complete=(long double)0.0;
-	char*recString1,*recString2;
-
-	if(bracketFind(line,"->") != -1)
-	{
-		int pos1=bracketFindRev(line,"->");
-		if(len<pos1+1)
-			return NAN;
-			
-		int var=((int)line[pos1+1])-65;
-		if(var<0 || var>25)
-			return NAN;
-
-		recString1=new char[pos1];
-		strcopy(recString1,line,pos1-1);
-		vars[var][0]=calculate(recString1,pref,vars);
-		delete[]recString1;
-		return vars[var][0];
-	}
-	else if(bracketFind(line,"+") != -1 || bracketFind(line,"-") != -1)
-	{
-		int pos1,pos2,pos=-1;
-		while(true)
-		{
-			pos1=bracketFindRev(line,"+",pos);
-			if(pos1<=0)
-				break;
-			if(line[pos1-1]=='e')
-				pos=pos1-1;
-			else break;
-		}
-		pos=-1;
-		while(true)
-		{
-			pos2=bracketFindRev(line,"-",pos);
-			if(pos2<=0)
-				break;
-			if(line[pos2-1]=='e')
-				pos=pos2-1;
-			else break;
-		}
-			
-		
-		if(pos2>pos1)
-		{
-			if( pos2>0 &&(line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
-						 || line[pos2-1]>='0' && line[pos2-1]<='9'
-						 || line[pos2-1]=='.' || line[pos2-1]==')'))
-			{
-				pos=pos2;
-
-				recString1=new char[pos+1];
-				strcopy(recString1,line,pos);
-				recString2=new char[len-pos];
-				strcopy(recString2,&line[pos+1],len-pos-1);
-				complete=calculate(recString1,pref,vars)-calculate(recString2,pref,vars);
-				delete[]recString1;
-				delete[]recString2;
-				return complete;
-			}
-			else if(pos2==0)								//unary - operator
-				return (long double)-1.0*calculate(&line[1],pref,vars);
-			
-		}
-		else if(pos1>pos2)
-		{
-			if(pos1>0 && (line[pos1-1] >='A' && line[pos1-1]<='Z'		//binary + operator
-						|| line[pos1-1]>='0' && line[pos1-1]<='9'
-						|| line[pos1-1]=='.' || line[pos1-1]==')'))
-			{
-				pos=pos1;
-
-				recString1=new char[pos+1];
-				strcopy(recString1,line,pos);
-				recString2=new char[len-pos];
-				strcopy(recString2,&line[pos+1],len-pos-1);
-				complete=calculate(recString1,pref,vars)+calculate(recString2,pref,vars);
-				delete[]recString1;
-				delete[]recString2;
-				return complete;
-
-			}
-			else if(pos1==0)								//unary + operator
-				return calculate(&line[1],pref,vars);
-		}
-	}
-
-	
-	if(bracketFind(line,"*") != -1 || bracketFind(line,"/") != -1)
-	{
-		int pos1=bracketFindRev(line,"*");
-		int pos2=bracketFindRev(line,"/");
-		if(pos1==-1 && pos2==-1)
-			return NAN;
-		int pos;
-		if((pos2>pos1 && pos2 != -1) || pos1==-1)
-		{
-			pos=pos2;
-			
-			recString1=new char[pos+1];
-			strcopy(recString1,line,pos);
-			recString2=new char[len-pos];
-			strcopy(recString2,&line[pos+1],len-pos-1);
-			complete=calculate(recString1,pref,vars)/calculate(recString2,pref,vars);
-			delete[]recString1;
-			delete[]recString2;
-			return complete;
-		}
-		else
-		{
-			pos=pos1;
-			recString1=new char[pos+1];
-			strcopy(recString1,line,pos);
-			recString2=new char[len-pos];
-			strcopy(recString2,&line[pos+1],len-pos-1);
-			complete=calculate(recString1,pref,vars)*calculate(recString2,pref,vars);
-			delete[]recString1;
-			delete[]recString2;
-			return complete;
-		}
-	}
-	else if(bracketFind(line,"%") != -1)
-	{
-		int pos=bracketFind(line,"%");
-		recString1=new char[pos+1];
-		strcopy(recString1,line,pos);
-		recString2=new char[len-pos];
-		strcopy(recString2,&line[pos+1],len-pos-1);
-		complete=fmodl(calculate(recString1,pref,vars),calculate(recString2,pref,vars));
-		delete[]recString1;
-		delete[]recString2;
-		return complete;
-		
-		
-	}
-	else if(bracketFind(line,"||") != -1)
-	{
-		int pos=bracketFind(line,"||");
-		recString1=new char[pos+1];
-		strcopy(recString1,line,pos);
-		recString2=new char[len-pos-1];
-		strcopy(recString2,&line[pos+2],len-pos-2);
-		int num1=(int)calculate(recString1,pref,vars);
-		int num2=(int)calculate(recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
-		if(num1==0 && num2==0)
-			return 0.0;
-		else return 1.0;
-	}
-	else if(bracketFind(line,"&&") != -1)
-	{
-		int pos=bracketFind(line,"&&");
-		recString1=new char[pos+1];
-		strcopy(recString1,line,pos);
-		recString2=new char[len-pos-1];
-		strcopy(recString2,&line[pos+2],len-pos-2);
-		int num1=(int)calculate(recString1,pref,vars);
-		int num2=(int)calculate(recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
-		if(num1==0 || num2==0)
-			return 0.0;
-		else return 1.0;
-	}
-	else if(bracketFind(line,">>") != -1)
-	{
-		int pos=bracketFind(line,">>");
-		recString1=new char[pos+1];
-		strcopy(recString1,line,pos);
-		recString2=new char[len-pos-1];
-		strcopy(recString2,&line[pos+2],len-pos-2);
-		long long num1=(long long)calculate(recString1,pref,vars);
-		long long num2=(long long)calculate(recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
-		return (long double)(num1>>num2);
-	}
-	else if(bracketFind(line,"<<") != -1)
-	{
-		int pos=bracketFind(line,"<<");
-		recString1=new char[pos+1];
-		strcopy(recString1,line,pos);
-		recString2=new char[len-pos-1];
-		strcopy(recString2,&line[pos+2],len-pos-2);
-		long long num1=(long long)calculate(recString1,pref,vars);
-		long long num2=(long long)calculate(recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
-		return (long double)(num1<<num2);
-	}
-	else if(bracketFind(line,"x") != -1)
-	{
-		int pos=bracketFind(line,"x");
-		recString1=new char[pos+1];
-		strcopy(recString1,line,pos);
-		recString2=new char[len-pos];
-		strcopy(recString2,&line[pos+1],len-pos-1);
-		long long num1=(long long)calculate(recString1,pref,vars);
-		long long num2=(long long)calculate(recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
-		return(long double)(num1^num2);
-	}
-	else if(bracketFind(line,"|") != -1)
-	{
-		int pos=bracketFind(line,"|");
-		recString1=new char[pos+1];
-		strcopy(recString1,line,pos);
-		recString2=new char[len-pos];
-		strcopy(recString2,&line[pos+1],len-pos-1);
-		long long num1=(long long)calculate(recString1,pref,vars);
-		long long num2=(long long)calculate(recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
-		return(long double)(num1|num2);
-	}
-	else if(bracketFind(line,"&") != -1)
-	{
-		int pos=bracketFind(line,"&");
-		recString1=new char[pos+1];
-		strcopy(recString1,line,pos);
-		recString2=new char[len-pos];
-		strcopy(recString2,&line[pos+1],len-pos-1);
-		long long num1=(long long)calculate(recString1,pref,vars);
-		long long num2=(long long)calculate(recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
-		return(long double)(num1&num2);
-	}
-	else if(bracketFind(line,"^") != -1)
-	{
-		int pos1;
-		pos1=bracketFindRev(line,"^");
-		if(pos1==-1)
-			return NAN;
-		recString1=new char[pos1+1];
-		strcopy(recString1,line,pos1);
-		recString2=new char[len-pos1];
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		complete=powl(calculate(recString1,pref,vars),calculate(recString2,pref,vars));
-		delete[] recString1;
-		delete[] recString2;
-	}
-	else if(bracketFind(line,"$r") != -1)	//	root operation for extcalc (binary operator)
-	{
-
-		int pos=bracketFind(line,"$r");
-		recString1=new char[pos+1];
-		recString2=new char[len-pos-1];
-		strcopy(recString1,line,pos);
-		strcopy(recString2,&line[pos+2],len-pos-2);
-		
-		complete=powl(calculate(recString2,pref,vars),1.0/calculate(recString1,pref,vars));
-		delete[]recString1;
-		delete[]recString2;
-		return complete;
-	}
-	else if(line[0]>='a' && line[0]<='z') 
-	{
-		long double mult=1.0;
-		if(pref->angle==DEG)
-			mult=(long double)PI/180.0;
-		else if(pref->angle==GRA)
-			mult=(long double)PI/200.0;
-
-		if(strncmp(line,"asinh",5) == 0)
-		{
-			complete=asinhl(calculate(&line[5],pref,vars));
-		}
-		else if(strncmp(line,"acosh",5) == 0)
-		{
-			complete=acoshl(calculate(&line[5],pref,vars));
-		}
-		else  if(strncmp(line,"atanh",5) == 0)
-		{
-			complete=atanhl(calculate(&line[5],pref,vars));
-		}
-		else  if(strncmp(line,"asin",4) == 0)
-		{
-			complete=asinl(calculate(&line[4],pref,vars))/mult;
-		}
-		else if(strncmp(line,"acos",4) == 0)
-		{
-			complete=acosl(calculate(&line[4],pref,vars))/mult;
-		}
-		else if(strncmp(line,"atan",4) == 0)
-		{
-			complete=atanl(calculate(&line[4],pref,vars))/mult;
-		}
-		else if(strncmp(line,"sinh",4) == 0)
-		{
-			complete=sinhl(calculate(&line[4],pref,vars));
-		}
-		else if(strncmp(line,"cosh",4) == 0)
-		{
-			complete=coshl(calculate(&line[4],pref,vars));
-		}
-		else if(strncmp(line,"tanh",4) == 0)
-		{
-			complete=tanhl(calculate(&line[4],pref,vars));
-		}
-		else if(strncmp(line,"sin",3) == 0)
-		{
-			complete=sinl(calculate(&line[3],pref,vars)*mult);
-		}
-		else if(strncmp(line,"cos",3) == 0)
-		{
-			complete=cosl(calculate(&line[3],pref,vars)*mult);
-		}
-		else if(strncmp(line,"tan",3) == 0)
-		{
-			complete=tanl(calculate(&line[3],pref,vars)*mult);
-		}
-		else if(strncmp(line,"log",3) == 0)
-		{
-			complete=logl(calculate(&line[3],pref,vars))/log(10);
-		}
-		else if(strncmp(line,"ln",2) == 0)
-		{
-			complete=logl(calculate(&line[2],pref,vars));
-		}
-		else if(strncmp(line,"rnd",3) == 0)
-		{
-#if RAND_MAX < 1000000000
-			complete=(((rand()*(1000000000/RAND_MAX))%1000000000)*calculate(&line[3],pref,vars))/1000000000;
-#else
-			complete=((rand()%1000000000)*calculate(&line[3],pref,vars))/1000000000;
-#endif
-		}
-		else if(strncmp(line,"sqrt",4) == 0)
-		{
-			complete=sqrtl(calculate(&line[4],pref,vars));
-		}
-		else if(strncmp(line,"curt",4) == 0)
-		{
-			complete=powl(calculate(&line[4],pref,vars),(long double)(1.0/3.0));
-		}
-		else if(line[0]=='n')
-		{
-			int num=(int)calculate(&line[1],pref,vars);
-			if(num==0)
-				return(1.0);
-			else return(0.0);
-		}
-		else{
-			return (NAN);
-		}
-		if(complete < pow(10.0,-pref->precisision+1) && complete > -1.0*pow(10.0,-pref->precisision+1))
-		{
-			complete=0.0;
-		}
-	}
-	else if(line[0]=='~')
-	{
-		long long num=(long long)calculate(&line[1],pref,vars);
-		num=~num;
-		return (long double)num;
-	}
-	else if(bracketFind(line,"!") != -1)
-	{
-		recString1=new char[len];
-		strcopy(recString1,line,len-1);
-		long double end=calculate(recString1,pref,vars);
-		delete[]recString1;
-		if(end<0.0)
-			return NAN;
-		complete=1.0;
-		for(int c=2; c<=(int)end; c++)
-			complete*=c;
-	}
-/*	else if(bracketFind(line,"\\r(") != -1)		//root operation for calc (operator with arguments)
-	{
-		// syntax: fourth root of nine: root(4,9)
-		int pos1=bracketFind(line,"\\r(");
-		pos1+=3;
-		int pos2=bracketFind(line,",",pos1);
-		if(pos1==-1 || pos2 == -1 || line[len-1]!=')')
-			return (NAN);
-		
-		recString1=new char[pos2-pos1+1];
-		recString2=new char[len-pos2-1];
-		strcopy(recString1,&line[pos1],pos2-pos1);
-		strcopy(recString2,&line[pos2+1],len-pos2-2);
-		
-		complete=powl(calculate(recString2,pref,vars),1/calculate(recString1,pref,vars));
-		delete[]recString1;
-		delete[]recString2;
-	}
-*/	else if(bracketFind(line,"\\i(") != -1)
-	{
-		// syntax: integration of sin X between 2 and 3: integ(sinx,2,3)
-		bool inv=false;
-		double start,end;
-		int pos1=bracketFind(line,",",3);
-		if(pos1==-1)
-			return NAN;
-		int pos2=bracketFind(line,",",pos1+1);
-		if(pos2==-1)
-			return NAN;
-		char *function=new char[pos1-2];
-		char *startStr=new char[pos2-pos1+1];
-		char *endStr=new char[len-pos2];
-
-		strcopy(function,&line[3],pos1-3);
-		strcopy(startStr,&line[pos1+1],pos2-pos1-1);
-		strcopy(endStr,&line[pos2+1],len-pos2-2);
-		
-		start=calculate(startStr,pref,vars);
-		end=calculate(endStr,pref,vars);
-		Calculate integ(NULL,function,pref,vars);
-		if(start>end)
-		{
-			double temp=start;
-			start=end;
-			end=temp;
-			inv=true;
-		}
-
-		double * line1=new double;						//	Romberg's Method
-		double *line2=new double[3];
-		double y,oldy;
-		vars[23][0]=start;
-		oldy=integ.calc();
-		vars[23][0]=end;
-		y=integ.calc();
-		line1[0]=(y+oldy)*(end-start)/2.0;
-		double fail=HUGE_VAL,oldfail=0.0;
-		
-		int num=1;
-		int steps;
-
-		while(true)
-		{
-			delete[]line2;
-			line2=line1;
-			line1=new double[num+1];
-			line1[0]=0.0;
-			
-			steps=(int)pow(2,(num-1));
-			
-			for(int c=1; c<=steps; c++)
-			{
-				vars[23][0]=start+((2*c-1)*(end-start))/pow(2,num);
-				line1[0]+=integ.calc();
-			}
-			line1[0]=0.5*(line1[0]*(end-start)/pow(2,num-1)+line2[0]);
-			
-			for(int c=2; c<=num+1; c++)
-				line1[c-1]=(pow(4,c-1)*line1[c-2]-line2[c-2])/(pow(4,c-1)-1);
-
-		
-			num++;
-			oldfail=fail;
-			fail=line1[num-1]-line2[num-2];
-			if(fail < 0.0)
-				fail*=-1.0;
-			if(num>16 || (fail < 1e-9))
-			{
-				if(num>3)					//precision check may not work before that
-					break;
-			}
-			if(fail>oldfail)
-			{
-				if(num>5)					//error check may not work before that
-				{
-					line1[num-1]=NAN;
-					break;
-				}
-			}
-		}
-		complete=line1[num-1];
-		if(inv)
-			complete*=-1.0;
-		delete[]function;
-		delete[]startStr;
-		delete[]endStr;
-
-	}
-	else if(bracketFind(line,"\\d(") !=-1)
-	{
-		double pos;
-		int pos1=bracketFind(line,",",3);
-		if(pos1<0 || pos1>len-2)
-			return NAN;
-		char* function=new char[pos1-2];
-		char* startStr=new char[len-pos1-1];
-		strcopy(function,&line[3],pos1-3);
-		strcopy(startStr,&line[pos1+1],len-pos1-2);
-//	startStr=checkString(startStr);
-		pos=calculate(startStr,pref,vars);
-		Calculate diff(NULL,function,pref,vars);
-		double step=(pos*(double)1e-6);
-		if(step<1e-6)
-			step=1e-6;
-		vars[23][0]=pos-step;
-		double w1=diff.calc();
-		vars[23][0]=pos+step;
-		double w2=diff.calc();
-		complete=(w2-w1)/((double)2.0*step);
-		delete[]function;
-		delete[]startStr;
-	}
-	else if(line[0]=='(')
-	{
-		if(line[len-1] == ')')
-		{
-		recString1=new char[len-1];
-		strcopy(recString1,&line[1],len-2);
-		}
-		else 
-		{
-			recString1=new char[len];
-			strcopy(recString1,&line[1],len-1);
-		}
-		complete=calculate(recString1,pref,vars);
-		delete[] recString1;
-	}
-	else if((pref->calcType == SCIENTIFIC && line[0]>='A' || line[0]>='G') && line[0]<='Z')
-	{
-
-		complete=vars[(int)line[0]-65][0];
-
-	}
-	else if(line[0] == '\\')
-	{
-		if(len<3)
-			return NAN;
-		if(line[1] == 'b')
-			return (long double)strtoll(&line[2],NULL,2);
-		else if(line[1] == 'o')
-			return (long double)strtoll(&line[2],NULL,8);
-		else if(line[1] == 'c')
-			return (long double)strtoll(&line[2],NULL,10);
-		else if(line[1] == 'h')
-			return (long double)strtoll(&line[2],NULL,16);
-		else return NAN;
-	}
-	else {
-		if(pref->calcType == BASE)
-		{
-			if(pref->base == BIN)
-				return (long double)strtoll(line,NULL,2);
-			else if(pref->base == OCT)
-				return (long double)strtoll(line,NULL,8);
-			else if(pref->base == HEX)
-				return (long double)strtoll(line,NULL,16);
-			else if(pref->base == DEC)
-				return (long double)strtoll(line,NULL,10);
-			
-			
-		}
-		else return(strtold(line,NULL));
-	} 
-	
-	return complete;
 }
 
 
@@ -1204,7 +644,7 @@ int Calculate::split(char* line)
 		return -1;
 //	perror("split: "+QString(line));
 
-	if(bracketFind(line," ") != -1)	//Leeroperation
+	if(bracketFind(line," ") != -1)	//none operation
 	{
 		operation=NONE;
 		var=-1;
@@ -1412,7 +852,7 @@ int Calculate::split(char* line)
 			operation=ACOSH;
 			vertObj=new Calculate(this,&line[5],pref,vars);
 		}
-			else if(strncmp("atanh",line,5) == 0)
+		else if(strncmp("atanh",line,5) == 0)
 		{
 			operation=ATANH;
 			vertObj=new Calculate(this,&line[5],pref,vars);
@@ -1495,27 +935,27 @@ int Calculate::split(char* line)
 	/*	else if(bracketFind(line,"$r(") != -1)		//root operation for calc (operator with arguments)
 	{
 		// syntax: fourth root of nine: root(4,9)
-		operation=ROOT;
-		var=-1;
-		number=NAN;
-		int pos1=bracketFind(line,"$r(");
-		pos1+=3;
-		int pos2=bracketFind(line,",",pos1);
-		if(pos1==-1 || pos2 == -1 || line[len-1]!=')')
-		return (NAN);
+	operation=ROOT;
+	var=-1;
+	number=NAN;
+	int pos1=bracketFind(line,"$r(");
+	pos1+=3;
+	int pos2=bracketFind(line,",",pos1);
+	if(pos1==-1 || pos2 == -1 || line[len-1]!=')')
+	return (NAN);
 			
-		char* recString1=new char[pos2-pos1+1];
-		char* recString2=new char[len-pos2-1];
-		strcopy(recString1,&line[pos1],pos2-pos1);
-		strcopy(recString2,&line[pos2+1],len-pos2-2);
+	char* recString1=new char[pos2-pos1+1];
+	char* recString2=new char[len-pos2-1];
+	strcopy(recString1,&line[pos1],pos2-pos1);
+	strcopy(recString2,&line[pos2+1],len-pos2-2);
 			
-		vertObj=new Calculate(this,recString1,pref,vars);
-		horzObj=new Calculate(this,recString2,pref,vars);
+	vertObj=new Calculate(this,recString1,pref,vars);
+	horzObj=new Calculate(this,recString2,pref,vars);
 		
-		delete[]recString1;
-		delete[]recString2;
-		return 0;
-	}*/
+	delete[]recString1;
+	delete[]recString2;
+	return 0;
+}*/
 	else if(bracketFind(line,"\\d(") != -1)
 	{
 		operation=DIFF;
@@ -1702,7 +1142,7 @@ double Calculate::calc()
 		case TAN:
 			return tan(vertObj->calc()/number);
 		case LG:
-			return log(vertObj->calc())/log(10);
+			return log10(vertObj->calc());
 		case LN:
 			return log(vertObj->calc());
 		case ASIN:
@@ -1748,7 +1188,7 @@ double Calculate::calc()
 		{
 			double savedX=vars[23][0];
 //     Verzweigung:
-			//    
+			//
 //         end
 //          |
 //         NONE - start
@@ -1790,16 +1230,16 @@ double Calculate::calc()
 				line2=line1;
 				line1=new double[num+1];
 				line1[0]=0.0;
-				steps=(int)pow(2,(num-1));
+				steps=(int)pow(2.0,(double)(num-1));
 				for(int c=1; c<=steps; c++)
 				{
-					vars[23][0]=start+((2*c-1)*(end-start))/pow(2,num);
+					vars[23][0]=start+((2*c-1)*(end-start))/pow(2.0,(double)num);
 					line1[0]+=horzObj->calc();
 				}
-				line1[0]=0.5*(line1[0]*(end-start)/pow(2,num-1)+line2[0]);
+				line1[0]=0.5*(line1[0]*(end-start)/pow(2.0,(double)(num-1))+line2[0]);
 			
 				for(int c=2; c<=num+1; c++)
-					line1[c-1]=(pow(4,c-1)*line1[c-2]-line2[c-2])/(pow(4,c-1)-1);
+					line1[c-1]=(pow(4.0,(double)(c-1))*line1[c-2]-line2[c-2])/(pow(4.0,(double)(c-1))-1);
 
 				num++;
 				oldfail=fail;
@@ -1875,12 +1315,16 @@ int Script::split(char*line)
 
 char* Script::parse(char* line)
 {
+	
 	static int semicolonCount=0;
 	if(line==NULL)
 	{
 		semicolonCount=0;
 		return NULL;
 	}
+	
+//	perror(line);
+	
 	int pos1;
 	int len=strlen(line);
 //	perror("parse: "+QString(line));
@@ -1937,6 +1381,14 @@ char* Script::parse(char* line)
 			number=NAN;
 			return NULL;
 		}
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
 		char*recString1=new char[pos2-5];
 		strcopy(recString1,&line[6],pos2-6);
 		vertObj=new Script(this,recString1,pref,vars,eventReciver);
@@ -1961,6 +1413,14 @@ char* Script::parse(char* line)
 		{
 			printError("Invalid usage of for",semicolonCount,eventReciver);
 			operation=SFAIL;
+			return NULL;
+		}
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
 			return NULL;
 		}
 		
@@ -2037,7 +1497,7 @@ char* Script::parse(char* line)
 			vertObj=new Script(this,recString1,pref,vars,eventReciver);
 		else vertObj=NULL;
 		delete[]recString1;
-	//	printError("Strichpunkt gefunden",semicolonCount,eventReciver->eventReciver);
+	//	printError("Strichpunkt gefunden",semicolonCount,eventReciver);
 		semicolonCount++;
 		
 		if(len-pos1>1)
@@ -2195,9 +1655,8 @@ char* Script::parse(char* line)
 		delete[]recString2;
 		return NULL;
 	}
-	else if(bracketFind(line,">") != -1)
+	else if((pos1=bracketFind(line,">")) != -1 && line[pos1+1]!='>')
 	{
-		pos1=bracketFindRev(line,">");
 		operation=SGREATHER;
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1];
@@ -2209,9 +1668,8 @@ char* Script::parse(char* line)
 		delete[]recString2;
 		return NULL;
 	}
-	else if(bracketFind(line,"<") != -1)
+	else if((pos1=bracketFind(line,"<")) != -1 && line[pos1+1]!='<')
 	{
-		pos1=bracketFindRev(line,"<");
 		operation=SLESS;
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1];
@@ -2281,8 +1739,14 @@ char* Script::parse(char* line)
 		eventReciver->numlen[var]=1;
 		return NULL;
 	}
-	else if((pos1=bracketFind(line,"+")) != -1)
+	pos1=0;
+	while((pos1=bracketFind(line,"+",pos1)) != -1)
 	{
+		if(pos1>1 && line[pos1-1]=='e')
+		{
+			pos1++;
+			continue;
+		}
 		operation=SFAIL;
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1];
@@ -2300,8 +1764,14 @@ char* Script::parse(char* line)
 		delete[]recString2;
 		return NULL;
 	}
-	else if((pos1=bracketFind(line,"-")) != -1)
-	{
+	pos1=-1;
+	while((pos1=bracketFindRev(line,"-",pos1)) != -1)
+	{		
+		if(pos1>1 && !(line[pos1-1]>='A' && line[pos1-1]<='Z' || line[pos1-1]>='0' && line[pos1-1]<='9' || line[pos1-1]=='i' || line[pos1-1]==')'||line[pos1-1]==']'|| line[pos1-1]=='!') )
+		{
+			pos1--;
+			continue;
+		}
 		operation=MINUS;
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1];
@@ -2311,30 +1781,186 @@ char* Script::parse(char* line)
 		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
 		delete[]recString1;
 		delete[]recString2;
-		if(vertObj->getOperation()==NONE)
-		{
-			operation=NONE;
-			delete vertObj;
-			delete vertObj2;
-			vertObj=vertObj2=NULL;
-		}
-		else return NULL;
+		return NULL;
 	}
-	if(bracketFind(line,"!") ==0)
+	if((pos1=bracketFind(line,"*")) != -1)
 	{
-		if(len<2)
-		{
-			operation=SFAIL;
-			printError("No argument for ! set",semicolonCount,eventReciver);
-		}
-		else operation=SNOT;
-		char*recString1=new char[len];
-		strcopy(recString1,&line[1],len-1);
+		operation=SFAIL;
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1];
+		if(pos1<1)
+			printError("First operand of * invalid",semicolonCount,eventReciver);
+		else if(len-pos1<2)
+			printError("Second operand of * invalid",semicolonCount,eventReciver);
+		else operation=MULT;
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+1],len-pos1-1);
 		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+			
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"/")) != -1)
+	{
+		operation=SFAIL;
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1];
+		if(pos1<1)
+			printError("First operand of / invalid",semicolonCount,eventReciver);
+		else if(len-pos1<2)
+			printError("Second operand of / invalid",semicolonCount,eventReciver);
+		else operation=DIVIDE;
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+1],len-pos1-1);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+			
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"%")) != -1)
+	{
+		operation=SFAIL;
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1];
+		if(pos1<1)
+			printError("First operand of % invalid",semicolonCount,eventReciver);
+		else if(len-pos1<2)
+			printError("Second operand of % invalid",semicolonCount,eventReciver);
+		else operation=MODULO;
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+1],len-pos1-1);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+			
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}
+	else if(bracketFind(line,">>") != -1)
+	{
+		pos1=bracketFind(line,">>");
+		operation=SFAIL;
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1-1];
+		if(pos1<1)
+			printError("First operand of >> invalid",semicolonCount,eventReciver);
+		else if(len-pos1<3)
+			printError("Second operand of >> invalid",semicolonCount,eventReciver);
+		else operation=RSHIFT;
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+2],len-pos1-2);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}
+	else if(bracketFind(line,"<<") != -1)
+	{
+		pos1=bracketFind(line,"<<");
+		operation=SFAIL;
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1-1];
+		if(pos1<1)
+			printError("First operand of << invalid",semicolonCount,eventReciver);
+		else if(len-pos1<3)
+			printError("Second operand of << invalid",semicolonCount,eventReciver);
+		else operation=LSHIFT;
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+2],len-pos1-2);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"x")) != -1)
+	{
+		operation=SFAIL;
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1];
+		if(pos1<1)
+			printError("First operand of x invalid",semicolonCount,eventReciver);
+		else if(len-pos1<2)
+			printError("Second operand of x invalid",semicolonCount,eventReciver);
+		else operation=XOR;
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+1],len-pos1-1);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+			
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"&")) != -1)
+	{
+		operation=SFAIL;
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1];
+		if(pos1<1)
+			printError("First operand of & invalid",semicolonCount,eventReciver);
+		else if(len-pos1<2)
+			printError("Second operand of & invalid",semicolonCount,eventReciver);
+		else operation=SBAND;
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+1],len-pos1-1);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+			
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"|")) != -1)
+	{
+		operation=SFAIL;
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1];
+		if(pos1<1)
+			printError("First operand of | invalid",semicolonCount,eventReciver);
+		else if(len-pos1<2)
+			printError("Second operand of | invalid",semicolonCount,eventReciver);
+		else operation=SBOR;
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+1],len-pos1-1);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+			
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"!"))!=-1)
+	{
 		vertObj2=vertObj3=horzObj=nextObj=NULL;
+		char*recString1=new char[len];
+		if(pos1<=0)
+		{
+			if(len>1)
+			{
+				operation=SNOT;
+				strcopy(recString1,&line[1],len-1);
+			}
+			else {
+				operation=SFAIL;
+				printError("No argument for ! set",semicolonCount,eventReciver);
+			}
+		}
+		else {
+			operation=SFAK;
+			strcopy(recString1,line,len-1);
+				
+		}
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
 		delete[]recString1;
 		return NULL;
 	}
+
 	else if((pos1=bracketFind(line,"print(")) == 0)
 	{
 //		perror("print");
@@ -2385,6 +2011,14 @@ char* Script::parse(char* line)
 	else if((pos1=bracketFind(line,"sleep(")) == 0)
 	{
 //		perror("sleep");
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
 		operation=SSLEEP;
 		int pos2=bracketFind(line,")");
 		if(pos2<7)
@@ -2418,6 +2052,14 @@ char* Script::parse(char* line)
 
 	else if((pos1=bracketFind(line,"run(")) == 0)
 	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
 		operation=SRUN;
 		
 		if(line[len-1]!=')')
@@ -2437,10 +2079,10 @@ char* Script::parse(char* line)
 		var=-1;
 		for(int c=0; c<eventReciver->subprogramPath.GetLen(); c++)
 			if(strcmp(eventReciver->subprogramPath[c],recString1)==0)
-			{
-				var=c;
-				break;
-			}
+		{
+			var=c;
+			break;
+		}
 		if(var==-1)
 		{
 			printError("File for run does not exist",semicolonCount,eventReciver);
@@ -2449,6 +2091,58 @@ char* Script::parse(char* line)
 			return NULL;
 		}
 		delete[]recString1;
+		return NULL;
+	}
+	else if(bracketFind(line,"\\d(") != -1)
+	{
+		operation=DIFF;
+		var=-1;
+		int pos1=bracketFind(line,",",3);
+		if(pos1<0 || pos1>len-2)
+		{
+			printError("Invalid use if d/dx",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char* function=new char[pos1-2];
+		char* startStr=new char[len-pos1-1];
+		strcopy(function,&line[3],pos1-3);
+		strcopy(startStr,&line[pos1+1],len-pos1-2);
+
+
+		horzObj=new Script(this,function,pref,vars,eventReciver);
+		vertObj=new Script(this,startStr,pref,vars,eventReciver);
+		delete[]function;
+		delete[]startStr;
+		return NULL;
+	}
+	else if(bracketFind(line,"\\i(") != -1)
+	{
+		operation=INTEGRAL;
+		var=-1;
+		int pos1=bracketFind(line,",",3);
+
+		int pos2=bracketFind(line,",",pos1+1);
+		if(pos1==-1 || pos2==-1)
+		{
+			printError("Invalid use if integ",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+
+		char *function=new char[pos1-2];
+		char *startStr=new char[pos2-pos1];
+		char *endStr=new char[len-pos2-1];
+
+		strcopy(function,&line[3],pos1-3);
+		strcopy(startStr,&line[pos1+1],pos2-pos1-1);
+		strcopy(endStr,&line[pos2+1],len-pos2-2);
+		horzObj=new Calculate(this,function,pref,vars);
+		vertObj=new Script(this,startStr,pref,vars,eventReciver);
+		vertObj2=new Script(this,endStr,pref,vars,eventReciver);
+		delete[]function;
+		delete[]startStr;
+		delete[]endStr;
 		return NULL;
 	}
 	else if(bracketFind(line,"getline") ==0)
@@ -2526,6 +2220,194 @@ char* Script::parse(char* line)
 		vertObj=vertObj2=vertObj3=horzObj=nextObj=NULL;
 		return NULL;
 	}
+	else if(line[0]>='a' && line[0]<='z') 
+	{
+		horzObj=vertObj2=vertObj3=nextObj=NULL;
+		if(pref->angle==DEG)
+			number=180.0/(long double)PI;
+		else if(pref->angle==RAD)
+			number=1.0;
+		else number=200.0/(long double)PI;
+		if(strncmp("asinh",line,5) == 0)
+		{
+			operation=ASINH;
+			vertObj=new Script(this,&line[5],pref,vars,eventReciver);
+		}
+		else if(strncmp("acosh",line,5) == 0)
+		{
+			operation=ACOSH;
+			vertObj=new Script(this,&line[5],pref,vars,eventReciver);
+		}
+		else if(strncmp("atanh",line,5) == 0)
+		{
+			operation=ATANH;
+			vertObj=new Script(this,&line[5],pref,vars,eventReciver);
+		}
+		else if(strncmp("asin",line,4) == 0)
+		{
+			operation=ASIN;
+			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+		}
+		else if(strncmp("acos",line,4) == 0)
+		{
+			operation=ACOS;
+			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+		}
+		else if(strncmp("atan",line,4) == 0)
+		{
+			operation=ATAN;
+			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+		}
+		else if(strncmp("sinh",line,4) == 0)
+		{
+			operation=SINH;
+			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+		}
+		else if(strncmp("cosh",line,4) == 0)
+		{
+			operation=COSH;
+			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+		}
+		else if(strncmp("tanh",line,4) == 0)
+		{
+			operation=TANH;
+			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+		}
+		else if(strncmp("sin",line,3) == 0)
+		{
+			operation=SIN;
+			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+		}
+		else if(strncmp("cos",line,3) == 0)
+		{
+			operation=COS;
+			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+		}
+		else if(strncmp("tan",line,3) == 0)
+		{
+			operation=TAN;
+			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+		}
+		else if(strncmp("log",line,3) == 0)
+		{
+			operation=LG;
+			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+		}
+		else if(strncmp("ln",line,2) == 0)
+		{
+			operation=LN;
+			vertObj=new Script(this,&line[2],pref,vars,eventReciver);
+		}
+		else if(strncmp(line,"sqrt",4) == 0)
+		{
+			operation=ROOT;
+			vertObj2=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj=new Script(this,"2",pref,vars,eventReciver);
+		}
+		else if(strncmp(line,"curt",4) == 0)
+		{
+			operation=ROOT;
+			vertObj2=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj=new Script(this,"3",pref,vars,eventReciver);
+		}
+		else if(strncmp(line,"real",4) == 0)
+		{
+			operation=SREAL;
+			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj2=new Script(this,"3",pref,vars,eventReciver);
+		}
+		else if(strncmp(line,"imag",4) == 0)
+		{
+			operation=SIMAG;
+			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+		}
+		else if(strncmp(line,"abs",3) == 0)
+		{
+			operation=SABS;
+			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+		}
+		else if(strncmp(line,"arg",3) == 0)
+		{
+			operation=SARG;
+			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+		}
+		else if(strncmp(line,"conj",4) == 0)
+		{
+			operation=SCONJ;
+			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+		}
+		else if(strncmp(line,"i",1) == 0)
+		{
+			operation=SVALUE;
+			value.type=NFLOAT;
+			value.fval=0.0;
+			value.cfval=Complex(0.0,1.0);
+			return NULL;
+		}
+		else{
+			printError("Unknown command",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		return NULL;
+	}
+	else if(bracketFind(line,"~")==0)
+	{
+		vertObj2=vertObj3=horzObj=nextObj=NULL;
+		char*recString1=new char[len];
+		if(len<2)
+		{
+			operation=SFAIL;
+			printError("No argument for ~ set",semicolonCount,eventReciver);
+		}
+		else operation=SBNOT;
+		
+		strcopy(recString1,&line[1],len-1);
+		
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		delete[]recString1;
+		return NULL;
+	}
+	else if((pos1=bracketFindRev(line,"^")) != -1)
+	{
+		operation=SFAIL;
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1];
+		if(pos1<1)
+			printError("First operand of ^ invalid",semicolonCount,eventReciver);
+		else if(len-pos1<2)
+			printError("Second operand of ^ invalid",semicolonCount,eventReciver);
+		else operation=POW;
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+1],len-pos1-1);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+			
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}
+	else if(bracketFind(line,"$r") != -1)
+	{
+		pos1=bracketFindRev(line,"$r")-1;
+		operation=SFAIL;
+		if(pos1<1)
+			printError("First operand of root invalid",semicolonCount,eventReciver);
+		else if(len-pos1<3)
+			printError("Second operand of root invalid",semicolonCount,eventReciver);
+		else operation=ROOT;
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1-1];
+
+		
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+2],len-pos1-2);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}
 	else if(line[0] == '(' && (line[len-1]==')' || strncmp(&line[1],"float",5)==0 || strncmp(&line[1],"int",3)==0 || strncmp(&line[1],"bool",4)==0 || strncmp(&line[1],"string",6)==0))
 	{
 //		perror("bracket");
@@ -2599,10 +2481,12 @@ char* Script::parse(char* line)
 			return recString2;
 		}
 	}
-	else if(line[0]>='A' && line[0]<='Z' &&len==1)
+	else if((pref->calcType == SCIENTIFIC && line[0]>='A' || line[0]>='G') && line[0]<='Z'&& len==1 || strncmp(line,"$A",2)==0 )
 	{
 		operation=SVAR;
-		var=line[0]-65;
+		if(strncmp(line,"$A",2)==0)
+			var=26;
+		else var=line[0]-65;
 		eventReciver->numlen[var]=1;
 		return NULL;
 	}
@@ -2662,29 +2546,80 @@ char* Script::parse(char* line)
 		strcopy(value.cval,&line[1],len-2);
 		return NULL;
 	}
-	else {
-		char*end;
-		long long ret=strtoll(line,&end,10);
-		if(end[0]==(char)0)
+	else if(line[0] == '\\')
+	{
+		char*err;
+		if(len<3)
 		{
-//			perror("integer: "+QString(line));
-			operation=SVALUE;
-			value.fval=NAN;
-			value.type=NINT;
-			value.ival=ret;
-			value.fval=(long double)ret;
+			printError("Invalid number",semicolonCount,eventReciver);
+			operation=SFAIL;
 			return NULL;
+		}
+
+		operation=SVALUE;
+		value.type=NINT;
+
+		if(line[1] == 'b')
+			value.ival=strtoll(&line[2],&err,2);
+		else if(line[1] == 'o')
+			value.ival=strtoll(&line[2],&err,8);
+		else if(line[1] == 'c')
+			value.ival=strtoll(&line[2],&err,10);
+		else if(line[1] == 'h')
+			value.ival=strtoll(&line[2],&err,16);
+		else {
+			printError("Invalid number",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		if(*err!=(char)0)
+		{
+			printError("Invalid number",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		value.fval=(long double)value.ival;
+		
+		
+		return NULL;
+	}
+	else {
+		
+		operation=SVALUE;
+		char*err;
+		
+		if(pref->calcType == BASE)
+		{
+			value.type=NINT;
+			if(pref->base == BIN)
+				value.ival=strtoll(line,&err,2);
+			else if(pref->base == OCT)
+				value.ival=strtoll(line,&err,8);
+			else if(pref->base == HEX)
+				value.ival=strtoll(line,&err,16);
+			else if(pref->base == DEC)
+				value.ival=strtoll(line,&err,10);
+
+			value.fval=(long double)value.ival;
 		}
 		else
 		{
-			operation=NONE;									//No script operation; use Calculate
-			horzObj=new Calculate((Math*)this,line,pref,vars);
-
-			if(horzObj->getOperation()==NONE)
-				if(isnan(horzObj->calc()))
-					printError("Unknown command",semicolonCount,eventReciver);
-			
-
+			value.ival=strtoll(line,&err,10);
+			if(*err!=(char)0)
+			{
+				value.fval=strtold(line,&err);
+				value.cfval=Complex(value.fval,0.0);
+				value.type=NFLOAT;
+			}
+			else {
+				value.type=NINT;
+				value.fval=(long double)value.ival;
+			}
+		}
+		if(*err!=(char)0)
+		{
+			printError("Invalid number",semicolonCount,eventReciver);
+			operation=SFAIL;
 			return NULL;
 		}
 	}
@@ -2721,9 +2656,21 @@ double Script::calcHorzObj()
 Number Script::exec()
 {
 
-//	fprintf(stderr,"exec: %i",operation);
+	//	perror("exec: "+QString::number(operation));
 	if(eventReciver->status)
 	{
+		
+	/*	if(eventReciver->exit)
+		{
+			eventReciver->exit=false;
+			eventReciver->status=0;
+			pthread_exit(0);
+		}
+		*/	if(eventReciver->usleep)
+		{
+			eventReciver->usleep=false;
+			usleep(eventReciver->sleepTime);
+		}
 		if(eventReciver->bbreak || eventReciver->bcontinue)
 			return value;
 		else eventReciver->status=0;
@@ -2743,10 +2690,6 @@ Number Script::exec()
 		}
 		case SBRACKET:
 			return vertObj->exec();
-		case NONE:
-			value.type=NFLOAT;
-			value.fval=horzObj->calc();
-			return value;
 		case SVALUE:
 			return value;
 		case SVAR:
@@ -2762,7 +2705,7 @@ Number Script::exec()
 			else if(value.type==NINT)
 				index=value.ival;
 			else if(value.type==NFLOAT)
-				index=(int)value.fval;
+				index=(int)value.cfval.real();
 			if(index<0)
 				index=0;
 			if(index>=eventReciver->numlen[var])
@@ -2781,7 +2724,7 @@ Number Script::exec()
 			else if(value.type==NINT)
 				index=value.ival;
 			else if(value.type==NFLOAT)
-				index=(int)value.fval;
+				index=(int)value.cfval.real();
 			if(index<0)
 				index=0;
 			
@@ -2791,7 +2734,7 @@ Number Script::exec()
 			else if(value.type==NINT)
 				index2=value.ival;
 			else if(value.type==NFLOAT)
-				index2=(int)value.fval;
+				index2=(int)value.cfval.real();
 			if(index2<0)
 				index2=0;
 			if(index>=eventReciver->numlen[var])
@@ -2818,19 +2761,19 @@ Number Script::exec()
 			if(n1.type==NFLOAT)
 			{
 				if(n2.type==NFLOAT)
-					value.bval=(n1.fval==n2.fval);
+					value.bval=(n1.cfval==n2.cfval);
 				else if(n2.type==NBOOL)
-					value.bval=(n1.fval==(long double)n2.bval);
+					value.bval=(n1.cfval.real()==(long double)n2.bval);
 				else if(n2.type==NINT)
-					value.bval=(n1.fval==(long double)n2.ival);
+					value.bval=(n1.cfval.real()==(long double)n2.ival);
 				else value.bval=false;
 			}
 			else if(n2.type==NFLOAT)
 			{
 				if(n1.type==NBOOL)
-					value.bval=(n2.fval==(long double)n1.bval);
+					value.bval=(n2.cfval.real()==(long double)n1.bval);
 				else if(n1.type==NINT)
-					value.bval=(n2.fval==(long double)n1.ival);
+					value.bval=(n2.cfval.real()==(long double)n1.ival);
 				else value.bval=false;
 			}
 			else if(n1.type==NINT)
@@ -2838,7 +2781,7 @@ Number Script::exec()
 				if(n2.type==NINT)
 					value.bval=(n1.ival==n2.ival);
 				else if(n2.type==NBOOL)
-						value.bval=(n1.ival==(long long)n2.bval);
+					value.bval=(n1.ival==(long long)n2.bval);
 				else value.bval=false;
 			}
 			else if(n2.type==NINT)
@@ -2873,7 +2816,7 @@ Number Script::exec()
 				if(value.ival)
 					vertObj2->exec();
 			else if(value.type==NFLOAT)
-				if(value.fval!=0.0)
+				if(value.cfval.real()!=0.0)
 					vertObj2->exec();
 			if(nextObj==NULL)
 				return value;
@@ -2885,15 +2828,15 @@ Number Script::exec()
 			if(value.type==NBOOL)
 				if(value.bval)
 					vertObj2->exec();
-				else vertObj3->exec();
+			else vertObj3->exec();
 			else if(value.type==NINT)
 				if(value.ival)
 					vertObj2->exec();
-				else vertObj3->exec();
+			else vertObj3->exec();
 			else if(value.type==NFLOAT)
-				if(value.fval!=0.0)
+				if(value.cfval.real()!=0.0)
 					vertObj2->exec();
-				else vertObj3->exec();
+			else vertObj3->exec();
 			else vertObj3->exec();
 			
 			if(nextObj==NULL)
@@ -2912,7 +2855,7 @@ Number Script::exec()
 					if(value.ival==0)
 						break;
 				else if(value.type==NFLOAT)
-					if(value.fval==0.0)
+					if(value.cfval.real()==0.0)
 						break;
 				else break;
 				vertObj2->exec();
@@ -2949,7 +2892,7 @@ Number Script::exec()
 						if(value.ival==0)
 							break;
 					else if(value.type==NFLOAT)
-						if(value.fval==0.0)
+						if(value.cfval.real()==0.0)
 							break;
 					else break;
 					horzObj->exec();
@@ -2980,7 +2923,7 @@ Number Script::exec()
 						if(value.ival==0)
 							break;
 					else if(value.type==NFLOAT)
-						if(value.fval==0.0)
+						if(value.cfval.real()==0.0)
 							break;
 					else break;
 					horzObj->exec();
@@ -3011,7 +2954,8 @@ Number Script::exec()
 
 			if(value.type==NINT)
 				value.fval=(long double)value.ival;
-			else if(value.type==NFLOAT);
+			else if(value.type==NFLOAT)
+				value.fval=value.cfval.real();
 			else if(value.type==NCHAR)
 				value.fval=(long double)value.cval[0];
 			else if(value.type==NBOOL)
@@ -3024,7 +2968,7 @@ Number Script::exec()
 				else if(nIndex.type==NINT)
 					index=nIndex.ival;
 				else if(nIndex.type==NFLOAT)
-					index=(int)nIndex.fval;
+					index=(int)nIndex.cfval.real();
 				if(index<0)
 					index=0;
 			}
@@ -3052,7 +2996,7 @@ Number Script::exec()
 				else if(nIndex.type==NINT)
 					index2=nIndex.ival;
 				else if(nIndex.type==NFLOAT)
-					index2=(int)nIndex.fval;
+					index2=(int)nIndex.cfval.real();
 				if(index2<0)
 					index2=0;
 				if(index2<(signed)strlen(eventReciver->vars[var][index].cval))
@@ -3074,7 +3018,7 @@ Number Script::exec()
 						else memcpy(&(eventReciver->vars[var][index].cval[index2]),value.cval,slen2);;
 					}
 					else if(value.type==NFLOAT)
-						eventReciver->vars[var][index].cval[index2]=(char)value.fval;
+						eventReciver->vars[var][index].cval[index2]=(char)value.cfval.real();
 				}
 				else {
 					int slen=strlen(eventReciver->vars[var][index].cval);
@@ -3091,7 +3035,7 @@ Number Script::exec()
 					if(value.type==NINT)
 						newchar[index2]=(char)value.ival;
 					else if(value.type==NFLOAT)
-						newchar[index2]=(char)value.fval;
+						newchar[index2]=(char)value.cfval.real();
 					else if(value.type==NBOOL)
 						newchar[index2]=(char)value.bval;
 					else if(value.type==NCHAR)
@@ -3102,7 +3046,7 @@ Number Script::exec()
 			}
 			else 
 			{
-				vars[var][index]=value.fval;
+				vars[var][index]=value.cfval.real();
 				if(eventReciver->vars[var][index].type==NCHAR)
 				{
 					delete[] eventReciver->vars[var][index].cval;
@@ -3121,19 +3065,29 @@ Number Script::exec()
 		}
 		case SPRINT:
 		{
+			char*eventContent;
 			value=vertObj->exec();
 			switch(value.type)
 			{
 				case NFLOAT:
 				{
-					char*printString=new char[12];
-					sprintf(printString,"%%.%iLg",pref->outputLength);
-					fprintf(stderr,printString,value.fval);
-					delete[]printString;
+					if(value.cfval.imag()==0.0)
+					{
+						eventContent=(char*)malloc(42);
+						fprintf(stderr,"%.*Lg",pref->outputLength,real(value.cfval));
+					}
+					else {
+						eventContent=(char*)malloc(84);
+						if(value.cfval.imag()>0.0)
+							fprintf(stderr,"%.*Lg+%.*Lgi",pref->outputLength,real(value.cfval),pref->outputLength,imag(value.cfval));
+						else fprintf(stderr,"%.*Lg%.*Lgi",pref->outputLength,real(value.cfval),pref->outputLength,imag(value.cfval));
+					}
+
 					break;
 				}
 				case NINT:
 				{
+					eventContent=(char*)malloc(30);
 					fprintf(stderr,"%lli",value.ival);
 					break;
 				}
@@ -3144,7 +3098,6 @@ Number Script::exec()
 					break;
 				case NCHAR:
 				{
-					//printf(value.cval);
 					fprintf(stderr,value.cval);
 					break;
 				}
@@ -3152,7 +3105,6 @@ Number Script::exec()
 					fprintf(stderr,"none");
 					break;
 			}
-
 			if(nextObj==NULL)
 				return value;
 			else return nextObj->exec();
@@ -3165,19 +3117,19 @@ Number Script::exec()
 			if(n1.type==NFLOAT)
 			{
 				if(n2.type==NFLOAT)
-					value.bval=(n1.fval!=n2.fval);
+					value.bval=(n1.cfval!=n2.cfval);
 				else if(n2.type==NBOOL)
-					value.bval=(n1.fval!=(long double)n2.bval);
+					value.bval=(n1.cfval.real()!=(long double)n2.bval);
 				else if(n2.type==NINT)
-					value.bval=(n1.fval!=(long double)n2.ival);
+					value.bval=(n1.cfval.real()!=(long double)n2.ival);
 				else value.bval=true;
 			}
 			else if(n2.type==NFLOAT)
 			{
 				if(n1.type==NBOOL)
-					value.bval=(n2.fval!=(long double)n1.bval);
+					value.bval=(n2.cfval.real()!=(long double)n1.bval);
 				else if(n1.type==NINT)
-					value.bval=(n2.fval!=(long double)n1.ival);
+					value.bval=(n2.cfval.real()!=(long double)n1.ival);
 				else value.bval=true;
 			}
 			else if(n1.type==NINT)
@@ -3220,7 +3172,7 @@ Number Script::exec()
 				value.bval=!n1.ival;
 			else if(n1.type==NFLOAT)
 			{
-				if(n1.fval==0)
+				if(n1.cfval.real()==0.0)
 					value.bval=true;
 				else value.bval=false;
 			}
@@ -3242,12 +3194,13 @@ Number Script::exec()
 			}
 			else if(n1.type==NFLOAT)
 			{
-				if(n1.fval==0)
+				if(n1.cfval.real()==0)
 					n1.bval=false;
 				else n1.bval=true;
 				n1.type=NBOOL;
 			}
-			else {
+			else 
+			{
 				n1.bval=false;
 				n1.type=NBOOL;
 			}
@@ -3260,7 +3213,7 @@ Number Script::exec()
 			}
 			else if(n2.type==NFLOAT)
 			{
-				if(n2.fval==0)
+				if(n2.cfval.real()==0.0)
 					n2.bval=false;
 				else n2.bval=true;
 				n2.type=NBOOL;
@@ -3287,7 +3240,7 @@ Number Script::exec()
 			}
 			else if(n1.type==NFLOAT)
 			{
-				if(n1.fval==0)
+				if(n1.cfval.real()==0.0)
 					n1.bval=false;
 				else n1.bval=true;
 				n1.type=NBOOL;
@@ -3305,7 +3258,7 @@ Number Script::exec()
 			}
 			else if(n2.type==NFLOAT)
 			{
-				if(n2.fval==0)
+				if(n2.cfval.real()==0.0)
 					n2.bval=false;
 				else n2.bval=true;
 				n2.type=NBOOL;
@@ -3322,87 +3275,58 @@ Number Script::exec()
 		{
 			value=vertObj->exec();
 			Number n=vertObj2->exec();
-			if(value.type==NINT)
+			if(value.type==NCHAR && n.type==NCHAR)
 			{
-				if(n.type==NINT)
-					value.ival+=n.ival;
-				else if(n.type==NFLOAT)
-				{
-					value.fval=(long double)value.ival+n.fval;
-					value.type=NFLOAT;
-				}
-				else if(n.type==NCHAR)
-					value.ival+=(long long)n.cval[0];
-				else if(n.type==NBOOL)
-					value.ival+=(long long)n.bval;
-				else {
-					value.fval=NAN;
-					value.type=NNONE;
-				}
-			}
-			else if(value.type==NFLOAT)
-			{
-				if(n.type==NINT)
-					value.fval+=(long double)n.ival;
-				else if(n.type==NFLOAT)
-					value.fval+=n.fval;
-				else if(n.type==NCHAR)
-					value.fval+=(long double)n.cval[0];
-				else if(n.type==NBOOL)
-					value.fval+=(long double)n.bval;
-				else {
-					value.fval=NAN;
-					value.type=NNONE;
-				}
-			}
-			else if(value.type==NCHAR)
-			{
-				if(n.type==NINT)
-					value.cval[0]+=(char)n.ival;
-				else if(n.type==NFLOAT)
-					value.cval[0]+=(char)n.fval;
-				else if(n.type==NCHAR)
-				{
-					int strlen1=strlen(value.cval);
-					int strlen2=strlen(n.cval);
-					char*newstring=new char[strlen1+strlen2+1];
-					memcpy(newstring,value.cval,strlen1);
-					memcpy(&newstring[strlen1],n.cval,strlen2+1);
-					delete[] value.cval;
-					value.cval=newstring;
-				}
-				else if(n.type==NBOOL)
-					value.cval[0]+=(char)n.bval;
-				else {
-					value.fval=NAN;
-					value.type=NNONE;
-				}
-			}
-			else if(value.type==NBOOL)
-			{
-				if(n.type==NINT)
-				{
-					value.type=NINT;
-					value.ival=(long long)value.bval+n.ival;
-				}
-				else if(n.type==NFLOAT)
-				{
-					value.fval=(long double)value.bval+n.fval;
-					value.type=NFLOAT;
-				}
-				else if(n.type==NCHAR)
-					value.bval+=(bool)n.cval[0];
-				else if(n.type==NBOOL)
-					value.bval+=n.bval;
-				else {
-					value.fval=NAN;
-					value.type=NNONE;
-				}
-				value.bval=!(!value.bval);
-			}
-			else {
+				int strlen1=strlen(value.cval);
+				int strlen2=strlen(n.cval);
+				char*newstring=new char[strlen1+strlen2+1];
+				memcpy(newstring,value.cval,strlen1);
+				memcpy(&newstring[strlen1],n.cval,strlen2+1);
+				delete[] value.cval;
+				value.cval=newstring;
 				value.fval=NAN;
-				value.type=NNONE;
+				return value;
+			}
+			
+			switch(value.type)
+			{
+				case NBOOL:
+					value.ival=(long long)value.bval; value.type=NINT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+			switch(n.type)
+			{
+				case NBOOL:
+					n.ival=(long long)n.bval; n.type=NINT; break;
+				case NNONE:
+				case NCHAR:
+					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
+			}
+			
+			switch(value.type)
+			{
+				case NINT:
+					switch(n.type)
+					{
+						case NINT:
+							value.ival+=n.ival;	break;
+							break;
+						case NFLOAT:
+							value.cfval=Complex((long double)value.ival,0.0)+n.cfval; value.type=NFLOAT; break;
+					}
+					break;
+				case NFLOAT:
+					switch(n.type)
+					{
+						case NINT:
+							value.cfval+=Complex((long double)n.ival,0.0);	break;
+
+						case NFLOAT:
+							value.cfval+=n.cfval; break;
+					}
+					break;
 			}
 			switch(value.type)
 			{
@@ -3421,79 +3345,46 @@ Number Script::exec()
 		{
 			value=vertObj->exec();
 			Number n=vertObj2->exec();
-			if(value.type==NINT)
+			
+			switch(value.type)
 			{
-				if(n.type==NINT)
-					value.ival-=n.ival;
-				else if(n.type==NFLOAT)
-				{
-					value.fval=(long double)value.ival-n.fval;
-					value.type=NFLOAT;
-				}
-				else if(n.type==NCHAR)
-					value.ival-=(long long)n.cval[0];
-				else if(n.type==NBOOL)
-					value.ival-=(long long)n.bval;
-				else {
-					value.fval=NAN;
-					value.type=NNONE;
-				}
+				case NBOOL:
+					value.ival=(long long)value.bval; value.type=NINT; break;
+				case NNONE:
+				case NCHAR:
+					value.fval=NAN; value.type=NFLOAT; break;
 			}
-			else if(value.type==NFLOAT)
+			switch(n.type)
 			{
-				if(n.type==NINT)
-					value.fval-=(long double)n.ival;
-				else if(n.type==NFLOAT)
-					value.fval-=n.fval;
-				else if(n.type==NCHAR)
-					value.fval-=(long double)n.cval[0];
-				else if(n.type==NBOOL)
-					value.fval-=(long double)n.bval;
-				else {
-					value.fval=NAN;
-					value.type=NNONE;
-				}
+				case NBOOL:
+					n.ival=(long long)n.bval; n.type=NINT; break;
+				case NNONE:
+				case NCHAR:
+					n.fval=NAN; n.type=NFLOAT; break;
 			}
-			else if(value.type==NCHAR)
+			
+			switch(value.type)
 			{
-				if(n.type==NINT)
-					value.cval[0]-=(char)n.ival;
-				else if(n.type==NFLOAT)
-					value.cval[0]-=(char)n.fval;
-				else if(n.type==NCHAR)
-					value.cval[0]-=n.cval[0];
-				else if(n.type==NBOOL)
-					value.cval[0]-=(char)n.bval;
-				else {
-					value.fval=NAN;
-					value.type=NNONE;
-				}
-			}
-			else if(value.type==NBOOL)
-			{
-				if(n.type==NINT)
-				{
-					value.type=NINT;
-					value.ival=(long long)value.bval-n.ival;
-				}
-				else if(n.type==NFLOAT)
-				{
-					value.type=NFLOAT;
-					value.fval=(float)value.bval-n.fval;
-				}
-				else if(n.type==NCHAR)
-					value.bval-=(bool)n.cval[0];
-				else if(n.type==NBOOL)
-					value.bval-=n.bval;
-				else {
-					value.fval=NAN;
-					value.type=NNONE;
-				}
-				value.bval=!(!value.bval);
-			}
-			else {
-				value.fval=NAN;
-				value.type=NNONE;
+				case NINT:
+					switch(n.type)
+					{
+						case NINT:
+							value.ival-=n.ival;	break;
+							break;
+						case NFLOAT:
+							value.cfval=Complex((long double)value.ival,0.0)-n.cfval; value.type=NFLOAT; break;
+					}
+					break;
+				case NFLOAT:
+					switch(n.type)
+					{
+						case NINT:
+							value.cfval-=Complex((long double)n.ival,0.0);	break;
+
+						case NFLOAT:
+							value.cfval-=n.cfval; break;
+					}
+					break;
 			}
 			switch(value.type)
 			{
@@ -3508,6 +3399,93 @@ Number Script::exec()
 			}
 			return value;
 		}
+		case MULT:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.ival=(long long)value.bval; value.type=NINT; break;
+				case NNONE:
+				case NCHAR:
+					value.fval=NAN; value.type=NFLOAT; break;
+			}
+			switch(n.type)
+			{
+				case NBOOL:
+					n.ival=(long long)n.bval; n.type=NINT; break;
+				case NNONE:
+				case NCHAR:
+					n.fval=NAN; n.type=NFLOAT; break;
+			}
+			if(value.type==NINT && n.type==NINT)
+			{
+				value.ival*=n.ival;
+				value.fval=(long double)value.ival;
+			}
+			else if(value.type==NFLOAT && n.type==NFLOAT)
+				value.cfval*=n.cfval;
+			else if(value.type==NFLOAT && n.type==NINT)
+				value.cfval*=Complex((long double)n.ival,0.0);
+			else if(value.type==NINT && n.type==NFLOAT)
+			{
+				value.cfval=Complex((long double)value.ival,0.0)*n.cfval;
+				value.type=NFLOAT;
+			}
+
+			
+			return value;
+		}
+		case DIVIDE:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.ival=(long long)value.bval; value.type=NINT; break;
+				case NNONE:
+				case NCHAR:
+					value.fval=NAN; value.type=NFLOAT; break;
+			}
+			switch(n.type)
+			{
+				case NBOOL:
+					n.ival=(long long)n.bval; n.type=NINT; break;
+				case NNONE:
+				case NCHAR:
+					n.fval=NAN; n.type=NFLOAT; break;
+			}
+			if(value.type==NINT && n.type==NINT)
+			{
+				if(n.ival==0)
+				{
+					value.fval=NAN;
+					value.type=NNONE;
+				}
+				else {
+					value.fval=(long double)value.ival / (long double)n.ival;
+					value.ival=(long long)value.fval;
+					if((long double)value.ival != value.fval)
+					{
+						value.type=NFLOAT;
+						value.cfval=Complex(value.fval,0.0);
+					}
+				}
+			}
+			else if(value.type==NFLOAT && n.type==NFLOAT)
+				value.cfval/=n.cfval;
+			else if(value.type==NFLOAT && n.type==NINT)
+				value.cfval/=Complex((long double)n.ival,0.0);
+			else if(value.type==NINT && n.type==NFLOAT)
+			{
+				value.cfval=Complex((long double)value.ival,0.0)/n.cfval;
+				value.type=NFLOAT;
+			}
+
+			return value;
+		}
 		case SLESS:
 		{
 			value.type=NBOOL;
@@ -3516,19 +3494,23 @@ Number Script::exec()
 			if(n1.type==NFLOAT)
 			{
 				if(n2.type==NFLOAT)
-					value.bval=(n1.fval<n2.fval);
+				{
+					if(n1.cfval.imag()==0.0 && n2.cfval.imag()==0.0)
+						value.bval=(n1.cfval.real()<n2.cfval.real());
+					else value.bval=(abs(n1.cfval)<abs(n2.cfval));
+				}
 				else if(n2.type==NBOOL)
-					value.bval=(n1.fval<(long double)n2.bval);
+					value.bval=(n1.cfval.real()<(long double)n2.bval);
 				else if(n2.type==NINT)
-					value.bval=(n1.fval<(long double)n2.ival);
+					value.bval=(n1.cfval.real()<(long double)n2.ival);
 				else value.bval=false;
 			}
 			else if(n2.type==NFLOAT)
 			{
 				if(n1.type==NBOOL)
-					value.bval=(n2.fval>(long double)n1.bval);
+					value.bval=(n2.cfval.real()>(long double)n1.bval);
 				else if(n1.type==NINT)
-					value.bval=(n2.fval>(long double)n1.ival);
+					value.bval=(n2.cfval.real()>(long double)n1.ival);
 				else value.bval=false;
 			}
 			else if(n1.type==NINT)
@@ -3567,19 +3549,23 @@ Number Script::exec()
 			if(n1.type==NFLOAT)
 			{
 				if(n2.type==NFLOAT)
-					value.bval=(n1.fval>n2.fval);
+				{
+					if(n1.cfval.imag()==0.0 && n2.cfval.imag()==0.0)
+						value.bval=(n1.cfval.real()>n2.cfval.real());
+					else value.bval=(abs(n1.cfval)>abs(n2.cfval));
+				}
 				else if(n2.type==NBOOL)
-					value.bval=(n1.fval>(long double)n2.bval);
+					value.bval=(n1.cfval.real()>(long double)n2.bval);
 				else if(n2.type==NINT)
-					value.bval=(n1.fval>(long double)n2.ival);
+					value.bval=(n1.cfval.real()>(long double)n2.ival);
 				else value.bval=false;
 			}
 			else if(n2.type==NFLOAT)
 			{
 				if(n1.type==NBOOL)
-					value.bval=(n2.fval<(long double)n1.bval);
+					value.bval=(n2.cfval.real()<(long double)n1.bval);
 				else if(n1.type==NINT)
-					value.bval=(n2.fval<(long double)n1.ival);
+					value.bval=(n2.cfval.real()<(long double)n1.ival);
 				else value.bval=false;
 			}
 			else if(n1.type==NINT)
@@ -3618,19 +3604,23 @@ Number Script::exec()
 			if(n1.type==NFLOAT)
 			{
 				if(n2.type==NFLOAT)
-					value.bval=(n1.fval<=n2.fval);
+				{
+					if(n1.cfval.imag()==0.0 && n2.cfval.imag()==0.0)
+						value.bval=(n1.cfval.real()<=n2.cfval.real());
+					else value.bval=(abs(n1.cfval)<=abs(n2.cfval));
+				}
 				else if(n2.type==NBOOL)
-					value.bval=(n1.fval<=(long double)n2.bval);
+					value.bval=(n1.cfval.real()<=(long double)n2.bval);
 				else if(n2.type==NINT)
-					value.bval=(n1.fval<=(long double)n2.ival);
+					value.bval=(n1.cfval.real()<=(long double)n2.ival);
 				else value.bval=false;
 			}
 			else if(n2.type==NFLOAT)
 			{
 				if(n1.type==NBOOL)
-					value.bval=(n2.fval>=(long double)n1.bval);
+					value.bval=(n2.cfval.real()>=(long double)n1.bval);
 				else if(n1.type==NINT)
-					value.bval=(n2.fval>=(long double)n1.ival);
+					value.bval=(n2.cfval.real()>=(long double)n1.ival);
 				else value.bval=false;
 			}
 			else if(n1.type==NINT)
@@ -3669,19 +3659,23 @@ Number Script::exec()
 			if(n1.type==NFLOAT)
 			{
 				if(n2.type==NFLOAT)
-					value.bval=(n1.fval>=n2.fval);
+				{
+					if(n1.cfval.imag()==0.0 && n2.cfval.imag()==0.0)
+						value.bval=(n1.cfval.real()>=n2.cfval.real());
+					else value.bval=(abs(n1.cfval)>=abs(n2.cfval));
+				}
 				else if(n2.type==NBOOL)
-					value.bval=(n1.fval>=(long double)n2.bval);
+					value.bval=(n1.cfval.real()>=(long double)n2.bval);
 				else if(n2.type==NINT)
-					value.bval=(n1.fval>=(long double)n2.ival);
+					value.bval=(n1.cfval.real()>=(long double)n2.ival);
 				else value.bval=false;
 			}
 			else if(n2.type==NFLOAT)
 			{
 				if(n1.type==NBOOL)
-					value.bval=(n2.fval<=(long double)n1.bval);
+					value.bval=(n2.cfval.real()<=(long double)n1.bval);
 				else if(n1.type==NINT)
-					value.bval=(n2.fval<=(long double)n1.ival);
+					value.bval=(n2.cfval.real()<=(long double)n1.ival);
 				else value.bval=false;
 			}
 			else if(n1.type==NINT)
@@ -3712,6 +3706,825 @@ Number Script::exec()
 			value.fval=(long double)value.bval;
 			return value;
 		}
+		case POW:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+			switch(n.type)
+			{
+				case NBOOL:
+					n.cfval=Complex((long double)n.bval,0.0); n.type=NFLOAT; break;
+				case NINT:
+					n.cfval=Complex((long double)n.ival,0.0); n.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
+			}
+			
+			if(value.cfval.imag()==0.0 && n.cfval.imag()==0.0)
+				value.cfval=Complex(powl(value.cfval.real(),n.cfval.real()));
+			else value.cfval=pow(value.cfval,n.cfval);
+			return value;
+		}
+		case ROOT:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+			switch(n.type)
+			{
+				case NBOOL:
+					n.cfval=Complex((long double)n.bval,0.0); n.type=NFLOAT; break;
+				case NINT:
+					n.cfval=Complex((long double)n.ival,0.0); n.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
+			}
+
+			value.cfval=pow(n.cfval,Complex(1.0)/value.cfval);
+			return value;
+		}
+		case SIN:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+			value.cfval=Complex(value.cfval.real()/number,value.cfval.imag());
+			
+
+			value.cfval=sin(value.cfval);
+			return value;
+		}
+		case COS:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+			value.cfval=Complex(value.cfval.real()/number,value.cfval.imag());
+			value.cfval=cos(value.cfval);
+			return value;
+			
+		}
+		case TAN:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+			value.cfval=Complex(value.cfval.real()/number,value.cfval.imag());
+			value.cfval=tan(value.cfval);
+			return value;
+			
+		}
+		case ASIN:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NFLOAT:
+					value.fval=real(value.cfval);
+					break;
+				case NBOOL:
+					value.fval=(long double)value.bval; value.type=NFLOAT; break;
+				case NINT:
+					value.fval=(long double)value.ival; value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.fval=NAN; value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(asinl(value.fval),imag(value.cfval));
+			value.cfval=Complex(value.cfval.real()*number,value.cfval.imag());
+			return value;
+			
+		}
+		case ACOS:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NFLOAT:
+					value.fval=real(value.cfval);
+					break;
+				case NBOOL:
+					value.fval=(long double)value.bval; value.type=NFLOAT; break;
+				case NINT:
+					value.fval=(long double)value.ival; value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.fval=NAN; value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(acosl(value.fval),imag(value.cfval));
+			value.cfval=Complex(value.cfval.real()*number,value.cfval.imag());
+			return value;
+			
+		}
+		case ATAN:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NFLOAT:
+					value.fval=real(value.cfval);
+					break;
+				case NBOOL:
+					value.fval=(long double)value.bval; value.type=NFLOAT; break;
+				case NINT:
+					value.fval=(long double)value.ival; value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.fval=NAN; value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(atanl(value.fval),imag(value.cfval));
+			value.cfval=Complex(value.cfval.real()*number,value.cfval.imag());
+			return value;
+			
+		}
+		case ASINH:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NFLOAT:
+					value.fval=real(value.cfval);
+					break;
+				case NBOOL:
+					value.fval=(long double)value.bval; value.type=NFLOAT; break;
+				case NINT:
+					value.fval=(long double)value.ival; value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.fval=NAN; value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(asinhl(value.fval),imag(value.cfval));
+			return value;
+			
+		}
+		case ACOSH:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NFLOAT:
+					value.fval=real(value.cfval);
+					break;
+				case NBOOL:
+					value.fval=(long double)value.bval; value.type=NFLOAT; break;
+				case NINT:
+					value.fval=(long double)value.ival; value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.fval=NAN; value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(acoshl(value.fval),imag(value.cfval));
+			return value;
+			
+		}
+		case ATANH:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NFLOAT:
+					value.fval=real(value.cfval);
+					break;
+				case NBOOL:
+					value.fval=(long double)value.bval; value.type=NFLOAT; break;
+				case NINT:
+					value.fval=(long double)value.ival; value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.fval=NAN; value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(atanhl(value.fval),imag(value.cfval));
+			return value;
+			
+		}
+		case SINH:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=sinh(value.cfval);
+			return value;
+			
+		}
+		case COSH:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=cosh(value.cfval);
+			return value;
+			
+		}
+		case TANH:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=tanh(value.cfval);
+			return value;
+			
+		}
+		case LN:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=log(value.cfval);
+			return value;
+			
+		}
+		case LG:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=log10(value.cfval);
+			return value;
+		}
+		case SREAL:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(value.cfval.real(),0.0);
+			return value;
+		}
+		case SIMAG:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(value.cfval.imag(),0.0);
+			return value;
+		}
+		case SABS:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(abs(value.cfval),0.0);
+			return value;
+		}
+		case SARG:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(arg(value.cfval),0.0);
+			return value;
+		}
+		case SCONJ:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=conj(value.cfval);
+			return value;
+		}
+		case SFAK:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.ival=(long long)value.bval; value.type=NINT; break;
+				case NFLOAT:
+					value.ival=(long long)value.cfval.real(); value.type=NINT; break;
+				case NNONE:
+				case NCHAR:
+					value.fval=NAN; value.type=NFLOAT; break;
+			}
+			
+			value.type=NFLOAT;
+
+			if(value.ival<0)
+			{
+				value.fval=NAN;
+				value.type=NNONE;
+			}
+			else if(value.ival<2)
+				value.fval=1.0;
+			else {
+				int end=value.ival;
+				value.fval=1.0;
+				for(int c=2; c<=end; c++)
+					value.fval*=(long double)c;
+			}
+			value.cfval=Complex(value.fval,value.cfval.imag());
+			return value;
+		}
+		case RSHIFT:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.ival=(long long)value.bval; value.type=NINT; break;
+				case NFLOAT:
+					value.ival=(long long)value.cfval.real(); value.type=NINT; break;
+				case NNONE:
+				case NCHAR:
+					value.type=NNONE;
+					value.fval=NAN;
+					return value;
+			}
+			switch(n.type)
+			{
+				case NBOOL:
+					n.ival=(long long)n.bval; n.type=NINT; break;
+				case NFLOAT:
+					n.ival=(long long)n.cfval.real(); n.type=NINT; break;
+				case NCHAR:
+				case NNONE:
+					n.type=NNONE;
+					n.fval=NAN;
+					return n;
+			}
+
+			value.ival=value.ival >> n.ival;
+			return value;
+		}
+		case LSHIFT:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.ival=(long long)value.bval; value.type=NINT; break;
+				case NFLOAT:
+					value.ival=(long long)value.cfval.real(); value.type=NINT; break;
+				case NCHAR:
+				case NNONE:
+					value.type=NNONE;
+					value.fval=NAN;
+					return value;
+			}
+			switch(n.type)
+			{
+				case NBOOL:
+					n.ival=(long long)n.bval; n.type=NINT; break;
+				case NFLOAT:
+					n.ival=(long long)n.cfval.real(); n.type=NINT; break;
+				case NCHAR:
+				case NNONE:
+					n.type=NNONE;
+					n.fval=NAN;
+					return n;
+			}
+
+			value.ival=value.ival << n.ival;
+			return value;
+		}
+		case XOR:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.ival=(long long)value.bval; value.type=NINT; break;
+				case NFLOAT:
+					value.ival=(long long)value.cfval.real(); value.type=NINT; break;
+				case NCHAR:
+				case NNONE:
+					value.type=NNONE;
+					value.fval=NAN;
+					return value;
+			}
+			switch(n.type)
+			{
+				case NBOOL:
+					n.ival=(long long)n.bval; n.type=NINT; break;
+				case NFLOAT:
+					n.ival=(long long)n.cfval.real(); n.type=NINT; break;
+				case NCHAR:
+				case NNONE:
+					n.type=NNONE;
+					n.fval=NAN;
+					return n;
+			}
+
+			value.ival=value.ival ^ n.ival;
+			return value;
+		}
+		case SBAND:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.ival=(long long)value.bval; value.type=NINT; break;
+				case NFLOAT:
+					value.ival=(long long)value.cfval.real(); value.type=NINT; break;
+				case NCHAR:
+				case NNONE:
+					value.type=NNONE;
+					value.fval=NAN;
+					return value;
+			}
+			switch(n.type)
+			{
+				case NBOOL:
+					n.ival=(long long)n.bval; n.type=NINT; break;
+				case NFLOAT:
+					n.ival=(long long)n.cfval.real(); n.type=NINT; break;
+				case NCHAR:
+				case NNONE:
+					n.type=NNONE;
+					n.fval=NAN;
+					return n;
+			}
+
+			value.ival=value.ival & n.ival;
+			return value;
+		}
+		case SBOR:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.ival=(long long)value.bval; value.type=NINT; break;
+				case NFLOAT:
+					value.ival=(long long)value.cfval.real(); value.type=NINT; break;
+				case NCHAR:
+				case NNONE:
+					value.type=NNONE;
+					value.fval=NAN;
+					return value;
+			}
+			switch(n.type)
+			{
+				case NBOOL:
+					n.ival=(long long)n.bval; n.type=NINT; break;
+				case NFLOAT:
+					n.ival=(long long)n.cfval.real(); n.type=NINT; break;
+				case NCHAR:
+				case NNONE:
+					n.type=NNONE;
+					n.fval=NAN;
+					return n;
+			}
+
+			value.ival=value.ival | n.ival;
+			return value;
+		}
+		case SBNOT:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.ival=(long long)value.bval; value.type=NINT; break;
+				case NFLOAT:
+					value.ival=(long long)value.cfval.real(); value.type=NINT; break;
+				case NCHAR:
+				case NNONE:
+					value.type=NNONE;
+					value.fval=NAN;
+					return value;
+			}
+
+			value.ival=~value.ival;
+			return value;
+		}
+		case MODULO:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.ival=(long long)value.bval; value.type=NINT; break;
+				case NFLOAT:
+					value.fval=value.cfval.real(); break;
+				case NNONE:
+				case NCHAR:
+					value.fval=NAN; value.type=NFLOAT; break;
+			}
+			switch(n.type)
+			{
+				case NBOOL:
+					n.ival=(long long)n.bval; n.type=NINT; break;
+				case NFLOAT:
+					n.fval=n.cfval.real(); break;
+				case NNONE:
+				case NCHAR:
+					n.fval=NAN; n.type=NFLOAT; break;
+			}
+			if(value.type==NINT && n.type==NINT)
+			{
+				value.ival%=n.ival;
+				value.fval=(long double)value.ival;
+			}
+			else if(value.type==NFLOAT && n.type==NFLOAT)
+				value.cfval=Complex(fmodl(value.fval,n.fval),value.cfval.imag());
+			else if(value.type==NFLOAT && n.type==NINT)
+				value.cfval=Complex(fmodl(value.fval,(long double)n.ival),value.cfval.imag());
+			else if(value.type==NINT && n.type==NFLOAT)
+			{
+				value.cfval=Complex(fmodl((long double)value.ival,n.fval),n.cfval.imag());
+				value.type=NFLOAT;
+			}
+			
+			return value;
+		}
+		case DIFF:
+		{
+			Number value=vertObj->exec();
+			double pos;
+
+			switch(value.type)
+			{
+				case NBOOL:
+					pos=(double)value.bval; break;
+				case NFLOAT:
+					pos=(double)value.cfval.real(); break;
+				case NINT:
+					pos=(double)value.ival; break;
+				default:
+					pos=value.fval; break;
+			}
+			value.type=NFLOAT;
+			double step=(pos*(double)1e-8);
+			if(step<1e-8)
+				step=1e-8;
+			eventReciver->vars[23][0].type=NFLOAT;
+			eventReciver->vars[23][0].cfval=Complex(pos-step,0.0);
+			Number w1=horzObj->exec();
+			switch(w1.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)w1.bval,0.0); break;
+				case NFLOAT:
+					value.cfval=w1.cfval; break;
+				case NINT:
+					value.cfval=Complex((long double)w1.ival,0.0);  break;
+				default:
+					value.cfval=value.cfval;  break;
+			}
+			eventReciver->vars[23][0].cfval=Complex(pos+step,0.0);
+			Number w2=horzObj->exec();
+			switch(w2.type)
+			{
+				case NBOOL:
+					value.cfval=(Complex(w2.bval,0.0)-value.cfval)/Complex(2.0*step); break;
+				case NFLOAT:
+					value.cfval=(w2.cfval-value.cfval)/Complex(2.0*step); break;
+				case NINT:
+					value.cfval=(Complex(w2.ival,0.0)-value.cfval)/Complex(2.0*step);  break;
+				default:
+					value.cfval=(w2.cfval-value.cfval)/Complex(2.0*step); break;
+			}
+		//	value.cfval=Complex((w2-w1)/((double)2.0*step),0.0);
+		
+			return value;
+		}
+		case INTEGRAL:
+		{
+			bool inv=false;
+			Number nstart=vertObj->exec();
+			Number nend=vertObj2->exec();
+			double start,end;
+
+			switch(nstart.type)
+			{
+				case NFLOAT:
+					start=(double)nstart.cfval.real(); break;
+				case NBOOL:
+					start=(double)nstart.bval; break;
+				case NINT:
+					start=(double)nstart.ival; break;
+				default:
+					start=nstart.fval; break;
+			}
+			
+			switch(nend.type)
+			{
+				case NFLOAT:
+					end=(double)nend.cfval.real(); break;
+				case NBOOL:
+					end=(double)nend.bval; break;
+				case NINT:
+					end=(double)nend.ival; break;
+				default:
+					end=nend.fval; break;
+			}
+			
+			if(start>end)
+			{
+				double temp=start;
+				start=end;
+				end=temp;
+				inv=true;
+			}
+
+			double * line1=new double;						//	Romberg's Method
+			double *line2=new double[3];
+			double y,oldy;
+			vars[23][0]=start;
+			oldy=horzObj->calc();
+			vars[23][0]=end;
+			y=horzObj->calc();
+			line1[0]=(y+oldy)*(end-start)/2.0;
+			double fail=HUGE_VAL,oldfail=0.0;
+		
+			int num=1;
+			int steps;
+
+			while(true)
+			{
+				delete[]line2;
+				line2=line1;
+				line1=new double[num+1];
+				line1[0]=0.0;
+			
+				steps=(int)pow(2.0,(double)(num-1));
+			
+				for(int c=1; c<=steps; c++)
+				{
+					vars[23][0]=start+((2*c-1)*(end-start))/pow(2.0,(double)num);
+					line1[0]+=horzObj->calc();
+				}
+				line1[0]=0.5*(line1[0]*(end-start)/pow(2.0,(double)(num-1))+line2[0]);
+			
+				for(int c=2; c<=num+1; c++)
+					line1[c-1]=(pow(4.0,(double)(c-1))*line1[c-2]-line2[c-2])/(pow(4.0,(double)(c-1))-1);
+
+		
+				num++;
+				oldfail=fail;
+				fail=line1[num-1]-line2[num-2];
+				if(fail < 0.0)
+					fail*=-1.0;
+				if(num>16 || (fail < 1e-9))
+				{
+					if(num>3)					//precision check may not work before that
+						break;
+				}
+				if(fail>oldfail)
+				{
+					if(num>5)					//error check may not work before that
+					{
+						line1[num-1]=NAN;
+						break;
+					}
+				}
+			}
+			value.type=NFLOAT;
+			value.cfval=Complex((long double)line1[num-1],0.0);
+			if(inv)
+				value.cfval*=Complex(-1.0,0.0);
+		
+			return value;
+
+		
+		}
 		case SRUN:
 		{
 			if(eventReciver->subprograms[var]!=NULL)
@@ -3722,7 +4535,7 @@ Number Script::exec()
 				value.fval=NAN;
 				return value;
 			}
-		}	
+		}
 		case SBREAK:
 		{
 			eventReciver->status=1;
@@ -3754,7 +4567,7 @@ Number Script::exec()
 							value.ival=n.ival;
 							break;
 						case NFLOAT:
-							value.ival=(long long)n.fval;
+							value.ival=(long long)n.cfval.real();
 							break;
 						case NCHAR:
 							char*end;
@@ -3774,19 +4587,16 @@ Number Script::exec()
 					switch(n.type)
 					{
 						case NINT:
-							value.fval=(long double)n.ival;
-							break;
-						case NFLOAT:
-							value.fval=n.fval;
+							value.cfval=Complex((long double)n.ival,0.0);
 							break;
 						case NCHAR:
-							value.fval=strtold(n.cval,NULL);
+							value.cfval=Complex(strtold(n.cval,NULL),0.0);
 							break;
 						case NBOOL:
-							value.fval=n.bval;
+							value.cfval=Complex(n.bval,0.0);
 							break;
 						default:
-							value.fval=NAN;
+							value.cfval=Complex(NAN,0.0);
 					}
 					return value;
 				case NBOOL:
@@ -3796,7 +4606,7 @@ Number Script::exec()
 							value.bval=!(!(bool)n.ival);
 							break;
 						case NFLOAT:
-							if(n.fval==0.0)
+							if(n.cfval.real()==0.0)
 								value.bval=false;
 							else value.bval=true;
 							break;
@@ -3816,14 +4626,23 @@ Number Script::exec()
 					value.fval=(long double)value.bval;
 					return value;
 				case NCHAR:
-					value.cval=new char[42];
 					switch(n.type)
 					{
 						case NINT:
+							value.cval=new char[25];
 							sprintf(value.cval,"%lli",n.ival);
 							break;
 						case NFLOAT:
-							sprintf(value.cval,"%Lg",n.fval);
+							value.cval=new char[90];
+							sprintf(value.cval,"%Lg",n.cfval.real());
+							if(value.cfval.imag()!=0.0)
+							{
+								if(value.cfval.imag()>0.0)
+									strcpy(value.cval,"+");
+								sprintf(&value.cval[strlen(value.cval)],"%Lg",n.cfval.imag());
+								strcpy(value.cval,"i");
+							}
+								
 							break;
 						case NCHAR:
 							break;
@@ -3848,11 +4667,10 @@ Number Script::exec()
 			
 			value=vertObj->exec();
 			value.type=NFLOAT;
-	//		value.fval=(fmod(rand(),1000000000)*value.fval)/1000000000;
 #if RAND_MAX < 1000000000
-			value.fval=(((rand()*(1000000000/RAND_MAX))%1000000000)*value.fval)/1000000000;
+			value.cfval=Complex((((rand()*(1000000000/RAND_MAX))%1000000000)*value.fval)/1000000000,0.0);
 #else
-			value.fval=((rand()%1000000000)*value.fval)/1000000000;
+			value.cfval=Complex(((rand()%1000000000)*value.fval)/1000000000,0.0);
 #endif
 			return value;
 		}
@@ -3862,7 +4680,7 @@ Number Script::exec()
 			int sleeptime;
 			if(value.type ==NINT)
 				sleeptime=value.ival;
-			else sleeptime=(int)value.fval;
+			else sleeptime=(int)value.cfval.real();
 			if(sleeptime>0)
 			{
 				usleep(sleeptime);
@@ -3893,7 +4711,6 @@ Number Script::exec()
 		}
 		case SCLEARTEXT:
 		{
-
 			fprintf(stderr,"\033[2J");
 			fprintf(stderr,"\033[1;1H");
 			if(nextObj==NULL)
@@ -3972,6 +4789,12 @@ Number Script::exec()
 			value=nextObj->exec();
 			return value;
 		}
+		case SFAIL:
+		{
+			value.type=NNONE;
+			value.fval=NAN;
+			return value;
+		}
 	}
 	return value;
 }
@@ -3989,3 +4812,5 @@ Number Script::execHorzObj()
 		return horzObj->exec();
 	else return value;
 }
+
+

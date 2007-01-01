@@ -45,6 +45,7 @@
 int main(int argc,char**argv)
 {
 	Variable *vars=new Variable[27];
+	Number value;
 
 	for(int c=0; c<27;c++)
 		vars[c].NewItem(0.0);
@@ -57,7 +58,16 @@ int main(int argc,char**argv)
 	bool script=false;
 	Script*s;
 	ThreadSync scriptData;
-
+	scriptData.vars=new Number*[27];
+	for(int c=0; c<27;c++)
+	{
+		scriptData.vars[c]=(Number*)malloc(sizeof(Number));
+		scriptData.numlen[c]=1;
+		scriptData.vars[c][0].type=NNONE;
+	}
+	for(int c=0; c<27; c++)
+		scriptData.numlen[c]=0;
+	
 #ifdef HAVE_LONG_DOUBLE
 	pref->outputLength=pref->precisision=LDBL_DIG;
 	int maxLength=LDBL_DIG;
@@ -67,7 +77,7 @@ int main(int argc,char**argv)
 #endif
 
 	char*homedir=getenv("HOME");
-	char*path=new char[strlen(homedir)+16];
+	char*path=new char[strlen(homedir)+17];
 	memcpy(path,homedir,strlen(homedir));
 	memcpy(&path[strlen(homedir)],"/.calcvariables",16);
 
@@ -78,41 +88,59 @@ int main(int argc,char**argv)
 	int fileLength;
 	struct stat fileStat;
 	char*variablesString;
-	FILE*variablesFile=fopen(path,"r");
+
 	char*var;
-	if(lstat(path,&fileStat) == 0 && variablesFile!=NULL)
+
+	if(lstat(path,&fileStat) == 0)
 	{
-		fileLength=fileStat.st_size;
-		variablesString=new char[fileLength+1];
-		fread(variablesString,fileLength,1,variablesFile);
-		
-		int varStart=0;
-		int varEnd=0;
-		int varCount=0;
-	
-	
-		for(int c=0; c<fileLength && varCount<27; c++)
+		FILE*variablesFile=fopen(path,"r");
+		if(variablesFile!=NULL)
 		{
-			if(variablesString[c]=='\n' || c == fileLength-1)
+			fileLength=fileStat.st_size;
+			variablesString=new char[fileLength+1];
+			fread(variablesString,fileLength,1,variablesFile);
+			
+			int varStart=0;
+			int varEnd=0;
+			int varCount=0;
+			bool real=true;
+		
+		
+			for(int c=0; c<fileLength && varCount<27; c++)
 			{
-				varEnd=c;
-				var=new char[varEnd-varStart+1];
-				memcpy(var,&variablesString[varStart],varEnd-varStart);
-				var[varEnd-varStart]=(char)0;
-#ifdef HAVE_LONG_DOUBLE
-				vars[varCount][0]=strtold(var,NULL);
-#else 
-				vars[varCount][0]=strtod(var,NULL);
-#endif
-				varStart=varEnd+1;
-				varCount++;	
-				delete[] var;
+				if(variablesString[c]=='\n' || c == fileLength-1)
+				{
+					varEnd=c;
+					var=new char[varEnd-varStart+1];
+					memcpy(var,&variablesString[varStart],varEnd-varStart);
+					var[varEnd-varStart]=(char)0;
+					scriptData.vars[varCount][0].type=NFLOAT;
+					if(real)
+					{
+	#ifdef HAVE_LONG_DOUBLE
+					vars[varCount][0]=strtold(var,NULL);
+	#else 
+					vars[varCount][0]=strtod(var,NULL);
+	#endif
+					real=false;
+					}
+					else 
+					{
+	#ifdef HAVE_LONG_DOUBLE
+					scriptData.vars[varCount][0].cfval=Complex(vars[varCount][0],strtold(var,NULL));
+	#else 
+					scriptData.vars[varCount][0].cfval=Complex(vars[varCount][0],strtod(var,NULL));
+	#endif
+						varCount++;
+						real=true;
+					}
+					varStart=varEnd+1;
+					delete[] var;
+				}
 			}
-		}
 		fclose(variablesFile);
+		}
 	}
-
-
 
 
 	for(int c=1; c<argc; c++)
@@ -294,10 +322,36 @@ int main(int argc,char**argv)
 		}		
 		input[fileinfo.st_size]=(char)0;
 	}
-	char*res=checkString(input,pref,vars);
+	char*res=checkString(input,pref);
 	char*printString=new char[50];
+
+		
+	scriptData.error=false;
+	
+	struct termios terminfo,oldTerminfo;
+	tcgetattr(fileno(stdout),&terminfo);
+	oldTerminfo=terminfo;
+	terminfo.c_lflag &=~ECHO;
+	terminfo.c_lflag &=~ICANON;
+	if(tcsetattr(fileno(stdout),TCSANOW,&terminfo)!=0)
+		perror("tcsetattr fehler");
+
+	scriptData.status=0;
+	scriptData.usleep=false;
+	scriptData.bbreak=false;
+	scriptData.bcontinue=false;
+	
+	scriptData.exit=false;
+
+	searchScripts(input,pref,vars,&scriptData);
+	scriptData.countDifference=0;
+	initDebugging(input,&scriptData);
+
+
+		
 	if(script)
 	{
+		scriptData.calcMode=false;
 		fprintf(stderr,"\nProcessing main file ...\n");
 		if(res==NULL)
 		{
@@ -308,38 +362,6 @@ int main(int argc,char**argv)
 			delete pref;
 			return 0;
 		}
-		scriptData.error=false;
-		
-		struct termios terminfo,oldTerminfo;
-		tcgetattr(fileno(stdout),&terminfo);
-		oldTerminfo=terminfo;
-		terminfo.c_lflag &=~ECHO;
-		terminfo.c_lflag &=~ICANON;
-		if(tcsetattr(fileno(stdout),TCSANOW,&terminfo)!=0)
-			perror("tcsetattr fehler");
-
-		scriptData.status=0;
-		scriptData.usleep=false;
-		scriptData.bbreak=false;
-		scriptData.bcontinue=false;
-		
-		scriptData.exit=false;
-		scriptData.vars=new Number*[27];
-		for(int c=0; c<27;c++)
-		{
-			scriptData.vars[c]=(Number*)malloc(sizeof(Number));
-			scriptData.numlen[c]=1;
-			scriptData.vars[c][0].type=NNONE;
-		}
-		for(int c=0; c<27; c++)
-			scriptData.numlen[c]=0;
-		
-
-		searchScripts(input,pref,vars,&scriptData);
-		scriptData.countDifference=0;
-		initDebugging(input,&scriptData);
-
-		
 		s=new Script((Script*)NULL,res,pref,vars,&scriptData);
 		loadSubScripts(&scriptData,pref,vars,s);
 		if(scriptData.error)
@@ -354,29 +376,84 @@ int main(int argc,char**argv)
 				perror("tcsetattr fehler");
 			return 0;
 		}
-		
-		
-		s->exec();
-		
-		if(tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo)!=0)
-			perror("tcsetattr fehler");
-		
-		delete[] scriptData.vars;
-	}	
-	else if(pref->calcType==SCIENTIFIC)
+		value=s->exec();
+	}
+	else 
 	{
-		printf("%.*Lg\n",pref->outputLength,vars[26][0]=calculate(res,pref,vars));
+		scriptData.calcMode=true;
+		s=new Script((Script*)NULL,res,pref,vars,&scriptData);
+		value=s->exec();
+	}
+	
+
+	
+	if(pref->calcType==SCIENTIFIC)
+	{	
+		switch(value.type)
+		{
+			case NFLOAT:
+			{
+				if(value.cfval.imag()==0.0)
+				{
+					printf("%.*Lg",pref->outputLength,real(value.cfval));
+				}
+				else {
+					if(value.cfval.imag()>0.0)
+						printf("%.*Lg+%.*Lgi",pref->outputLength,real(value.cfval),pref->outputLength,imag(value.cfval));
+					else printf("%.*Lg%.*Lgi",pref->outputLength,real(value.cfval),pref->outputLength,imag(value.cfval));
+				}
+	
+				break;
+			}
+			case NINT:
+			{
+				printf("%lli",value.ival);
+				break;
+			}
+			case NBOOL:
+				if(value.bval)
+					printf("true");
+				else printf("false");
+				break;
+			case NCHAR:
+			{
+				printf(value.cval);
+				break;
+			}
+			default:
+				printf("none");
+				break;
+		}
+		printf("\n");
+		//printf("%.*Lg\n",pref->outputLength,vars[26][0]=;
 	}
 	else {
+		long long ival;
+		
+		switch(value.type)
+		{
+			case NFLOAT:
+				ival=(long long)value.cfval.real();
+				break;
+			case NINT:
+				ival=value.ival;
+				break;
+			case NBOOL:
+				ival=(long long)value.bval;
+				break;
+			default:
+				ival=0;
+		}
+		
 		
 		switch(pref->base)
 		{
 			case DEC:
-				printf("%lli\n",(long long)(vars[26][0]=calculate(res,pref,vars)));
+				printf("%lli\n",ival);
 				break;
 			case BIN:
 			{
-				long long result=(long long)(vars[26][0]=calculate(res,pref,vars));
+				long long result=ival;
 				char*cRes=new char[65];
 				cRes[64]=(char)0;
 				for(long long c=0; c<64;c++)
@@ -395,10 +472,10 @@ int main(int argc,char**argv)
 				break;
 				}
 			case HEX:
-				printf("%LX\n",(long long)(vars[26][0]=calculate(res,pref,vars)));
+				printf("%LX\n",ival);
 				break;
 			case OCT:
-				printf("%llo\n",(long long)(vars[26][0]=calculate(res,pref,vars)));
+				printf("%llo\n",ival);
 				break;
 		}	
 
@@ -408,25 +485,39 @@ int main(int argc,char**argv)
 
 	char*varString=new char[maxLength+20];
 
+	scriptData.vars[26][0]=value;
 
 	for(int c=0; c<27; c++)
 	{
-		sprintf(varString,"%.*Lg",maxLength,vars[c][0]);
+		if(scriptData.vars[c][0].type==NINT)
+			scriptData.vars[c][0].cfval=Complex((long double)scriptData.vars[c][0].ival,0.0);
+		else if(scriptData.vars[c][0].type==NBOOL)
+			scriptData.vars[c][0].cfval=Complex((long double)scriptData.vars[c][0].bval,0.0);
+		else if(scriptData.vars[c][0].type!=NFLOAT)
+			scriptData.vars[c][0].cfval=Complex(NAN,0.0);
+		
+		sprintf(varString,"%.*Lg",maxLength,scriptData.vars[c][0].cfval.real());
+		newVarString=strins(newVarString,varString,strlen(newVarString));
+		newVarString=strins(newVarString,"\n",strlen(newVarString));
+		
+		sprintf(varString,"%.*Lg",maxLength,scriptData.vars[c][0].cfval.imag());
 		newVarString=strins(newVarString,varString,strlen(newVarString));
 		newVarString=strins(newVarString,"\n",strlen(newVarString));
 	}
 	chdir(getenv("HOME"));
-	variablesFile=fopen(".calcvariables","w");
+	FILE*variablesFile=fopen(".calcvariables","w");
 	if(variablesFile!=NULL)
 	{
 		fwrite(newVarString,strlen(newVarString),1,variablesFile);
 		fclose(variablesFile);
 	}
 
-
+	if(tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo)!=0)
+		perror("tcsetattr fehler");
+	
 	delete[]input;
 	delete[]res;
-		
+	delete[] scriptData.vars;		
 
 	delete pref;
 	delete[] vars;
@@ -477,7 +568,7 @@ void initDebugging(char*code,ThreadSync*scriptData)
 
 void searchScripts(char*code,Preferences*pref,Variable*vars,ThreadSync*scriptData)
 {
-	char*cleanString=checkString(code,pref,vars);
+	char*cleanString=checkString(code,pref);
 	if(cleanString==NULL)
 		return;
 	char*scriptName;
@@ -559,7 +650,7 @@ void loadSubScripts(ThreadSync*scriptData,Preferences*pref,Variable*vars,Script*
 				fclose(subFile);
 				scriptData->countDifference+=scriptData->semicolonLines.GetLen();
 				initDebugging(subFileContent,scriptData);
-				cleanSubFileContent=checkString(subFileContent,pref,vars);
+				cleanSubFileContent=checkString(subFileContent,pref);
 				fprintf(stderr,"\nProcessing file ");
 				fprintf(stderr,scriptData->subprogramPath[c]);
 				fprintf(stderr,"\n");

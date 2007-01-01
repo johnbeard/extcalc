@@ -31,3 +31,7 @@ alpha:
 0.6.0
 - updated to Extcalc calculator algorithms v0.6.0
 - fixed bug in script interpreter (BSD)
+
+0.6.5
+- updated to Execalc algorithms v0.6.5
+- support for complex numbers
