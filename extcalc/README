@@ -21,8 +21,8 @@ mathmatical functions, draw graphs and work with functions. You can also calcula
 
 
 2. INSTALLATION
-- unpack archive (tar -xzf extcalc-0.6.0.tar.gz)
-- switch to directory (cd extcalc-0.6.0)
+- unpack archive (tar -xzf extcalc-0.6.5.tar.gz)
+- switch to directory (cd extcalc-0.6.5)
 - run configure (./configure)
 - compile (make)
 - become root (su)
@@ -57,7 +57,7 @@ doc/                         documentation
 	   
 	   
 4. VERSION
-Version 0.6.0
+Version 0.6.5
 
 This is a TESTING VERSION!
 Parts of the program may not work or may work wrong!
@@ -81,12 +81,12 @@ script debug messages
 zooming and moving graphs
 draw into graphics window
 save screenshots of graphics window
+complex numbers
 
 to do:
 script commands for file usage and graphics
 matrix calculation
 vector calculation
-complex numbers
 
 
 

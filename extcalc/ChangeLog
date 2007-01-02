@@ -106,3 +106,9 @@ mouse wheel
 dialogs
 - updated translation
 - updated documentation
+
+0.6.5 complex numbers
+- rewritten calculator algorithms to support complex numbers
+- added performance preferences dialog
+- installer generates menu entery
+- fixed some bugs, updated documentation

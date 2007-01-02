@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Extcalc
+Exec=extcalc
+Terminal=false
+Type=Application
+Categories=Qt;Utility
+Icon=/usr/share/icons/icon48.png
