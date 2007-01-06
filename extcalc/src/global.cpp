@@ -1692,7 +1692,7 @@ char* Script::parse(char* line)
 		return NULL;
 	}
 	
-	perror(line);
+//	perror(line);
 	
 	int pos1;
 	int len=strlen(line);
@@ -4119,15 +4119,9 @@ Number Script::exec()
 				case NCHAR:
 					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
 			}
-			if(value.cfval.imag()!=0.0)
-				perror("value");
-			if(n.cfval.imag()!=0.0)
-				perror("n");
+
 			if(value.cfval.imag()==0.0 && n.cfval.imag()==0.0)
-			{
 				value.cfval=Complex(powl(value.cfval.real(),n.cfval.real()));
-				perror("real");
-			}
 			else value.cfval=pow(value.cfval,n.cfval);
 			return value;
 		}
@@ -4173,7 +4167,6 @@ Number Script::exec()
 					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
 			}
 			value.cfval=Complex(value.cfval.real()/number,value.cfval.imag());
-			perror(QString::number(number));
 			
 
 			value.cfval=sin(value.cfval);

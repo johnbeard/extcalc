@@ -913,6 +913,52 @@
   and the item "Graphic" for the preferences of the graphics window or
   by the preferences dialogs. You find them at the "Preferences"
   menu-point.<br>
+  <h3>Calculator Preferences Dialog</h3>
+  In this dialog, you can set the calculator mode and the output format. The calculator mode (scientific or base mode) only
+ refers to the
+  calculator window itself. The output format preferences, output length and output type, change the output format 
+  of the complete program. The angle type is also set for the complete program. All these preferences can also be set
+  by the preferences menu.
+  <h3>Graphics Preferences Dialog</h3>
+  The graphics preferences are seperated to three tabs.
+  <h4>Coordinate Systems</h4>
+  Here you can set the coordinate system type, the sizes of the coordinate systems, and the look of them.<br>
+  There are two buttons, to set standard values for the coordinate system sizes. The "Standard"-Button is to set standard values
+  which make sense for most graphs. The "Trigonometric"-Button sets the coordinate system to special values to show trigonometric
+  functions like sinus and cosinus optimally. This values depend on the current angle type.<br>
+  The maximal radius and the maximal angle of the polar coordinate system can only have positive values.<br>
+  Furturmore, there are some options depending the look. The axis, the raster and the labels can be switched on and off and
+  the coordinate systems width-to-hight-ratio can be set equal to the x-to-y ratio.<br>
+  <h4>Parameter Range</h4>
+  For some graphs were parameter needed, which don't depend on the coordinate system size.<br><br>
+  Parameter T:<br>
+  This one is needed for parameter functions. You can set its start and end point, here. Remember that you should not set the
+  range too wide, because you will not see most of the calculated graph, and the visible part may not be precise enough.<br><br>
+  Parameter Z:<br>
+  This parameter is only for 2D-Nyquist-Plots. 3D-Nyquist plots use the Z-axes of the coordinate system.
+  You have two modes, to set this parameter range. The standard is logarithmic scale, which means, that if you set -3 to 3,
+  the parameter runs from 10^-3 to 10^3 with logarithmic scale.This is the best for the most nyquist plots. If you switch logarithmic
+  scale off, the parameter runs from the start to the end value in equal steps.<br><br>
+  Parameter A:<br>
+  This is the parameter for all dynamic graphs. First, you have to set the start and the end value. Then you must set the 
+  number of steps to calculate. If you want to show an animation, you will have to set about 30 steps. You should
+  not set so much steps, if you use single step mode. As next, you can choose, if the parameter should only be counted in one
+  direction, or if it should be counted up and down. If you have selected automatic mode, you can also set the delay time.
+  For animations, 3 will be a good value.<br><br>
+  <h4>Precision/Performance</h4>
+  In this dialog, you can set the steps for graph calculation and the precision of some graph analysation functions.
+  Normally, it is not needed to change the steps count for 2D-graphs. It can be increased, if details of a graph, for example
+  an asymptote, are not shown correctly.
+  The number of steps of the 3D-graph is equal to the number of grid lines, that show the graph. Remember, that if you increase
+  this value, the number of points to calculate raises by the power of two.
+  The graph analysation presition should also be increased only if detail are calculated wrong. It does not increase the
+  precision of the results themselve, because they are always calculated as exact as possible.
+  <h3>Table Preferences</h3>
+  If you want to calculate a table of function values, you can set the start value, end value and number of values, here.
+  The function type, for which the table is calculated, can be set here or by the table preferences menu.
+  <h3>Scripting Preferences</h3>
+  Here you can set the path to the script root directory. This directory contains two subdirectories, one for the code
+  files and one for the data files. Their names can also be set in this dialog.
   <br>
   <br>
   <a name="else"><h2>4. Other</h2></a>

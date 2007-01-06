@@ -136,8 +136,11 @@
 //	- changing angle type does not work													ok	//
 //	- changing analyse precision does not work											ok	//
 //	- some script commands may cause problems in calculator mode						ok	//
-//	- recalculaton of 3d-graphs and parameter graphs is not needed							//
-//	- automatic ans inserting does not work corectly							//
+//	- recalculaton of 3d-graphs and parameter graphs is not needed						ok	//
+//	- automatic ans inserting does not work corectly									ok	//
+//	- dynamic graphs are not shown correctly when coordinate system is moved				//
+//	- debug messages in graph calculation													//
+//	- changing graph precision and moving graph without redraw results in a crash			//
 
 
 //////////////////////////used variables//////////////////////////

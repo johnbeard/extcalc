@@ -935,6 +935,55 @@
   Es besteht auch die Möglichkeit, die Einstellungen im Einstellungs-Fenster zu verändern.
   Dazu muss man im Menü den Punkt "Einstellungen" und dann die entsprechende Komponente wählen.
   In den Dialogen können alle Parameter, die einstellbar sind, konfiguriert werden.
+  <h3>Rechner-Einstellungen</h3>
+  In diesem Dialog kann dass Ausgabeformat und der Rechner-Modus eingestellt werden. Der Rechner-Modus
+  (Wissenschaftlich oder Logik) bezieht sich nur auf den Rechner selbst. Das Ausgabeformat und die Einstellung
+  für die Winkelfunktionen bezieht sich auf das gesamte Programm. Alle Einstellungen die in diesem Dialog enthalten
+  sind, können auch im Rechner-Menü verändert werden.
+  <h3>Graphik-Einstellungen</h3>
+  Dieser Dialog ist in drei Tabs unterteilt.
+  <h4>Koordinatensystem</h4>
+  Hier können die Größen der Koordinatensysteme eingestellt werden. Es können immer nur die Werte des aktuellen Koordinatensystems
+  verändert werden. Dieses kann auch hier eingestellt werden. Die Werte für das polare Koordinatensystem, maximaler Radius
+  und maximaler Winkel dürfen nur positive Werte haben. Es gibt auch noch zwei Knöpfe, um die Koordiatensysteme auf
+  Standardeinstellungen zurückzusetzen. Die Werte des Standard-Knopfs sind für die Darstellung der meisten Graphen geeignet.
+  Die Werte des Trigonometrisch-Knopfes sind optimal zur Darstellung von trigonometrischen Funktionen wie z. B. Sinus oder Kosinus.
+  Außerdem kann in diesem Dialog noch das Aussehen der Koordinatensysteme eingestellt werden. Das Raster, die Beschriftung und die
+  Achsen können ein- und ausgeschaltet werden und das Verhältnis zwischen der Skalierung der Koordinatenachsen und der Breite und
+  Höhe des Koordinatensystem-Fensters kann konstant eingestellt werden.
+  <h4>Parameter T,A,Z</h4>
+  Nicht alle Parameter, die zum Zeichnen der verschiedenen Funktionen nötig sind, sind von der Größe des Koordinatensystems abhängig.
+  Alle anderen können hier eingestellt werden.<br><br>
+  Parameter T:<br>
+  Der Parameter T dient als Parameter für Parameterfunktionen. Hier kann ein Startwert und ein Endwert gewählt werden.
+  Die Werte sollten nicht so hoch gewählt werden. Wenn man den größten Teil des Berechneten Graphen nicht sieht, wird 
+  der darstellbare Teil eventuell zu ungenau berechnet.<br><br>
+  Parameter Z:<br>
+  Diese Einstellungen für den Parameter Z betreffen nur 2D-Ortskurven. 3D-Ortskurven verwenden die Einstellungen der Z-Achse
+  des Koordinatensystems. Hier gibt es zwei Möglichkeiten der Skalierung. Standard ist die logarithmische Skalierung. Das heisst,
+  wenn als Grenzwerte -3 und 3 eingestellt sind, läuft der Parameter zwischen 10^-3 und 10^3 in entsprechenden Schritten.
+  Dies ist bei den meisten Ortskurven sinnvoll. Ist die logarithmische Skalierung ausgeschaltet, dann läuft der Parameter linear
+  vom eingestellten Startwert zum eingestellten Endwert.<br><br>
+  Parameter A:<br>
+  Das A ist der Parameter für alle dynamischen Graphen. Zur Darstellung des dynamischen Graphs muss zuerst ein Start- und ein
+  Endwert gewählt werden. Dann muss eine Schrittzahl angegeben werden. Für ruckelfreie Animationen sollte dieser Wert etwa 30 oder
+  höher sein. Im Einzelschritt-Modus sollte der Wert niedriger sein. Im automatischen Modus und für Animationen muss noch eine
+  Verzögerungszeit eingestellt werden. Die Verzögerungszeit ist in Schritten von 10ms einstellbar. Für ruckelfreie Animationen
+  sollte der Wert etwa auf 3 stehen.
+  <h4>Rechenleistung/Genauigkeit</h4>
+  Hier kann die Rechengenauigkeit beim Zeichnen von Graphen und die Genauigkeit bei Analysefunktionen eingestellt werden.
+  Dazu stehen drei Standard-Konfigurationen zur Verfügung: Hoch, Standard und Niedrig. Bei langsamen Systemen sollte die Einstellung
+  "Niedrig" gewählt werden, sonst die Einstellung "Standard". Die Werte für die Anzahl der Rechenschritte bei verschieden Graphen
+  muss normalerweise nicht geädert werden. Diese Werte müssen nur dann erhöht werden, wenn Bereiche eines Graphs wie z. B.
+  Asymptoten falsch dargestellt werden. Auch die Einstellung für die Analyse-Genauigkeit sollte nur erhöht werden, wenn Fehler
+  auftreten, z. B. wenn nicht alle Nullstellen gefunden werden. Die Genauigkeit der Ergebnisse ist immer so hoch, wie möglich
+  (unabhängig von dieser Einstellung).
+  <h3>Tabellen Einstellungen</h3>
+  Will man eine Wertetabelle zu einr Funktion erstellen, dann muss man hier die Grenzen und die Werteanzahl einstellen.
+  Außerdem kann noch der Funktionstyp, zu dem die Wertetabellen erstellt werden sollen, ausgewählt werden.
+  <h3>Script-Einstellungen</h3>
+  Im Script-Einstellungsdialog kann der Pfad zum Script-Hauptverzeichnis und die Namen der Unterverzeichnisse für Quellcodes und
+  für Daten gewählt werden. Diese Einstellungen werden beim ersten Start von Extcalc schon abgefragt.
   <br>
   <br>
   <a name="else"><h2>4. Sonstiges</h2></a>

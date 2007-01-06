@@ -2184,7 +2184,6 @@ GLuint GraphOutput::generateGLList(int index)
 		bool end=false;
 		for(int c=0; c<objectInfo[index].length; c++)
 		{
-			perror("X: "+QString::number(objectCoordinates[index][c*2])+" Y: "+QString::number(objectCoordinates[index][c*2+1]));
 			if(end)
 			{
 				if(objectCoordinates[index][c*2+1] >pref.ymin && objectCoordinates[index][c*2+1] < pref.ymax && objectCoordinates[index][c*2]>pref.xmin && objectCoordinates[index][c*2]< pref.xmax)   
@@ -2205,7 +2204,6 @@ GLuint GraphOutput::generateGLList(int index)
 						else 
 						{
 							glVertex3f(objectCoordinates[index][(c-1)*2],-1.0*objectCoordinates[index][(c-1)*2+1]*HUGE_VAL,0.0f);
-							perror("inverted1");
 						}
 					}
 					
@@ -2242,7 +2240,6 @@ GLuint GraphOutput::generateGLList(int index)
 						else 
 						{
 							glVertex3f(objectCoordinates[index][c*2],-1.0*objectCoordinates[index][c*2+1]*HUGE_VAL,0.0f);
-							perror("inverted2");
 						}
 					}
 					

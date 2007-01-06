@@ -715,8 +715,6 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 	else cdfx=new Calculate(NULL,modifiedFunction,&pref,vars);
 	List <long double> results;
 
-	perror("function: "+QString(function));
-	perror("differential function: "+QString(modifiedFunction));
 
 	long double fx1,dfx1;
 	if(forceScript)
