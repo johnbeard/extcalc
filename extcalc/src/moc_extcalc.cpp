@@ -1,7 +1,7 @@
 /****************************************************************************
 ** MainObject meta object code from reading C++ file 'extcalc.h'
 **
-** Created: Sat Jan 6 18:07:19 2007
+** Created: Sun Jan 14 20:53:47 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
 **
 ** WARNING! All changes made in this file will be lost!

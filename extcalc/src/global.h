@@ -23,10 +23,10 @@ using namespace std;
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.6.5\n2006-12-29\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.6\n2006-01-14\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.6.5\n29.12.2006\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.6\n14.1.2006\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2006\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 

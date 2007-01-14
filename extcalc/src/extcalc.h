@@ -138,9 +138,9 @@
 //	- some script commands may cause problems in calculator mode						ok	//
 //	- recalculaton of 3d-graphs and parameter graphs is not needed						ok	//
 //	- automatic ans inserting does not work corectly									ok	//
-//	- dynamic graphs are not shown correctly when coordinate system is moved				//
-//	- debug messages in graph calculation													//
-//	- changing graph precision and moving graph without redraw results in a crash			//
+//	- dynamic graphs are not shown correctly when coordinate system is moved			ok	//
+//	- debug messages in graph calculation												ok	//
+//	- CPU-load is 100% when waiting for keyboart input									ok	//
 
 
 //////////////////////////used variables//////////////////////////
@@ -153,7 +153,7 @@
 //      Type: long double (12 Byte at 32bit CPU; 10 Bytes are used)
 //      sign         exponent            mantisse
 //      |+/-      |  +/-4932     |        1.2*10^18               |
-//      79        78             63                               0
+//      79        78             63            5                   0
 //
 //
 //		precision: 

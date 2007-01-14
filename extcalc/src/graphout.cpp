@@ -1450,6 +1450,7 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 
 	for(int c=0; c<objectInfo.GetLen(); c++)
 	{
+		vars[0][0]=objectInfo[c].dynamicParameter;
 		if(!ret);
 		else if(objectInfo[c].type == GRAPHSTD)
 		{

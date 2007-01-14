@@ -5130,7 +5130,7 @@ Number Script::exec()
 						eventReciver->exit=false;
 						pthread_exit(0);
 					}
-				else usleep(500);
+				usleep(2000);
 			}
 			value.cval[0]=*((char*)(eventReciver->data));
 			value.cfval=Complex((long double)value.cval[0],0.0);
@@ -5155,7 +5155,7 @@ Number Script::exec()
 						eventReciver->exit=false;
 						pthread_exit(0);
 					}
-				else usleep(500);
+				usleep(1000);
 			}
 			value.cval[0]=*((char*)(eventReciver->data));
 			value.cfval=Complex((long double)value.cval[0],0.0);
@@ -5180,7 +5180,7 @@ Number Script::exec()
 						eventReciver->exit=false;
 						pthread_exit(0);
 					}
-				else usleep(500);
+				usleep(5000);
 			}
 			int dataLen=strlen((char*)eventReciver->data);
 			value.cval=new char[dataLen+1];

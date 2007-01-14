@@ -21,7 +21,7 @@
 
 ////////////////drawRules//////////////////////////////////////////
 //
-// objectInfo[4]objectInfo[0]objectInfo[1]objectInfo[2]objectInfo[3]
+// 
 // drawRules[4] drawRules[0] drawRules[1] drawRules[2] drawRules[3]
 //                  |            |             |            |
 //                  1            3             1            3
@@ -42,7 +42,7 @@
 //   GLuint list6
 //   GLuint list7
 //   GLuint list8
-//
+//	there exists one objectInfo element and one ObjectCoordinates element for every object. They all have the same index
 
 struct ObjectInfo
 {
