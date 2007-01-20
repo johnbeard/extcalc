@@ -141,6 +141,8 @@
 //	- dynamic graphs are not shown correctly when coordinate system is moved			ok	//
 //	- debug messages in graph calculation												ok	//
 //	- CPU-load is 100% when waiting for keyboart input									ok	//
+//	- 3rd, 5th ... root of -N returns only complex results									//
+//	- result lines in polar cs were drawn wrong when angle type isn't rad				ok	//
 
 
 //////////////////////////used variables//////////////////////////

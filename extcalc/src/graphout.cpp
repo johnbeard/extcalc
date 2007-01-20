@@ -600,6 +600,21 @@ void GraphOutput::mousePressEvent(QMouseEvent*e)
 			dY-=fmod(dY,ySteps);
 			double angle, radius;
 			angle=atan(dY/dX);
+			if(dX<0)
+				angle+=PI;
+			else if(dX>0 && dY<0)
+				angle+=2*PI;
+			else if(dX==0)
+			{
+				if(dY>0)
+				angle=PI/2.0;
+				else angle=3.0*PI/2.0;
+			}
+					
+			if(pref.angle==DEG)
+				angle*=180.0/PI;
+			else if(pref.angle==GRA)
+				angle*=200.0/PI;
 			radius=sqrt(dX*dX+dY*dY);
 			
 			emit leftMButtonPressed(angle,radius);
@@ -2313,6 +2328,10 @@ void GraphOutput::drawCircle(double radius)
 }
 void GraphOutput::drawPolarLine(double angle)
 {
+	if(pref.angle==DEG)
+		angle*=PI/180.0;
+	else if(pref.angle==GRA)
+		angle*=PI/200.0;
 	GLuint list;
 	list=glGenLists(1);
 	glNewList(list,GL_COMPILE);
