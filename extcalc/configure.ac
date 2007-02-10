@@ -88,6 +88,12 @@ AC_CACHE_CHECK([for Qt library version >= 3.1.1],
     ])
 ])
 
+#Long double check
+AC_CHECK_DECL(atanhl,
+  [AC_CHECK_LIB(m,atanhl,,[CFLAGS="$CFLAGS -DNO_LONG_DOUBLE"] [CPPFLAGS="$CPPFLAGS -DNO_LONG_DOUBLE"])], [CPPFLAGS="$CPPFLAGS -DNO_LONG_DOUBLE"],[#include <math.h>])
+
+
+
 
 # Checks for OpenGL
 AC_CHECK_LIB(GL, glBegin,, AC_MSG_ERROR(Extcalc requires OpenGL))
@@ -102,7 +108,7 @@ AC_HEADER_TIME
 AC_FUNC_LSTAT
 AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_CHECK_FUNCS([gettimeofday mkdir pow])
-AC_CHECK_LIB(m,sinl,,[CFLAGS="$CFLAGS -DNO_LONG_DOUBLE"] [CPPFLAGS="$CPPFLAGS -DNO_LONG_DOUBLE"])
+
 
 # Installpath
 CFLAGS="$CFLAGS -DINSTALLDIR=\"\\\"$datadir/extcalc\\\"\""
