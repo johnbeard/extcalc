@@ -68,7 +68,7 @@ int main(int argc,char**argv)
 	for(int c=0; c<27; c++)
 		scriptData.numlen[c]=0;
 	
-#ifdef HAVE_LONG_DOUBLE
+#ifndef NO_LONG_DOUBLE
 	pref->outputLength=pref->precisision=LDBL_DIG;
 	int maxLength=LDBL_DIG;
 #else 
@@ -117,20 +117,20 @@ int main(int argc,char**argv)
 					scriptData.vars[varCount][0].type=NFLOAT;
 					if(real)
 					{
-	#ifdef HAVE_LONG_DOUBLE
+#ifndef NO_LONG_DOUBLE
 					vars[varCount][0]=strtold(var,NULL);
-	#else 
+#else 
 					vars[varCount][0]=strtod(var,NULL);
-	#endif
+#endif
 					real=false;
 					}
 					else 
 					{
-	#ifdef HAVE_LONG_DOUBLE
+#ifndef NO_LONG_DOUBLE
 					scriptData.vars[varCount][0].cfval=Complex(vars[varCount][0],strtold(var,NULL));
-	#else 
+#else 
 					scriptData.vars[varCount][0].cfval=Complex(vars[varCount][0],strtod(var,NULL));
-	#endif
+#endif
 						varCount++;
 						real=true;
 					}

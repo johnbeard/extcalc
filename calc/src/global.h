@@ -17,7 +17,7 @@
 using namespace std;
 
 
-#define VERSIONSTRING "Version: 0.6.5 2007-01-01\nCalculator algorithm: extcalc v0.6.0 2006-12-29"
+#define VERSIONSTRING "Version: 0.6.6 2007-02-13\nCalculator algorithm: extcalc v0.6.5 2006-12-29"
 #define AUTHORSTRING "Author:\nRainer Strobel\nhttp://extcalc-linux.sourceforge.net\n2007\n"
 
 
@@ -201,7 +201,7 @@ void printError(const char*,int,ThreadSync*);
 
 
 // for compatibility with systems without math functions for long double
-#ifndef HAVE_LONG_DOUBLE
+#ifdef NO_LONG_DOUBLE
 
 #define sinl(var) sin(var)
 #define cosl(var) cos(var)
