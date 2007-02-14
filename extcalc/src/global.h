@@ -23,10 +23,10 @@ using namespace std;
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.6.6\n2006-01-20\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.6\n2006-02-14\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.6.6\n20.1.2006\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.6\n14.2.2006\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2006\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -96,6 +96,7 @@ using namespace std;
 #define MODE				39
 #define SCIENTIFIC			32
 #define BASE				33
+#define COMPLEXMENU			165
 
 #define BASEMENU			40
 #define BIN					34
@@ -131,6 +132,22 @@ using namespace std;
 #define RSHIFT				139
 #define LSHIFT				140
 #define XOR					141
+#define CPOW				153
+#define CROOT				154
+#define CSIN				155
+#define CCOS				156
+#define CTAN				157
+#define CSINH				158
+#define CCOSH				159
+#define CTANH				160
+#define CLN					161
+#define CLG					162
+#define CABS				163
+#define CDIVIDE				164
+#define SQRT				166
+#define CSQRT				167
+#define CURT				168
+#define SCALARPROD			170
 
 #define SSEMICOLON			83
 #define SCOMPARE			84
@@ -177,6 +194,7 @@ using namespace std;
 #define SREAL				150
 #define SIMAG				151
 #define SARG				152
+#define SVECTOR				169
 
 #define CALCYVAL			0
 #define CALCZEROS			1
@@ -244,6 +262,9 @@ using namespace std;
 #define GIGASTRING			65319
 #define TERASTRING			65332
 #define DIFFSTRING			8706
+#define DEGREESTRING		176
+
+#define VARNUM				28
 
 
 
@@ -305,6 +326,7 @@ struct Preferences
 	bool moveUpDown;
 	bool show3dGrid;
 	bool logNyquistSteps;
+	bool complex;
 	int graphType;
 	int calcType;
 	int tableType;
@@ -323,7 +345,7 @@ struct Preferences
 struct Number
 {
 	long double fval;
-	long double *fvector;		//complex, vector
+	long double *fvector;		//matrix
 	int dimension;				//vector size
 	complex <long double> cfval;
 	long long ival;
@@ -348,7 +370,7 @@ struct ThreadSync
 	bool bbreak;
 	bool bcontinue;
 	bool calcMode;
-	int numlen[27];
+	int numlen[VARNUM];
 	Number**vars;
 	List <Math*>subprograms;
 	List <char*>subprogramPath;
@@ -374,11 +396,12 @@ QString getConfigString(QString*,QString);
 QString cleanConfigString(QString,QString);
 QString getUnicode(int code);
 QString formatOutput(long double num,Preferences*pref);
-QString formatOutput(Number num,Preferences*pref);
+QString formatOutput(Number num,Preferences*pref,ThreadSync*varData=NULL);
 QColor getColor(QString colorName);
 QString getColorName(QColor col);
 long double runCalc(QString,Preferences*,Variable*);
 void printError(const char*,int,QObject*);
+inline void convertToFloat(Number*num);
 
 
 
@@ -458,7 +481,7 @@ public:
 
 	virtual int split(char*){return 0;}
 	virtual char* parse(char*){return 0;}
-
+	
 };
 
 

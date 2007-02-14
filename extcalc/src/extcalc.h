@@ -141,7 +141,7 @@
 //	- dynamic graphs are not shown correctly when coordinate system is moved			ok	//
 //	- debug messages in graph calculation												ok	//
 //	- CPU-load is 100% when waiting for keyboart input									ok	//
-//	- 3rd, 5th ... root of -N returns only complex results									//
+//	- 3rd, 5th ... root of -N returns only complex results								ok	//
 //	- result lines in polar cs were drawn wrong when angle type isn't rad				ok	//
 
 
@@ -250,8 +250,8 @@ MainObject() :QTabWidget()
 	Number n0;
 	n0.type=NFLOAT;
 	n0.fval=0.0;
-	vecs=new Vector [27];
-	for(int c=0; c<27;c++)
+	vecs=new Vector [VARNUM];
+	for(int c=0; c<VARNUM;c++)
 		vecs[c].NewItem(n0);
 	
 	appIcon=new QPixmap(QString(INSTALLDIR)+"/data/icon22.png");
@@ -333,6 +333,7 @@ MainObject() :QTabWidget()
 	pref.raster=true;
 	pref.axis=true;
 	pref.label=false;
+	pref.complex=false;
 	pref.functions=NULL;
 	pref.activeFunctions=new bool[20];
 	for(int c=0; c<20;c++)
@@ -378,8 +379,8 @@ MainObject() :QTabWidget()
 	pref.tableType=TABLENORMAL;
 	pref.showWindows[0]=pref.showWindows[2]=pref.showWindows[3]=pref.showWindows[4]=true;
 	pref.showWindows[1]=pref.showWindows[5]=false;
-	
-	
+
+
 	threadData=new ThreadSync;
 	threadData->mutex=NULL;
 	threadData->eventReciver=this;
@@ -391,15 +392,15 @@ MainObject() :QTabWidget()
 	threadData->calcMode=true;
 	threadData->data=NULL;
 	threadData->sleepTime=1000;
-	threadData->vars=new Number*[27];
-	for(int c=0; c<27;c++)
+	threadData->vars=new Number*[VARNUM];
+	for(int c=0; c<VARNUM;c++)
 	{
 		threadData->vars[c]=(Number*)malloc(sizeof(Number));
 		threadData->numlen[c]=1;
 		threadData->vars[c][0].type=NNONE;
 		threadData->vars[c][0].cfval=Complex(0.0,0.0);
 	}
-	
+
 
 	angleMenu=new QPopupMenu;
 	angleMenu->insertItem(EXTCALCH_MENU1,DEG);
@@ -431,6 +432,7 @@ MainObject() :QTabWidget()
 	calcTypeMenu=new QPopupMenu;
 	calcTypeMenu->insertItem(EXTCALCH_MENU31,SCIENTIFIC);
 	calcTypeMenu->insertItem(EXTCALCH_MENU32,BASE);
+	calcTypeMenu->insertItem("Complex",COMPLEXMENU);
 	calcTypeMenu->insertItem(EXTCALCH_MENU33,baseMenu,BASEMENU);
 	QObject::connect(calcTypeMenu,SIGNAL(activated(int)),this,SLOT(calcTypeMenuSlot(int)));
 	baseMenu->setItemChecked(pref.base,true);
@@ -715,6 +717,7 @@ void getPref(Preferences newPref)
 
 	calcTypeMenu->setItemChecked(SCIENTIFIC,false);
 	calcTypeMenu->setItemChecked(BASE,false);
+	calcTypeMenu->setItemChecked(COMPLEXMENU,false);
 
 	baseMenu->setItemChecked(BIN,false);
 	baseMenu->setItemChecked(OCT,false);
@@ -741,6 +744,7 @@ void getPref(Preferences newPref)
 	floatPointMenu->setItemChecked(pref.outputLength,true);
 	baseMenu->setItemChecked(pref.base,true);
 	calcTypeMenu->setItemChecked(pref.calcType,true);
+	calcTypeMenu->setItemChecked(COMPLEXMENU,pref.complex);
 	calcTypeMenu->setItemEnabled(BASEMENU,calcTypeMenu->isItemChecked(BASE));
 	graphTypeMenu->setItemChecked(pref.graphType,true);
 	tableTypeMenu->setItemChecked(pref.tableType,true);

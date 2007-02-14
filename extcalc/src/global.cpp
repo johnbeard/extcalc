@@ -200,7 +200,7 @@ QString formatOutput(long double num,Preferences*pref)
 	return ret;
 }
 
-QString formatOutput(Number num,Preferences*pref)
+QString formatOutput(Number num,Preferences*pref,ThreadSync*varData)
 {
 	QString ret;
 	switch(num.type)
@@ -212,7 +212,7 @@ QString formatOutput(Number num,Preferences*pref)
 		case NFLOAT:
 		case NCOMPLEX:
 			ret=formatOutput(num.cfval.real(),pref);
-			if(num.cfval.imag()!=0.0)
+			if(num.cfval.imag()!=0.0 && pref->complex)
 			{
 				if(num.cfval.imag()>0.0)
 					ret+=" +";
@@ -230,9 +230,27 @@ QString formatOutput(Number num,Preferences*pref)
 			ret+=QString(num.cval);
 //			ret+="(string)";
 			break;
+		case NVECTOR:
+			if(varData==NULL)
+				ret=formatOutput((long double)num.ival,pref);
+			else {
+				if(num.ival<0 || num.ival >=VARNUM)
+				{
+					ret=QString("invalid");
+					break;
+				}
+				int end=varData->numlen[num.ival];
+				ret=QString("");
+				for(int c=0; c<end;c++)
+				{
+					if(varData->vars[num.ival][c].type!=NVECTOR)
+						ret+=formatOutput(varData->vars[num.ival][c],pref);
+					ret+=" ";
+				}
+			}
+			break;
 		default:
-			ret=formatOutput(num.fval,pref);
-			ret+=("(invalid)");
+			ret=("invalid");
 			break;
 	}
 	return ret;
@@ -378,6 +396,7 @@ char*checkString(QString input,Preferences*pref)
 	qstr.replace("\xb3"+getUnicode(ROOTSTRING),"curt");
 	qstr.replace("3"+getUnicode(ROOTSTRING),"curt");
 	qstr.replace(getUnicode(ROOTSTRING),"root");
+	qstr.replace(getUnicode(DEGREESTRING),"sprod");
 	
 	qstr.replace(getUnicode(PISTRING),"pi");
 	qstr.replace(getUnicode(EULERSTRING),"eu");
@@ -645,6 +664,15 @@ char* checkStringAnsi(char* str,Preferences*pref)
 			delete[]tmp;
 			tmp=calcString;
 			calcString=strins(calcString,"$r",c);
+			delete[]tmp;
+		}
+		if(strncmp(&calcString[c],"sprod",5) == 0)
+		{
+			tmp=calcString;
+			calcString=strcut(calcString,c,5);
+			delete[]tmp;
+			tmp=calcString;
+			calcString=strins(calcString,"$s",c);
 			delete[]tmp;
 		}
 		if(strncmp(&calcString[c],"d/dx",4) == 0)
@@ -963,7 +991,7 @@ char* checkStringAnsi(char* str,Preferences*pref)
 		if(
 				 (calcString[c]=='\\' ||
 				 ((pref->calcType==SCIENTIFIC && calcString[c] >= 'A' || calcString[c]>='G') && calcString[c]<='Z') ||
-				 (calcString[c] >= 'a' && calcString[c]<='z' &&(calcString[c]!='e' ||calcString[c+1]=='u') && calcString[c]!='x'))
+				 (calcString[c] >= 'a' && calcString[c]<='z' && calcString[c]!='x'))
 				 && 
 				 (//calcString[c-1] == '!' ||
 				 calcString[c-1] == '.' ||
@@ -982,7 +1010,7 @@ char* checkStringAnsi(char* str,Preferences*pref)
 				 (calcString[c] >= '0' && calcString[c] <= '9'))
 				 &&
 				 (//calcString[c-1] == '!' ||
-				 ((pref->calcType==SCIENTIFIC && calcString[c-1] >= 'A' || calcString[c-1]>='G') && calcString[c-1]<='Z'))
+				 ((pref->calcType==SCIENTIFIC && calcString[c-1] >= 'A' || calcString[c-1]>='G') && calcString[c-1]<='Z') || calcString[c-1]=='i')
 		  )
 		{
 			tmp=calcString;
@@ -997,7 +1025,22 @@ char* checkStringAnsi(char* str,Preferences*pref)
 
 
 
-
+inline void convertToFloat(Number*num)
+{
+	switch(num->type)
+	{
+		case NINT:
+			num->cfval=Complex((long double)num->ival); break;
+		case NFLOAT:
+			break;
+		case NBOOL:
+			num->cfval=Complex((long double)num->bval); break;
+		default:
+			num->cfval=Complex(NAN);
+	}
+	num->type=NFLOAT;
+	
+}
 
 
 
@@ -1283,15 +1326,13 @@ int Calculate::split(char* line)
 		}
 		else if(strncmp(line,"sqrt",4) == 0)
 		{
-			operation=ROOT;
-			horzObj=new Calculate(this,&line[4],pref,vars);
-			vertObj=new Calculate(this,"2",pref,vars);
+			operation=SQRT;
+			vertObj=new Calculate(this,&line[4],pref,vars);
 		}
 		else if(strncmp(line,"curt",4) == 0)
 		{
-			operation=ROOT;
-			horzObj=new Calculate(this,&line[4],pref,vars);
-			vertObj=new Calculate(this,"3",pref,vars);
+			operation=CURT;
+			vertObj=new Calculate(this,&line[4],pref,vars);
 		}
 		else{
 			operation=NONE;
@@ -1502,6 +1543,10 @@ double Calculate::calc()
 		}
 		case POW:
 			return pow(vertObj->calc(),horzObj->calc());
+		case SQRT:
+			return sqrt(vertObj->calc());
+		case CURT:
+			return cbrt(vertObj->calc());
 		case ROOT:
 			return pow(horzObj->calc(),1/vertObj->calc());
 		case SIN:
@@ -1914,7 +1959,7 @@ char* Script::parse(char* line)
 		int pos2=0;
 		if(pos1!=len-3)
 		{
-			if(line[pos1+3]=='[' && line[len-1]==']')
+			if(line[pos1+3]=='[' && line[len-1]==']' && len-pos1!=4)
 			{
 				if((pos2=bracketFind(line,"[",pos1+4))!=-1)
 				{
@@ -1964,7 +2009,7 @@ char* Script::parse(char* line)
 			delete[]recString1;
 			return NULL;
 		}
-		eventReciver->numlen[var]=1;
+		//eventReciver->numlen[var]=1;
 		delete[]recString1;
 		return NULL;
 	}
@@ -2105,7 +2150,7 @@ char* Script::parse(char* line)
 			number=NAN;
 			return NULL;
 		}
-		eventReciver->numlen[var]=1;
+//		eventReciver->numlen[var]=1;
 		return NULL;
 	}
 	pos1=0;
@@ -2180,7 +2225,11 @@ char* Script::parse(char* line)
 			printError("First operand of / invalid",semicolonCount,eventReciver->eventReciver);
 		else if(len-pos1<2)
 			printError("Second operand of / invalid",semicolonCount,eventReciver->eventReciver);
-		else operation=DIVIDE;
+		else {
+			if(pref->complex)
+				operation=CDIVIDE;
+			else operation=DIVIDE;
+		}
 		strcopy(recString1,line,pos1);
 		strcopy(recString2,&line[pos1+1],len-pos1-1);
 		vertObj=new Script(this,recString1,pref,vars,eventReciver);
@@ -2190,6 +2239,29 @@ char* Script::parse(char* line)
 		delete[]recString2;
 		return NULL;
 	}
+	else if(bracketFind(line,"$s") != -1)
+	{
+		pos1=bracketFindRev(line,"$s")-1;
+		operation=SFAIL;
+		if(pos1<1)
+			printError("First operand of root invalid",semicolonCount,eventReciver->eventReciver);
+		else if(len-pos1<3)
+			printError("Second operand of root invalid",semicolonCount,eventReciver->eventReciver);
+		else {
+			operation=SCALARPROD;
+		}
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1-1];
+
+		
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+2],len-pos1-2);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}	
 	else if((pos1=bracketFind(line,"%")) != -1)
 	{
 		operation=SFAIL;
@@ -2628,55 +2700,80 @@ char* Script::parse(char* line)
 		}
 		else if(strncmp("sinh",line,4) == 0)
 		{
-			operation=SINH;
+			if(pref->complex)
+				operation=CSINH;
+			else operation=SINH;
 			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
 		}
 		else if(strncmp("cosh",line,4) == 0)
 		{
-			operation=COSH;
+			if(pref->complex)
+				operation=CCOSH;
+			else operation=COSH;
 			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
 		}
 		else if(strncmp("tanh",line,4) == 0)
 		{
-			operation=TANH;
+			if(pref->complex)
+				operation=CTANH;
+			else operation=TANH;
 			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
 		}
 		else if(strncmp("sin",line,3) == 0)
 		{
-			operation=SIN;
+			if(pref->complex)
+				operation=CSIN;
+			else operation=SIN;
 			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
 		}
 		else if(strncmp("cos",line,3) == 0)
 		{
-			operation=COS;
+			if(pref->complex)
+				operation=CCOS;
+			else operation=COS;
 			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
 		}
 		else if(strncmp("tan",line,3) == 0)
 		{
-			operation=TAN;
+			if(pref->complex)
+				operation=CTAN;
+			else operation=TAN;
 			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
 		}
 		else if(strncmp("log",line,3) == 0)
 		{
-			operation=LG;
+			if(pref->complex)
+				operation=CLG;
+			else operation=LG;
 			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
 		}
 		else if(strncmp("ln",line,2) == 0)
 		{
-			operation=LN;
+			if(pref->complex)
+				operation=CLN;
+			else operation=LN;
 			vertObj=new Script(this,&line[2],pref,vars,eventReciver);
 		}
 		else if(strncmp(line,"sqrt",4) == 0)
 		{
-			operation=ROOT;
-			vertObj2=new Script(this,&line[4],pref,vars,eventReciver);
-			vertObj=new Script(this,"2",pref,vars,eventReciver);
+			if(pref->complex)
+				operation=CSQRT;
+			else operation=SQRT;
+			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
 		}
 		else if(strncmp(line,"curt",4) == 0)
 		{
-			operation=ROOT;
-			vertObj2=new Script(this,&line[4],pref,vars,eventReciver);
-			vertObj=new Script(this,"3",pref,vars,eventReciver);
+			if(pref->complex)
+			{
+				operation=CROOT;
+				vertObj=new Script(this,"3",pref,vars,eventReciver);
+				vertObj2=new Script(this,&line[4],pref,vars,eventReciver);
+			}
+			else 
+			{
+				operation=CURT;
+				vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+			}
 		}
 		else if(strncmp(line,"real",4) == 0)
 		{
@@ -2691,20 +2788,22 @@ char* Script::parse(char* line)
 		}
 		else if(strncmp(line,"abs",3) == 0)
 		{
-			operation=SABS;
+			if(pref->complex)
+				operation=CABS;
+			else operation=SABS;
 			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
 		}
-		else if(strncmp(line,"arg",3) == 0)
+		else if(strncmp(line,"arg",3) == 0 && pref->complex)
 		{
 			operation=SARG;
 			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
 		}
-		else if(strncmp(line,"conj",4) == 0)
+		else if(strncmp(line,"conj",4) == 0 && pref->complex)
 		{
 			operation=SCONJ;
 			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
 		}
-		else if(strncmp(line,"i",1) == 0)
+		else if(strncmp(line,"i",1) == 0  && pref->complex)
 		{
 			operation=SVALUE;
 			value.type=NFLOAT;
@@ -2745,7 +2844,12 @@ char* Script::parse(char* line)
 			printError("First operand of ^ invalid",semicolonCount,eventReciver->eventReciver);
 		else if(len-pos1<2)
 			printError("Second operand of ^ invalid",semicolonCount,eventReciver->eventReciver);
-		else operation=POW;
+		else 
+		{
+			if(pref->complex)
+				operation=CPOW;
+			else operation=POW;
+		}
 		strcopy(recString1,line,pos1);
 		strcopy(recString2,&line[pos1+1],len-pos1-1);
 		vertObj=new Script(this,recString1,pref,vars,eventReciver);
@@ -2763,7 +2867,11 @@ char* Script::parse(char* line)
 			printError("First operand of root invalid",semicolonCount,eventReciver->eventReciver);
 		else if(len-pos1<3)
 			printError("Second operand of root invalid",semicolonCount,eventReciver->eventReciver);
-		else operation=ROOT;
+		else {
+			if(pref->complex)
+				operation=CROOT;
+			else operation=ROOT;
+		}
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1-1];
 
@@ -2856,7 +2964,7 @@ char* Script::parse(char* line)
 		if(strncmp(line,"$A",2)==0)
 			var=26;
 		else var=line[0]-65;
-		eventReciver->numlen[var]=1;
+//		eventReciver->numlen[var]=1;
 		return NULL;
 	}
 	else if(line[0]>='A' && line[0]<='Z' && line[len-1]==']')
@@ -2882,14 +2990,20 @@ char* Script::parse(char* line)
 			operation=SMATRIX;
 		}
 		else {
-			char*recString1=new char[len-2];
-			strcopy(recString1,&line[2],len-3);
-			vertObj=new Script(this,recString1,pref,vars,eventReciver);
-			vertObj2=vertObj3=horzObj=nextObj=NULL;
-	//		perror(QString("index: ")+recString1);
-			delete[]recString1;
-			operation=SARRAY;
+			
+			if(len-3<=0)
+				operation=SVECTOR;
+			else {
+				char*recString1=new char[len-2];
+				strcopy(recString1,&line[2],len-3);
+				vertObj=new Script(this,recString1,pref,vars,eventReciver);
+				vertObj2=vertObj3=horzObj=nextObj=NULL;
+	//			perror(QString("index: ")+recString1);
+				delete[]recString1;
+				operation=SARRAY;
+			}
 		}
+
 		var=line[0]-65;
 		if(var>25 || var < 0)
 		{
@@ -2897,7 +3011,7 @@ char* Script::parse(char* line)
 			operation=SFAIL;
 			return NULL;
 		}
-		eventReciver->numlen[var]=1;
+//		eventReciver->numlen[var]=1;
 		return NULL;
 	}
 	else if(line[0] == '\"')
@@ -3061,6 +3175,12 @@ Number Script::exec()
 			return vertObj->exec();
 		case SVALUE:
 			return value;
+		case SVECTOR:
+		{
+			value.type=NVECTOR;
+			value.ival=var;
+			return value;
+		}
 		case SVAR:
 		{
 			return eventReciver->vars[var][0];
@@ -3348,14 +3468,19 @@ Number Script::exec()
 				//vars[var].NewItems(addlen,diffItems);
 				for(int c=0; c<addlen; c++)
 					vars[var].NewItem(0.0);
-			//	delete[]diffItems;
+				//delete[]diffItems;
 			}
-			if(index>=eventReciver->numlen[var])
+			if(index>=eventReciver->numlen[var] || value.type==NVECTOR && index+eventReciver->numlen[value.ival]>=eventReciver->numlen[var])
 			{
-				eventReciver->vars[var]=(Number*)realloc((void*)eventReciver->vars[var],sizeof(Number)*(index+1));
-				for(int c=eventReciver->numlen[var]; c<index+1; c++)
+				int newlen;
+				if(value.type==NVECTOR)
+					newlen=index+eventReciver->numlen[value.ival];
+				else newlen=index+1;
+				eventReciver->vars[var]=(Number*)realloc((void*)eventReciver->vars[var],sizeof(Number)*(newlen));
+				for(int c=eventReciver->numlen[var]; c<newlen; c++)
 					eventReciver->vars[var][c].type=NNONE;
-				eventReciver->numlen[var]=index+1;
+				eventReciver->numlen[var]=newlen;
+//				perror("newlen " +QString::number(eventReciver->numlen[var])+ " " + QString::number(var));
 			}
 			if(vertObj3!=NULL && eventReciver->vars[var][index].type==NCHAR)
 			{
@@ -3427,6 +3552,16 @@ Number Script::exec()
 					int slen=strlen(value.cval);
 					eventReciver->vars[var][index].cval=new char[slen+1];
 					memcpy(eventReciver->vars[var][index].cval,value.cval,slen+1);
+				}
+				else if(value.type==NVECTOR)
+				{
+					int end;
+					if(value.ival==var)
+						end=eventReciver->numlen[var];
+					else end=index+eventReciver->numlen[value.ival];
+					for(int c=end-1; c>=index;c--)
+						eventReciver->vars[var][c]=eventReciver->vars[value.ival][c-index];
+					eventReciver->numlen[var]=end;
 				}
 				else eventReciver->vars[var][index]=value;
 			}
@@ -3692,6 +3827,14 @@ Number Script::exec()
 				case NNONE:
 				case NCHAR:
 					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
+				case NVECTOR:
+					if(value.type!=NVECTOR)
+					{
+						Number tmp=value;
+						value=n;
+						n=tmp;
+					}
+					break;
 			}
 			
 			switch(value.type)
@@ -3716,6 +3859,38 @@ Number Script::exec()
 							value.cfval+=n.cfval; break;
 					}
 					break;
+				case NVECTOR:
+					int index1=value.ival;
+					int minlen=eventReciver->numlen[value.ival];
+					if(n.type==NVECTOR)
+					{
+						int index2=n.ival;
+						
+						if(eventReciver->numlen[n.ival]<minlen)
+							minlen=eventReciver->numlen[n.ival];
+						eventReciver->vars[27]=(Number*)realloc(eventReciver->vars[27],sizeof(Number)*minlen);
+						for(int c=0; c<minlen; c++)
+						{
+							convertToFloat(&eventReciver->vars[index1][c]);
+							convertToFloat(&eventReciver->vars[index2][c]);
+							eventReciver->vars[27][c].type=NFLOAT;
+							eventReciver->vars[27][c].cfval=eventReciver->vars[index1][c].cfval+eventReciver->vars[index2][c].cfval;
+						}
+					}
+					else
+					{
+						convertToFloat(&n);
+						eventReciver->vars[27]=(Number*)realloc(eventReciver->vars[27],sizeof(Number)*minlen);
+						for(int c=0; c<minlen; c++)
+						{
+							convertToFloat(&eventReciver->vars[index1][c]);
+							eventReciver->vars[27][c].type=NFLOAT;
+							eventReciver->vars[27][c].cfval=eventReciver->vars[index1][c].cfval+n.cfval;
+						}
+					}
+					eventReciver->numlen[27]=minlen;
+					value.ival=27;
+					break;
 			}
 			switch(value.type)
 			{
@@ -3725,7 +3900,7 @@ Number Script::exec()
 					value.fval=(long double)value.bval; break;
 				case NCHAR:
 					value.fval=(long double)value.cval[0]; break;
-				case NNONE:
+				default:
 					value.fval=NAN; break;
 			}
 			return value;
@@ -3750,6 +3925,14 @@ Number Script::exec()
 				case NNONE:
 				case NCHAR:
 					n.fval=NAN; n.type=NFLOAT; break;
+				case NVECTOR:
+					if(value.type!=NVECTOR)
+					{
+						Number tmp=value;
+						value=n;
+						n=tmp;
+					}
+					break;
 			}
 			
 			switch(value.type)
@@ -3773,6 +3956,38 @@ Number Script::exec()
 						case NFLOAT:
 							value.cfval-=n.cfval; break;
 					}
+					break;
+				case NVECTOR:
+					int index1=value.ival;
+					int minlen=eventReciver->numlen[value.ival];
+					if(n.type==NVECTOR)
+					{
+						int index2=n.ival;
+						
+						if(eventReciver->numlen[n.ival]<minlen)
+							minlen=eventReciver->numlen[n.ival];
+						eventReciver->vars[27]=(Number*)realloc(eventReciver->vars[27],sizeof(Number)*minlen);
+						for(int c=0; c<minlen; c++)
+						{
+							convertToFloat(&eventReciver->vars[index1][c]);
+							convertToFloat(&eventReciver->vars[index2][c]);
+							eventReciver->vars[27][c].type=NFLOAT;
+							eventReciver->vars[27][c].cfval=eventReciver->vars[index1][c].cfval-eventReciver->vars[index2][c].cfval;
+						}
+					}
+					else
+					{
+						convertToFloat(&n);
+						eventReciver->vars[27]=(Number*)realloc(eventReciver->vars[27],sizeof(Number)*minlen);
+						for(int c=0; c<minlen; c++)
+						{
+							convertToFloat(&eventReciver->vars[index1][c]);
+							eventReciver->vars[27][c].type=NFLOAT;
+							eventReciver->vars[27][c].cfval=eventReciver->vars[index1][c].cfval-n.cfval;
+						}
+					}
+					eventReciver->numlen[27]=minlen;
+					value.ival=27;
 					break;
 			}
 			switch(value.type)
@@ -3807,6 +4022,14 @@ Number Script::exec()
 				case NNONE:
 				case NCHAR:
 					n.fval=NAN; n.type=NFLOAT; break;
+				case NVECTOR:
+					if(value.type!=NVECTOR)
+					{
+						Number tmp=value;
+						value=n;
+						n=tmp;
+					}
+					break;
 			}
 			if(value.type==NINT && n.type==NINT)
 			{
@@ -3821,6 +4044,56 @@ Number Script::exec()
 			{
 				value.cfval=Complex((long double)value.ival,0.0)*n.cfval;
 				value.type=NFLOAT;
+			}
+			else if(value.type==NVECTOR && n.type==NVECTOR)					//cross product
+			{
+				if(eventReciver->numlen[n.ival]>=3 && eventReciver->numlen[value.ival]>=3)
+				{
+					int index1=value.ival;
+					int index2=n.ival;
+					perror(QString::number(index1)+" "+QString::number(index2));
+
+					eventReciver->vars[27]=(Number*)realloc(eventReciver->vars[27],sizeof(Number)*3);
+					for(int c=0; c<3;c++)
+					{
+						eventReciver->vars[27][c].type=NFLOAT;
+						convertToFloat(&eventReciver->vars[index1][c]);
+						convertToFloat(&eventReciver->vars[index2][c]);
+					}
+
+					eventReciver->vars[27][0].cfval=eventReciver->vars[index1][1].cfval*eventReciver->vars[index2][2].cfval-eventReciver->vars[index1][2].cfval*eventReciver->vars[index2][1].cfval;
+					eventReciver->vars[27][1].cfval=eventReciver->vars[index1][2].cfval*eventReciver->vars[index2][0].cfval-eventReciver->vars[index1][0].cfval*eventReciver->vars[index2][2].cfval;
+					eventReciver->vars[27][2].cfval=eventReciver->vars[index1][0].cfval*eventReciver->vars[index2][1].cfval-eventReciver->vars[index1][1].cfval*eventReciver->vars[index2][0].cfval;
+					
+					eventReciver->numlen[27]=3;
+					value.ival=27;
+					value.type=NVECTOR;
+
+				}
+				else {
+					value.type=NNONE;
+					value.cfval=Complex(NAN,0.0);
+				}
+				
+			}
+			else if(value.type==NVECTOR)
+			{
+				int index1=value.ival;
+				int minlen=eventReciver->numlen[value.ival];
+				convertToFloat(&n);
+				eventReciver->vars[27]=(Number*)realloc(eventReciver->vars[27],sizeof(Number)*minlen);
+				for(int c=0; c<minlen; c++)
+				{
+					convertToFloat(&eventReciver->vars[index1][c]);
+					eventReciver->vars[27][c].type=NFLOAT;
+					eventReciver->vars[27][c].cfval=eventReciver->vars[index1][c].cfval*n.cfval;
+				}
+				eventReciver->numlen[27]=minlen;
+				value.ival=27;
+			}
+			else {
+				value.type=NNONE;
+				value.cfval=Complex(NAN,0.0);
 			}
 
 			
@@ -3850,8 +4123,57 @@ Number Script::exec()
 			{
 				if(n.ival==0)
 				{
-					value.fval=NAN;
-					value.type=NNONE;
+					value.cfval=Complex((long double)value.ival/(long double)n.ival,0.0);
+					value.type=NFLOAT;
+				}
+				else {
+					value.fval=(long double)value.ival / (long double)n.ival;
+					value.ival=(long long)value.fval;
+					if((long double)value.ival != value.fval)
+					{
+						value.type=NFLOAT;
+						value.cfval=Complex(value.fval,0.0);
+					}
+				}
+			}
+			else if(value.type==NFLOAT && n.type==NFLOAT)
+				value.cfval=Complex(value.cfval.real()/n.cfval.real());
+			else if(value.type==NFLOAT && n.type==NINT)
+				value.cfval=Complex(value.cfval.real()/(long double)n.ival,0.0);
+			else if(value.type==NINT && n.type==NFLOAT)
+			{
+				value.cfval=Complex((long double)value.ival/n.cfval.real(),0.0);
+				value.type=NFLOAT;
+			}
+
+			return value;
+		}
+		case CDIVIDE:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.ival=(long long)value.bval; value.type=NINT; break;
+				case NNONE:
+				case NCHAR:
+					value.fval=NAN; value.type=NFLOAT; break;
+			}
+			switch(n.type)
+			{
+				case NBOOL:
+					n.ival=(long long)n.bval; n.type=NINT; break;
+				case NNONE:
+				case NCHAR:
+					n.fval=NAN; n.type=NFLOAT; break;
+			}
+			if(value.type==NINT && n.type==NINT)
+			{
+				if(n.ival==0)
+				{
+					value.cfval=Complex((long double)value.ival/(long double)n.ival,0.0);
+					value.type=NFLOAT;
 				}
 				else {
 					value.fval=(long double)value.ival / (long double)n.ival;
@@ -4120,12 +4442,120 @@ Number Script::exec()
 					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
 			}
 
+
+			value.cfval=Complex(powl(value.cfval.real(),n.cfval.real()));
+			return value;
+		}
+		case CPOW:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+			switch(n.type)
+			{
+				case NBOOL:
+					n.cfval=Complex((long double)n.bval,0.0); n.type=NFLOAT; break;
+				case NINT:
+					n.cfval=Complex((long double)n.ival,0.0); n.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
+			}
+
 			if(value.cfval.imag()==0.0 && n.cfval.imag()==0.0)
 				value.cfval=Complex(powl(value.cfval.real(),n.cfval.real()));
 			else value.cfval=pow(value.cfval,n.cfval);
 			return value;
 		}
+		case SQRT:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(sqrtl(value.cfval.real()));
+			return value;
+		}
+		case CURT:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(cbrtl(value.cfval.real()));
+			return value;
+		}
+		case CSQRT:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=sqrt(value.cfval);
+			return value;
+		}
 		case ROOT:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+			switch(n.type)
+			{
+				case NBOOL:
+					n.cfval=Complex((long double)n.bval,0.0); n.type=NFLOAT; break;
+				case NINT:
+					n.cfval=Complex((long double)n.ival,0.0); n.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(powl(n.cfval.real(),1.0/value.cfval.real()));
+			return value;
+		}
+		case CROOT:
 		{
 			value=vertObj->exec();
 			Number n=vertObj2->exec();
@@ -4166,13 +4596,67 @@ Number Script::exec()
 				case NCHAR:
 					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
 			}
+			value.cfval=Complex(value.cfval.real()/number);
+
+			value.cfval=Complex(sinl(value.cfval.real()));
+			return value;
+		}
+		case COS:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+			value.cfval=Complex(value.cfval.real()/number);
+			value.cfval=Complex(cosl(value.cfval.real()));
+			return value;
+			
+		}
+		case TAN:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+			value.cfval=Complex(value.cfval.real()/number);
+			value.cfval=Complex(tanl(value.cfval.real()));
+			return value;
+			
+		}
+		case CSIN:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
 			value.cfval=Complex(value.cfval.real()/number,value.cfval.imag());
 			
 
 			value.cfval=sin(value.cfval);
 			return value;
 		}
-		case COS:
+		case CCOS:
 		{
 			value=vertObj->exec();
 			switch(value.type)
@@ -4190,7 +4674,7 @@ Number Script::exec()
 			return value;
 			
 		}
-		case TAN:
+		case CTAN:
 		{
 			value=vertObj->exec();
 			switch(value.type)
@@ -4351,7 +4835,7 @@ Number Script::exec()
 					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
 			}
 
-			value.cfval=sinh(value.cfval);
+			value.cfval=Complex(sinhl(value.cfval.real()));
 			return value;
 			
 		}
@@ -4369,11 +4853,65 @@ Number Script::exec()
 					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
 			}
 
-			value.cfval=cosh(value.cfval);
+			value.cfval=Complex(cosh(value.cfval.real()));
 			return value;
 			
 		}
 		case TANH:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(tanh(value.cfval.real()));
+			return value;
+			
+		}
+		case CSINH:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=sinh(value.cfval);
+			return value;
+			
+		}
+		case CCOSH:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=cosh(value.cfval);
+			return value;
+			
+		}
+		case CTANH:
 		{
 			value=vertObj->exec();
 			switch(value.type)
@@ -4405,11 +4943,46 @@ Number Script::exec()
 					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
 			}
 
-			value.cfval=log(value.cfval);
+			value.cfval=Complex(log(value.cfval.real()));
 			return value;
 			
 		}
 		case LG:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(log10(value.cfval.real()));
+			return value;
+		}
+		case CLN:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=log(value.cfval);
+			return value;
+			
+		}
+		case CLG:
 		{
 			value=vertObj->exec();
 			switch(value.type)
@@ -4461,6 +5034,23 @@ Number Script::exec()
 			return value;
 		}
 		case SABS:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NBOOL:
+					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
+				case NINT:
+					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
+				case NNONE:
+				case NCHAR:
+					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+			}
+
+			value.cfval=Complex(fabsl(value.cfval.real()));
+			return value;
+		}
+		case CABS:
 		{
 			value=vertObj->exec();
 			switch(value.type)
@@ -5063,6 +5653,29 @@ Number Script::exec()
 #else
 			value.cfval=Complex(((rand()%1000000000)*value.fval)/1000000000,0.0);
 #endif
+			return value;
+		}
+		case SCALARPROD:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			if(value.type==NVECTOR && n.type==NVECTOR && eventReciver->numlen[value.ival]==eventReciver->numlen[n.ival])
+			{
+				int len=eventReciver->numlen[value.ival];
+				value.cfval=Complex(0.0,0.0);
+				for(int c=0; c<len;c++)
+				{
+					convertToFloat(&eventReciver->vars[value.ival][c]);
+					convertToFloat(&eventReciver->vars[n.ival][c]);
+					value.cfval+=eventReciver->vars[value.ival][c].cfval*eventReciver->vars[n.ival][c].cfval;
+				}
+				value.type=NFLOAT;
+			}
+			else {
+				value.type=NNONE;
+				value.cfval=Complex(NAN,0.0);
+			}
+			
 			return value;
 		}
 		case SSLEEP:

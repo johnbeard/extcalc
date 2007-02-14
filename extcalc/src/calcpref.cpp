@@ -30,6 +30,9 @@ void CalcPreferences::saveSlot()
 	else if(baseBox->currentItem() == 3)
 		pref.base=BIN;
 	
+	pref.complex=complexBox->isChecked();
+	
+	
 	pref.outputLength=outputLenBox->value();
 		
 	emit prefChange(pref);

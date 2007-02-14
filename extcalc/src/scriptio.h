@@ -90,8 +90,8 @@ class ScriptIOWidget :public QWidget
 		ScriptIOWidget(QWidget*parent,Preferences pr,Variable *) :QWidget(parent)
 		{
 		//	vars=va;
-			vars=new Variable [27];
-			for(int c=0; c<27;c++)
+			vars=new Variable [VARNUM];
+			for(int c=0; c<VARNUM;c++)
 				vars[c].NewItem(0.0);
 			pref=pr;
 			maximized=false;
@@ -114,8 +114,8 @@ class ScriptIOWidget :public QWidget
 			threadData->calcMode=false;
 			threadData->data=NULL;
 			threadData->sleepTime=1000;
-			threadData->vars=new Number*[27];
-			for(int c=0; c<27;c++)
+			threadData->vars=new Number*[VARNUM];
+			for(int c=0; c<VARNUM;c++)
 			{
 				threadData->vars[c]=(Number*)malloc(sizeof(Number));
 				threadData->numlen[c]=1;

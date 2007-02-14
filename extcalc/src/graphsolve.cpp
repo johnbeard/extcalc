@@ -690,10 +690,13 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 	char*modifiedFunction=(char*)cleanFunction.ascii();
 	Calculate *cfx=NULL;
 	Script*sfx=NULL;
+	bool oldcpref=pref.complex;
+	pref.complex=true;
+
 	if(forceScript)
 		sfx=new Script(NULL,modifiedFunction,&pref,vars,threadData);
 	else cfx=new Calculate(NULL,modifiedFunction,&pref,vars);
-	
+	pref.complex=oldcpref;	
 	QString strdfx("d/dx("+function+"");
 	cf=checkString(strdfx,&pref);
 	cleanFunction=QString(cf);
@@ -709,12 +712,14 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 	modifiedFunction=(char*)cleanFunction.ascii();
 	
 	Calculate *cdfx=NULL;
+	oldcpref=pref.complex;
+	pref.complex=true;
 	Script*sdfx=NULL;
 	if(forceScript)
 		sdfx=new Script(NULL,modifiedFunction,&pref,vars,threadData);
 	else cdfx=new Calculate(NULL,modifiedFunction,&pref,vars);
 	List <long double> results;
-
+	pref.complex=oldcpref;
 
 	long double fx1,dfx1;
 	if(forceScript)
@@ -1119,7 +1124,10 @@ void GraphSolveWidget::solveButtonSlot()
 						else {
 							yFunction="imag("+pref.functions[funcIndex]+")";
 							char*cleanFunc=checkString(yFunction,&pref);
+							bool oldcpref=pref.complex;
+							pref.complex=true;
 							syf=new Script(NULL,cleanFunc,&pref,vars,threadData);
+							pref.complex=oldcpref;
 							threadData->vars[25][0].type=NFLOAT;
 						}
 						
@@ -1285,7 +1293,10 @@ void GraphSolveWidget::solveButtonSlot()
 						else {
 							yFunction="real("+pref.functions[funcIndex]+")";
 							char*cleanFunc=checkString(yFunction,&pref);
+							bool oldcpref=pref.complex;
+							pref.complex=true;
 							sxf=new Script(NULL,cleanFunc,&pref,vars,threadData);
+							pref.complex=oldcpref;
 							threadData->vars[25][0].type=NFLOAT;
 						}
 

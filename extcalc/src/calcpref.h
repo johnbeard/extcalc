@@ -26,6 +26,7 @@ class CalcPreferences :public QWidget
 	QComboBox *angleBox, *outputBox, *calcModeBox, *baseBox;
 	QSpinBox *outputLenBox;
 	QPushButton*saveButton,*cancelButton;
+	QCheckBox*complexBox;
 	QLabel *angleLabel,*outputLabel,*outputLenLabel,*calcModeLabel,*baseLabel;
 	Preferences pref;
 	
@@ -46,10 +47,11 @@ class CalcPreferences :public QWidget
 			outputLenLabel=new QLabel(CALCPREFH_STR5,this);
 			calcModeLabel=new QLabel(CALCPREFH_STR6,this);
 			baseLabel=new QLabel(CALCPREFH_STR7,this);
+			complexBox=new QCheckBox("Complex",this);
 			
-			setGeometry(0,0,400,260);
+			setGeometry(0,0,400,290);
 			setFixedWidth(400);
-			setFixedHeight(260);
+			setFixedHeight(290);
 			
 			angleLabel->setGeometry(10,10,150,20);
 			angleBox->setGeometry(160,10,120,30);
@@ -59,10 +61,11 @@ class CalcPreferences :public QWidget
 			outputLenBox->setGeometry(160,90,80,30);
 			calcModeLabel->setGeometry(10,130,150,20);
 			calcModeBox->setGeometry(160,130,160,30);
-			baseLabel->setGeometry(10,170,150,20);
-			baseBox->setGeometry(160,170,120,30);
-			saveButton->setGeometry(90,220,100,30);
-			cancelButton->setGeometry(210,220,100,30);
+			complexBox->setGeometry(160,165,300,20);
+			baseLabel->setGeometry(10,200,150,20);
+			baseBox->setGeometry(160,200,120,30);
+			saveButton->setGeometry(90,250,100,30);
+			cancelButton->setGeometry(210,250,100,30);
 			
 			angleBox->insertItem("DEG");
 			angleBox->insertItem("RAD");
@@ -74,6 +77,8 @@ class CalcPreferences :public QWidget
 			
 			calcModeBox->insertItem(CALCPREFH_STR11);
 			calcModeBox->insertItem(CALCPREFH_STR12);
+			
+			complexBox->setChecked(pref.complex);
 			
 			baseBox->insertItem("hex");
 			baseBox->insertItem("dec");

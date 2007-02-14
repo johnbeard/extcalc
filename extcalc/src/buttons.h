@@ -220,13 +220,14 @@ public:
 		QString buttonName[] ={	"Shift","Rand",	"!",	"i",	"",		"",
 								"Alpha","x\xb3","\xb3",	"abs",	"arg",	"conj",
 								"10^",	"^",	"hyp",	"asin",	"acos",	"atan",
-								"==",	"[",	"{",	"}",	"]",	"!=",
+								"==",	"[",	"{",	"}",	"]",	"",
 		};
 
 		buttonName[8].insert(1,getUnicode(ROOTSTRING));
 		buttonName[13].insert(0,getUnicode(EULERSTRING));
 		buttonName[4].insert(0,getUnicode(PISTRING));
 		buttonName[5].insert(0,getUnicode(EULERSTRING));
+		buttonName[23].insert(0,getUnicode(DEGREESTRING));
 	//	buttons[14].setToggleButton(true);
 		((QPushButton*)find(14))->setToggleButton(true);
 

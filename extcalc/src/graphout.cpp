@@ -297,7 +297,6 @@ GLuint GraphOutput::draw3dAxes()
 	if(pref.raster)
 	{
 
-		double coord;
 		qglColor( QColor(220,220,220) );
 
 		for(float c=pref.xmin-fmod(pref.xmin,pref.rasterSizeX)+pref.rasterSizeX; c<pref.xmax; c+=pref.rasterSizeX)		
@@ -1146,7 +1145,10 @@ void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
 	}
 
 	QString num,num2;
+	bool oldcpref=pref.complex;
+	pref.complex=true;
 	Script ca1(NULL,func,&pref,vars,threadData);
+	pref.complex=oldcpref;
 	struct timeval t1,t2;
 	Number result;
 	

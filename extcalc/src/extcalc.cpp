@@ -195,6 +195,7 @@ int MainObject::readConfigFile()
 			fwrite("ANALYSEPRECISION=1\n",19,1,configFile);
 			fwrite("GRAPHTYPE=std\n",14,1,configFile);
 			fwrite("CALCTYPE=scientific\n",20,1,configFile);
+			fwrite("COMPLEX=false\n",14,1,configFile);
 			fwrite("TABLETYPE=normal\n",17,1,configFile);
 			fwrite("BASE=dec\n",9,1,configFile);
 			fwrite("SHOWWIN1=true\n",14,1,configFile);
@@ -615,6 +616,14 @@ int MainObject::readConfigFile()
 		else pref.show3dGrid=true;
 	}
 	
+	QString compStr=getConfigString(&confFile,"COMPLEX");
+	if(compStr.length()>0)
+	{
+		if(compStr.lower() == "false")
+			pref.complex=false;
+		else pref.complex=true;
+	}
+	
 	QString logStr=getConfigString(&confFile,"LOGNYQUISTSTEPS");
 	if(logStr.length()>0)
 	{
@@ -916,6 +925,10 @@ void MainObject::writeConfigFile()
 	if(pref.calcType == BASE)
 		configuration+="base";
 	else configuration+="scientific";
+	configuration+="\nCOMPLEX=";
+	if(pref.complex == true)
+		configuration+="true";
+	else configuration+="false";
 	configuration+="\nTABLETYPE=";
 	if(pref.tableType==TABLENORMAL)
 		configuration+="normal";
@@ -1086,11 +1099,18 @@ void MainObject::outputMenuSlot(int item)
 
 void MainObject::calcTypeMenuSlot(int item)
 {
-	if(calcFocus || item==SCIENTIFIC)
+	if(item==COMPLEXMENU)
+	{
+		pref.complex=!pref.complex;
+		getPref(pref);
+	}
+	else if(calcFocus || item==SCIENTIFIC)
 	{
 		pref.calcType=item;
 		getPref(pref);
 	}
+
+	
 }
 void MainObject::baseMenuSlot(int item)
 {

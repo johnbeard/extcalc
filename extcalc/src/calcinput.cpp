@@ -208,7 +208,7 @@ void CalcInput::calculateKey()
 	
 
 	
-	strResult=formatOutput(nResult,&pref);
+	strResult=formatOutput(nResult,&pref,threadData);
 	
 	threadData->vars[26][0]=nResult;
 //	while(strResult->length() < (unsigned)(lineLength-3))

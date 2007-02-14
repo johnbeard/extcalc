@@ -1,7 +1,7 @@
 /****************************************************************************
 ** CalcTable meta object code from reading C++ file 'calctable.h'
 **
-** Created: Thu Dec 28 21:00:07 2006
+** Created: Mon Feb 12 20:24:09 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
 **
 ** WARNING! All changes made in this file will be lost!
