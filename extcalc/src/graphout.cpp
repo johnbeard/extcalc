@@ -1166,22 +1166,22 @@ void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
 		for(int c=0; c<=pref.nyquistSteps; c++)
 		{
 			
-			threadData->vars[25][0].cfval=Complex(zStart+(double)c*zStep,0.0);
+			threadData->vars[25][0].fval=Complex(zStart+(double)c*zStep,0.0);
 			result=ca1.exec();
-			objectCoordinates[index][3*c+2]  =threadData->vars[25][0].cfval.real();
-			objectCoordinates[index][3*c]=result.cfval.real();
-			objectCoordinates[index][3*c+1]=result.cfval.imag();
+			objectCoordinates[index][3*c+2]  =threadData->vars[25][0].fval.real();
+			objectCoordinates[index][3*c]=result.fval.real();
+			objectCoordinates[index][3*c+1]=result.fval.imag();
 		}
 	}
 	else {
 		for(int c=0; c<=pref.nyquistSteps; c++)
 		{
 			if(pref.logNyquistSteps)
-				threadData->vars[25][0].cfval=Complex(pow(10,zStart+(double)c*zStep),0.0);
-			else threadData->vars[25][0].cfval=Complex(zStart+(double)c*zStep,0.0);
+				threadData->vars[25][0].fval=Complex(pow(10,zStart+(double)c*zStep),0.0);
+			else threadData->vars[25][0].fval=Complex(zStart+(double)c*zStep,0.0);
 			result=ca1.exec();
-			objectCoordinates[index][2*c]=result.cfval.real();
-			objectCoordinates[index][2*c+1]=result.cfval.imag();
+			objectCoordinates[index][2*c]=result.fval.real();
+			objectCoordinates[index][2*c+1]=result.fval.imag();
 		}
 	}
 	
@@ -1733,7 +1733,7 @@ void GraphOutput::processFunction(int index)
 				for(int c=0; c<=dynamicSteps; c++)
 				{
 					threadData->vars[0][0].type=NFLOAT;
-					threadData->vars[0][0].cfval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
+					threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
 					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
 					objectInfo.NewItem(info);
 					processComplexFunction(pref.functions[index]);
@@ -1744,7 +1744,7 @@ void GraphOutput::processFunction(int index)
 				for(int c=0; c<=dynamicSteps; c++)
 				{
 					threadData->vars[0][0].type=NFLOAT;
-					threadData->vars[0][0].cfval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
+					threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
 					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
 					objectInfo.NewItem(info);
 					processComplexFunction(pref.functions[index],true);

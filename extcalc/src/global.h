@@ -264,7 +264,8 @@ using namespace std;
 #define DIFFSTRING			8706
 #define DEGREESTRING		176
 
-#define VARNUM				28
+#define VARNUM				29
+#define VARDIMENSIONS		2
 
 
 
@@ -344,10 +345,8 @@ struct Preferences
 
 struct Number
 {
-	long double fval;
-	long double *fvector;		//matrix
-	int dimension;				//vector size
-	complex <long double> cfval;
+
+	complex <long double> fval;
 	long long ival;
 	bool bval;
 	char*cval;
@@ -370,7 +369,8 @@ struct ThreadSync
 	bool bbreak;
 	bool bcontinue;
 	bool calcMode;
-	int numlen[VARNUM];
+	int numlen[VARNUM];	
+	int dimension[VARNUM][VARDIMENSIONS];					//vector, matrix size
 	Number**vars;
 	List <Math*>subprograms;
 	List <char*>subprogramPath;
@@ -401,8 +401,9 @@ QColor getColor(QString colorName);
 QString getColorName(QColor col);
 long double runCalc(QString,Preferences*,Variable*);
 void printError(const char*,int,QObject*);
-inline void convertToFloat(Number*num);
-
+void convertToFloat(Number*num);
+inline void convertToInt(Number*num);
+inline void convertToBool(Number*num);
 
 
 // for compatibility with systems without math functions for long double
@@ -522,6 +523,10 @@ class Script :public Math
 	Number value;
 	Math*nextObj,*vertObj2,*vertObj3;
 	ThreadSync*eventReciver;
+		
+private:
+	
+	inline bool resizeVar(int var,int newlen);
 
 public:
 
@@ -547,7 +552,7 @@ public:
 	{
 		if(value.type==SVALUE && value.type==NCHAR && value.cval!=NULL)
 		{
-			delete[]value.cval;
+			free(value.cval);
 			value.cval=NULL;
 		}
 		if(horzObj!=NULL)
@@ -587,6 +592,7 @@ public:
 	virtual Number exec();
 	virtual Number execVertObj();
 	virtual Number execHorzObj();
+
 };
 
 #endif

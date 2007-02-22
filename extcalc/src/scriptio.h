@@ -98,7 +98,7 @@ class ScriptIOWidget :public QWidget
 			scriptExec=false;
 			script=NULL;
 			inputMode=IMDEFAULT;
-			inputBuffer="";
+			inputBuffer=(char*)calloc(1,1);
 			bufferCursor=0;
 			scriptObject=NULL;
 			
@@ -120,6 +120,9 @@ class ScriptIOWidget :public QWidget
 				threadData->vars[c]=(Number*)malloc(sizeof(Number));
 				threadData->numlen[c]=1;
 				threadData->vars[c][0].type=NNONE;
+				threadData->vars[c][0].cval=NULL;
+				for(int c1=0; c1<VARDIMENSIONS; c1++)
+					threadData->dimension[c][c1]=1;
 			}
 			
 			t=new QTimer(this);

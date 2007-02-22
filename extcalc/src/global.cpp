@@ -70,7 +70,7 @@ QString getUnicode(int code)
 	QString retString;
 	QChar cCode((unsigned short)code);
 	retString.setUnicode(&cCode,1);	
-	
+
 	return retString;
 }
 
@@ -211,13 +211,13 @@ QString formatOutput(Number num,Preferences*pref,ThreadSync*varData)
 			break;
 		case NFLOAT:
 		case NCOMPLEX:
-			ret=formatOutput(num.cfval.real(),pref);
-			if(num.cfval.imag()!=0.0 && pref->complex)
+			ret=formatOutput(num.fval.real(),pref);
+			if(num.fval.imag()!=0.0 && pref->complex)
 			{
-				if(num.cfval.imag()>0.0)
+				if(num.fval.imag()>0.0)
 					ret+=" +";
 				else ret+=" ";
-				ret+=formatOutput(imag(num.cfval),pref);
+				ret+=formatOutput(imag(num.fval),pref);
 				ret+="i";
 			}
 //			ret+="(float)";
@@ -239,16 +239,33 @@ QString formatOutput(Number num,Preferences*pref,ThreadSync*varData)
 					ret=QString("invalid");
 					break;
 				}
-				int end=varData->numlen[num.ival];
+				int end=varData->dimension[num.ival][0];
 				ret=QString("");
 				for(int c=0; c<end;c++)
 				{
-					if(varData->vars[num.ival][c].type!=NVECTOR)
+					if(varData->vars[num.ival][c].type!=NVECTOR && varData->vars[num.ival][c].type!=NMATRIX)
 						ret+=formatOutput(varData->vars[num.ival][c],pref);
 					ret+=" ";
 				}
 			}
 			break;
+		case NMATRIX:
+		{
+			int effIndex;
+			for(int c=0; c<varData->dimension[num.ival][0];c++)
+			{
+				for(int c1=0; c1<varData->dimension[num.ival][1];c1++)
+				{
+					effIndex=c1*varData->dimension[num.ival][0]+c;
+					if(effIndex<=varData->numlen[num.ival] && varData->vars[num.ival][effIndex].type!=NMATRIX && varData->vars[num.ival][effIndex].type!=NVECTOR)
+						ret+=formatOutput(varData->vars[num.ival][effIndex],pref);
+					else ret+="invalid";
+					ret+=" ";
+				}
+				ret+="\n";
+			}
+			break;
+	}
 		default:
 			ret=("invalid");
 			break;
@@ -1025,24 +1042,64 @@ char* checkStringAnsi(char* str,Preferences*pref)
 
 
 
-inline void convertToFloat(Number*num)
+void convertToFloat(Number*num)
 {
 	switch(num->type)
 	{
 		case NINT:
-			num->cfval=Complex((long double)num->ival); break;
+			num->fval=Complex((long double)num->ival); break;
 		case NFLOAT:
 			break;
 		case NBOOL:
-			num->cfval=Complex((long double)num->bval); break;
+			num->fval=Complex((long double)num->bval); break;
 		default:
-			num->cfval=Complex(NAN);
+			num->fval=Complex(NAN);
 	}
 	num->type=NFLOAT;
 	
 }
 
+void convertToInt(Number*num)
+{
+	switch(num->type)
+	{
+		case NINT:
+			break;
+		case NFLOAT:
+			num->ival=(long long)num->fval.real();break;
+		case NBOOL:
+			num->ival=(long long)num->bval; break;
+		case NCHAR:
+			if(num->cval==NULL) 
+				num->ival=0;
+			else num->ival=(long long)num->cval[0]; break;
+		default:
+			num->ival=0;
+	}
+	num->type=NFLOAT;
+}
 
+void convertToBool(Number*num)
+{
+	switch(num->type)
+	{
+		case NBOOL:
+			break;
+		case NINT:
+			num->bval=num->ival!=0; break;
+			break;
+		case NFLOAT:
+			num->bval=num->fval.real()!=0.0; break;
+		case NCHAR:
+			if(num->cval==NULL) 
+				num->bval=false;
+			else num->bval=(long long)num->cval[0]!=0; break;
+		default:
+			num->bval=false;
+	}
+	num->type=NBOOL;
+	
+}
 
 
 
@@ -1737,7 +1794,7 @@ char* Script::parse(char* line)
 		return NULL;
 	}
 	
-//	perror(line);
+	perror(line);
 	
 	int pos1;
 	int len=strlen(line);
@@ -2807,8 +2864,7 @@ char* Script::parse(char* line)
 		{
 			operation=SVALUE;
 			value.type=NFLOAT;
-			value.fval=0.0;
-			value.cfval=Complex(0.0,1.0);
+			value.fval=Complex(0.0,1.0);
 			return NULL;
 		}
 		else{
@@ -2958,7 +3014,7 @@ char* Script::parse(char* line)
 			return recString2;
 		}
 	}
-	else if((pref->calcType == SCIENTIFIC && line[0]>='A' || line[0]>='G') && line[0]<='Z'&& len==1 || strncmp(line,"$A",2)==0 )
+	else if((pref->calcType == SCIENTIFIC && line[0]>='A' || line[0]>='G') && line[0]<='Z'&& len==1 || strncmp(line,"$A",2)==0 &&len==2)
 	{
 		operation=SVAR;
 		if(strncmp(line,"$A",2)==0)
@@ -2967,9 +3023,16 @@ char* Script::parse(char* line)
 //		eventReciver->numlen[var]=1;
 		return NULL;
 	}
-	else if(line[0]>='A' && line[0]<='Z' && line[len-1]==']')
+	else if((line[0]>='A' && line[0]<='Z' || strncmp(line,"$A",2)==0) && line[len-1]==']')
 	{
-
+		if(strncmp(line,"$A",2)==0)
+		{
+			var=26;
+			line++;
+			len--;
+		}
+		else var=line[0]-65;
+		
 		if((pos1=bracketFind(line,"[",2))!=-1)
 		{
 			if(line[pos1-1] !=']')
@@ -2978,19 +3041,26 @@ char* Script::parse(char* line)
 				operation=SFAIL;
 				return NULL;
 			}
-			char*recString1=new char[pos1-2];
-			char*recString2=new char[len-pos1-1];
-			strcopy(recString1,&line[2],pos1-3);
-			strcopy(recString2,&line[pos1+1],len-pos1-2);
-			vertObj=new Script(this,recString1,pref,vars,eventReciver);
-			vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-	//		perror(QString("index: ")+recString1);
-			delete[]recString1;
-			delete[]recString2;
+			if(pos1-3<=0 && len-pos1-2<=0)
+			{
+				vertObj=vertObj2=NULL;
+			}
+			else {
+				char*recString1=new char[pos1-2];
+				char*recString2=new char[len-pos1-1];
+				strcopy(recString1,&line[2],pos1-3);
+				strcopy(recString2,&line[pos1+1],len-pos1-2);
+				
+				vertObj=new Script(this,recString1,pref,vars,eventReciver);
+				vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+		//		perror(QString("index: ")+recString1);
+				delete[]recString1;
+				delete[]recString2;
+			}
 			operation=SMATRIX;
 		}
 		else {
-			
+
 			if(len-3<=0)
 				operation=SVECTOR;
 			else {
@@ -3004,8 +3074,7 @@ char* Script::parse(char* line)
 			}
 		}
 
-		var=line[0]-65;
-		if(var>25 || var < 0)
+		if(var>26 || var < 0)
 		{
 			printError("Invalid variable",semicolonCount,eventReciver->eventReciver);
 			operation=SFAIL;
@@ -3023,9 +3092,8 @@ char* Script::parse(char* line)
 			return NULL;
 		}
 		operation=SVALUE;
-		value.fval=NAN;
 		value.type=NCHAR;
-		value.cval=new char[len-1];
+		value.cval=(char*)malloc(len-1);
 		strcopy(value.cval,&line[1],len-2);
 		return NULL;
 	}
@@ -3061,9 +3129,8 @@ char* Script::parse(char* line)
 			operation=SFAIL;
 			return NULL;
 		}
-		value.fval=(long double)value.ival;
-		
-		
+
+
 		return NULL;
 	}
 	else {
@@ -3083,21 +3150,16 @@ char* Script::parse(char* line)
 			else if(pref->base == DEC)
 				value.ival=strtoll(line,&err,10);
 
-			value.fval=(long double)value.ival;
 		}
 		else
 		{
 			value.ival=strtoll(line,&err,10);
 			if(*err!=(char)0)
 			{
-				value.fval=strtold(line,&err);
-				value.cfval=Complex(value.fval,0.0);
+				value.fval=Complex(strtold(line,&err),0.0);
 				value.type=NFLOAT;
 			}
-			else {
-				value.type=NINT;
-				value.fval=(long double)value.ival;
-			}
+			else value.type=NINT;
 		}
 		if(*err!=(char)0)
 		{
@@ -3139,7 +3201,7 @@ double Script::calcHorzObj()
 Number Script::exec()
 {
 
-	//	perror("exec: "+QString::number(operation));
+//	perror("exec: "+QString::number(operation));
 	if(eventReciver->status)
 	{
 		
@@ -3194,7 +3256,7 @@ Number Script::exec()
 			else if(value.type==NINT)
 				index=value.ival;
 			else if(value.type==NFLOAT)
-				index=(int)value.cfval.real();
+				index=(int)value.fval.real();
 			if(index<0)
 				index=0;
 			if(index>=eventReciver->numlen[var])
@@ -3206,41 +3268,41 @@ Number Script::exec()
 		}
 		case SMATRIX:
 		{
-			value=vertObj->exec();
+			if(vertObj==NULL && vertObj2==NULL)
+			{
+				value.type=NMATRIX;
+				value.ival=var;
+				return value;
+			}
 			int index=0,index2=0;
-			if(value.type==NBOOL)
-				index=(int)value.bval;
-			else if(value.type==NINT)
-				index=value.ival;
-			else if(value.type==NFLOAT)
-				index=(int)value.cfval.real();
+			
+			value=vertObj->exec();
+			convertToInt(&value);
+			index=value.ival;
 			if(index<0)
 				index=0;
 			
 			value=vertObj2->exec();
-			if(value.type==NBOOL)
-				index2=(int)value.bval;
-			else if(value.type==NINT)
-				index2=value.ival;
-			else if(value.type==NFLOAT)
-				index2=(int)value.cfval.real();
+			index2=value.ival;
+			convertToInt(&value);
 			if(index2<0)
 				index2=0;
-			if(index>=eventReciver->numlen[var])
+			int effIndex=index+index2*eventReciver->dimension[var][0];
+			perror("matrix effIndex: "+QString::number(effIndex));
+			if(effIndex>=eventReciver->numlen[var])
 			{
-				eventReciver->vars[var]=(Number*)realloc((void*)eventReciver->vars[var],sizeof(Number)*(index+1));
-				eventReciver->numlen[var]=index+1;
-				eventReciver->vars[var][index].type=NNONE;
+				value.type=NNONE;
+				return value;
 			}
 			else if(eventReciver->vars[var][index].type==NCHAR)
 			{
 				value.type=NINT;
-				if((signed)strlen(eventReciver->vars[var][index].cval)>index2)
+				if(eventReciver->vars[var][index].cval!=NULL && (signed)strlen(eventReciver->vars[var][index].cval)>index2)
 					value.ival=(long long)eventReciver->vars[var][index].cval[index2];
 				else value.ival=0;
 				return value;
 			}
-			return eventReciver->vars[var][index];
+			return eventReciver->vars[var][effIndex];
 		}
 		case SCOMPARE:
 		{
@@ -3250,19 +3312,19 @@ Number Script::exec()
 			if(n1.type==NFLOAT)
 			{
 				if(n2.type==NFLOAT)
-					value.bval=(n1.cfval==n2.cfval);
+					value.bval=(n1.fval==n2.fval);
 				else if(n2.type==NBOOL)
-					value.bval=(n1.cfval.real()==(long double)n2.bval);
+					value.bval=(n1.fval.real()==(long double)n2.bval);
 				else if(n2.type==NINT)
-					value.bval=(n1.cfval.real()==(long double)n2.ival);
+					value.bval=(n1.fval.real()==(long double)n2.ival);
 				else value.bval=false;
 			}
 			else if(n2.type==NFLOAT)
 			{
 				if(n1.type==NBOOL)
-					value.bval=(n2.cfval.real()==(long double)n1.bval);
+					value.bval=(n2.fval.real()==(long double)n1.bval);
 				else if(n1.type==NINT)
-					value.bval=(n2.cfval.real()==(long double)n1.ival);
+					value.bval=(n2.fval.real()==(long double)n1.ival);
 				else value.bval=false;
 			}
 			else if(n1.type==NINT)
@@ -3292,7 +3354,6 @@ Number Script::exec()
 			else if(n1.type==n2.type)
 				value.bval=true;
 			else value.bval=false;
-			value.fval=(long double)value.bval;
 			return value;
 		}
 		case SIF:
@@ -3305,7 +3366,7 @@ Number Script::exec()
 				if(value.ival)
 					vertObj2->exec();
 			else if(value.type==NFLOAT)
-				if(value.cfval.real()!=0.0)
+				if(value.fval.real()!=0.0)
 					vertObj2->exec();
 			if(nextObj==NULL)
 				return value;
@@ -3323,7 +3384,7 @@ Number Script::exec()
 					vertObj2->exec();
 				else vertObj3->exec();
 			else if(value.type==NFLOAT)
-				if(value.cfval.real()!=0.0)
+				if(value.fval.real()!=0.0)
 					vertObj2->exec();
 				else vertObj3->exec();
 			else vertObj3->exec();
@@ -3344,7 +3405,7 @@ Number Script::exec()
 					if(value.ival==0)
 						break;
 				else if(value.type==NFLOAT)
-					if(value.cfval.real()==0.0)
+					if(value.fval.real()==0.0)
 						break;
 				else break;
 				vertObj2->exec();
@@ -3381,7 +3442,7 @@ Number Script::exec()
 						if(value.ival==0)
 							break;
 					else if(value.type==NFLOAT)
-						if(value.cfval.real()==0.0)
+						if(value.fval.real()==0.0)
 							break;
 					else break;
 					horzObj->exec();
@@ -3412,7 +3473,7 @@ Number Script::exec()
 						if(value.ival==0)
 							break;
 					else if(value.type==NFLOAT)
-						if(value.cfval.real()==0.0)
+						if(value.fval.real()==0.0)
 							break;
 					else break;
 					horzObj->exec();
@@ -3438,17 +3499,12 @@ Number Script::exec()
 		}
 		case SSET:
 		{
-			int index=0,index2=-1;
+			int index=0,index2=0,effIndex=0,oldDimension1=eventReciver->dimension[var][0],oldDimension2=eventReciver->dimension[var][1];
+			int newlen=1;
+			bool charOperation=false;
 			value=vertObj->exec();
 
-			if(value.type==NINT)
-				value.fval=(long double)value.ival;
-			else if(value.type==NFLOAT)
-				value.fval=value.cfval.real();
-			else if(value.type==NCHAR)
-				value.fval=(long double)value.cval[0];
-			else if(value.type==NBOOL)
-				value.fval=(long double)value.bval;
+
 			if(vertObj2!=NULL)
 			{
 				Number nIndex=vertObj2->exec();
@@ -3457,32 +3513,24 @@ Number Script::exec()
 				else if(nIndex.type==NINT)
 					index=nIndex.ival;
 				else if(nIndex.type==NFLOAT)
-					index=(int)nIndex.cfval.real();
+					index=(int)nIndex.fval.real();
 				if(index<0)
 					index=0;
+				
+				if(vertObj3==NULL && eventReciver->vars[var][0].type==NCHAR && value.type!=NCHAR)
+				{
+					charOperation=true;
+					newlen=1;
+					index2=index;
+					index=0;
+				}
+				else {
+					if(eventReciver->dimension[var][0]<index+1)
+						eventReciver->dimension[var][0]=index+1;
+					newlen=index+1;
+				}
 			}
-			if(index>=vars[var].GetLen())
-			{
-				int addlen=index-vars[var].GetLen()+1;
-				//long double*diffItems=new long double[addlen];
-				//vars[var].NewItems(addlen,diffItems);
-				for(int c=0; c<addlen; c++)
-					vars[var].NewItem(0.0);
-				//delete[]diffItems;
-			}
-			if(index>=eventReciver->numlen[var] || value.type==NVECTOR && index+eventReciver->numlen[value.ival]>=eventReciver->numlen[var])
-			{
-				int newlen;
-				if(value.type==NVECTOR)
-					newlen=index+eventReciver->numlen[value.ival];
-				else newlen=index+1;
-				eventReciver->vars[var]=(Number*)realloc((void*)eventReciver->vars[var],sizeof(Number)*(newlen));
-				for(int c=eventReciver->numlen[var]; c<newlen; c++)
-					eventReciver->vars[var][c].type=NNONE;
-				eventReciver->numlen[var]=newlen;
-//				perror("newlen " +QString::number(eventReciver->numlen[var])+ " " + QString::number(var));
-			}
-			if(vertObj3!=NULL && eventReciver->vars[var][index].type==NCHAR)
+			if(vertObj3!=NULL)
 			{
 				Number nIndex=vertObj3->exec();
 				if(nIndex.type==NBOOL)
@@ -3490,106 +3538,135 @@ Number Script::exec()
 				else if(nIndex.type==NINT)
 					index2=nIndex.ival;
 				else if(nIndex.type==NFLOAT)
-					index2=(int)nIndex.cfval.real();
+					index2=(int)nIndex.fval.real();
 				if(index2<0)
 					index2=0;
-				if(index2<(signed)strlen(eventReciver->vars[var][index].cval))
+				
+				if(eventReciver->numlen[var]>index && eventReciver->vars[var][index].type==NCHAR && value.type!=NCHAR)
 				{
-					if(value.type==NINT)
-						eventReciver->vars[var][index].cval[index2]=(char)value.ival;
-					else if(value.type==NCHAR)
-					{
-						int slen=strlen(eventReciver->vars[var][index].cval);
-						int slen2=strlen(value.cval);
-						if(slen2+index2>slen)
-						{
-							char*newchar=new char[slen2+index2+1];
-							memcpy(newchar,eventReciver->vars[var][index].cval,slen);
-							memcpy(&newchar[index2],value.cval,slen2+1);
-							delete[] eventReciver->vars[var][index].cval;
-							eventReciver->vars[var][index].cval=newchar;
-						}
-						else memcpy(&(eventReciver->vars[var][index].cval[index2]),value.cval,slen2);;
-					}
-					else if(value.type==NFLOAT)
-						eventReciver->vars[var][index].cval[index2]=(char)value.cfval.real();
+					charOperation=true;
+					newlen=index+1;
 				}
 				else {
-					int slen=strlen(eventReciver->vars[var][index].cval);
-					int newlen;
-					if(value.type==NCHAR)
-						newlen=index2+strlen(value.cval)+2;
-					else newlen=index2+2;
-
-					char*newchar=new char[newlen];
-					memcpy(newchar,eventReciver->vars[var][index].cval,slen);
-					for(int c=slen; c<index2; c++)
-						newchar[c]=' ';
-					newchar[newlen-1]=(char)0;
-					if(value.type==NINT)
-						newchar[index2]=(char)value.ival;
-					else if(value.type==NFLOAT)
-						newchar[index2]=(char)value.cfval.real();
-					else if(value.type==NBOOL)
-						newchar[index2]=(char)value.bval;
-					else if(value.type==NCHAR)
-						memcpy(&newchar[index2],value.cval,strlen(value.cval));
-					delete[] (eventReciver->vars[var][index].cval);
-					eventReciver->vars[var][index].cval=newchar;
+					if(eventReciver->dimension[var][1]<index2+1)
+						eventReciver->dimension[var][1]=index2+1;
+					newlen=index2*eventReciver->dimension[var][0]+index+1;
 				}
 			}
-			else 
+			
+			if(value.type==NVECTOR)
 			{
-				vars[var][index]=value.cfval.real();
-				if(eventReciver->vars[var][index].type==NCHAR)
+				newlen=eventReciver->dimension[value.ival][0];
+				eventReciver->dimension[var][0]=eventReciver->dimension[value.ival][0];
+			}
+			else if(value.type==NMATRIX)
+			{
+				newlen=eventReciver->dimension[value.ival][0]*eventReciver->dimension[value.ival][1];
+				eventReciver->dimension[var][0]=eventReciver->dimension[value.ival][0];
+				eventReciver->dimension[var][1]=eventReciver->dimension[value.ival][1];
+			}
+
+			
+			if(oldDimension1<eventReciver->dimension[var][0])
+			{
+				newlen=eventReciver->dimension[var][1]*eventReciver->dimension[var][0];
+				if(newlen>eventReciver->numlen[var])
+					resizeVar(var,newlen);
+				int oldEffIndex,newEffIndex;
+				Number nullNum;
+				nullNum.type=NONE;
+				nullNum.cval=NULL;
+				
+				for(int c=oldDimension2-1; c>=1; c--)
 				{
-					delete[] eventReciver->vars[var][index].cval;
-					eventReciver->vars[var][index].cval=NULL;
+					for(int c1=oldDimension1-1; c1>=0; c1--)
+					{
+						
+						oldEffIndex=c1+c*oldDimension1;
+						newEffIndex=c1+c*eventReciver->dimension[var][0];
+//						perror("\nresize: c "+QString::number(c)+ " c1: " + QString::number(c1));
+						memcpy(&eventReciver->vars[var][newEffIndex],&eventReciver->vars[var][oldEffIndex],sizeof(Number));
+						memcpy(&eventReciver->vars[var][oldEffIndex],&nullNum,sizeof(Number));
+					}
 				}
-				if(value.type==NCHAR)
+			}
+			else if(newlen>eventReciver->numlen[var])
+				resizeVar(var,newlen);
+			
+			if(charOperation)
+			{
+				if(eventReciver->dimension[var][0]<index+1)
+					eventReciver->dimension[var][0]=index+1;
+				
+				convertToInt(&value);
+				
+				if(eventReciver->vars[var][index].cval==NULL)
+					eventReciver->vars[var][index].cval=(char*)calloc(index2+2,1);
+				else if((signed)strlen(eventReciver->vars[var][index].cval)<index2+1)
 				{
-					eventReciver->vars[var][index].type=NCHAR;
-					int slen=strlen(value.cval);
-					eventReciver->vars[var][index].cval=new char[slen+1];
-					memcpy(eventReciver->vars[var][index].cval,value.cval,slen+1);
+					eventReciver->vars[var][index].cval=(char*)realloc(eventReciver->vars[var][index].cval,index2+2);
+					eventReciver->vars[var][index].cval[index2+1]=(char)0;
 				}
-				else if(value.type==NVECTOR)
-				{
-					int end;
-					if(value.ival==var)
-						end=eventReciver->numlen[var];
-					else end=index+eventReciver->numlen[value.ival];
-					for(int c=end-1; c>=index;c--)
-						eventReciver->vars[var][c]=eventReciver->vars[value.ival][c-index];
-					eventReciver->numlen[var]=end;
-				}
-				else eventReciver->vars[var][index]=value;
+				eventReciver->vars[var][index].cval[index2]=(char)value.ival;
+					
+				return value;
+			}
+			effIndex=index+index2*eventReciver->dimension[var][0];
+			perror("newlen "+QString::number(eventReciver->numlen[var])+ " var: " + QString::number(var));
+			perror("index "+QString::number(index)+ " index2: " + QString::number(index2));
+			perror("dimesion[0] "+QString::number(eventReciver->dimension[var][0])+ " dimension[1]: " + QString::number(eventReciver->dimension[var][1]));
+			switch(value.type)
+			{
+				case NINT:
+					eventReciver->vars[var][effIndex].ival=value.ival; eventReciver->vars[var][effIndex].type=NINT; break;
+				case NFLOAT:
+					eventReciver->vars[var][effIndex].fval=value.fval; eventReciver->vars[var][effIndex].type=NFLOAT; break;
+				case NBOOL:
+					eventReciver->vars[var][effIndex].cval=value.cval; eventReciver->vars[var][effIndex].type=NBOOL; break;
+				case NCHAR:
+					perror("effIndex: "+QString::number(effIndex)+" source text: "+QString(value.cval));
+					if(value.cval==NULL)
+						eventReciver->vars[var][effIndex].cval=NULL;
+					else {
+						if(eventReciver->vars[var][effIndex].cval==NULL)
+							eventReciver->vars[var][effIndex].cval=(char*)malloc(strlen(value.cval)+1);
+						else eventReciver->vars[var][effIndex].cval=(char*)realloc(eventReciver->vars[var][effIndex].cval,strlen(value.cval)+1);
+						strcpy(eventReciver->vars[var][effIndex].cval,value.cval);
+					}
+					eventReciver->vars[var][effIndex].type=NCHAR;
+					break;
+				case NVECTOR:
+				case NMATRIX:
+					for(int c=0; c<eventReciver->numlen[value.ival]; c++)
+					{
+						convertToFloat(&eventReciver->vars[value.ival][c]);
+						eventReciver->vars[var][c].fval=eventReciver->vars[value.ival][c].fval;
+						eventReciver->vars[var][c].type=NFLOAT;
+					}
+					break;
+				default:
+					eventReciver->vars[var][effIndex].type=NNONE;
 			}
 			return value;
 		}
 		case SPRINT:
 		{
-			char*eventContent;
+			char*eventContent=NULL;
 			value=vertObj->exec();
 			switch(value.type)
 			{
 				case NFLOAT:
 				{
-				/*	eventContent=(char*)malloc(42);
-					char*printString=new char[12];
-					sprintf(printString,"%%.%iLg",pref->outputLength);
-					sprintf(eventContent,printString,value.fval);
-					delete[]printString;*/
-					if(value.cfval.imag()==0.0)
+					if(value.fval.imag()==0.0)
 					{
 						eventContent=(char*)malloc(42);
-						sprintf(eventContent,"%.*Lg",pref->outputLength,real(value.cfval));
+						sprintf(eventContent,"%.*Lg",pref->outputLength,real(value.fval));
 					}
 					else {
 						eventContent=(char*)malloc(84);
-						if(value.cfval.imag()>0.0)
-							sprintf(eventContent,"%.*Lg+%.*Lgi",pref->outputLength,real(value.cfval),pref->outputLength,imag(value.cfval));
-						else sprintf(eventContent,"%.*Lg%.*Lgi",pref->outputLength,real(value.cfval),pref->outputLength,imag(value.cfval));
+						if(value.fval.imag()>0.0)
+							sprintf(eventContent,"%.*Lg+%.*Lgi",pref->outputLength,real(value.fval),pref->outputLength,imag(value.fval));
+						else sprintf(eventContent,"%.*Lg%.*Lgi",pref->outputLength,real(value.fval),pref->outputLength,imag(value.fval));
 					}
 
 					break;
@@ -3618,6 +3695,53 @@ Number Script::exec()
 					strcopy(eventContent,value.cval,slen);
 					break;
 				}
+				case NVECTOR:
+				{
+					eventContent=(char*)calloc(1,1);
+					for(int c=0; c<eventReciver->dimension[value.ival][0];c++)
+					{
+						convertToFloat(&eventReciver->vars[value.ival][c]);
+						if(eventReciver->vars[value.ival][c].fval.imag()==0.0)
+						{
+							eventContent=(char*)realloc(eventContent,strlen(eventContent)+44);
+							sprintf(&eventContent[strlen(eventContent)]," %.*Lg",pref->outputLength,real(eventReciver->vars[value.ival][c].fval));
+						}
+						else {
+							eventContent=(char*)realloc(eventContent,strlen(eventContent)+86);
+							if(eventReciver->vars[value.ival][c].fval.imag()>0.0)
+								sprintf(&eventContent[strlen(eventContent)]," %.*Lg+%.*Lgi",pref->outputLength,real(eventReciver->vars[value.ival][c].fval),pref->outputLength,imag(eventReciver->vars[value.ival][c].fval));
+							else sprintf(&eventContent[strlen(eventContent)]," %.*Lg%.*Lgi",pref->outputLength,real(eventReciver->vars[value.ival][c].fval),pref->outputLength,imag(eventReciver->vars[value.ival][c].fval));
+						}
+					}
+					break;
+				}
+				case NMATRIX:
+				{
+					eventContent=(char*)calloc(1,1);
+					int effIndex;
+					for(int c=0; c<eventReciver->dimension[value.ival][0];c++)
+					{
+						for(int c1=0; c1<eventReciver->dimension[value.ival][1];c1++)
+						{
+							effIndex=c1*eventReciver->dimension[value.ival][0]+c;
+							convertToFloat(&eventReciver->vars[value.ival][effIndex]);
+							if(eventReciver->vars[value.ival][effIndex].fval.imag()==0.0)
+							{
+								eventContent=(char*)realloc(eventContent,strlen(eventContent)+45);
+								sprintf(&eventContent[strlen(eventContent)]," %.*Lg",pref->outputLength,real(eventReciver->vars[value.ival][effIndex].fval));
+							}
+							else {
+								eventContent=(char*)realloc(eventContent,strlen(eventContent)+87);
+								if(eventReciver->vars[value.ival][effIndex].fval.imag()>0.0)
+									sprintf(&eventContent[strlen(eventContent)]," %.*Lg+%.*Lgi",pref->outputLength,real(eventReciver->vars[value.ival][effIndex].fval),pref->outputLength,imag(eventReciver->vars[value.ival][effIndex].fval));
+								else sprintf(&eventContent[strlen(eventContent)]," %.*Lg%.*Lgi",pref->outputLength,real(eventReciver->vars[value.ival][effIndex].fval),pref->outputLength,imag(eventReciver->vars[value.ival][effIndex].fval));
+							}
+						}
+						sprintf(&eventContent[strlen(eventContent)],"\n");
+
+					}
+					break;
+				}
 				default:
 					eventContent=(char*)malloc(5);
 					strcopy(eventContent,"none",4);
@@ -3641,19 +3765,19 @@ Number Script::exec()
 			if(n1.type==NFLOAT)
 			{
 				if(n2.type==NFLOAT)
-					value.bval=(n1.cfval!=n2.cfval);
+					value.bval=(n1.fval!=n2.fval);
 				else if(n2.type==NBOOL)
-					value.bval=(n1.cfval.real()!=(long double)n2.bval);
+					value.bval=(n1.fval.real()!=(long double)n2.bval);
 				else if(n2.type==NINT)
-					value.bval=(n1.cfval.real()!=(long double)n2.ival);
+					value.bval=(n1.fval.real()!=(long double)n2.ival);
 				else value.bval=true;
 			}
 			else if(n2.type==NFLOAT)
 			{
 				if(n1.type==NBOOL)
-					value.bval=(n2.cfval.real()!=(long double)n1.bval);
+					value.bval=(n2.fval.real()!=(long double)n1.bval);
 				else if(n1.type==NINT)
-					value.bval=(n2.cfval.real()!=(long double)n1.ival);
+					value.bval=(n2.fval.real()!=(long double)n1.ival);
 				else value.bval=true;
 			}
 			else if(n1.type==NINT)
@@ -3683,132 +3807,70 @@ Number Script::exec()
 			else if(n1.type==n2.type)
 				value.bval=false;
 			else value.bval=true;
-			value.fval=(long double)value.bval;
+
 			return value;
 		}
 		case SNOT:
 		{
-			value.type=NBOOL;
-			Number n1=vertObj->exec();
-			if(n1.type==NBOOL)
-				value.bval=!n1.bval;
-			else if(n1.type==NINT)
-				value.bval=!n1.ival;
-			else if(n1.type==NFLOAT)
-			{
-				if(n1.cfval.real()==0.0)
-					value.bval=true;
-				else value.bval=false;
-			}
-			else value.bval=false;
-			
+			value=vertObj->exec();
+			convertToBool(&value);
+			value.bval=!value.bval;
 			return value;
 		}
 		case SAND:
 		{
-			value.type=NBOOL;
-			Number n1=vertObj->exec();
-			Number n2=vertObj2->exec();
-			if(n1.type==NBOOL)
-				;
-			else if(n1.type==NINT)
-			{
-				n1.bval=!(!n1.ival);
-				n1.type=NBOOL;
-			}
-			else if(n1.type==NFLOAT)
-			{
-				if(n1.cfval.real()==0)
-					n1.bval=false;
-				else n1.bval=true;
-				n1.type=NBOOL;
-			}
-			else 
-			{
-				n1.bval=false;
-				n1.type=NBOOL;
-			}
-			if(n2.type==NBOOL)
-				;
-			else if(n2.type==NINT)
-			{
-				n2.bval=!(!n1.ival);
-				n2.type=NBOOL;
-			}
-			else if(n2.type==NFLOAT)
-			{
-				if(n2.cfval.real()==0.0)
-					n2.bval=false;
-				else n2.bval=true;
-				n2.type=NBOOL;
-			}
-			else {
-				n2.bval=false;
-				n2.type=NBOOL;
-			}
-			value.bval=(n1.bval&&n2.bval);
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			convertToBool(&value);
+			convertToBool(&n);
 			
+			value.bval=(value.bval&&n.bval);
 			return value;
 		}
 		case SOR:
 		{
-			value.type=NBOOL;
-			Number n1=vertObj->exec();
-			Number n2=vertObj2->exec();
-			if(n1.type==NBOOL)
-				;
-			else if(n1.type==NINT)
-			{
-				n1.bval=!(!n1.ival);
-				n1.type=NBOOL;
-			}
-			else if(n1.type==NFLOAT)
-			{
-				if(n1.cfval.real()==0.0)
-					n1.bval=false;
-				else n1.bval=true;
-				n1.type=NBOOL;
-			}
-			else {
-				n1.bval=false;
-				n1.type=NBOOL;
-			}
-			if(n2.type==NBOOL)
-				;
-			else if(n2.type==NINT)
-			{
-				n2.bval=!(!n1.ival);
-				n2.type=NBOOL;
-			}
-			else if(n2.type==NFLOAT)
-			{
-				if(n2.cfval.real()==0.0)
-					n2.bval=false;
-				else n2.bval=true;
-				n2.type=NBOOL;
-			}
-			else {
-				n2.bval=false;
-				n2.type=NBOOL;
-			}
-			value.bval=(n1.bval||n2.bval);
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			convertToBool(&value);
+			convertToBool(&n);
 			
+			value.bval=(value.bval||n.bval);
 			return value;
 		}
 		case PLUS:
 		{
 			value=vertObj->exec();
-			Number n=vertObj2->exec();
+			Number n;
+
+			if((value.type==NVECTOR || value.type==NMATRIX) &&value.ival==27)
+			{
+				Number*tmpMem=eventReciver->vars[27];
+				int tmpMemLen=eventReciver->numlen[27],tmpDimension1=eventReciver->dimension[27][0],tmpDimension2=eventReciver->dimension[27][1];
+				
+				eventReciver->vars[27]= (Number*)malloc(sizeof(Number));
+				eventReciver->vars[27][0].type=NNONE;
+				eventReciver->vars[27][0].cval=NULL;
+				eventReciver->dimension[27][0]=eventReciver->dimension[27][1]=eventReciver->numlen[27]=1;
+				n=vertObj2->exec();
+				
+				eventReciver->vars[28]=tmpMem;
+				eventReciver->numlen[28]=tmpMemLen;
+				eventReciver->dimension[28][0]=tmpDimension1;
+				eventReciver->dimension[28][1]=tmpDimension2;
+				value.ival=28;
+			}
+			else n =vertObj2->exec();
+
 			if(value.type==NCHAR && n.type==NCHAR)
 			{
 				int strlen1=strlen(value.cval);
 				int strlen2=strlen(n.cval);
-				char*newstring=new char[strlen1+strlen2+1];
+				char*newstring=(char*)malloc(strlen1+strlen2+1);
 				memcpy(newstring,value.cval,strlen1);
 				memcpy(&newstring[strlen1],n.cval,strlen2+1);
-				delete[] value.cval;
+				free(value.cval);
 				value.cval=newstring;
-				value.fval=NAN;
+
 				return value;
 			}
 			
@@ -3818,7 +3880,7 @@ Number Script::exec()
 					value.ival=(long long)value.bval; value.type=NINT; break;
 				case NNONE:
 				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
+					value.fval=Complex(NAN,0.0); value.type=NFLOAT; break;
 			}
 			switch(n.type)
 			{
@@ -3826,7 +3888,7 @@ Number Script::exec()
 					n.ival=(long long)n.bval; n.type=NINT; break;
 				case NNONE:
 				case NCHAR:
-					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
+					n.fval=Complex(NAN,0.0); n.type=NFLOAT; break;
 				case NVECTOR:
 					if(value.type!=NVECTOR)
 					{
@@ -3835,8 +3897,16 @@ Number Script::exec()
 						n=tmp;
 					}
 					break;
+				case NMATRIX:
+					if(value.type!=NMATRIX)
+					{
+						Number tmp=value;
+						value=n;
+						n=tmp;
+					}
+					break;
 			}
-			
+
 			switch(value.type)
 			{
 				case NINT:
@@ -3846,35 +3916,33 @@ Number Script::exec()
 							value.ival+=n.ival;	break;
 							break;
 						case NFLOAT:
-							value.cfval=Complex((long double)value.ival,0.0)+n.cfval; value.type=NFLOAT; break;
+							value.fval=Complex((long double)value.ival,0.0)+n.fval; value.type=NFLOAT; break;
 					}
 					break;
 				case NFLOAT:
 					switch(n.type)
 					{
 						case NINT:
-							value.cfval+=Complex((long double)n.ival,0.0);	break;
+							value.fval+=Complex((long double)n.ival,0.0);	break;
 
 						case NFLOAT:
-							value.cfval+=n.cfval; break;
+							value.fval+=n.fval; break;
 					}
 					break;
 				case NVECTOR:
-					int index1=value.ival;
+				{
 					int minlen=eventReciver->numlen[value.ival];
 					if(n.type==NVECTOR)
 					{
-						int index2=n.ival;
-						
 						if(eventReciver->numlen[n.ival]<minlen)
 							minlen=eventReciver->numlen[n.ival];
 						eventReciver->vars[27]=(Number*)realloc(eventReciver->vars[27],sizeof(Number)*minlen);
 						for(int c=0; c<minlen; c++)
 						{
-							convertToFloat(&eventReciver->vars[index1][c]);
-							convertToFloat(&eventReciver->vars[index2][c]);
+							convertToFloat(&eventReciver->vars[value.ival][c]);
+							convertToFloat(&eventReciver->vars[n.ival][c]);
 							eventReciver->vars[27][c].type=NFLOAT;
-							eventReciver->vars[27][c].cfval=eventReciver->vars[index1][c].cfval+eventReciver->vars[index2][c].cfval;
+							eventReciver->vars[27][c].fval=eventReciver->vars[value.ival][c].fval+eventReciver->vars[n.ival][c].fval;
 						}
 					}
 					else
@@ -3883,32 +3951,88 @@ Number Script::exec()
 						eventReciver->vars[27]=(Number*)realloc(eventReciver->vars[27],sizeof(Number)*minlen);
 						for(int c=0; c<minlen; c++)
 						{
-							convertToFloat(&eventReciver->vars[index1][c]);
+							convertToFloat(&eventReciver->vars[value.ival][c]);
 							eventReciver->vars[27][c].type=NFLOAT;
-							eventReciver->vars[27][c].cfval=eventReciver->vars[index1][c].cfval+n.cfval;
+							eventReciver->vars[27][c].fval=eventReciver->vars[value.ival][c].fval+n.fval;
 						}
 					}
 					eventReciver->numlen[27]=minlen;
+					eventReciver->dimension[27][0]=minlen;
+					eventReciver->dimension[27][1]=1;
 					value.ival=27;
 					break;
+				}
+				case NMATRIX:
+				{
+					int min1=eventReciver->dimension[value.ival][0];
+					int min2=eventReciver->dimension[value.ival][1];
+					int effIndex1=0,effIndex2=0,effIndexD=0;
+					if(n.type==NMATRIX)
+					{
+						if(eventReciver->dimension[n.ival][0]<min1)
+							min1=eventReciver->dimension[n.ival][0];
+						if(eventReciver->dimension[n.ival][1]<min2)
+							min2=eventReciver->dimension[n.ival][1];
+	
+						resizeVar(27,min1*min2);
+						for(int c=0; c<min1; c++)
+						{
+							for(int c1=0; c1<min2; c1++)
+							{
+								effIndex1=c+c1*eventReciver->dimension[value.ival][0];
+								effIndex2=c+c1*eventReciver->dimension[n.ival][0];
+								effIndexD=c+c1*min1;
+								convertToFloat(&eventReciver->vars[value.ival][effIndex1]);
+								convertToFloat(&eventReciver->vars[n.ival][effIndex2]);
+								eventReciver->vars[27][effIndexD].type=NFLOAT;
+								eventReciver->vars[27][effIndexD].fval=eventReciver->vars[value.ival][effIndex1].fval+eventReciver->vars[n.ival][effIndex2].fval;
+							}
+						}
+						eventReciver->dimension[27][0]=min1;
+						eventReciver->dimension[27][1]=min2;
+					}
+					else
+					{
+						convertToFloat(&n);
+						resizeVar(27,eventReciver->numlen[value.ival]);
+						for(int c=0; c<eventReciver->numlen[value.ival]; c++)
+						{
+							convertToFloat(&eventReciver->vars[value.ival][c]);
+							eventReciver->vars[27][c].type=NFLOAT;
+							eventReciver->vars[27][c].fval=eventReciver->vars[value.ival][c].fval+n.fval;
+						}
+						eventReciver->numlen[27]=eventReciver->numlen[value.ival];
+						eventReciver->dimension[27][0]=eventReciver->dimension[value.ival][0];
+						eventReciver->dimension[27][1]=eventReciver->dimension[value.ival][1];
+					}
+					value.ival=27;
+				}
 			}
-			switch(value.type)
-			{
-				case NINT:
-					value.fval=(long double)value.ival; break;
-				case NBOOL:
-					value.fval=(long double)value.bval; break;
-				case NCHAR:
-					value.fval=(long double)value.cval[0]; break;
-				default:
-					value.fval=NAN; break;
-			}
+
 			return value;
 		}
 		case MINUS:
 		{
+			Number n;
 			value=vertObj->exec();
-			Number n=vertObj2->exec();
+			if((value.type==NVECTOR || value.type==NMATRIX) &&value.ival==27)
+			{
+				Number*tmpMem=eventReciver->vars[27];
+				int tmpMemLen=eventReciver->numlen[27],tmpDimension1=eventReciver->dimension[27][0],tmpDimension2=eventReciver->dimension[27][1];
+				
+				eventReciver->vars[27]= (Number*)malloc(sizeof(Number));
+				eventReciver->vars[27][0].type=NNONE;
+				eventReciver->vars[27][0].cval=NULL;
+				eventReciver->dimension[27][0]=eventReciver->dimension[27][1]=eventReciver->numlen[27]=1;
+				n=vertObj2->exec();
+				
+				eventReciver->vars[28]=tmpMem;
+				eventReciver->numlen[28]=tmpMemLen;
+				eventReciver->dimension[28][0]=tmpDimension1;
+				eventReciver->dimension[28][1]=tmpDimension2;
+				value.ival=28;
+			}
+			else n =vertObj2->exec();
 			
 			switch(value.type)
 			{
@@ -3916,21 +4040,38 @@ Number Script::exec()
 					value.ival=(long long)value.bval; value.type=NINT; break;
 				case NNONE:
 				case NCHAR:
-					value.fval=NAN; value.type=NFLOAT; break;
+					value.type=NFLOAT; break;
 			}
+			int fakt=1;
+			
 			switch(n.type)
 			{
+				
 				case NBOOL:
 					n.ival=(long long)n.bval; n.type=NINT; break;
 				case NNONE:
 				case NCHAR:
-					n.fval=NAN; n.type=NFLOAT; break;
+					n.type=NFLOAT; break;
 				case NVECTOR:
 					if(value.type!=NVECTOR)
 					{
 						Number tmp=value;
 						value=n;
 						n=tmp;
+						convertToFloat(&n);
+						n.fval*=Complex(-1.0);
+						fakt=-1;
+					}
+					break;
+				case NMATRIX:
+					if(value.type!=NMATRIX)
+					{
+						Number tmp=value;
+						value=n;
+						n=tmp;
+						convertToFloat(&n);
+						n.fval*=Complex(-1.0);
+						fakt=-1;
 					}
 					break;
 			}
@@ -3944,35 +4085,33 @@ Number Script::exec()
 							value.ival-=n.ival;	break;
 							break;
 						case NFLOAT:
-							value.cfval=Complex((long double)value.ival,0.0)-n.cfval; value.type=NFLOAT; break;
+							value.fval=Complex((long double)value.ival,0.0)-n.fval; value.type=NFLOAT; break;
 					}
 					break;
 				case NFLOAT:
 					switch(n.type)
 					{
 						case NINT:
-							value.cfval-=Complex((long double)n.ival,0.0);	break;
+							value.fval-=Complex((long double)n.ival,0.0);	break;
 
 						case NFLOAT:
-							value.cfval-=n.cfval; break;
+							value.fval-=n.fval; break;
 					}
 					break;
 				case NVECTOR:
-					int index1=value.ival;
+				{
 					int minlen=eventReciver->numlen[value.ival];
 					if(n.type==NVECTOR)
 					{
-						int index2=n.ival;
-						
 						if(eventReciver->numlen[n.ival]<minlen)
 							minlen=eventReciver->numlen[n.ival];
 						eventReciver->vars[27]=(Number*)realloc(eventReciver->vars[27],sizeof(Number)*minlen);
 						for(int c=0; c<minlen; c++)
 						{
-							convertToFloat(&eventReciver->vars[index1][c]);
-							convertToFloat(&eventReciver->vars[index2][c]);
+							convertToFloat(&eventReciver->vars[value.ival][c]);
+							convertToFloat(&eventReciver->vars[n.ival][c]);
 							eventReciver->vars[27][c].type=NFLOAT;
-							eventReciver->vars[27][c].cfval=eventReciver->vars[index1][c].cfval-eventReciver->vars[index2][c].cfval;
+							eventReciver->vars[27][c].fval=eventReciver->vars[value.ival][c].fval-eventReciver->vars[n.ival][c].fval;
 						}
 					}
 					else
@@ -3981,39 +4120,95 @@ Number Script::exec()
 						eventReciver->vars[27]=(Number*)realloc(eventReciver->vars[27],sizeof(Number)*minlen);
 						for(int c=0; c<minlen; c++)
 						{
-							convertToFloat(&eventReciver->vars[index1][c]);
+							convertToFloat(&eventReciver->vars[value.ival][c]);
 							eventReciver->vars[27][c].type=NFLOAT;
-							eventReciver->vars[27][c].cfval=eventReciver->vars[index1][c].cfval-n.cfval;
+							eventReciver->vars[27][c].fval=eventReciver->vars[value.ival][c].fval*Complex(fakt)-n.fval;
 						}
 					}
 					eventReciver->numlen[27]=minlen;
+					eventReciver->dimension[27][0]=minlen;
+					eventReciver->dimension[27][1]=1;
 					value.ival=27;
 					break;
-			}
-			switch(value.type)
-			{
-				case NINT:
-					value.fval=(long double)value.ival; break;
-				case NBOOL:
-					value.fval=(long double)value.bval; break;
-				case NCHAR:
-					value.fval=(long double)value.cval[0]; break;
-				case NNONE:
-					value.fval=NAN; break;
+				}
+				case NMATRIX:
+				{
+					int min1=eventReciver->dimension[value.ival][0];
+					int min2=eventReciver->dimension[value.ival][1];
+					int effIndex1=0,effIndex2=0,effIndexD=0;
+					if(n.type==NMATRIX)
+					{
+						if(eventReciver->dimension[n.ival][0]<min1)
+							min1=eventReciver->dimension[n.ival][0];
+						if(eventReciver->dimension[n.ival][1]<min2)
+							min2=eventReciver->dimension[n.ival][1];
+	
+						resizeVar(27,min1*min2);
+						for(int c=0; c<min1; c++)
+						{
+							for(int c1=0; c1<min2; c1++)
+							{
+								effIndex1=c+c1*eventReciver->dimension[value.ival][0];
+								effIndex2=c+c1*eventReciver->dimension[n.ival][0];
+								effIndexD=c+c1*min1;
+								convertToFloat(&eventReciver->vars[value.ival][effIndex1]);
+								convertToFloat(&eventReciver->vars[n.ival][effIndex2]);
+								eventReciver->vars[27][effIndexD].type=NFLOAT;
+								eventReciver->vars[27][effIndexD].fval=eventReciver->vars[value.ival][effIndex1].fval-eventReciver->vars[n.ival][effIndex2].fval;
+							}
+						}
+						eventReciver->dimension[27][0]=min1;
+						eventReciver->dimension[27][1]=min2;
+					}
+					else
+					{
+						convertToFloat(&n);
+						resizeVar(27,eventReciver->numlen[value.ival]);
+						for(int c=0; c<eventReciver->numlen[value.ival]; c++)
+						{
+							convertToFloat(&eventReciver->vars[value.ival][c]);
+							eventReciver->vars[27][c].type=NFLOAT;
+							eventReciver->vars[27][c].fval=eventReciver->vars[value.ival][c].fval*Complex(fakt)-n.fval;
+						}
+						eventReciver->numlen[27]=eventReciver->numlen[value.ival];
+						eventReciver->dimension[27][0]=eventReciver->dimension[value.ival][0];
+						eventReciver->dimension[27][1]=eventReciver->dimension[value.ival][1];
+					}
+					value.ival=27;
+				}
 			}
 			return value;
 		}
 		case MULT:
 		{
 			value=vertObj->exec();
-			Number n=vertObj2->exec();
+			Number n;
+			if((value.type==NVECTOR || value.type==NMATRIX) &&value.ival==27)
+			{
+				Number*tmpMem=eventReciver->vars[27];
+				int tmpMemLen=eventReciver->numlen[27],tmpDimension1=eventReciver->dimension[27][0],tmpDimension2=eventReciver->dimension[27][1];
+				
+				eventReciver->vars[27]= (Number*)malloc(sizeof(Number));
+				eventReciver->vars[27][0].type=NNONE;
+				eventReciver->vars[27][0].cval=NULL;
+				eventReciver->dimension[27][0]=eventReciver->dimension[27][1]=eventReciver->numlen[27]=1;
+				n=vertObj2->exec();
+				
+				eventReciver->vars[28]=tmpMem;
+				eventReciver->numlen[28]=tmpMemLen;
+				eventReciver->dimension[28][0]=tmpDimension1;
+				eventReciver->dimension[28][1]=tmpDimension2;
+				value.ival=28;
+			}
+			else n =vertObj2->exec();
+			
 			switch(value.type)
 			{
 				case NBOOL:
 					value.ival=(long long)value.bval; value.type=NINT; break;
 				case NNONE:
 				case NCHAR:
-					value.fval=NAN; value.type=NFLOAT; break;
+					value.type=NFLOAT; break;
 			}
 			switch(n.type)
 			{
@@ -4021,7 +4216,7 @@ Number Script::exec()
 					n.ival=(long long)n.bval; n.type=NINT; break;
 				case NNONE:
 				case NCHAR:
-					n.fval=NAN; n.type=NFLOAT; break;
+					n.type=NFLOAT; break;
 				case NVECTOR:
 					if(value.type!=NVECTOR)
 					{
@@ -4030,24 +4225,29 @@ Number Script::exec()
 						n=tmp;
 					}
 					break;
+				case NMATRIX:
+					if(value.type!=NMATRIX)
+					{
+						Number tmp=value;
+						value=n;
+						n=tmp;
+					}
+					break;
 			}
 			if(value.type==NINT && n.type==NINT)
-			{
 				value.ival*=n.ival;
-				value.fval=(long double)value.ival;
-			}
 			else if(value.type==NFLOAT && n.type==NFLOAT)
-				value.cfval*=n.cfval;
+				value.fval*=n.fval;
 			else if(value.type==NFLOAT && n.type==NINT)
-				value.cfval*=Complex((long double)n.ival,0.0);
+				value.fval*=Complex((long double)n.ival,0.0);
 			else if(value.type==NINT && n.type==NFLOAT)
 			{
-				value.cfval=Complex((long double)value.ival,0.0)*n.cfval;
+				value.fval=Complex((long double)value.ival,0.0)*n.fval;
 				value.type=NFLOAT;
 			}
 			else if(value.type==NVECTOR && n.type==NVECTOR)					//cross product
 			{
-				if(eventReciver->numlen[n.ival]>=3 && eventReciver->numlen[value.ival]>=3)
+				if(eventReciver->dimension[n.ival][0]>=3 && eventReciver->dimension[value.ival][0]>=3)
 				{
 					int index1=value.ival;
 					int index2=n.ival;
@@ -4061,42 +4261,78 @@ Number Script::exec()
 						convertToFloat(&eventReciver->vars[index2][c]);
 					}
 
-					eventReciver->vars[27][0].cfval=eventReciver->vars[index1][1].cfval*eventReciver->vars[index2][2].cfval-eventReciver->vars[index1][2].cfval*eventReciver->vars[index2][1].cfval;
-					eventReciver->vars[27][1].cfval=eventReciver->vars[index1][2].cfval*eventReciver->vars[index2][0].cfval-eventReciver->vars[index1][0].cfval*eventReciver->vars[index2][2].cfval;
-					eventReciver->vars[27][2].cfval=eventReciver->vars[index1][0].cfval*eventReciver->vars[index2][1].cfval-eventReciver->vars[index1][1].cfval*eventReciver->vars[index2][0].cfval;
-					
+					eventReciver->vars[27][0].fval=eventReciver->vars[index1][1].fval*eventReciver->vars[index2][2].fval-eventReciver->vars[index1][2].fval*eventReciver->vars[index2][1].fval;
+					eventReciver->vars[27][1].fval=eventReciver->vars[index1][2].fval*eventReciver->vars[index2][0].fval-eventReciver->vars[index1][0].fval*eventReciver->vars[index2][2].fval;
+					eventReciver->vars[27][2].fval=eventReciver->vars[index1][0].fval*eventReciver->vars[index2][1].fval-eventReciver->vars[index1][1].fval*eventReciver->vars[index2][0].fval;
+
 					eventReciver->numlen[27]=3;
+					eventReciver->dimension[27][0]=3;
 					value.ival=27;
 					value.type=NVECTOR;
 
 				}
 				else {
 					value.type=NNONE;
-					value.cfval=Complex(NAN,0.0);
+					value.fval=Complex(NAN,0.0);
 				}
 				
 			}
-			else if(value.type==NVECTOR)
+			else if((value.type==NMATRIX || value.type==NVECTOR) && (n.type==NMATRIX || n.type==NVECTOR))					//matrix product
 			{
-				int index1=value.ival;
-				int minlen=eventReciver->numlen[value.ival];
-				convertToFloat(&n);
-				eventReciver->vars[27]=(Number*)realloc(eventReciver->vars[27],sizeof(Number)*minlen);
-				for(int c=0; c<minlen; c++)
+				int min1=eventReciver->dimension[value.ival][0];
+				int min2=eventReciver->dimension[n.ival][1];
+				int minstep=eventReciver->dimension[value.ival][1];
+				int effIndex1=0,effIndex2=0,effIndexD=0;
+				
+				if(eventReciver->dimension[n.ival][0]<minstep)
+					minstep=eventReciver->dimension[n.ival][0];
+
+				resizeVar(27,min1*min2);
+				for(int c=0; c<min1; c++)								//row
 				{
-					convertToFloat(&eventReciver->vars[index1][c]);
-					eventReciver->vars[27][c].type=NFLOAT;
-					eventReciver->vars[27][c].cfval=eventReciver->vars[index1][c].cfval*n.cfval;
+					for(int c1=0; c1<min2; c1++)						//column
+					{
+						effIndexD=c+c1*min1;
+						eventReciver->vars[27][effIndexD].type=NFLOAT;
+						eventReciver->vars[27][effIndexD].fval=Complex(0.0);
+						for(int c2=0; c2<minstep; c2++)
+						{
+							effIndex1=c+c2*eventReciver->dimension[value.ival][0];
+							effIndex2=c2+c1*eventReciver->dimension[n.ival][0];
+						
+							if(effIndex1<eventReciver->numlen[value.ival] && effIndex2<eventReciver->numlen[n.ival])
+							{
+								convertToFloat(&eventReciver->vars[value.ival][effIndex1]);
+								convertToFloat(&eventReciver->vars[n.ival][effIndex2]);
+								eventReciver->vars[27][effIndexD].fval+=eventReciver->vars[value.ival][effIndex1].fval*eventReciver->vars[n.ival][effIndex2].fval;
+							}
+						}
+					}
 				}
-				eventReciver->numlen[27]=minlen;
+				eventReciver->dimension[27][0]=min1;
+				eventReciver->dimension[27][1]=min2;
+				value.ival=27;
+				if(n.type==NVECTOR)
+					value.type=NVECTOR;
+				else value.type=NMATRIX;
+			}
+			else if((value.type==NMATRIX || value.type==NVECTOR) && !(n.type==NMATRIX || n.type==NVECTOR))
+			{
+				convertToFloat(&n);
+				resizeVar(27,eventReciver->numlen[value.ival]);
+				for(int c=0; c<eventReciver->numlen[value.ival]; c++)
+				{
+					convertToFloat(&eventReciver->vars[value.ival][c]);
+					eventReciver->vars[27][c].type=NFLOAT;
+					eventReciver->vars[27][c].fval=eventReciver->vars[value.ival][c].fval*n.fval;
+				}
+				eventReciver->numlen[27]=eventReciver->numlen[value.ival];
+				eventReciver->dimension[27][0]=eventReciver->dimension[value.ival][0];
+				eventReciver->dimension[27][1]=eventReciver->dimension[value.ival][1];
 				value.ival=27;
 			}
-			else {
-				value.type=NNONE;
-				value.cfval=Complex(NAN,0.0);
-			}
+			else value.type=NNONE;
 
-			
 			return value;
 		}
 		case DIVIDE:
@@ -4109,7 +4345,7 @@ Number Script::exec()
 					value.ival=(long long)value.bval; value.type=NINT; break;
 				case NNONE:
 				case NCHAR:
-					value.fval=NAN; value.type=NFLOAT; break;
+					value.type=NFLOAT; break;
 			}
 			switch(n.type)
 			{
@@ -4117,32 +4353,31 @@ Number Script::exec()
 					n.ival=(long long)n.bval; n.type=NINT; break;
 				case NNONE:
 				case NCHAR:
-					n.fval=NAN; n.type=NFLOAT; break;
+					n.type=NFLOAT; break;
 			}
 			if(value.type==NINT && n.type==NINT)
 			{
 				if(n.ival==0)
 				{
-					value.cfval=Complex((long double)value.ival/(long double)n.ival,0.0);
+					value.fval=Complex((long double)value.ival/(long double)n.ival,0.0);
 					value.type=NFLOAT;
 				}
 				else {
-					value.fval=(long double)value.ival / (long double)n.ival;
-					value.ival=(long long)value.fval;
-					if((long double)value.ival != value.fval)
+					value.fval=Complex((long double)value.ival / (long double)n.ival);
+					value.ival=(long long)value.fval.real();
+					if((long double)value.ival != value.fval.real())
 					{
 						value.type=NFLOAT;
-						value.cfval=Complex(value.fval,0.0);
 					}
 				}
 			}
 			else if(value.type==NFLOAT && n.type==NFLOAT)
-				value.cfval=Complex(value.cfval.real()/n.cfval.real());
+				value.fval=Complex(value.fval.real()/n.fval.real());
 			else if(value.type==NFLOAT && n.type==NINT)
-				value.cfval=Complex(value.cfval.real()/(long double)n.ival,0.0);
+				value.fval=Complex(value.fval.real()/(long double)n.ival,0.0);
 			else if(value.type==NINT && n.type==NFLOAT)
 			{
-				value.cfval=Complex((long double)value.ival/n.cfval.real(),0.0);
+				value.fval=Complex((long double)value.ival/n.fval.real(),0.0);
 				value.type=NFLOAT;
 			}
 
@@ -4158,7 +4393,7 @@ Number Script::exec()
 					value.ival=(long long)value.bval; value.type=NINT; break;
 				case NNONE:
 				case NCHAR:
-					value.fval=NAN; value.type=NFLOAT; break;
+					value.type=NFLOAT; break;
 			}
 			switch(n.type)
 			{
@@ -4166,32 +4401,29 @@ Number Script::exec()
 					n.ival=(long long)n.bval; n.type=NINT; break;
 				case NNONE:
 				case NCHAR:
-					n.fval=NAN; n.type=NFLOAT; break;
+					n.type=NFLOAT; break;
 			}
 			if(value.type==NINT && n.type==NINT)
 			{
 				if(n.ival==0)
 				{
-					value.cfval=Complex((long double)value.ival/(long double)n.ival,0.0);
+					value.fval=Complex((long double)value.ival/(long double)n.ival,0.0);
 					value.type=NFLOAT;
 				}
 				else {
-					value.fval=(long double)value.ival / (long double)n.ival;
-					value.ival=(long long)value.fval;
-					if((long double)value.ival != value.fval)
-					{
+					value.fval=Complex((long double)value.ival / (long double)n.ival);
+					value.ival=(long long)value.fval.real();
+					if((long double)value.ival != value.fval.real())
 						value.type=NFLOAT;
-						value.cfval=Complex(value.fval,0.0);
-					}
 				}
 			}
 			else if(value.type==NFLOAT && n.type==NFLOAT)
-				value.cfval/=n.cfval;
+				value.fval/=n.fval;
 			else if(value.type==NFLOAT && n.type==NINT)
-				value.cfval/=Complex((long double)n.ival,0.0);
+				value.fval/=Complex((long double)n.ival,0.0);
 			else if(value.type==NINT && n.type==NFLOAT)
 			{
-				value.cfval=Complex((long double)value.ival,0.0)/n.cfval;
+				value.fval=Complex((long double)value.ival,0.0)/n.fval;
 				value.type=NFLOAT;
 			}
 
@@ -4206,22 +4438,22 @@ Number Script::exec()
 			{
 				if(n2.type==NFLOAT)
 				{
-					if(n1.cfval.imag()==0.0 && n2.cfval.imag()==0.0)
-						value.bval=(n1.cfval.real()<n2.cfval.real());
-					else value.bval=(abs(n1.cfval)<abs(n2.cfval));
+					if(n1.fval.imag()==0.0 && n2.fval.imag()==0.0)
+						value.bval=(n1.fval.real()<n2.fval.real());
+					else value.bval=(abs(n1.fval)<abs(n2.fval));
 				}
 				else if(n2.type==NBOOL)
-					value.bval=(n1.cfval.real()<(long double)n2.bval);
+					value.bval=(n1.fval.real()<(long double)n2.bval);
 				else if(n2.type==NINT)
-					value.bval=(n1.cfval.real()<(long double)n2.ival);
+					value.bval=(n1.fval.real()<(long double)n2.ival);
 				else value.bval=false;
 			}
 			else if(n2.type==NFLOAT)
 			{
 				if(n1.type==NBOOL)
-					value.bval=(n2.cfval.real()>(long double)n1.bval);
+					value.bval=(n2.fval.real()>(long double)n1.bval);
 				else if(n1.type==NINT)
-					value.bval=(n2.cfval.real()>(long double)n1.ival);
+					value.bval=(n2.fval.real()>(long double)n1.ival);
 				else value.bval=false;
 			}
 			else if(n1.type==NINT)
@@ -4249,7 +4481,6 @@ Number Script::exec()
 				else value.bval=false;
 			}
 			else value.bval=false;
-			value.fval=(long double)value.bval;
 			return value;
 		}
 		case SGREATHER:
@@ -4261,22 +4492,22 @@ Number Script::exec()
 			{
 				if(n2.type==NFLOAT)
 				{
-					if(n1.cfval.imag()==0.0 && n2.cfval.imag()==0.0)
-						value.bval=(n1.cfval.real()>n2.cfval.real());
-					else value.bval=(abs(n1.cfval)>abs(n2.cfval));
+					if(n1.fval.imag()==0.0 && n2.fval.imag()==0.0)
+						value.bval=(n1.fval.real()>n2.fval.real());
+					else value.bval=(abs(n1.fval)>abs(n2.fval));
 				}
 				else if(n2.type==NBOOL)
-					value.bval=(n1.cfval.real()>(long double)n2.bval);
+					value.bval=(n1.fval.real()>(long double)n2.bval);
 				else if(n2.type==NINT)
-					value.bval=(n1.cfval.real()>(long double)n2.ival);
+					value.bval=(n1.fval.real()>(long double)n2.ival);
 				else value.bval=false;
 			}
 			else if(n2.type==NFLOAT)
 			{
 				if(n1.type==NBOOL)
-					value.bval=(n2.cfval.real()<(long double)n1.bval);
+					value.bval=(n2.fval.real()<(long double)n1.bval);
 				else if(n1.type==NINT)
-					value.bval=(n2.cfval.real()<(long double)n1.ival);
+					value.bval=(n2.fval.real()<(long double)n1.ival);
 				else value.bval=false;
 			}
 			else if(n1.type==NINT)
@@ -4304,7 +4535,7 @@ Number Script::exec()
 				else value.bval=false;
 			}
 			else value.bval=false;
-			value.fval=(long double)value.bval;
+
 			return value;
 		}
 		case SLESSEQ:
@@ -4316,22 +4547,22 @@ Number Script::exec()
 			{
 				if(n2.type==NFLOAT)
 				{
-					if(n1.cfval.imag()==0.0 && n2.cfval.imag()==0.0)
-						value.bval=(n1.cfval.real()<=n2.cfval.real());
-					else value.bval=(abs(n1.cfval)<=abs(n2.cfval));
+					if(n1.fval.imag()==0.0 && n2.fval.imag()==0.0)
+						value.bval=(n1.fval.real()<=n2.fval.real());
+					else value.bval=(abs(n1.fval)<=abs(n2.fval));
 				}
 				else if(n2.type==NBOOL)
-					value.bval=(n1.cfval.real()<=(long double)n2.bval);
+					value.bval=(n1.fval.real()<=(long double)n2.bval);
 				else if(n2.type==NINT)
-					value.bval=(n1.cfval.real()<=(long double)n2.ival);
+					value.bval=(n1.fval.real()<=(long double)n2.ival);
 				else value.bval=false;
 			}
 			else if(n2.type==NFLOAT)
 			{
 				if(n1.type==NBOOL)
-					value.bval=(n2.cfval.real()>=(long double)n1.bval);
+					value.bval=(n2.fval.real()>=(long double)n1.bval);
 				else if(n1.type==NINT)
-					value.bval=(n2.cfval.real()>=(long double)n1.ival);
+					value.bval=(n2.fval.real()>=(long double)n1.ival);
 				else value.bval=false;
 			}
 			else if(n1.type==NINT)
@@ -4359,7 +4590,7 @@ Number Script::exec()
 				else value.bval=false;
 			}
 			else value.bval=false;
-			value.fval=(long double)value.bval;
+
 			return value;
 		}
 		case SGREQ:
@@ -4371,22 +4602,22 @@ Number Script::exec()
 			{
 				if(n2.type==NFLOAT)
 				{
-					if(n1.cfval.imag()==0.0 && n2.cfval.imag()==0.0)
-						value.bval=(n1.cfval.real()>=n2.cfval.real());
-					else value.bval=(abs(n1.cfval)>=abs(n2.cfval));
+					if(n1.fval.imag()==0.0 && n2.fval.imag()==0.0)
+						value.bval=(n1.fval.real()>=n2.fval.real());
+					else value.bval=(abs(n1.fval)>=abs(n2.fval));
 				}
 				else if(n2.type==NBOOL)
-					value.bval=(n1.cfval.real()>=(long double)n2.bval);
+					value.bval=(n1.fval.real()>=(long double)n2.bval);
 				else if(n2.type==NINT)
-					value.bval=(n1.cfval.real()>=(long double)n2.ival);
+					value.bval=(n1.fval.real()>=(long double)n2.ival);
 				else value.bval=false;
 			}
 			else if(n2.type==NFLOAT)
 			{
 				if(n1.type==NBOOL)
-					value.bval=(n2.cfval.real()<=(long double)n1.bval);
+					value.bval=(n2.fval.real()<=(long double)n1.bval);
 				else if(n1.type==NINT)
-					value.bval=(n2.cfval.real()<=(long double)n1.ival);
+					value.bval=(n2.fval.real()<=(long double)n1.ival);
 				else value.bval=false;
 			}
 			else if(n1.type==NINT)
@@ -4414,753 +4645,342 @@ Number Script::exec()
 				else value.bval=false;
 			}
 			else value.bval=false;
-			value.fval=(long double)value.bval;
+
 			return value;
 		}
 		case POW:
 		{
 			value=vertObj->exec();
 			Number n=vertObj2->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
-			switch(n.type)
-			{
-				case NBOOL:
-					n.cfval=Complex((long double)n.bval,0.0); n.type=NFLOAT; break;
-				case NINT:
-					n.cfval=Complex((long double)n.ival,0.0); n.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
+			convertToFloat(&n);
 
-
-			value.cfval=Complex(powl(value.cfval.real(),n.cfval.real()));
+			value.fval=Complex(powl(value.fval.real(),n.fval.real()));
 			return value;
 		}
 		case CPOW:
 		{
 			value=vertObj->exec();
 			Number n=vertObj2->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
-			switch(n.type)
-			{
-				case NBOOL:
-					n.cfval=Complex((long double)n.bval,0.0); n.type=NFLOAT; break;
-				case NINT:
-					n.cfval=Complex((long double)n.ival,0.0); n.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
+			convertToFloat(&n);
 
-			if(value.cfval.imag()==0.0 && n.cfval.imag()==0.0)
-				value.cfval=Complex(powl(value.cfval.real(),n.cfval.real()));
-			else value.cfval=pow(value.cfval,n.cfval);
+
+			if(value.fval.imag()==0.0 && n.fval.imag()==0.0)
+				value.fval=Complex(powl(value.fval.real(),n.fval.real()));
+			else value.fval=pow(value.fval,n.fval);
 			return value;
 		}
 		case SQRT:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(sqrtl(value.cfval.real()));
+			value.fval=Complex(sqrtl(value.fval.real()));
 			return value;
 		}
 		case CURT:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(cbrtl(value.cfval.real()));
+			value.fval=Complex(cbrtl(value.fval.real()));
 			return value;
 		}
 		case CSQRT:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=sqrt(value.cfval);
+			value.fval=sqrt(value.fval);
 			return value;
 		}
 		case ROOT:
 		{
 			value=vertObj->exec();
 			Number n=vertObj2->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
-			switch(n.type)
-			{
-				case NBOOL:
-					n.cfval=Complex((long double)n.bval,0.0); n.type=NFLOAT; break;
-				case NINT:
-					n.cfval=Complex((long double)n.ival,0.0); n.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
+			convertToFloat(&n);
 
-			value.cfval=Complex(powl(n.cfval.real(),1.0/value.cfval.real()));
+			value.fval=Complex(powl(n.fval.real(),1.0/value.fval.real()));
 			return value;
 		}
 		case CROOT:
 		{
 			value=vertObj->exec();
 			Number n=vertObj2->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
-			switch(n.type)
-			{
-				case NBOOL:
-					n.cfval=Complex((long double)n.bval,0.0); n.type=NFLOAT; break;
-				case NINT:
-					n.cfval=Complex((long double)n.ival,0.0); n.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					n.cfval=Complex(NAN,0.0); n.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
+			convertToFloat(&n);
 
-			value.cfval=pow(n.cfval,Complex(1.0)/value.cfval);
+			value.fval=pow(n.fval,Complex(1.0)/value.fval);
 			return value;
 		}
 		case SIN:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
-			value.cfval=Complex(value.cfval.real()/number);
+			convertToFloat(&value);
+			value.fval=Complex(value.fval.real()/number);
 
-			value.cfval=Complex(sinl(value.cfval.real()));
+			value.fval=Complex(sinl(value.fval.real()));
 			return value;
 		}
 		case COS:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
-			value.cfval=Complex(value.cfval.real()/number);
-			value.cfval=Complex(cosl(value.cfval.real()));
+			convertToFloat(&value);
+			value.fval=Complex(value.fval.real()/number);
+			value.fval=Complex(cosl(value.fval.real()));
 			return value;
 			
 		}
 		case TAN:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
-			value.cfval=Complex(value.cfval.real()/number);
-			value.cfval=Complex(tanl(value.cfval.real()));
+			convertToFloat(&value);
+			value.fval=Complex(value.fval.real()/number);
+			value.fval=Complex(tanl(value.fval.real()));
 			return value;
 			
 		}
 		case CSIN:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
-			value.cfval=Complex(value.cfval.real()/number,value.cfval.imag());
+			convertToFloat(&value);
+			value.fval=Complex(value.fval.real()/number,value.fval.imag());
 			
 
-			value.cfval=sin(value.cfval);
+			value.fval=sin(value.fval);
 			return value;
 		}
 		case CCOS:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
-			value.cfval=Complex(value.cfval.real()/number,value.cfval.imag());
-			value.cfval=cos(value.cfval);
+			convertToFloat(&value);
+			value.fval=Complex(value.fval.real()/number,value.fval.imag());
+			value.fval=cos(value.fval);
 			return value;
 			
 		}
 		case CTAN:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
-			value.cfval=Complex(value.cfval.real()/number,value.cfval.imag());
-			value.cfval=tan(value.cfval);
+			convertToFloat(&value);
+			value.fval=Complex(value.fval.real()/number,value.fval.imag());
+			value.fval=tan(value.fval);
 			return value;
 			
 		}
 		case ASIN:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NFLOAT:
-					value.fval=real(value.cfval);
-					break;
-				case NBOOL:
-					value.fval=(long double)value.bval; value.type=NFLOAT; break;
-				case NINT:
-					value.fval=(long double)value.ival; value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.fval=NAN; value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(asinl(value.fval),imag(value.cfval));
-			value.cfval=Complex(value.cfval.real()*number,value.cfval.imag());
+			value.fval=Complex(asinl(value.fval.real())*number,imag(value.fval));
 			return value;
-			
 		}
 		case ACOS:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NFLOAT:
-					value.fval=real(value.cfval);
-					break;
-				case NBOOL:
-					value.fval=(long double)value.bval; value.type=NFLOAT; break;
-				case NINT:
-					value.fval=(long double)value.ival; value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.fval=NAN; value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(acosl(value.fval),imag(value.cfval));
-			value.cfval=Complex(value.cfval.real()*number,value.cfval.imag());
+			value.fval=Complex(acosl(value.fval.real())*number,imag(value.fval));
 			return value;
-			
 		}
 		case ATAN:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NFLOAT:
-					value.fval=real(value.cfval);
-					break;
-				case NBOOL:
-					value.fval=(long double)value.bval; value.type=NFLOAT; break;
-				case NINT:
-					value.fval=(long double)value.ival; value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.fval=NAN; value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(atanl(value.fval),imag(value.cfval));
-			value.cfval=Complex(value.cfval.real()*number,value.cfval.imag());
+			value.fval=Complex(atanl(value.fval.real())*number,imag(value.fval));
 			return value;
-			
 		}
 		case ASINH:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NFLOAT:
-					value.fval=real(value.cfval);
-					break;
-				case NBOOL:
-					value.fval=(long double)value.bval; value.type=NFLOAT; break;
-				case NINT:
-					value.fval=(long double)value.ival; value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.fval=NAN; value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(asinhl(value.fval),imag(value.cfval));
+			value.fval=Complex(asinhl(value.fval.real()),imag(value.fval));
 			return value;
 			
 		}
 		case ACOSH:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NFLOAT:
-					value.fval=real(value.cfval);
-					break;
-				case NBOOL:
-					value.fval=(long double)value.bval; value.type=NFLOAT; break;
-				case NINT:
-					value.fval=(long double)value.ival; value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.fval=NAN; value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(acoshl(value.fval),imag(value.cfval));
+			value.fval=Complex(acoshl(value.fval.real()),imag(value.fval));
 			return value;
 			
 		}
 		case ATANH:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NFLOAT:
-					value.fval=real(value.cfval);
-					break;
-				case NBOOL:
-					value.fval=(long double)value.bval; value.type=NFLOAT; break;
-				case NINT:
-					value.fval=(long double)value.ival; value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.fval=NAN; value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(atanhl(value.fval),imag(value.cfval));
+			value.fval=Complex(atanhl(value.fval.real()),imag(value.fval));
 			return value;
-			
 		}
 		case SINH:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(sinhl(value.cfval.real()));
+			value.fval=Complex(sinhl(value.fval.real()));
 			return value;
 			
 		}
 		case COSH:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(cosh(value.cfval.real()));
+			value.fval=Complex(cosh(value.fval.real()));
 			return value;
 			
 		}
 		case TANH:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(tanh(value.cfval.real()));
+			value.fval=Complex(tanh(value.fval.real()));
 			return value;
 			
 		}
 		case CSINH:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=sinh(value.cfval);
+			value.fval=sinh(value.fval);
 			return value;
 			
 		}
 		case CCOSH:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=cosh(value.cfval);
+			value.fval=cosh(value.fval);
 			return value;
 			
 		}
 		case CTANH:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=tanh(value.cfval);
+			value.fval=tanh(value.fval);
 			return value;
 			
 		}
 		case LN:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(log(value.cfval.real()));
+			value.fval=Complex(log(value.fval.real()));
 			return value;
 			
 		}
 		case LG:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(log10(value.cfval.real()));
+			value.fval=Complex(log10(value.fval.real()));
 			return value;
 		}
 		case CLN:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=log(value.cfval);
+			value.fval=log(value.fval);
 			return value;
 			
 		}
 		case CLG:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=log10(value.cfval);
+			value.fval=log10(value.fval);
 			return value;
 		}
 		case SREAL:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(value.cfval.real(),0.0);
+			value.fval=Complex(value.fval.real(),0.0);
 			return value;
 		}
 		case SIMAG:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(value.cfval.imag(),0.0);
+			value.fval=Complex(value.fval.imag(),0.0);
 			return value;
 		}
 		case SABS:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(fabsl(value.cfval.real()));
+			value.fval=Complex(fabsl(value.fval.real()));
 			return value;
 		}
 		case CABS:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(abs(value.cfval),0.0);
+			value.fval=Complex(abs(value.fval),0.0);
 			return value;
 		}
 		case SARG:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=Complex(arg(value.cfval),0.0);
+			value.fval=Complex(arg(value.fval),0.0);
 			return value;
 		}
 		case SCONJ:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)value.bval,0.0); value.type=NFLOAT; break;
-				case NINT:
-					value.cfval=Complex((long double)value.ival,0.0); value.type=NFLOAT; break;
-				case NNONE:
-				case NCHAR:
-					value.cfval=Complex(NAN,0.0); value.type=NFLOAT; break;
-			}
+			convertToFloat(&value);
 
-			value.cfval=conj(value.cfval);
+			value.fval=conj(value.fval);
 			return value;
 		}
 		case SFAK:
 		{
 			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.ival=(long long)value.bval; value.type=NINT; break;
-				case NFLOAT:
-					value.ival=(long long)value.cfval.real(); value.type=NINT; break;
-				case NNONE:
-				case NCHAR:
-					value.fval=NAN; value.type=NFLOAT; break;
-			}
-			
+			convertToInt(&value);
 			value.type=NFLOAT;
 
 			if(value.ival<0)
-			{
-				value.fval=NAN;
-				value.type=NNONE;
-			}
+				value.fval=Complex(NAN);
 			else if(value.ival<2)
-				value.fval=1.0;
+				value.fval=Complex(1.0);
 			else {
 				int end=value.ival;
-				value.fval=1.0;
+				long double res=1.0;
 				for(int c=2; c<=end; c++)
-					value.fval*=(long double)c;
+					res*=(long double)c;
+				value.fval=Complex(res,value.fval.imag());
 			}
-			value.cfval=Complex(value.fval,value.cfval.imag());
 			return value;
 		}
 		case RSHIFT:
 		{
 			value=vertObj->exec();
 			Number n=vertObj2->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.ival=(long long)value.bval; value.type=NINT; break;
-				case NFLOAT:
-					value.ival=(long long)value.cfval.real(); value.type=NINT; break;
-				case NNONE:
-				case NCHAR:
-					value.type=NNONE;
-					value.fval=NAN;
-					return value;
-			}
-			switch(n.type)
-			{
-				case NBOOL:
-					n.ival=(long long)n.bval; n.type=NINT; break;
-				case NFLOAT:
-					n.ival=(long long)n.cfval.real(); n.type=NINT; break;
-				case NCHAR:
-				case NNONE:
-					n.type=NNONE;
-					n.fval=NAN;
-					return n;
-			}
+			convertToInt(&value);
+			convertToInt(&n);
 
 			value.ival=value.ival >> n.ival;
 			return value;
@@ -5169,30 +4989,8 @@ Number Script::exec()
 		{
 			value=vertObj->exec();
 			Number n=vertObj2->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.ival=(long long)value.bval; value.type=NINT; break;
-				case NFLOAT:
-					value.ival=(long long)value.cfval.real(); value.type=NINT; break;
-				case NCHAR:
-				case NNONE:
-					value.type=NNONE;
-					value.fval=NAN;
-					return value;
-			}
-			switch(n.type)
-			{
-				case NBOOL:
-					n.ival=(long long)n.bval; n.type=NINT; break;
-				case NFLOAT:
-					n.ival=(long long)n.cfval.real(); n.type=NINT; break;
-				case NCHAR:
-				case NNONE:
-					n.type=NNONE;
-					n.fval=NAN;
-					return n;
-			}
+			convertToInt(&value);
+			convertToInt(&n);
 
 			value.ival=value.ival << n.ival;
 			return value;
@@ -5201,30 +4999,8 @@ Number Script::exec()
 		{
 			value=vertObj->exec();
 			Number n=vertObj2->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.ival=(long long)value.bval; value.type=NINT; break;
-				case NFLOAT:
-					value.ival=(long long)value.cfval.real(); value.type=NINT; break;
-				case NCHAR:
-				case NNONE:
-					value.type=NNONE;
-					value.fval=NAN;
-					return value;
-			}
-			switch(n.type)
-			{
-				case NBOOL:
-					n.ival=(long long)n.bval; n.type=NINT; break;
-				case NFLOAT:
-					n.ival=(long long)n.cfval.real(); n.type=NINT; break;
-				case NCHAR:
-				case NNONE:
-					n.type=NNONE;
-					n.fval=NAN;
-					return n;
-			}
+			convertToInt(&value);
+			convertToInt(&n);
 
 			value.ival=value.ival ^ n.ival;
 			return value;
@@ -5233,30 +5009,8 @@ Number Script::exec()
 		{
 			value=vertObj->exec();
 			Number n=vertObj2->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.ival=(long long)value.bval; value.type=NINT; break;
-				case NFLOAT:
-					value.ival=(long long)value.cfval.real(); value.type=NINT; break;
-				case NCHAR:
-				case NNONE:
-					value.type=NNONE;
-					value.fval=NAN;
-					return value;
-			}
-			switch(n.type)
-			{
-				case NBOOL:
-					n.ival=(long long)n.bval; n.type=NINT; break;
-				case NFLOAT:
-					n.ival=(long long)n.cfval.real(); n.type=NINT; break;
-				case NCHAR:
-				case NNONE:
-					n.type=NNONE;
-					n.fval=NAN;
-					return n;
-			}
+			convertToInt(&value);
+			convertToInt(&n);
 
 			value.ival=value.ival & n.ival;
 			return value;
@@ -5265,30 +5019,8 @@ Number Script::exec()
 		{
 			value=vertObj->exec();
 			Number n=vertObj2->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.ival=(long long)value.bval; value.type=NINT; break;
-				case NFLOAT:
-					value.ival=(long long)value.cfval.real(); value.type=NINT; break;
-				case NCHAR:
-				case NNONE:
-					value.type=NNONE;
-					value.fval=NAN;
-					return value;
-			}
-			switch(n.type)
-			{
-				case NBOOL:
-					n.ival=(long long)n.bval; n.type=NINT; break;
-				case NFLOAT:
-					n.ival=(long long)n.cfval.real(); n.type=NINT; break;
-				case NCHAR:
-				case NNONE:
-					n.type=NNONE;
-					n.fval=NAN;
-					return n;
-			}
+			convertToInt(&value);
+			convertToInt(&n);
 
 			value.ival=value.ival | n.ival;
 			return value;
@@ -5301,11 +5033,10 @@ Number Script::exec()
 				case NBOOL:
 					value.ival=(long long)value.bval; value.type=NINT; break;
 				case NFLOAT:
-					value.ival=(long long)value.cfval.real(); value.type=NINT; break;
+					value.ival=(long long)value.fval.real(); value.type=NINT; break;
 				case NCHAR:
 				case NNONE:
 					value.type=NNONE;
-					value.fval=NAN;
 					return value;
 			}
 
@@ -5320,34 +5051,26 @@ Number Script::exec()
 			{
 				case NBOOL:
 					value.ival=(long long)value.bval; value.type=NINT; break;
-				case NFLOAT:
-					value.fval=value.cfval.real(); break;
-				case NNONE:
-				case NCHAR:
-					value.fval=NAN; value.type=NFLOAT; break;
+				default:
+					value.type=NFLOAT; break;
 			}
 			switch(n.type)
 			{
 				case NBOOL:
 					n.ival=(long long)n.bval; n.type=NINT; break;
-				case NFLOAT:
-					n.fval=n.cfval.real(); break;
 				case NNONE:
-				case NCHAR:
-					n.fval=NAN; n.type=NFLOAT; break;
+				default:
+					n.type=NFLOAT; break;
 			}
 			if(value.type==NINT && n.type==NINT)
-			{
 				value.ival%=n.ival;
-				value.fval=(long double)value.ival;
-			}
 			else if(value.type==NFLOAT && n.type==NFLOAT)
-				value.cfval=Complex(fmodl(value.fval,n.fval),value.cfval.imag());
+				value.fval=Complex(fmodl(value.fval.real(),n.fval.real()),value.fval.imag());
 			else if(value.type==NFLOAT && n.type==NINT)
-				value.cfval=Complex(fmodl(value.fval,(long double)n.ival),value.cfval.imag());
+				value.fval=Complex(fmodl(value.fval.real(),(long double)n.ival),value.fval.imag());
 			else if(value.type==NINT && n.type==NFLOAT)
 			{
-				value.cfval=Complex(fmodl((long double)value.ival,n.fval),n.cfval.imag());
+				value.fval=Complex(fmodl((long double)value.ival,n.fval.real()),n.fval.imag());
 				value.type=NFLOAT;
 			}
 			
@@ -5358,49 +5081,20 @@ Number Script::exec()
 			Number value=vertObj->exec();
 			double pos;
 
-			switch(value.type)
-			{
-				case NBOOL:
-					pos=(double)value.bval; break;
-				case NFLOAT:
-					pos=(double)value.cfval.real(); break;
-				case NINT:
-					pos=(double)value.ival; break;
-				default:
-					pos=value.fval; break;
-			}
-			value.type=NFLOAT;
+			convertToFloat(&value);
+			pos=value.fval.real();
+
 			double step=(pos*(double)1e-8);
 			if(step<1e-8)
 				step=1e-8;
 			eventReciver->vars[23][0].type=NFLOAT;
-			eventReciver->vars[23][0].cfval=Complex(pos-step,0.0);
+			eventReciver->vars[23][0].fval=Complex(pos-step,0.0);
 			Number w1=horzObj->exec();
-			switch(w1.type)
-			{
-				case NBOOL:
-					value.cfval=Complex((long double)w1.bval,0.0); break;
-				case NFLOAT:
-					value.cfval=w1.cfval; break;
-				case NINT:
-					value.cfval=Complex((long double)w1.ival,0.0);  break;
-				default:
-					value.cfval=value.cfval;  break;
-			}
-			eventReciver->vars[23][0].cfval=Complex(pos+step,0.0);
+			convertToFloat(&w1);
+			eventReciver->vars[23][0].fval=Complex(pos+step,0.0);
 			Number w2=horzObj->exec();
-			switch(w2.type)
-			{
-				case NBOOL:
-					value.cfval=(Complex(w2.bval,0.0)-value.cfval)/Complex(2.0*step); break;
-				case NFLOAT:
-					value.cfval=(w2.cfval-value.cfval)/Complex(2.0*step); break;
-				case NINT:
-					value.cfval=(Complex(w2.ival,0.0)-value.cfval)/Complex(2.0*step);  break;
-				default:
-					value.cfval=(w2.cfval-value.cfval)/Complex(2.0*step); break;
-			}
-		//	value.cfval=Complex((w2-w1)/((double)2.0*step),0.0);
+			convertToFloat(&w2);
+			value.fval=Complex((w2.fval.real()-w1.fval.real())/(2.0*step),0.0);
 		
 			return value;
 		}
@@ -5411,29 +5105,10 @@ Number Script::exec()
 			Number nend=vertObj2->exec();
 			double start,end;
 
-			switch(nstart.type)
-			{
-				case NFLOAT:
-					start=(double)nstart.cfval.real(); break;
-				case NBOOL:
-					start=(double)nstart.bval; break;
-				case NINT:
-					start=(double)nstart.ival; break;
-				default:
-					start=nstart.fval; break;
-			}
-			
-			switch(nend.type)
-			{
-				case NFLOAT:
-					end=(double)nend.cfval.real(); break;
-				case NBOOL:
-					end=(double)nend.bval; break;
-				case NINT:
-					end=(double)nend.ival; break;
-				default:
-					end=nend.fval; break;
-			}
+			convertToFloat(&nstart);
+			convertToFloat(&nend);
+			start=nstart.fval.real();
+			end=nend.fval.real();
 			
 			if(start>end)
 			{
@@ -5475,7 +5150,6 @@ Number Script::exec()
 			for(int c=2; c<=num+1; c++)
 				line1[c-1]=(pow(4.0,(double)(c-1))*line1[c-2]-line2[c-2])/(pow(4.0,(double)(c-1))-1);
 
-		
 			num++;
 			oldfail=fail;
 			fail=line1[num-1]-line2[num-2];
@@ -5496,13 +5170,11 @@ Number Script::exec()
 			}
 		}
 		value.type=NFLOAT;
-		value.cfval=Complex((long double)line1[num-1],0.0);
+		value.fval=Complex((long double)line1[num-1],0.0);
 		if(inv)
-			value.cfval*=Complex(-1.0,0.0);
+			value.fval*=Complex(-1.0);
 		
 		return value;
-
-		
 		}
 		case SRUN:
 		{
@@ -5511,7 +5183,6 @@ Number Script::exec()
 			else 
 			{
 				value.type=NNONE;
-				value.fval=NAN;
 				return value;
 			}
 		}
@@ -5548,7 +5219,7 @@ Number Script::exec()
 							value.ival=n.ival;
 							break;
 						case NFLOAT:
-							value.ival=(long long)n.cfval.real();
+							value.ival=(long long)n.fval.real();
 							break;
 						case NCHAR:
 							char*end;
@@ -5562,22 +5233,23 @@ Number Script::exec()
 						default:
 							value.ival=0;
 					}
-					value.fval=(long double)value.ival;
 					return value;
 				case NFLOAT:
 					switch(n.type)
 					{
 						case NINT:
-							value.cfval=Complex((long double)n.ival,0.0);
+							value.fval=Complex((long double)n.ival,0.0);
 							break;
 						case NCHAR:
-							value.cfval=Complex(strtold(n.cval,NULL),0.0);
+							if(n.cval==NULL || strlen(n.cval)<=0)
+								value.fval=Complex(NAN,0.0);
+							else value.fval=Complex(strtold(n.cval,NULL),0.0);
 							break;
 						case NBOOL:
-							value.cfval=Complex(n.bval,0.0);
+							value.fval=Complex(n.bval,0.0);
 							break;
 						default:
-							value.cfval=Complex(NAN,0.0);
+							value.fval=Complex(NAN,0.0);
 					}
 					return value;
 				case NBOOL:
@@ -5587,7 +5259,7 @@ Number Script::exec()
 							value.bval=!(!(bool)n.ival);
 							break;
 						case NFLOAT:
-							if(n.cfval.real()==0.0)
+							if(n.fval.real()==0.0)
 								value.bval=false;
 							else value.bval=true;
 							break;
@@ -5604,23 +5276,22 @@ Number Script::exec()
 						default:
 							value.bval=false;
 					}
-					value.fval=(long double)value.bval;
 					return value;
 				case NCHAR:
 					switch(n.type)
 					{
 						case NINT:
-							value.cval=new char[25];
+							value.cval=(char*)malloc(25);
 							sprintf(value.cval,"%lli",n.ival);
 							break;
 						case NFLOAT:
-							value.cval=new char[90];
-							sprintf(value.cval,"%Lg",n.cfval.real());
-							if(value.cfval.imag()!=0.0)
+							value.cval=(char*)malloc(90);
+							sprintf(value.cval,"%Lg",n.fval.real());
+							if(value.fval.imag()!=0.0)
 							{
-								if(value.cfval.imag()>0.0)
+								if(value.fval.imag()>0.0)
 									strcpy(value.cval,"+");
-								sprintf(&value.cval[strlen(value.cval)],"%Lg",n.cfval.imag());
+								sprintf(&value.cval[strlen(value.cval)],"%Lg",n.fval.imag());
 								strcpy(value.cval,"i");
 							}
 								
@@ -5635,11 +5306,9 @@ Number Script::exec()
 						default:
 							value.cval[0]=(char)0;
 					}
-					value.fval=NAN;
 					return value;
 				default:
 					value.type=NNONE;
-					value.fval=NAN;
 					return value;
 			}
 		}
@@ -5649,31 +5318,52 @@ Number Script::exec()
 			value=vertObj->exec();
 			value.type=NFLOAT;
 #if RAND_MAX < 1000000000
-			value.cfval=Complex((((rand()*(1000000000/RAND_MAX))%1000000000)*value.fval)/1000000000,0.0);
+			value.fval=Complex((((rand()*(1000000000/RAND_MAX))%1000000000)*value.fval.real())/1000000000,0.0);
 #else
-			value.cfval=Complex(((rand()%1000000000)*value.fval)/1000000000,0.0);
+			value.fval=Complex(((rand()%1000000000)*value.fval.real())/1000000000,0.0);
 #endif
 			return value;
 		}
 		case SCALARPROD:
 		{
 			value=vertObj->exec();
-			Number n=vertObj2->exec();
-			if(value.type==NVECTOR && n.type==NVECTOR && eventReciver->numlen[value.ival]==eventReciver->numlen[n.ival])
+			Number n;
+			if((value.type==NVECTOR || value.type==NMATRIX) &&value.ival==27)
 			{
-				int len=eventReciver->numlen[value.ival];
-				value.cfval=Complex(0.0,0.0);
-				for(int c=0; c<len;c++)
+				Number*tmpMem=eventReciver->vars[27];
+				int tmpMemLen=eventReciver->numlen[27],tmpDimension1=eventReciver->dimension[27][0],tmpDimension2=eventReciver->dimension[27][1];
+				
+				eventReciver->vars[27]= (Number*)malloc(sizeof(Number));
+				eventReciver->vars[27][0].type=NNONE;
+				eventReciver->vars[27][0].cval=NULL;
+				eventReciver->dimension[27][0]=eventReciver->dimension[27][1]=eventReciver->numlen[27]=1;
+				n=vertObj2->exec();
+				
+				eventReciver->vars[28]=tmpMem;
+				eventReciver->numlen[28]=tmpMemLen;
+				eventReciver->dimension[28][0]=tmpDimension1;
+				eventReciver->dimension[28][1]=tmpDimension2;
+				value.ival=28;
+			}
+			else n =vertObj2->exec();
+			if(value.type==NVECTOR && n.type==NVECTOR)
+			{
+				int minlen=eventReciver->dimension[value.ival][0];
+				if(eventReciver->dimension[n.ival][0]<minlen)
+					minlen=eventReciver->dimension[n.ival][0];
+
+				value.fval=Complex(0.0,0.0);
+				for(int c=0; c<minlen;c++)
 				{
 					convertToFloat(&eventReciver->vars[value.ival][c]);
 					convertToFloat(&eventReciver->vars[n.ival][c]);
-					value.cfval+=eventReciver->vars[value.ival][c].cfval*eventReciver->vars[n.ival][c].cfval;
+					value.fval+=eventReciver->vars[value.ival][c].fval*eventReciver->vars[n.ival][c].fval;
 				}
 				value.type=NFLOAT;
 			}
 			else {
 				value.type=NNONE;
-				value.cfval=Complex(NAN,0.0);
+				value.fval=Complex(NAN,0.0);
 			}
 			
 			return value;
@@ -5684,7 +5374,7 @@ Number Script::exec()
 			int sleeptime;
 			if(value.type ==NINT)
 				sleeptime=value.ival;
-			else sleeptime=(int)value.cfval.real();
+			else sleeptime=(int)value.fval.real();
 			if(sleeptime>0)
 			{
 				usleep(sleeptime);
@@ -5695,23 +5385,18 @@ Number Script::exec()
 		}
 		case SSETCURSOR:
 		{
-	//		perror("SETCURSOR in exec: "+QString::number(pthread_self()));
 			int*coords=(int*)malloc(sizeof(int)*2);
 			value=vertObj->exec();
 			if(value.type==NINT)
 				coords[0]=value.ival;
-			else coords[0]=(int)value.cfval.real();
+			else coords[0]=(int)value.fval.real();
 			value=vertObj2->exec();
 			if(value.type==NINT)
 				coords[1]=value.ival;
-			else coords[1]=(int)value.cfval.real();
+			else coords[1]=(int)value.fval.real();
 			QCustomEvent *ev=new QCustomEvent(SIGSETTEXTPOS);
 			ev->setData(coords);
-//			qApp->lock();
 			QApplication::postEvent(eventReciver->eventReciver,ev);
-//			QApplication::sendPostedEvents();
-//			qApp->unlock();
-//			free(coords);
 			if(nextObj==NULL)
 				return value;
 			else return nextObj->exec();
@@ -5721,8 +5406,6 @@ Number Script::exec()
 
 			QCustomEvent*clearEvent=new QCustomEvent(SIGCLEARTEXT);
 			QApplication::postEvent(eventReciver->eventReciver,clearEvent);
-//			QApplication::sendPostedEvents();
-
 			if(nextObj==NULL)
 				return value;
 			else return nextObj->exec();
@@ -5746,7 +5429,7 @@ Number Script::exec()
 				usleep(2000);
 			}
 			value.cval[0]=*((char*)(eventReciver->data));
-			value.cfval=Complex((long double)value.cval[0],0.0);
+			value.fval=Complex((long double)value.cval[0],0.0);
 			free(eventReciver->data);
 			if(nextObj==NULL)
 				return value;
@@ -5771,7 +5454,7 @@ Number Script::exec()
 				usleep(1000);
 			}
 			value.cval[0]=*((char*)(eventReciver->data));
-			value.cfval=Complex((long double)value.cval[0],0.0);
+			value.fval=Complex((long double)value.cval[0],0.0);
 			free(eventReciver->data);
 			if(nextObj==NULL)
 				return value;
@@ -5796,7 +5479,7 @@ Number Script::exec()
 				usleep(5000);
 			}
 			int dataLen=strlen((char*)eventReciver->data);
-			value.cval=new char[dataLen+1];
+			value.cval=(char*)malloc(dataLen+1);
 			memcpy(value.cval,eventReciver->data,dataLen+1);
 			free(eventReciver->data);
 			if(nextObj==NULL)
@@ -5813,7 +5496,7 @@ Number Script::exec()
 		case SFAIL:
 		{
 			value.type=NNONE;
-			value.fval=NAN;
+			value.fval=Complex(NAN);
 			return value;
 		}
 	}
@@ -5832,6 +5515,19 @@ Number Script::execHorzObj()
 	if(horzObj != NULL)
 		return horzObj->exec();
 	else return value;
+}
+
+bool Script::resizeVar(int var,int newlen)
+{
+	eventReciver->vars[var]=(Number*)realloc((void*)eventReciver->vars[var],sizeof(Number)*(newlen));
+	for(int c=eventReciver->numlen[var]; c<newlen; c++)
+	{
+		eventReciver->vars[var][c].type=NNONE;
+		eventReciver->vars[var][c].cval=NULL;
+	}
+				
+	eventReciver->numlen[var]=newlen;
+	return true;
 }
 
 void printError(const char*text,int num,QObject*eventReciver)

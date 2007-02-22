@@ -93,6 +93,7 @@
 //      - run other scripts: run                                                        ok  //
 //      - graph output functions: point, line, circle, ... (in a later version)             //
 //      - usage of files (in a later version)                                               //
+//      - change preferences (in a later version)                                           //
 //      - script debugging tool                                                         ok  //
 //  - load and save scripts                                     (v0.5)                  ok  //
 //  - script editor window                                      (v0.5)                  ok  //
@@ -143,6 +144,7 @@
 //	- CPU-load is 100% when waiting for keyboart input									ok	//
 //	- 3rd, 5th ... root of -N returns only complex results								ok	//
 //	- result lines in polar cs were drawn wrong when angle type isn't rad				ok	//
+//	- array memory can't be deleted															//
 
 
 //////////////////////////used variables//////////////////////////
@@ -249,7 +251,6 @@ MainObject() :QTabWidget()
 		vars[c].NewItem(0.0);
 	Number n0;
 	n0.type=NFLOAT;
-	n0.fval=0.0;
 	vecs=new Vector [VARNUM];
 	for(int c=0; c<VARNUM;c++)
 		vecs[c].NewItem(n0);
@@ -398,7 +399,10 @@ MainObject() :QTabWidget()
 		threadData->vars[c]=(Number*)malloc(sizeof(Number));
 		threadData->numlen[c]=1;
 		threadData->vars[c][0].type=NNONE;
-		threadData->vars[c][0].cfval=Complex(0.0,0.0);
+		threadData->vars[c][0].cval=NULL;
+		threadData->vars[c][0].fval=Complex(0.0,0.0);
+		for(int c1=0; c1<VARDIMENSIONS; c1++)
+			threadData->dimension[c][c1]=1;
 	}
 
 

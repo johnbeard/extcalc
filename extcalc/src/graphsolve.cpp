@@ -725,9 +725,9 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 	if(forceScript)
 	{
 		threadData->vars[23][0].type=NFLOAT;
-		threadData->vars[23][0].cfval=Complex(scanPos,0.0);
-		fx1=sfx->exec().cfval.real();
-		dfx1=sdfx->exec().cfval.real();
+		threadData->vars[23][0].fval=Complex(scanPos,0.0);
+		fx1=sfx->exec().fval.real();
+		dfx1=sdfx->exec().fval.real();
 	}
 	else
 	{
@@ -751,9 +751,9 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 		if(forceScript)
 		{
 			
-			threadData->vars[23][0].cfval=Complex(scanPos,0.0);
-			fx1=sfx->exec().cfval.real();
-			dfx1=sdfx->exec().cfval.real();
+			threadData->vars[23][0].fval=Complex(scanPos,0.0);
+			fx1=sfx->exec().fval.real();
+			dfx1=sdfx->exec().fval.real();
 		}
 		else {
 			
@@ -770,9 +770,9 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 			startPos=scanPos;
 			if(forceScript)
 			{
-				threadData->vars[23][0].cfval=Complex(scanPos,0.0);
-				fx1=sfx->exec().cfval.real();
-				dfx1=sdfx->exec().cfval.real();
+				threadData->vars[23][0].fval=Complex(scanPos,0.0);
+				fx1=sfx->exec().fval.real();
+				dfx1=sdfx->exec().fval.real();
 			}
 			else {
 				vars[23][0]=scanPos;
@@ -787,9 +787,9 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 				scanPos+=exactStep;
 				if(forceScript)
 				{
-					threadData->vars[23][0].cfval=Complex(scanPos,0.0);
-					fx1=sfx->exec().cfval.real();
-					dfx1=sdfx->exec().cfval.real();
+					threadData->vars[23][0].fval=Complex(scanPos,0.0);
+					fx1=sfx->exec().fval.real();
+					dfx1=sdfx->exec().fval.real();
 				}
 				else {
 					vars[23][0]=scanPos;
@@ -804,9 +804,9 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 					{
 						if(forceScript)
 						{
-							threadData->vars[23][0].cfval=Complex(x1,0.0);
-							nfx1=sfx->exec().cfval.real();
-							ndfx1=sdfx->exec().cfval.real();
+							threadData->vars[23][0].fval=Complex(x1,0.0);
+							nfx1=sfx->exec().fval.real();
+							ndfx1=sdfx->exec().fval.real();
 						}
 						else {
 							vars[23][0]=x1;
@@ -849,10 +849,10 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 						c++;
 						if(forceScript)
 						{
-							threadData->vars[23][0].cfval=Complex(rfXStart,0.0);
-							rfYStart=sfx->exec().cfval.real();
-							threadData->vars[23][0].cfval=Complex(rfXEnd,0.0);
-							rfYEnd=sfx->exec().cfval.real();
+							threadData->vars[23][0].fval=Complex(rfXStart,0.0);
+							rfYStart=sfx->exec().fval.real();
+							threadData->vars[23][0].fval=Complex(rfXEnd,0.0);
+							rfYEnd=sfx->exec().fval.real();
 						}
 						else {
 							vars[23][0]=rfXStart;
@@ -864,8 +864,8 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 						
 						if(forceScript)
 						{
-							threadData->vars[23][0].cfval=Complex(x1,0.0);
-							fx1=sfx->exec().cfval.real();
+							threadData->vars[23][0].fval=Complex(x1,0.0);
+							fx1=sfx->exec().fval.real();
 						}
 						else {
 							vars[23][0]=x1;
@@ -889,9 +889,9 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 							
 							if(forceScript)
 							{
-								threadData->vars[23][0].cfval=Complex(scanPos,0.0);
-								fx1=sfx->exec().cfval.real();
-								dfx1=sdfx->exec().cfval.real();
+								threadData->vars[23][0].fval=Complex(scanPos,0.0);
+								fx1=sfx->exec().fval.real();
+								dfx1=sdfx->exec().fval.real();
 							}
 							else {
 								vars[23][0]=scanPos;
@@ -1142,8 +1142,8 @@ void GraphSolveWidget::solveButtonSlot()
 								emit addHorizontalLine(yValues[c]);
 							}
 							else {
-								threadData->vars[25][0].cfval=Complex(tValues[c]);
-								yValues[c]=syf->exec().cfval.real();
+								threadData->vars[25][0].fval=Complex(tValues[c]);
+								yValues[c]=syf->exec().fval.real();
 								if(pref.functionTypes[funcIndex]==GRAPHCOMP3D)
 								{
 									emit add3dXLine(yValues[c],tValues[c]);
@@ -1313,8 +1313,8 @@ void GraphSolveWidget::solveButtonSlot()
 								emit addVerticalLine(xValues[c]);
 							}
 							else {
-								threadData->vars[25][0].cfval=Complex(tValues[c]);
-								xValues[c]=sxf->exec().cfval.real();
+								threadData->vars[25][0].fval=Complex(tValues[c]);
+								xValues[c]=sxf->exec().fval.real();
 								
 								if(pref.functionTypes[funcIndex]==GRAPHCOMP3D)
 								{

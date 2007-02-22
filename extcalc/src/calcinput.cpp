@@ -161,11 +161,11 @@ void CalcInput::menuSlot(int item)
 
 }
 
+
 void CalcInput::calculateKey()
 {
 	ansAvailable=true;
 	ansDone=false;
-	long double result;
 	textInput("");
 	int para;
 	int pos;
@@ -191,7 +191,6 @@ void CalcInput::calculateKey()
 			cleanString=checkString(text(0),&pref);
 		Script s(NULL,cleanString,&pref,vars,threadData);
 		nResult=s.exec();
-		result=nResult.fval;
 		if(cleanString!=NULL)
 			delete[]cleanString;
 		setCursorPosition(paragraphs()-1,0);
@@ -201,7 +200,6 @@ void CalcInput::calculateKey()
 		char*cleanString=checkString(text(para),&pref);
 		Script s(NULL,cleanString,&pref,vars,threadData);
 		nResult=s.exec();
-		result=nResult.fval;
 		if(cleanString!=NULL)
 			delete[]cleanString;
 	}
@@ -210,7 +208,18 @@ void CalcInput::calculateKey()
 	
 	strResult=formatOutput(nResult,&pref,threadData);
 	
-	threadData->vars[26][0]=nResult;
+	if(nResult.type==NVECTOR)
+	{
+		threadData->vars[26]=(Number*)realloc(threadData->vars[26],sizeof(Number)*threadData->numlen[nResult.ival]);
+		for(int c=0; c<threadData->numlen[nResult.ival];c++)
+		{
+			convertToFloat(&threadData->vars[nResult.ival][c]);
+			threadData->vars[26][c].type=NFLOAT;
+			threadData->vars[26][c].fval=threadData->vars[nResult.ival][c].fval;
+		}
+		threadData->numlen[26]=threadData->numlen[nResult.ival];
+	}
+	else threadData->vars[26][0]=nResult;
 //	while(strResult->length() < (unsigned)(lineLength-3))
 //		strResult->insert(0,' ');
 	setAlignment(Qt::AlignRight);

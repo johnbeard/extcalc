@@ -155,7 +155,7 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 				if(inputBuffer!=NULL)
 					if(strlen(inputBuffer)>0)
 						free(inputBuffer);
-				inputBuffer="";
+				inputBuffer=(char*)calloc(1,1);
 				bufferCursor=0;
 			}
 			else if(inputMode==IMGETKEY)
@@ -173,7 +173,7 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 			}
 			else {
 				threadData->data=inputBuffer;
-				inputBuffer="";
+				inputBuffer=(char*)calloc(1,1);
 				inputMode=IMSCRIPTING;
 			}
 			bufferCursor=0;
@@ -299,7 +299,7 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 				}
 				else if(inputMode==IMGETKEY)
 				{
-					char*strBuf=new char[2];
+					char*strBuf=(char*)malloc(2);
 					strBuf[1]=(char)0;
 					if(strlen(inputBuffer)>0)
 					{
@@ -375,7 +375,7 @@ void ScriptIOWidget::customEvent(QCustomEvent*ev)
 					if(len==1)
 					{
 						free(inputBuffer);
-						inputBuffer="";
+						inputBuffer=(char*)calloc(1,1);
 					}
 				}
 				else inputMode=IMGETKEY;
@@ -397,7 +397,7 @@ void ScriptIOWidget::customEvent(QCustomEvent*ev)
 					if(len==1)
 					{
 						free(inputBuffer);
-						inputBuffer="";
+						inputBuffer=(char*)calloc(1,1);
 					}
 				}
 				else strBuf[0]=(char)0;
@@ -693,7 +693,7 @@ void ScriptIOWidget::runSlot()
 		if(strlen(inputBuffer)>0)
 		{
 			free(inputBuffer);
-			inputBuffer="";
+			inputBuffer=(char*)calloc(1,1);
 		}
 
 	bufferCursor=0;
