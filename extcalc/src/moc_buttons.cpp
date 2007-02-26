@@ -1,8 +1,8 @@
 /****************************************************************************
 ** StandardButtons meta object code from reading C++ file 'buttons.h'
 **
-** Created: Thu Feb 22 12:16:27 2007
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
+** Created: Mon Feb 26 10:33:45 2007
+**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -14,7 +14,7 @@
 
 #include <private/qucomextra_p.h>
 #if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
-#error "This file was generated using the moc from 3.3.6. It"
+#error "This file was generated using the moc from 3.3.7. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif

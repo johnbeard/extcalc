@@ -51,7 +51,19 @@ void ScriptIOWidget::killSlot()
 			killButton->setEnabled(false);
 			scrollBar->show();
 			resizeEvent(NULL);
+			if(pref.clearScriptMemory)
+				clearMemSlot();
 		}
+	}
+}
+
+void ScriptIOWidget::clearMemSlot()
+{
+	for(int c=0; c<VARNUM; c++)
+	{
+		threadData->vars[c]=(Number*)realloc(threadData->vars[c],sizeof(Number));
+		threadData->numlen[c]=1;
+		threadData->dimension[c][0]=threadData->dimension[c][1]=1;
 	}
 }
 
@@ -444,6 +456,8 @@ void ScriptIOWidget::customEvent(QCustomEvent*ev)
 				scrollBar->show();
 				resizeEvent(NULL);
 				killButton->setEnabled(false);
+				if(pref.clearScriptMemory)
+					clearMemSlot();
 				break;
 			}
 			default:

@@ -60,13 +60,9 @@ public:
 		scriptPathLine->setText(pref.scriptDirName);
 		dataPathLine->setText(pref.dataDirName);
 		
-		
-		
-		
 		QObject::connect(saveButton,SIGNAL(clicked()),this,SLOT(saveSlot()));
 		QObject::connect(fileDialogButton,SIGNAL(clicked()),this,SLOT(fileDialogSlot()));
 		QObject::connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
-		
 	}
 	
 protected:

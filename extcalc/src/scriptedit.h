@@ -60,7 +60,7 @@ class ScriptWidget :public QWidget
 	bool currentTextChanged;
 	QListViewItem*activeFileItem;
 	QListViewItem*clickedFileItem;
-	
+
 	Q_OBJECT
 public:
 	

@@ -23,10 +23,10 @@ using namespace std;
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.6.6\n2006-02-14\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.7\n2006-02-26\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.6.6\n14.2.2006\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.7\n26.2.2006\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2006\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -92,6 +92,12 @@ using namespace std;
 #define GRAPHTYPE			31
 #define TABLETYPE			56
 #define STANDARDTABLE		57
+
+#define EXPORTSCRIPT		171
+#define IMPORTSCRIPT		172
+#define CLEARMEMALWAYS		173
+#define CLEARMEMNOW			174
+#define SCRIPTM				175
 
 #define MODE				39
 #define SCIENTIFIC			32
@@ -328,6 +334,7 @@ struct Preferences
 	bool show3dGrid;
 	bool logNyquistSteps;
 	bool complex;
+	bool clearScriptMemory;
 	int graphType;
 	int calcType;
 	int tableType;

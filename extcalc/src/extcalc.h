@@ -101,7 +101,7 @@
 //  - zooming and moving graphics-window                        (v0.6)                  ok  //
 //  - number object for standard-parser                         (v0.7)                  ok  //
 //  - support for complex numbers in standard parser            (v0.7)                  ok  //
-//  - include matrix- vector- ...-functions to standard-parser  (v0.7)                      //
+//  - include matrix- vector- ...-functions to standard-parser  (v0.7)                  ok  //
 //  - accelerate Calcultate classes                             (v0.7)                      //
 //  - window for vector calculations                            (v0.8)                      //
 //  - window for matrix calculations                            (v0.8)                      //
@@ -144,7 +144,7 @@
 //	- CPU-load is 100% when waiting for keyboart input									ok	//
 //	- 3rd, 5th ... root of -N returns only complex results								ok	//
 //	- result lines in polar cs were drawn wrong when angle type isn't rad				ok	//
-//	- array memory can't be deleted															//
+//	- array memory can't be deleted														ok	//
 
 
 //////////////////////////used variables//////////////////////////
@@ -211,13 +211,14 @@
 //                                                                //
 ////////////////////////////////////////////////////////////////////
 
+class ImportDialog;
 
 class MainObject :public QTabWidget
 {
 	QMenuBar*mainMenu;
 	QPopupMenu *calcMenu,*angleMenu,*helpMenu,*outputMenu,*floatPointMenu,*prefMenu,*graphMenu;
 	QPopupMenu *coordinateMenu,*graphTypeMenu,*calcTypeMenu,*baseMenu,*tableMenu,*tableTypeMenu;
-	QPopupMenu *editMenu,*viewMenu,*fileMenu;
+	QPopupMenu *editMenu,*viewMenu,*fileMenu,*scriptMenu;
 	QTabBar*tabBar;
 	CalcWidget *calculator,*calculator2;
 	GraphWidget * graph;
@@ -225,6 +226,8 @@ class MainObject :public QTabWidget
 	CalcPreferences*calcPref;
 	TablePreferences*tablePref;
 	ScriptPreferences*scriptPref;
+	ImportDialog*importDialog;
+	ImportDialog*exportDialog;
 	TableWidget*table;
 	ScriptWidget*scripting;
 	ScriptIOWidget*scriptIO;
@@ -310,6 +313,8 @@ MainObject() :QTabWidget()
 	calcPref=NULL;
 	tablePref=NULL;
 	scriptPref=NULL;
+	importDialog=NULL;
+	exportDialog=NULL;
 	
 	tabBar = new QTabBar(this);
 	
@@ -335,6 +340,7 @@ MainObject() :QTabWidget()
 	pref.axis=true;
 	pref.label=false;
 	pref.complex=false;
+	pref.clearScriptMemory=true;
 	pref.functions=NULL;
 	pref.activeFunctions=new bool[20];
 	for(int c=0; c<20;c++)
@@ -480,6 +486,14 @@ MainObject() :QTabWidget()
 	tableMenu->insertItem(EXTCALCH_MENU43,STANDARDTABLE);
 	tableMenu->insertItem(EXTCALCH_MENU44,tableTypeMenu,TABLETYPE);
 	QObject::connect(tableMenu,SIGNAL(activated(int)),this,SLOT(tableMenuSlot(int)));
+
+	scriptMenu=new QPopupMenu;
+	scriptMenu->insertItem("Export Script",EXPORTSCRIPT);
+	scriptMenu->insertItem("Import Script",IMPORTSCRIPT);
+	scriptMenu->insertSeparator();
+	scriptMenu->insertItem("Always clear Array Memory",CLEARMEMALWAYS);
+	scriptMenu->insertItem("Clear Array Memory now",CLEARMEMNOW);
+	QObject::connect(scriptMenu,SIGNAL(activated(int)),this,SLOT(scriptMenuSlot(int)));
 	
 	prefMenu=new QPopupMenu;
 	prefMenu->insertItem(EXTCALCH_MENU10,CPREF);
@@ -521,8 +535,8 @@ MainObject() :QTabWidget()
 	mainMenu->insertItem(EXTCALCH_MENU16,calcMenu,CALCULATOR);
 	mainMenu->insertItem(EXTCALCH_MENU17,graphMenu,GRAPH);
 	mainMenu->insertItem(EXTCALCH_MENU46,tableMenu,TABLE);
+	mainMenu->insertItem("Script",scriptMenu,SCRIPTM);
 	mainMenu->insertItem(EXTCALCH_MENU18,helpMenu,HELP);
-	
 	
 	
 	QRect tabbarSize=tabBar->geometry();
@@ -622,6 +636,7 @@ void baseMenuSlot(int item);
 void helpMenuSlot(int item);
 void prefMenuSlot(int item);
 void tableMenuSlot(int item);
+void scriptMenuSlot(int item);
 void tableTypeMenuSlot(int item);
 void runScriptSlot(QString*);
 void getPref(Preferences newPref)
@@ -733,6 +748,8 @@ void getPref(Preferences newPref)
 	tableTypeMenu->setItemChecked(TABLEPOLAR,false);
 	tableTypeMenu->setItemChecked(TABLEINEQUAITY,false);
 	tableTypeMenu->setItemChecked(TABLE3D,false);
+	
+	scriptMenu->setItemChecked(CLEARMEMALWAYS,true);
 
 	pref=newPref;
 	calculator->setPref(pref);
@@ -752,6 +769,7 @@ void getPref(Preferences newPref)
 	calcTypeMenu->setItemEnabled(BASEMENU,calcTypeMenu->isItemChecked(BASE));
 	graphTypeMenu->setItemChecked(pref.graphType,true);
 	tableTypeMenu->setItemChecked(pref.tableType,true);
+	scriptMenu->setItemChecked(CLEARMEMALWAYS,pref.clearScriptMemory);
 	coordinateMenu->setItemChecked(SHOWAXES,pref.axis);
 	coordinateMenu->setItemChecked(SHOWLABELS,pref.label);
 	coordinateMenu->setItemChecked(SHOWRASTER,pref.raster);
@@ -769,4 +787,90 @@ signals:
 	void runScript(QString*);
 
 };
+
+
+
+class ImportDialog :public QWidget
+{
+	QPushButton*saveButton,*cancelButton,*openDialogButton,*saveDialogButton;
+	QLabel *mainLabel,*openPathLabel,*savePathLabel;
+	QLineEdit *openPathLine,*savePathLine;
+	Preferences pref;
+	bool dialog;
+	bool importFile;
+	
+	
+	Q_OBJECT
+	public:
+		ImportDialog(Preferences p,QWidget*parent,bool importF) 
+	:QWidget(parent,"Import/Export Script",Qt::WStyle_Dialog | Qt::WType_Dialog)
+		{
+			pref=p;
+			dialog=false;
+			importFile=importF;
+			
+			if(importFile)
+			{
+				mainLabel=new QLabel("Import Script File",this);
+				openPathLabel=new QLabel("File name to import",this);
+				savePathLabel=new QLabel("File name to save",this);
+			}
+			else {
+				mainLabel=new QLabel("Export Script File",this);
+				openPathLabel=new QLabel("Script file to export",this);
+				savePathLabel=new QLabel("File name to save",this);
+			}
+			openPathLine=new QLineEdit(this);
+			savePathLine=new QLineEdit(this);
+
+			saveButton=new QPushButton(SCRIPTPREFH_STR5,this);
+			cancelButton=new QPushButton(SCRIPTPREFH_STR6,this);
+			openDialogButton=new QPushButton(SCRIPTPREFH_STR7,this);
+			saveDialogButton=new QPushButton(SCRIPTPREFH_STR7,this);
+
+			setGeometry(0,0,410,260);
+			setFixedWidth(410);
+			setFixedHeight(260);
+		
+			mainLabel->setGeometry(20,10,380,20);
+			openPathLabel->setGeometry(20,60,380,20);
+			savePathLabel->setGeometry(20,130,380,20);
+		
+			openPathLine->setGeometry(20,90,280,20);
+			savePathLine->setGeometry(20,160,280,20);
+		
+			saveButton->setGeometry(40,210,100,30);
+			cancelButton->setGeometry(180,210,100,30);
+			openDialogButton->setGeometry(310,90,80,20);
+			saveDialogButton->setGeometry(310,160,80,20);
+		
+			QObject::connect(saveButton,SIGNAL(clicked()),this,SLOT(saveSlot()));
+			QObject::connect(openDialogButton,SIGNAL(clicked()),this,SLOT(openDialogSlot()));
+			QObject::connect(saveDialogButton,SIGNAL(clicked()),this,SLOT(saveDialogSlot()));
+			QObject::connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
+		}
+	
+	protected:
+		virtual void windowActivationChange(bool);
+
+	public slots:
+
+		void saveSlot();
+		void openDialogSlot();
+		void saveDialogSlot();
+		
+	signals:
+		void updateScriptSignal(int);
+
+};
+
+
+
+
+
+
+
+
+
+
 #endif

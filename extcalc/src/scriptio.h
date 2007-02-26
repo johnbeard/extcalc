@@ -219,6 +219,7 @@ class ScriptIOWidget :public QWidget
 		void timerSlot();
 		void runSlot();
 		void scrollbarSlot(int);
+		void clearMemSlot();
 
 	signals:
 		void prefChange(Preferences);

@@ -1,8 +1,8 @@
 /****************************************************************************
 ** ScriptIOWidget meta object code from reading C++ file 'scriptio.h'
 **
-** Created: Thu Feb 22 12:16:27 2007
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
+** Created: Mon Feb 26 10:33:58 2007
+**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -14,7 +14,7 @@
 
 #include <private/qucomextra_p.h>
 #if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
-#error "This file was generated using the moc from 3.3.6. It"
+#error "This file was generated using the moc from 3.3.7. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -76,6 +76,7 @@ QMetaObject* ScriptIOWidget::staticMetaObject()
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
     static const QUMethod slot_8 = {"scrollbarSlot", 1, param_slot_8 };
+    static const QUMethod slot_9 = {"clearMemSlot", 0, 0 };
     static const QMetaData slot_tbl[] = {
 	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
 	{ "maximizeSlot()", &slot_1, QMetaData::Public },
@@ -85,7 +86,8 @@ QMetaObject* ScriptIOWidget::staticMetaObject()
 	{ "editSlot(int)", &slot_5, QMetaData::Public },
 	{ "timerSlot()", &slot_6, QMetaData::Public },
 	{ "runSlot()", &slot_7, QMetaData::Public },
-	{ "scrollbarSlot(int)", &slot_8, QMetaData::Public }
+	{ "scrollbarSlot(int)", &slot_8, QMetaData::Public },
+	{ "clearMemSlot()", &slot_9, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -96,7 +98,7 @@ QMetaObject* ScriptIOWidget::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"ScriptIOWidget", parentObject,
-	slot_tbl, 9,
+	slot_tbl, 10,
 	signal_tbl, 1,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -142,6 +144,7 @@ bool ScriptIOWidget::qt_invoke( int _id, QUObject* _o )
     case 6: timerSlot(); break;
     case 7: runSlot(); break;
     case 8: scrollbarSlot((int)static_QUType_int.get(_o+1)); break;
+    case 9: clearMemSlot(); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }

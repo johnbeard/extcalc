@@ -103,7 +103,7 @@ void CalcInput::keyPressEvent(QKeyEvent*e)
 			}
 			else {
 				if(pos==0 && ( e->text() == "+" || e->text() == "^" || e->text() == "*" ||
-							   e->text() == "/" || e->text() == "²" || e->text() == "³" ||
+							   e->text() == "/" || e->text() == "" || e->text() == "" ||
 							   e->text() == "-" || e->text() == getUnicode(ROOTSTRING) ||
 							   e->text() == "%" || e->text() == "!"))
 				{
@@ -276,6 +276,13 @@ void CalcInput::clearAll()
 	removeParagraph(0);
 	while(resultParagraphs.GetLen() > 0)
 		resultParagraphs.DeleteItem(0);
+	for(int c=0; c<VARNUM; c++)
+	{
+		threadData->vars[c]=(Number*)realloc(threadData->vars[c],sizeof(Number));
+		convertToFloat(threadData->vars[c]);
+		threadData->numlen[c]=1;
+		threadData->dimension[c][0]=threadData->dimension[c][1]=1;
+	}
 }
 void CalcInput::cursorKey(int key)
 {
@@ -387,7 +394,7 @@ void CalcInput::textInput(QString inputText)
 		setCursorPosition(para,pos);
 	}
 	if(pos==0 && ( inputText == "+" || inputText[0] == '^' || inputText == "*" ||
-		  inputText == "/" || inputText == "²" || inputText == "³" ||
+		  inputText == "/" || inputText == "" || inputText == "" ||
 		  inputText[0] == '-' || inputText == getUnicode(ROOTSTRING) ||
 		  inputText == "%" || inputText == "!"))
 	{

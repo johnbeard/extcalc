@@ -414,18 +414,18 @@ char*checkString(QString input,Preferences*pref)
 	qstr.replace("3"+getUnicode(ROOTSTRING),"curt");
 	qstr.replace(getUnicode(ROOTSTRING),"root");
 	qstr.replace(getUnicode(DEGREESTRING),"sprod");
-	
+
 	qstr.replace(getUnicode(PISTRING),"pi");
 	qstr.replace(getUnicode(EULERSTRING),"eu");
 	qstr.replace(getUnicode(INTEGRALSTRING),"integ");
 	qstr.replace("\xb2","^(2)");
 	qstr.replace("\xb3","^(3)");
-	
+
 	qstr.replace(getUnicode(MEGASTRING),"e6");
 	qstr.replace(getUnicode(GIGASTRING),"e9");
 	qstr.replace(getUnicode(TERASTRING),"e12");
-	
-	
+
+
 	char*output=new char[qstr.length()+1];
 	output[qstr.length()]=(char)0;
 	for(int c=0; c<(signed)qstr.length();c++)

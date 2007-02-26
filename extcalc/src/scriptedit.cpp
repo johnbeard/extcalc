@@ -712,18 +712,18 @@ bool ScriptWidget::saveFile(QString path,QString content)
 		if(pos==0 || 
 				!(content[pos-1]>='0' && 
 				 content[pos-1]<='9' || 
-				 content[pos-1]=='²' || 
-				 content[pos-1]=='³') )
+				 content[pos-1]=='\xb2' || 
+				 content[pos-1]=='\xb3') )
 		{
 			content.remove(pos,1);
 			content.insert(pos,"sqrt");
 		}
-		else if(content[pos-1]=='2' || content[pos-1]=='²')
+		else if(content[pos-1]=='2' || content[pos-1]=='\xb2')
 		{
 			content.remove(pos-1,2);
 			content.insert(pos-1,"sqrt");
 		}
-		else if(content[pos-1]=='3' || content[pos-1]=='³')
+		else if(content[pos-1]=='3' || content[pos-1]=='\xb3')
 		{
 			content.remove(pos-1,2);
 			content.insert(pos-1,"curt");
@@ -810,6 +810,4 @@ void LineNumberView::contentsDragEnterEvent(QDragEnterEvent*){setContentsPos(0,c
 void LineNumberView::contentsDragMoveEvent(QDragMoveEvent*e){setContentsPos(0,contentsY());e->accept(geometry());}
 void LineNumberView::contentsDragLeaveEvent(QDragLeaveEvent*){setContentsPos(0,contentsY());}
 void LineNumberView::contentsDropEvent(QDropEvent*){}
-
-
 

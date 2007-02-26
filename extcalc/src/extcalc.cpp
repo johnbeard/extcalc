@@ -160,6 +160,7 @@ int MainObject::readConfigFile()
 			fwrite("AUTOSIZE=false\n",15,1,configFile);
 			fwrite("3DGRID=true\n",12,1,configFile);
 			fwrite("LOGNYQUISTSTEPS=true\n",21,1,configFile);
+			fwrite("CLEARSCRIPTMEM=true\n",20,1,configFile);
 			fwrite("XMIN=-10.0\n",11,1,configFile);
 			fwrite("XMAX=10.0\n",10,1,configFile);
 			fwrite("YMIN=-10.0\n",11,1,configFile);
@@ -624,6 +625,14 @@ int MainObject::readConfigFile()
 		else pref.complex=true;
 	}
 	
+	QString memStr=getConfigString(&confFile,"CLEARSCRIPTMEM");
+	if(memStr.length()>0)
+	{
+		if(memStr.lower() == "true")
+			pref.clearScriptMemory=true;
+		else pref.clearScriptMemory=false;
+	}
+	
 	QString logStr=getConfigString(&confFile,"LOGNYQUISTSTEPS");
 	if(logStr.length()>0)
 	{
@@ -929,6 +938,10 @@ void MainObject::writeConfigFile()
 	if(pref.complex == true)
 		configuration+="true";
 	else configuration+="false";
+	configuration+="\nCLEARSCRIPTMEM=";
+	if(pref.clearScriptMemory == true)
+		configuration+="true";
+	else configuration+="false";
 	configuration+="\nTABLETYPE=";
 	if(pref.tableType==TABLENORMAL)
 		configuration+="normal";
@@ -1043,20 +1056,29 @@ void MainObject::writeConfigFile()
 
 void MainObject::tabChangeSlot(QWidget*activeWidget)
 {
-	if(activeWidget==(QWidget*)calculator || activeWidget==(QWidget*)calculator2 || activeWidget==(QWidget*)scripting || activeWidget==(QWidget*)scriptIO)
+	if(activeWidget==(QWidget*)calculator || activeWidget==(QWidget*)calculator2)
 	{
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,false);
+		mainMenu->setItemVisible(SCRIPTM,false);
 	}
 	else if(activeWidget==(QWidget*)graph)
 	{
 		mainMenu->setItemVisible(GRAPH,true);
 		mainMenu->setItemVisible(TABLE,false);
+		mainMenu->setItemVisible(SCRIPTM,false);
 	}
 	else if(activeWidget==(QWidget*)table)
 	{
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,true);
+		mainMenu->setItemVisible(SCRIPTM,false);
+	}
+	else if(activeWidget==(QWidget*)scripting || activeWidget==(QWidget*)scriptIO)
+	{
+		mainMenu->setItemVisible(GRAPH,false);
+		mainMenu->setItemVisible(TABLE,false);
+		mainMenu->setItemVisible(SCRIPTM,true);
 	}
 	
 	if(activeWidget!=(QWidget*)calculator && activeWidget!=(QWidget*)calculator2)
@@ -1255,6 +1277,34 @@ void MainObject::tableMenuSlot(int item)
 		getPref(pref);
 	}
 }
+
+void MainObject::scriptMenuSlot(int item)
+{
+	switch(item)
+	{
+		case EXPORTSCRIPT:
+			if(exportDialog != NULL)
+				delete exportDialog;
+			exportDialog=new ImportDialog(pref,(QWidget*)this,false);
+			exportDialog->show();			
+			break;
+		case IMPORTSCRIPT:
+			if(importDialog != NULL)
+				delete importDialog;
+			importDialog=new ImportDialog(pref,(QWidget*)this,true);
+			QObject::connect(importDialog,SIGNAL(updateScriptSignal(int)),scripting,SLOT(fileBrowserMenuSlot(int)));
+			importDialog->show();
+			break;
+		case CLEARMEMALWAYS:
+			pref.clearScriptMemory=!pref.clearScriptMemory;
+			getPref(pref);
+			break;
+		case CLEARMEMNOW:
+			scriptIO->clearMemSlot();
+			break;
+	}
+}
+
 void MainObject::tableTypeMenuSlot(int item)
 {
 
@@ -1409,6 +1459,97 @@ void MainObject::runScriptSlot(QString*)
 		viewMenuSlot(VIEWSCRIPTIO);
 	else showPage(scriptIO);
 }
+
+
+
+
+void ImportDialog::windowActivationChange(bool)
+{
+	if(!isActiveWindow()&&!dialog)
+		setActiveWindow();
+
+}
+
+void ImportDialog::saveSlot()
+{
+	QString savePath=savePathLine->text(),openPath=openPathLine->text();
+	
+	if((savePath.find(pref.scriptPath+"/"+pref.scriptDirName) !=0 && importFile) || 
+		  (openPath.find(pref.scriptPath+"/"+pref.scriptDirName) !=0 && !importFile))
+	{
+		if(importFile)
+			ErrorBox("File outside script code directory: "+savePath);
+		else ErrorBox("File outside script code directory: "+openPath);
+	}
+	else
+	{
+		struct stat testStat;
+		
+		if(lstat(savePath,&testStat)==0)
+		{
+			if(YesNoBox("Really overwrite "+savePath+" ?")==1)
+				return;
+		}
+		system("cp "+openPath+" "+savePath);
+		emit updateScriptSignal(FILEUPDATE);
+		close();
+	}
+}
+
+
+void ImportDialog::openDialogSlot()
+{
+	QString startPath,dialogText;
+	dialog=true;
+	if(!importFile) {
+		startPath=pref.scriptPath+"/"+pref.scriptDirName;
+		dialogText=QString("Choose a script file to export");
+	}
+	else {
+		dialogText=QString("Choose a file to import");
+		startPath=QString(getenv("HOME"));
+	}
+	
+	QString path = QFileDialog::getOpenFileName(
+			startPath,
+	QString::null,
+	this,
+	"open file dialog",
+	dialogText);
+	dialog=false;
+	if(!path.isNull())
+		openPathLine->setText(path);
+}
+
+void ImportDialog::saveDialogSlot()
+{
+	dialog=true;
+	QString startPath;
+	if(importFile)
+		startPath=pref.scriptPath+"/"+pref.scriptDirName;
+	else startPath=QString(getenv("HOME"));
+	QString path = QFileDialog::getSaveFileName(
+			startPath,
+	QString::null,
+	this,
+	"save file dialog",
+	"Choose a filename to save under" );
+	dialog=false;
+	if(!path.isNull())
+		savePathLine->setText(path);
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
