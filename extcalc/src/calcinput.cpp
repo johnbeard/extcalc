@@ -103,7 +103,7 @@ void CalcInput::keyPressEvent(QKeyEvent*e)
 			}
 			else {
 				if(pos==0 && ( e->text() == "+" || e->text() == "^" || e->text() == "*" ||
-							   e->text() == "/" || e->text() == "" || e->text() == "" ||
+							   e->text() == "/" || e->text() == "\xb2" || e->text() == "\xb3" ||
 							   e->text() == "-" || e->text() == getUnicode(ROOTSTRING) ||
 							   e->text() == "%" || e->text() == "!"))
 				{
@@ -394,7 +394,7 @@ void CalcInput::textInput(QString inputText)
 		setCursorPosition(para,pos);
 	}
 	if(pos==0 && ( inputText == "+" || inputText[0] == '^' || inputText == "*" ||
-		  inputText == "/" || inputText == "" || inputText == "" ||
+		  inputText == "/" || inputText == "\xb2" || inputText == "\xb3" ||
 		  inputText[0] == '-' || inputText == getUnicode(ROOTSTRING) ||
 		  inputText == "%" || inputText == "!"))
 	{

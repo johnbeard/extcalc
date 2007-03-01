@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GraphSolveWidget meta object code from reading C++ file 'graphsolve.h'
 **
-** Created: Mon Feb 26 10:33:50 2007
+** Created: Thu Mar 1 08:11:21 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!

@@ -73,15 +73,79 @@ void ScriptIOWidget::paintEvent(QPaintEvent*)
 	QPainter p;
 	p.begin(buffer);
 	p.setFont(*drawFont);
+	p.setBackgroundMode(Qt::OpaqueMode);
 	int lineMemLen=lines.GetLen();
 	int scrollbarPos;
 	
-	if(inputMode!=IMDEFAULT)
+	if(inputMode==IMSCRIPTING)
+	{
 		scrollbarPos=lineMemLen-lineNum;
-	else scrollbarPos=scrollBar->value();
-
-	for(int c=scrollbarPos; c<scrollbarPos+lineNum; c++)
+		for(int c=scrollbarPos; c<scrollbarPos+lineNum; c++)
 		p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c]);
+	}
+	else {
+		if(inputMode!=IMDEFAULT)
+			scrollbarPos=lineMemLen-lineNum;
+		else scrollbarPos=scrollBar->value();
+		
+		int startRow,startLine,endRow,endLine;
+		if(selectStartLine> selectEndLine || selectStartLine==selectEndLine && selectStartRow>selectEndRow)
+		{
+			startRow=selectEndRow;
+			startLine=selectEndLine;
+			endRow=selectStartRow;
+			endLine=selectStartLine;
+		}
+		else{
+			startRow=selectStartRow;
+			startLine=selectStartLine;
+			endRow=selectEndRow;
+			endLine=selectEndLine;
+		}
+		if(startLine<scrollbarPos && endLine>=scrollbarPos)
+		{
+			p.setBackgroundColor(QColor(0,0,0));
+			p.setPen(QColor(255,255,255));
+		}
+		
+		for(int c=scrollbarPos; c<scrollbarPos+lineNum; c++)
+		{
+			if(c!=startLine &&c!=endLine)
+				p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c]);
+			else if(startLine==endLine)
+			{
+				p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c].left(startRow));
+				p.setBackgroundColor(QColor(0,0,0));
+				p.setPen(QColor(255,255,255));
+				p.drawText(startRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].mid(startRow,startRow-endRow));
+				p.setBackgroundColor(QColor(255,255,255));
+				p.setPen(QColor(0,0,0));
+				p.drawText(endRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].right(lines[c].length()-endRow));
+	
+			}
+			else {
+				
+				if(c==startLine)
+				{
+					p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c].left(startRow));
+					p.setBackgroundColor(QColor(0,0,0));
+					p.setPen(QColor(255,255,255));
+					p.drawText(startRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].right(lines[c].length()-startRow));
+				}
+				if(c==endLine)
+				{
+					p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c].left(endRow));
+					p.setBackgroundColor(QColor(255,255,255));
+					p.setPen(QColor(0,0,0));
+					p.drawText(endRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].right(lines[c].length()-endRow));
+				}
+			}
+		}
+	}
+
+	
+
+
 	
 	
 	if((hasFocus() && inputMode==IMDEFAULT) || inputMode==IMGETLINE)
@@ -264,22 +328,15 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 				switch(e->key())
 				{
 					case Qt::Key_V:
-						QClipboard*board=QApplication::clipboard();
-						insert(board->text(QClipboard::Clipboard));
+						contextMenuSlot(EDITPASTE);
 						break;
-		/*			case Qt::Key_C:
-						copy();
+					case Qt::Key_C:
+						contextMenuSlot(EDITCOPY);
 						break;
-					case Qt::Key_X:
-						cut();
+					case Qt::Key_A:
+						contextMenuSlot(EDITSELECTALL);
 						break;
-					case Qt::Key_Y:
-						redo();
-						break;
-					case Qt::Key_Z:
-						undo();
-						break;
-			*/	}
+				}
 			}
 			else
 			{
@@ -497,7 +554,21 @@ void ScriptIOWidget::customEvent(QCustomEvent*ev)
 }
 
 void ScriptIOWidget::mousePressEvent(QMouseEvent*e)
-{
+{	
+	if(e->button()==Qt::RightButton)
+	{
+		if(inputMode!=IMSCRIPTING)
+		{
+			QPoint menuPos=e->pos();
+			menuPos=mapToGlobal(menuPos);
+			contextMenu->popup(menuPos,EDITCOPY);
+		}
+		return;
+	}
+	int scrollbarPos=scrollBar->value();
+	selectEndLine=selectStartLine=(e->y()-50)/charHeight+scrollbarPos;
+	selectEndRow=selectStartRow=(e->x()-20)/charWidth;
+	
 	if(inputMode!=IMDEFAULT)
 		return;
 	int mouseX=e->x()-20,mouseY=e->y()-50;
@@ -511,14 +582,28 @@ void ScriptIOWidget::mousePressEvent(QMouseEvent*e)
 		if(cursorY>scrollBar->value()+lineNum)
 			cursorY=scrollBar->value()+lineNum;
 	}
+	
+
+
 	repaint(20,50,ioFieldWidth,ioFieldHeight,false);
 }
-void ScriptIOWidget::mouseReleaseEvent(QMouseEvent*)
+void ScriptIOWidget::mouseReleaseEvent(QMouseEvent*me)
 {
-	
+	int scrollbarPos=scrollBar->value();
+//	p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c]);
+	selectEndLine=(me->y()-50)/charHeight+scrollbarPos;
+	selectEndRow=(me->x()-20)/charWidth;
+	repaint(20,50,ioFieldWidth,ioFieldHeight,false);
 }
-void ScriptIOWidget::mouseMoveEvent(QMouseEvent*)
+void ScriptIOWidget::mouseMoveEvent(QMouseEvent*me)
 {
+	int scrollbarPos=scrollBar->value();
+	int oldEndLine=selectEndLine,oldEndRow=selectEndRow;
+	selectEndLine=(me->y()-50)/charHeight+scrollbarPos;
+	selectEndRow=(me->x()-20)/charWidth;
+	perror(QString::number(selectStartLine)+" "+QString::number(selectStartRow)+" "+QString::number(selectEndLine)+" "+QString::number(selectEndRow));
+	if(oldEndRow!=selectEndRow || oldEndLine!=selectEndLine)
+		repaint(20,50,ioFieldWidth,ioFieldHeight,false);
 }
 
 
@@ -662,12 +747,40 @@ void ScriptIOWidget::runScript(QString*code)
 	while(semicolonLines.GetLen()>0)
 		semicolonLines.DeleteItem(0);
 	
+	runningPref=pref;
+	perror("complex before: "+QString::number(runningPref.complex));
+	int ret=preferencesPreprocessor(code,&runningPref);
+	perror("complex after: "+QString::number(runningPref.complex));
+	perror("return value: "+QString::number(ret));
+	
 	searchScripts(code);
 	countDifference=0;
 	initDebugging(code);
 
+	if(ret!=0)
+	{
+		switch(ret)
+		{
+			case PPINVALIDCOMMAND:
+				insert("\nPreference Preprocessor: Invalid preprocessor command\n");
+				return;
+			case PPINVALIDARGUMENT:
+				insert("\nPreference Preprocessor: Invalid preference argument\n");
+				return;
+			case PPINVALIDPREF:
+				insert("\nPreference Preprocessor: Invalid preference\n");
+				return;	
+			case PPEMPTY:
+				insert("\nPreference Preprocessor: Result script file empty\n");
+				return;
+			default:
+				insert("\nPreference Preprocessor: Unknown error\n");
+				return;
+		}
+	}
 
-	char*cleanString=checkString(*code,&pref);
+
+	char*cleanString=checkString(*code,&runningPref);
 
 	delete scriptObject;
 	insert(SCRIPTIO_STR8);
@@ -676,7 +789,7 @@ void ScriptIOWidget::runScript(QString*code)
 		insert("\nPreprocessor Error\n");
 		return;
 	}
-	scriptObject=new Script(NULL,cleanString,&pref,vars,threadData);
+	scriptObject=new Script(NULL,cleanString,&runningPref,vars,threadData);
 	loadSubScripts();
 	delete[]cleanString;
 
@@ -884,25 +997,98 @@ void ScriptIOWidget::initDebugging(QString *code)
 }
 
 
+int ScriptIOWidget::preferencesPreprocessor(QString *code,Preferences*pref)
+{
+	int pos=0,newlinePos=-1,end,commentPos=0;
+	QString configLine;
+	bool quote=false;
+	
+	while(pos<(signed)code->length())
+	{
+		if(quote)
+		{
+			if((*code)[pos]=='"')
+				quote=false;
+		}
+		else {
+			if((*code)[pos]=='"')
+				quote=true;
+			else if((*code)[pos]=='/' && (*code)[pos+1]=='/')
+			{
+				pos=code->find('\n',pos);
+				if(pos==-1)
+					pos=code->length();
+				else newlinePos=pos;
+			}
+			else if((*code)[pos]=='\n')
+				newlinePos=pos;
+			else if((*code)[pos]=='#')
+			{
+				end=code->find('\n',pos);
+				if(end<0)
+					end=code->length();
+				
+				configLine=code->mid(newlinePos+1,end-newlinePos-1);
+				code->remove(newlinePos+1,end-newlinePos-1);
+				pos=newlinePos;
+				perror("configLine1: "+configLine);
+				
+				configLine=configLine.stripWhiteSpace();
+				if(configLine.find("#CONFIG")==0)
+					configLine=configLine.right(configLine.length()-7);
+				else return PPINVALIDCOMMAND;
+				if((commentPos=configLine.find("//"))!=-1)
+					configLine=configLine.left(commentPos);
+				
+				configLine=configLine.stripWhiteSpace();
+				perror("configLine2: "+configLine);
+				
+				if(configLine=="complexon")
+					pref->complex=true;
+				else if(configLine=="complexoff")
+					pref->complex=false;
+				else if(configLine=="angledeg")
+					pref->angle=DEG;
+				else if(configLine=="anglerad")
+					pref->angle=RAD;
+				else if(configLine=="anglegra")
+					pref->angle=GRA;
+				else if(configLine=="modebase")
+				{
+					pref->calcType=BASE;
+					pref->base=DEC;
+				}
+				else if(configLine=="modescientific")
+					pref->calcType=SCIENTIFIC;
+				else if(configLine=="clearmemory")
+				{
+					if(!pref->clearScriptMemory)
+						clearMemSlot();
+				}
+				else if(configLine.find("outputlength")==0)
+				{
+					configLine=configLine.right(configLine.length()-12);
+					int num=configLine.toInt();
+					if(num>=2 && num<=pref->precision)
+						pref->outputLength=num;
+					else return PPINVALIDARGUMENT;
+				}
+				else return PPINVALIDPREF;
+			}
+		}
+		pos++;
+	}
+	if(code->length()<=0)
+		return PPEMPTY;
+	else return 0;
+}
+
 void ScriptIOWidget::editSlot(int type)
 {
 	if(hasFocus())
 	{
-		switch(type)
-		{
-			case EDITUNDO:
-				break;
-			case EDITREDO:
-				break;
-			case EDITCUT:
-				break;
-			case EDITCOPY:
-				break;
-			case EDITPASTE:
-				QClipboard*board=QApplication::clipboard();
-				insert(board->text(QClipboard::Clipboard));
-				break;
-		}
+		if(type==EDITCOPY || type==EDITPASTE)
+			contextMenuSlot(type);
 	}
 }
 
@@ -941,6 +1127,69 @@ void ScriptIOWidget::timerSlot()
 	repaint(20,50,ioFieldWidth,ioFieldHeight,false);
 }
 
+
+void ScriptIOWidget::contextMenuSlot(int item)
+{
+	switch(item)
+	{
+		case EDITCOPY:
+		{
+			QClipboard*board=QApplication::clipboard();
+			QString copyText;
+			int startRow,startLine,endRow,endLine;
+			if(selectStartLine> selectEndLine || selectStartLine==selectEndLine && selectStartRow>selectEndRow)
+			{
+				startRow=selectEndRow;
+				startLine=selectEndLine;
+				endRow=selectStartRow;
+				endLine=selectStartLine;
+			}
+			else{
+				startRow=selectStartRow;
+				startLine=selectStartLine;
+				endRow=selectEndRow;
+				endLine=selectEndLine;
+			}
+			if(startLine==endLine)
+				copyText=lines[startLine].mid(startRow,endRow-startRow);
+			else {
+				for(int c = startLine; c<=endLine; c++)
+				{
+					if(c==startLine)
+						copyText=lines[c].right(lines[c].length()-startRow);
+					else if(c==endLine)
+					{
+						copyText+="\n";
+						copyText+=lines[c].left(endRow);
+					}
+					else{
+						copyText+="\n";
+						copyText+=lines[c];
+					}
+				}
+			}
+			if(copyText.length()>0)
+				board->setText(copyText,QClipboard::Clipboard);
+			break;
+		}
+		case EDITPASTE:
+		{
+			QClipboard*board=QApplication::clipboard();
+			insert(board->text(QClipboard::Clipboard));
+			break;
+		}
+		case EDITCUT:
+			clearAll();
+			break;
+		case EDITSELECTALL:
+			selectStartRow=0;
+			selectStartLine=0;
+			selectEndLine=lines.GetLen()-1;
+			selectEndRow=lines[selectEndLine].length()-1;
+			repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+			break;
+	}
+}
 
 
 

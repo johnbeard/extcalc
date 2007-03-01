@@ -1,7 +1,7 @@
 /****************************************************************************
 ** ScriptWidget meta object code from reading C++ file 'scriptedit.h'
 **
-** Created: Mon Feb 26 10:33:56 2007
+** Created: Thu Mar 1 13:08:47 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -87,6 +87,10 @@ QMetaObject* ScriptWidget::staticMetaObject()
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
     static const QUMethod slot_10 = {"lineNumSlot", 2, param_slot_10 };
+    static const QUMethod slot_11 = {"saveallSlot", 0, 0 };
+    static const QUMethod slot_12 = {"newSlot", 0, 0 };
+    static const QUMethod slot_13 = {"importSlot", 0, 0 };
+    static const QUMethod slot_14 = {"exportSlot", 0, 0 };
     static const QMetaData slot_tbl[] = {
 	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
 	{ "buttonInputSlot(QString)", &slot_1, QMetaData::Public },
@@ -98,7 +102,11 @@ QMetaObject* ScriptWidget::staticMetaObject()
 	{ "textChangedSlot()", &slot_7, QMetaData::Public },
 	{ "saveSlot()", &slot_8, QMetaData::Public },
 	{ "runButtonSlot()", &slot_9, QMetaData::Public },
-	{ "lineNumSlot(int,int)", &slot_10, QMetaData::Public }
+	{ "lineNumSlot(int,int)", &slot_10, QMetaData::Public },
+	{ "saveallSlot()", &slot_11, QMetaData::Public },
+	{ "newSlot()", &slot_12, QMetaData::Public },
+	{ "importSlot()", &slot_13, QMetaData::Public },
+	{ "exportSlot()", &slot_14, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -108,14 +116,19 @@ QMetaObject* ScriptWidget::staticMetaObject()
 	{ 0, &static_QUType_varptr, "\x03", QUParameter::In }
     };
     static const QUMethod signal_1 = {"runScript", 1, param_signal_1 };
+    static const QUParameter param_signal_2[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod signal_2 = {"controlScriptMenu", 1, param_signal_2 };
     static const QMetaData signal_tbl[] = {
 	{ "prefChange(Preferences)", &signal_0, QMetaData::Protected },
-	{ "runScript(QString*)", &signal_1, QMetaData::Protected }
+	{ "runScript(QString*)", &signal_1, QMetaData::Protected },
+	{ "controlScriptMenu(int)", &signal_2, QMetaData::Protected }
     };
     metaObj = QMetaObject::new_metaobject(
 	"ScriptWidget", parentObject,
-	slot_tbl, 11,
-	signal_tbl, 2,
+	slot_tbl, 15,
+	signal_tbl, 3,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
 	0, 0,
@@ -161,6 +174,12 @@ void ScriptWidget::runScript( QString* t0 )
     activate_signal( clist, o );
 }
 
+// SIGNAL controlScriptMenu
+void ScriptWidget::controlScriptMenu( int t0 )
+{
+    activate_signal( staticMetaObject()->signalOffset() + 2, t0 );
+}
+
 bool ScriptWidget::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
@@ -175,6 +194,10 @@ bool ScriptWidget::qt_invoke( int _id, QUObject* _o )
     case 8: saveSlot(); break;
     case 9: runButtonSlot(); break;
     case 10: lineNumSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
+    case 11: saveallSlot(); break;
+    case 12: newSlot(); break;
+    case 13: importSlot(); break;
+    case 14: exportSlot(); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }
@@ -186,6 +209,7 @@ bool ScriptWidget::qt_emit( int _id, QUObject* _o )
     switch ( _id - staticMetaObject()->signalOffset() ) {
     case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
     case 1: runScript((QString*)static_QUType_varptr.get(_o+1)); break;
+    case 2: controlScriptMenu((int)static_QUType_int.get(_o+1)); break;
     default:
 	return QWidget::qt_emit(_id,_o);
     }

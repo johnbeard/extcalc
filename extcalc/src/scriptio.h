@@ -13,6 +13,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <qpopupmenu.h>
 #include "list.h"
 
 #define IMDEFAULT		1
@@ -51,8 +52,9 @@ class ScriptIOWidget :public QWidget
 	
 	StandardButtons*calcButtons;
 	ExtButtons*extButtons;
-	Preferences pref;
+	Preferences pref,runningPref;
 	QPushButton*maximizeButton,*killButton,*runButton;
+	QPopupMenu*contextMenu;
 	
 	bool maximized;
 	int ioFieldWidth,ioFieldHeight;
@@ -83,6 +85,7 @@ class ScriptIOWidget :public QWidget
 	QTimer*t;
 	int timerInterval,redrawTime;
 	struct timeval drawTime,currentTime,startTime;
+	int selectStartLine,selectStartRow,selectEndLine,selectEndRow;
 
 	Q_OBJECT
 
@@ -129,6 +132,8 @@ class ScriptIOWidget :public QWidget
 			timerInterval=25;
 			redrawTime=20000;
 			
+			selectStartLine=selectStartRow=selectEndLine=selectEndRow=0;
+			
 			calcButtons=new  StandardButtons(this);
 			extButtons=new ExtButtons(this);
 			maximizeButton=new QPushButton(CALCWIDGETH_STR1,this);
@@ -136,6 +141,13 @@ class ScriptIOWidget :public QWidget
 			killButton->setEnabled(false);
 			runButton=new QPushButton(SCRIPTIO_STR7,this);
 			runButton->setEnabled(false);
+			contextMenu=new QPopupMenu(this);
+			contextMenu->insertItem("Copy\tCtrl-C",EDITCOPY);
+			contextMenu->insertItem("Paste\tCtrl-V",EDITPASTE);
+			contextMenu->insertSeparator();
+			contextMenu->insertItem("Select All\tCtrl-A",EDITSELECTALL);
+			contextMenu->insertSeparator();
+			contextMenu->insertItem("Clear All",EDITCUT);
 
 			ioFieldWidth=600;
 			ioFieldHeight=310;
@@ -177,6 +189,7 @@ class ScriptIOWidget :public QWidget
 			QObject::connect(runButton,SIGNAL(clicked()),this,SLOT(runSlot()));
 			QObject::connect(t,SIGNAL(timeout()),this,SLOT(timerSlot()));
 			QObject::connect(scrollBar,SIGNAL(valueChanged(int)),this,SLOT(scrollbarSlot(int)));
+			QObject::connect(contextMenu,SIGNAL(activated(int)),this,SLOT(contextMenuSlot(int)));
 		}
 		~ScriptIOWidget()
 		{
@@ -197,6 +210,8 @@ class ScriptIOWidget :public QWidget
 		void searchScripts(QString*code);
 		void loadSubScripts();
 		void initDebugging(QString *code);
+		int preferencesPreprocessor(QString *code,Preferences*pref);
+		void selectText(int startx,int starty,int endx,int endy);
 
 	protected:
 		virtual void resizeEvent(QResizeEvent*);
@@ -220,6 +235,7 @@ class ScriptIOWidget :public QWidget
 		void runSlot();
 		void scrollbarSlot(int);
 		void clearMemSlot();
+		void contextMenuSlot(int);
 
 	signals:
 		void prefChange(Preferences);

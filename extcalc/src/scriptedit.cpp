@@ -8,11 +8,12 @@ void ScriptWidget::resizeEvent(QResizeEvent*)
 
 	if(maximized)
 	{
-		splitter->setGeometry(20,50,width-40,height-100);
+		splitter->setGeometry(20,menuBottom+40,width-40,height-100);
 		
-		runButton->setGeometry(20,height-45,90,35);
-		maximizeButton->setGeometry(120,height-45,90,35);
-		saveButton->setGeometry(220,height-45,90,35);
+//		runButton->setGeometry(20,height-45,90,35);
+//		maximizeButton->setGeometry(120,height-45,90,35);
+//		saveButton->setGeometry(220,height-45,90,35);
+		dockArea->setGeometry(0,menuBottom,width,35);
 	}
 	else {
 		splitter->setGeometry(20,50,width-40,height-290);
@@ -23,6 +24,7 @@ void ScriptWidget::resizeEvent(QResizeEvent*)
 		
 		standardButtons->setGeometry(20,height-220,280,200);
 		extButtons->setGeometry(width/2+10,height-180,300,160);
+
 	}
 }
 
@@ -66,14 +68,24 @@ void ScriptWidget::maximizeButtonSlot()
 	
 	if(maximized)
 	{
-		maximizeButton->setText(SCRIPTEDITC_STR1);
+//		maximizeButton->setText(SCRIPTEDITC_STR1);
 		standardButtons->show();
 		extButtons->show();
+		dockArea->hide();
+		saveButton->show();
+		maximizeButton->show();
+		runButton->show();
+
 	}
 	else {
-		maximizeButton->setText(SCRIPTEDITC_STR2);
+//		maximizeButton->setText(SCRIPTEDITC_STR2);
 		standardButtons->hide();
 		extButtons->hide();
+		dockArea->show();
+		saveButton->hide();
+		maximizeButton->hide();
+		runButton->hide();
+
 	}
 	maximized=!maximized;
 	
@@ -799,6 +811,28 @@ bool ScriptWidget::quitProgram()
 	saveSlot();
 	return true;
 }
+
+void ScriptWidget::saveallSlot()
+{
+	fileBrowserMenuSlot(FILESAVEALL);
+}
+
+void ScriptWidget::newSlot()
+{
+	fileBrowserMenuSlot(FILENEWSCRIPT);
+}
+
+void ScriptWidget::importSlot()
+{
+	emit controlScriptMenu(IMPORTSCRIPT);
+}
+
+void ScriptWidget::exportSlot()
+{
+	emit controlScriptMenu(EXPORTSCRIPT);
+}
+	
+	
 
 void LineNumberView::wheelEvent(QWheelEvent*){}
 void LineNumberView::contentsMousePressEvent(QMouseEvent*){}

@@ -1076,7 +1076,7 @@ void convertToInt(Number*num)
 		default:
 			num->ival=0;
 	}
-	num->type=NFLOAT;
+	num->type=NINT;
 }
 
 void convertToBool(Number*num)
@@ -1786,7 +1786,6 @@ int Script::split(char*line)
 
 char* Script::parse(char* line)
 {
-	
 	static int semicolonCount=0;
 	if(line==NULL)
 	{
@@ -1794,11 +1793,22 @@ char* Script::parse(char* line)
 		return NULL;
 	}
 	
-	perror(line);
-	
+//	perror(line);
 	int pos1;
 	int len=strlen(line);
-//	perror("parse: "+QString(line));
+
+	
+	if(line[0]== '{' && bracketFind(line,"}")==len-1 || line[0]== '(' && bracketFind(line,")")==len-1)
+	{
+		line[len-1]=(char)0;
+		line++;
+		len-=2;
+		split(line);
+		return NULL;
+	}
+//	static int commands=0;
+//	perror("Commands: "+QString::number(commands++));
+//	perror("line after bracket: "+QString(line));
 	
 	//programming language structures
 	if((pos1=bracketFind(line,"if(")) == 0)
@@ -1970,6 +1980,7 @@ char* Script::parse(char* line)
 		delete[]recString1;
 	//	printError("Strichpunkt gefunden",semicolonCount,eventReciver->eventReciver);
 		semicolonCount++;
+		
 		
 		if(len-pos1>1)
 		{
@@ -3237,12 +3248,7 @@ Number Script::exec()
 			return vertObj->exec();
 		case SVALUE:
 			return value;
-		case SVECTOR:
-		{
-			value.type=NVECTOR;
-			value.ival=var;
-			return value;
-		}
+
 		case SVAR:
 		{
 			return eventReciver->vars[var][0];
@@ -3259,12 +3265,27 @@ Number Script::exec()
 				index=(int)value.fval.real();
 			if(index<0)
 				index=0;
-			if(index>=eventReciver->numlen[var])
+			
+			if(eventReciver->vars[var][0].type==NCHAR && eventReciver->numlen[var]==1)
 			{
-				eventReciver->vars[var]=(Number*)realloc((void*)eventReciver->vars[var],sizeof(Number)*(index+1));
-				eventReciver->numlen[var]=index+1;
+				value.type=NINT;
+				if(eventReciver->vars[var][0].cval!=NULL && (signed)strlen(eventReciver->vars[var][0].cval)>index)
+					value.ival=(long long)eventReciver->vars[var][0].cval[index];
+				else value.ival=0;
+				return value;
+			}
+			else if(index>=eventReciver->numlen[var])
+			{
+				value.type=NNONE;
+				return value;
 			}
 			return eventReciver->vars[var][index];
+		}
+		case SVECTOR:
+		{
+			value.type=NVECTOR;
+			value.ival=var;
+			return value;
 		}
 		case SMATRIX:
 		{
@@ -3288,13 +3309,9 @@ Number Script::exec()
 			if(index2<0)
 				index2=0;
 			int effIndex=index+index2*eventReciver->dimension[var][0];
-			perror("matrix effIndex: "+QString::number(effIndex));
-			if(effIndex>=eventReciver->numlen[var])
-			{
-				value.type=NNONE;
-				return value;
-			}
-			else if(eventReciver->vars[var][index].type==NCHAR)
+//			perror("matrix effIndex: "+QString::number(effIndex));
+			
+			if(index>=eventReciver->numlen[var] && eventReciver->vars[var][index].type==NCHAR)
 			{
 				value.type=NINT;
 				if(eventReciver->vars[var][index].cval!=NULL && (signed)strlen(eventReciver->vars[var][index].cval)>index2)
@@ -3302,540 +3319,12 @@ Number Script::exec()
 				else value.ival=0;
 				return value;
 			}
+			else if(effIndex>=eventReciver->numlen[var])
+			{
+				value.type=NNONE;
+				return value;
+			}
 			return eventReciver->vars[var][effIndex];
-		}
-		case SCOMPARE:
-		{
-			value.type=NBOOL;
-			Number n1=vertObj->exec();
-			Number n2=vertObj2->exec();
-			if(n1.type==NFLOAT)
-			{
-				if(n2.type==NFLOAT)
-					value.bval=(n1.fval==n2.fval);
-				else if(n2.type==NBOOL)
-					value.bval=(n1.fval.real()==(long double)n2.bval);
-				else if(n2.type==NINT)
-					value.bval=(n1.fval.real()==(long double)n2.ival);
-				else value.bval=false;
-			}
-			else if(n2.type==NFLOAT)
-			{
-				if(n1.type==NBOOL)
-					value.bval=(n2.fval.real()==(long double)n1.bval);
-				else if(n1.type==NINT)
-					value.bval=(n2.fval.real()==(long double)n1.ival);
-				else value.bval=false;
-			}
-			else if(n1.type==NINT)
-			{
-				if(n2.type==NINT)
-					value.bval=(n1.ival==n2.ival);
-				else if(n2.type==NBOOL)
-						value.bval=(n1.ival==(long long)n2.bval);
-				else value.bval=false;
-			}
-			else if(n2.type==NINT)
-			{
-				if(n1.type==NBOOL)
-					value.bval=(n2.ival==(long long)n1.bval);
-				else value.bval=false;
-			}
-			else if(n1.type==NCHAR)
-			{
-				if(n2.type==NCHAR)
-				{
-					if(n1.cval!=NULL && n2.cval!=NULL)
-						value.bval=(strcmp(n1.cval,n2.cval)==0);
-					else value.bval=false;
-				}
-				else value.bval=false;
-			}
-			else if(n1.type==n2.type)
-				value.bval=true;
-			else value.bval=false;
-			return value;
-		}
-		case SIF:
-		{
-			value=vertObj->exec();
-			if(value.type==NBOOL)
-				if(value.bval)
-					vertObj2->exec();
-			else if(value.type==NINT)
-				if(value.ival)
-					vertObj2->exec();
-			else if(value.type==NFLOAT)
-				if(value.fval.real()!=0.0)
-					vertObj2->exec();
-			if(nextObj==NULL)
-				return value;
-			else return nextObj->exec();
-		}
-		case SIFELSE:
-		{
-			value=vertObj->exec();
-			if(value.type==NBOOL)
-				if(value.bval)
-					vertObj2->exec();
-				else vertObj3->exec();
-			else if(value.type==NINT)
-				if(value.ival)
-					vertObj2->exec();
-				else vertObj3->exec();
-			else if(value.type==NFLOAT)
-				if(value.fval.real()!=0.0)
-					vertObj2->exec();
-				else vertObj3->exec();
-			else vertObj3->exec();
-			
-			if(nextObj==NULL)
-				return value;
-			else return nextObj->exec();
-		}
-		case SWHILE:
-		{
-			while(true)
-			{
-				value=vertObj->exec();
-				if(value.type==NBOOL)
-					if(!value.bval)
-						break;
-				else if(value.type==NINT)
-					if(value.ival==0)
-						break;
-				else if(value.type==NFLOAT)
-					if(value.fval.real()==0.0)
-						break;
-				else break;
-				vertObj2->exec();
-				if(eventReciver->status)
-				{
-					if(eventReciver->bbreak)
-					{
-						eventReciver->status=0;
-						eventReciver->bbreak=false;
-						break;
-					}
-					if(eventReciver->bcontinue)
-					{
-						eventReciver->status=0;
-						eventReciver->bcontinue=false;
-					}
-				}
-			}
-			if(nextObj==NULL)
-				return value;
-			else return nextObj->exec();
-		}
-		case SFOR:
-		{
-			if(vertObj3!=NULL)
-			{
-				for(vertObj->exec();;vertObj3->exec())
-				{
-					value=vertObj2->exec();
-					if(value.type==NBOOL)
-						if(!value.bval)
-							break;
-					else if(value.type==NINT)
-						if(value.ival==0)
-							break;
-					else if(value.type==NFLOAT)
-						if(value.fval.real()==0.0)
-							break;
-					else break;
-					horzObj->exec();
-					if(eventReciver->status)
-					{
-						if(eventReciver->bbreak)
-						{
-							eventReciver->status=0;
-							eventReciver->bbreak=false;
-							break;
-						}
-						else if(eventReciver->bcontinue)
-						{
-							eventReciver->status=0;
-							eventReciver->bcontinue=false;
-						}
-					}
-				}
-			}
-			else {
-				for(vertObj->exec();;)
-				{
-					value=vertObj2->exec();
-					if(value.type==NBOOL)
-						if(!value.bval)
-							break;
-					else if(value.type==NINT)
-						if(value.ival==0)
-							break;
-					else if(value.type==NFLOAT)
-						if(value.fval.real()==0.0)
-							break;
-					else break;
-					horzObj->exec();
-					if(eventReciver->status)
-					{
-						if(eventReciver->bbreak)
-						{
-							eventReciver->status=0;
-							eventReciver->bbreak=false;
-							break;
-						}
-						else if(eventReciver->bcontinue)
-						{
-							eventReciver->status=0;
-							eventReciver->bcontinue=false;
-						}
-					}
-				}
-			}
-			if(nextObj==NULL)
-				return value;
-			else return nextObj->exec();
-		}
-		case SSET:
-		{
-			int index=0,index2=0,effIndex=0,oldDimension1=eventReciver->dimension[var][0],oldDimension2=eventReciver->dimension[var][1];
-			int newlen=1;
-			bool charOperation=false;
-			value=vertObj->exec();
-
-
-			if(vertObj2!=NULL)
-			{
-				Number nIndex=vertObj2->exec();
-				if(nIndex.type==NBOOL)
-					index=(int)nIndex.bval;
-				else if(nIndex.type==NINT)
-					index=nIndex.ival;
-				else if(nIndex.type==NFLOAT)
-					index=(int)nIndex.fval.real();
-				if(index<0)
-					index=0;
-				
-				if(vertObj3==NULL && eventReciver->vars[var][0].type==NCHAR && value.type!=NCHAR)
-				{
-					charOperation=true;
-					newlen=1;
-					index2=index;
-					index=0;
-				}
-				else {
-					if(eventReciver->dimension[var][0]<index+1)
-						eventReciver->dimension[var][0]=index+1;
-					newlen=index+1;
-				}
-			}
-			if(vertObj3!=NULL)
-			{
-				Number nIndex=vertObj3->exec();
-				if(nIndex.type==NBOOL)
-					index2=(int)nIndex.bval;
-				else if(nIndex.type==NINT)
-					index2=nIndex.ival;
-				else if(nIndex.type==NFLOAT)
-					index2=(int)nIndex.fval.real();
-				if(index2<0)
-					index2=0;
-				
-				if(eventReciver->numlen[var]>index && eventReciver->vars[var][index].type==NCHAR && value.type!=NCHAR)
-				{
-					charOperation=true;
-					newlen=index+1;
-				}
-				else {
-					if(eventReciver->dimension[var][1]<index2+1)
-						eventReciver->dimension[var][1]=index2+1;
-					newlen=index2*eventReciver->dimension[var][0]+index+1;
-				}
-			}
-			
-			if(value.type==NVECTOR)
-			{
-				newlen=eventReciver->dimension[value.ival][0];
-				eventReciver->dimension[var][0]=eventReciver->dimension[value.ival][0];
-			}
-			else if(value.type==NMATRIX)
-			{
-				newlen=eventReciver->dimension[value.ival][0]*eventReciver->dimension[value.ival][1];
-				eventReciver->dimension[var][0]=eventReciver->dimension[value.ival][0];
-				eventReciver->dimension[var][1]=eventReciver->dimension[value.ival][1];
-			}
-
-			
-			if(oldDimension1<eventReciver->dimension[var][0])
-			{
-				newlen=eventReciver->dimension[var][1]*eventReciver->dimension[var][0];
-				if(newlen>eventReciver->numlen[var])
-					resizeVar(var,newlen);
-				int oldEffIndex,newEffIndex;
-				Number nullNum;
-				nullNum.type=NONE;
-				nullNum.cval=NULL;
-				
-				for(int c=oldDimension2-1; c>=1; c--)
-				{
-					for(int c1=oldDimension1-1; c1>=0; c1--)
-					{
-						
-						oldEffIndex=c1+c*oldDimension1;
-						newEffIndex=c1+c*eventReciver->dimension[var][0];
-//						perror("\nresize: c "+QString::number(c)+ " c1: " + QString::number(c1));
-						memcpy(&eventReciver->vars[var][newEffIndex],&eventReciver->vars[var][oldEffIndex],sizeof(Number));
-						memcpy(&eventReciver->vars[var][oldEffIndex],&nullNum,sizeof(Number));
-					}
-				}
-			}
-			else if(newlen>eventReciver->numlen[var])
-				resizeVar(var,newlen);
-			
-			if(charOperation)
-			{
-				if(eventReciver->dimension[var][0]<index+1)
-					eventReciver->dimension[var][0]=index+1;
-				
-				convertToInt(&value);
-				
-				if(eventReciver->vars[var][index].cval==NULL)
-					eventReciver->vars[var][index].cval=(char*)calloc(index2+2,1);
-				else if((signed)strlen(eventReciver->vars[var][index].cval)<index2+1)
-				{
-					eventReciver->vars[var][index].cval=(char*)realloc(eventReciver->vars[var][index].cval,index2+2);
-					eventReciver->vars[var][index].cval[index2+1]=(char)0;
-				}
-				eventReciver->vars[var][index].cval[index2]=(char)value.ival;
-					
-				return value;
-			}
-			effIndex=index+index2*eventReciver->dimension[var][0];
-			perror("newlen "+QString::number(eventReciver->numlen[var])+ " var: " + QString::number(var));
-			perror("index "+QString::number(index)+ " index2: " + QString::number(index2));
-			perror("dimesion[0] "+QString::number(eventReciver->dimension[var][0])+ " dimension[1]: " + QString::number(eventReciver->dimension[var][1]));
-			switch(value.type)
-			{
-				case NINT:
-					eventReciver->vars[var][effIndex].ival=value.ival; eventReciver->vars[var][effIndex].type=NINT; break;
-				case NFLOAT:
-					eventReciver->vars[var][effIndex].fval=value.fval; eventReciver->vars[var][effIndex].type=NFLOAT; break;
-				case NBOOL:
-					eventReciver->vars[var][effIndex].cval=value.cval; eventReciver->vars[var][effIndex].type=NBOOL; break;
-				case NCHAR:
-					perror("effIndex: "+QString::number(effIndex)+" source text: "+QString(value.cval));
-					if(value.cval==NULL)
-						eventReciver->vars[var][effIndex].cval=NULL;
-					else {
-						if(eventReciver->vars[var][effIndex].cval==NULL)
-							eventReciver->vars[var][effIndex].cval=(char*)malloc(strlen(value.cval)+1);
-						else eventReciver->vars[var][effIndex].cval=(char*)realloc(eventReciver->vars[var][effIndex].cval,strlen(value.cval)+1);
-						strcpy(eventReciver->vars[var][effIndex].cval,value.cval);
-					}
-					eventReciver->vars[var][effIndex].type=NCHAR;
-					break;
-				case NVECTOR:
-				case NMATRIX:
-					for(int c=0; c<eventReciver->numlen[value.ival]; c++)
-					{
-						convertToFloat(&eventReciver->vars[value.ival][c]);
-						eventReciver->vars[var][c].fval=eventReciver->vars[value.ival][c].fval;
-						eventReciver->vars[var][c].type=NFLOAT;
-					}
-					break;
-				default:
-					eventReciver->vars[var][effIndex].type=NNONE;
-			}
-			return value;
-		}
-		case SPRINT:
-		{
-			char*eventContent=NULL;
-			value=vertObj->exec();
-			switch(value.type)
-			{
-				case NFLOAT:
-				{
-					if(value.fval.imag()==0.0)
-					{
-						eventContent=(char*)malloc(42);
-						sprintf(eventContent,"%.*Lg",pref->outputLength,real(value.fval));
-					}
-					else {
-						eventContent=(char*)malloc(84);
-						if(value.fval.imag()>0.0)
-							sprintf(eventContent,"%.*Lg+%.*Lgi",pref->outputLength,real(value.fval),pref->outputLength,imag(value.fval));
-						else sprintf(eventContent,"%.*Lg%.*Lgi",pref->outputLength,real(value.fval),pref->outputLength,imag(value.fval));
-					}
-
-					break;
-				}
-				case NINT:
-				{
-					eventContent=(char*)malloc(30);
-					sprintf(eventContent,"%lli",value.ival);
-					break;
-				}
-				case NBOOL:
-					if(value.bval)
-					{
-						eventContent=(char*)malloc(5);
-						strcopy(eventContent,"true",4);
-					}
-					else {
-						eventContent=(char*)malloc(6);
-						strcopy(eventContent,"false",5);
-					}
-					break;
-				case NCHAR:
-				{
-					int slen=strlen(value.cval);
-					eventContent=(char*)malloc(slen+1);
-					strcopy(eventContent,value.cval,slen);
-					break;
-				}
-				case NVECTOR:
-				{
-					eventContent=(char*)calloc(1,1);
-					for(int c=0; c<eventReciver->dimension[value.ival][0];c++)
-					{
-						convertToFloat(&eventReciver->vars[value.ival][c]);
-						if(eventReciver->vars[value.ival][c].fval.imag()==0.0)
-						{
-							eventContent=(char*)realloc(eventContent,strlen(eventContent)+44);
-							sprintf(&eventContent[strlen(eventContent)]," %.*Lg",pref->outputLength,real(eventReciver->vars[value.ival][c].fval));
-						}
-						else {
-							eventContent=(char*)realloc(eventContent,strlen(eventContent)+86);
-							if(eventReciver->vars[value.ival][c].fval.imag()>0.0)
-								sprintf(&eventContent[strlen(eventContent)]," %.*Lg+%.*Lgi",pref->outputLength,real(eventReciver->vars[value.ival][c].fval),pref->outputLength,imag(eventReciver->vars[value.ival][c].fval));
-							else sprintf(&eventContent[strlen(eventContent)]," %.*Lg%.*Lgi",pref->outputLength,real(eventReciver->vars[value.ival][c].fval),pref->outputLength,imag(eventReciver->vars[value.ival][c].fval));
-						}
-					}
-					break;
-				}
-				case NMATRIX:
-				{
-					eventContent=(char*)calloc(1,1);
-					int effIndex;
-					for(int c=0; c<eventReciver->dimension[value.ival][0];c++)
-					{
-						for(int c1=0; c1<eventReciver->dimension[value.ival][1];c1++)
-						{
-							effIndex=c1*eventReciver->dimension[value.ival][0]+c;
-							convertToFloat(&eventReciver->vars[value.ival][effIndex]);
-							if(eventReciver->vars[value.ival][effIndex].fval.imag()==0.0)
-							{
-								eventContent=(char*)realloc(eventContent,strlen(eventContent)+45);
-								sprintf(&eventContent[strlen(eventContent)]," %.*Lg",pref->outputLength,real(eventReciver->vars[value.ival][effIndex].fval));
-							}
-							else {
-								eventContent=(char*)realloc(eventContent,strlen(eventContent)+87);
-								if(eventReciver->vars[value.ival][effIndex].fval.imag()>0.0)
-									sprintf(&eventContent[strlen(eventContent)]," %.*Lg+%.*Lgi",pref->outputLength,real(eventReciver->vars[value.ival][effIndex].fval),pref->outputLength,imag(eventReciver->vars[value.ival][effIndex].fval));
-								else sprintf(&eventContent[strlen(eventContent)]," %.*Lg%.*Lgi",pref->outputLength,real(eventReciver->vars[value.ival][effIndex].fval),pref->outputLength,imag(eventReciver->vars[value.ival][effIndex].fval));
-							}
-						}
-						sprintf(&eventContent[strlen(eventContent)],"\n");
-
-					}
-					break;
-				}
-				default:
-					eventContent=(char*)malloc(5);
-					strcopy(eventContent,"none",4);
-					break;
-			}
-
-			QCustomEvent *ev=new QCustomEvent(SIGPRINT);
-			ev->setData(eventContent);
-
-			QApplication::postEvent(eventReciver->eventReciver,ev);
-
-			if(nextObj==NULL)
-				return value;
-			else return nextObj->exec();
-		}
-		case SUNEQUAL:
-		{
-			value.type=NBOOL;
-			Number n1=vertObj->exec();
-			Number n2=vertObj2->exec();
-			if(n1.type==NFLOAT)
-			{
-				if(n2.type==NFLOAT)
-					value.bval=(n1.fval!=n2.fval);
-				else if(n2.type==NBOOL)
-					value.bval=(n1.fval.real()!=(long double)n2.bval);
-				else if(n2.type==NINT)
-					value.bval=(n1.fval.real()!=(long double)n2.ival);
-				else value.bval=true;
-			}
-			else if(n2.type==NFLOAT)
-			{
-				if(n1.type==NBOOL)
-					value.bval=(n2.fval.real()!=(long double)n1.bval);
-				else if(n1.type==NINT)
-					value.bval=(n2.fval.real()!=(long double)n1.ival);
-				else value.bval=true;
-			}
-			else if(n1.type==NINT)
-			{
-				if(n2.type==NINT)
-					value.bval=(n1.ival!=n2.ival);
-				else if(n2.type==NBOOL)
-					value.bval=(n1.ival!=(long long)n2.bval);
-				else value.bval=true;
-			}
-			else if(n2.type==NINT)
-			{
-				if(n1.type==NBOOL)
-					value.bval=(n2.ival!=(long long)n1.bval);
-				else value.bval=true;
-			}
-			else if(n1.type==NCHAR)
-			{
-				if(n2.type==NCHAR)
-				{
-					if(n1.cval!=NULL && n2.cval!=NULL)
-						value.bval=(strcmp(n1.cval,n2.cval)!=0);
-					else value.bval=true;
-				}
-				else value.bval=true;
-			}
-			else if(n1.type==n2.type)
-				value.bval=false;
-			else value.bval=true;
-
-			return value;
-		}
-		case SNOT:
-		{
-			value=vertObj->exec();
-			convertToBool(&value);
-			value.bval=!value.bval;
-			return value;
-		}
-		case SAND:
-		{
-			value=vertObj->exec();
-			Number n=vertObj2->exec();
-			convertToBool(&value);
-			convertToBool(&n);
-			
-			value.bval=(value.bval&&n.bval);
-			return value;
-		}
-		case SOR:
-		{
-			value=vertObj->exec();
-			Number n=vertObj2->exec();
-			convertToBool(&value);
-			convertToBool(&n);
-			
-			value.bval=(value.bval||n.bval);
-			return value;
 		}
 		case PLUS:
 		{
@@ -4179,6 +3668,439 @@ Number Script::exec()
 			}
 			return value;
 		}
+		case SCOMPARE:
+		{
+			value.type=NBOOL;
+			Number n1=vertObj->exec();
+			Number n2=vertObj2->exec();
+			if(n1.type==NFLOAT)
+			{
+				if(n2.type==NFLOAT)
+					value.bval=(n1.fval==n2.fval);
+				else if(n2.type==NBOOL)
+					value.bval=(n1.fval.real()==(long double)n2.bval);
+				else if(n2.type==NINT)
+					value.bval=(n1.fval.real()==(long double)n2.ival);
+				else value.bval=false;
+			}
+			else if(n2.type==NFLOAT)
+			{
+				if(n1.type==NBOOL)
+					value.bval=(n2.fval.real()==(long double)n1.bval);
+				else if(n1.type==NINT)
+					value.bval=(n2.fval.real()==(long double)n1.ival);
+				else value.bval=false;
+			}
+			else if(n1.type==NINT)
+			{
+				if(n2.type==NINT)
+					value.bval=(n1.ival==n2.ival);
+				else if(n2.type==NBOOL)
+						value.bval=(n1.ival==(long long)n2.bval);
+				else value.bval=false;
+			}
+			else if(n2.type==NINT)
+			{
+				if(n1.type==NBOOL)
+					value.bval=(n2.ival==(long long)n1.bval);
+				else value.bval=false;
+			}
+			else if(n1.type==NCHAR)
+			{
+				if(n2.type==NCHAR)
+				{
+					if(n1.cval!=NULL && n2.cval!=NULL)
+						value.bval=(strcmp(n1.cval,n2.cval)==0);
+					else value.bval=false;
+				}
+				else value.bval=false;
+			}
+			else if(n1.type==n2.type)
+				value.bval=true;
+			else value.bval=false;
+			return value;
+		}
+		case SSET:
+		{
+			int index=0,index2=0,effIndex=0,oldDimension1=eventReciver->dimension[var][0],oldDimension2=eventReciver->dimension[var][1];
+			int newlen=1;
+			bool charOperation=false;
+			value=vertObj->exec();
+
+
+			if(vertObj2!=NULL)
+			{
+				Number nIndex=vertObj2->exec();
+				if(nIndex.type==NBOOL)
+					index=(int)nIndex.bval;
+				else if(nIndex.type==NINT)
+					index=nIndex.ival;
+				else if(nIndex.type==NFLOAT)
+					index=(int)nIndex.fval.real();
+				if(index<0)
+					index=0;
+				
+				if(vertObj3==NULL && eventReciver->vars[var][0].type==NCHAR && value.type!=NCHAR && eventReciver->numlen[var]==1)
+				{
+					charOperation=true;
+					newlen=1;
+					index2=index;
+					index=0;
+				}
+				else {
+					if(eventReciver->dimension[var][0]<index+1)
+						eventReciver->dimension[var][0]=index+1;
+					newlen=index+1;
+				}
+			}
+			if(vertObj3!=NULL)
+			{
+				Number nIndex=vertObj3->exec();
+				if(nIndex.type==NBOOL)
+					index2=(int)nIndex.bval;
+				else if(nIndex.type==NINT)
+					index2=nIndex.ival;
+				else if(nIndex.type==NFLOAT)
+					index2=(int)nIndex.fval.real();
+				if(index2<0)
+					index2=0;
+				
+				if(eventReciver->numlen[var]>index && eventReciver->vars[var][index].type==NCHAR && value.type!=NCHAR)
+				{
+					charOperation=true;
+					newlen=index+1;
+				}
+				else {
+					if(eventReciver->dimension[var][1]<index2+1)
+						eventReciver->dimension[var][1]=index2+1;
+					newlen=index2*eventReciver->dimension[var][0]+index+1;
+				}
+			}
+			
+			if(value.type==NVECTOR)
+			{
+				newlen=eventReciver->dimension[value.ival][0];
+				eventReciver->dimension[var][0]=eventReciver->dimension[value.ival][0];
+			}
+			else if(value.type==NMATRIX)
+			{
+				newlen=eventReciver->dimension[value.ival][0]*eventReciver->dimension[value.ival][1];
+				eventReciver->dimension[var][0]=eventReciver->dimension[value.ival][0];
+				eventReciver->dimension[var][1]=eventReciver->dimension[value.ival][1];
+			}
+
+			
+			if(oldDimension1<eventReciver->dimension[var][0])
+			{
+				newlen=eventReciver->dimension[var][1]*eventReciver->dimension[var][0];
+				if(newlen>eventReciver->numlen[var])
+					resizeVar(var,newlen);
+				int oldEffIndex,newEffIndex;
+				Number nullNum;
+				nullNum.type=NONE;
+				nullNum.cval=NULL;
+				
+				for(int c=oldDimension2-1; c>=1; c--)
+				{
+					for(int c1=oldDimension1-1; c1>=0; c1--)
+					{
+						
+						oldEffIndex=c1+c*oldDimension1;
+						newEffIndex=c1+c*eventReciver->dimension[var][0];
+//						perror("\nresize: c "+QString::number(c)+ " c1: " + QString::number(c1));
+						memcpy(&eventReciver->vars[var][newEffIndex],&eventReciver->vars[var][oldEffIndex],sizeof(Number));
+						memcpy(&eventReciver->vars[var][oldEffIndex],&nullNum,sizeof(Number));
+					}
+				}
+			}
+			else if(newlen>eventReciver->numlen[var])
+				resizeVar(var,newlen);
+			
+			if(charOperation)
+			{
+				if(eventReciver->dimension[var][0]<index+1)
+					eventReciver->dimension[var][0]=index+1;
+				
+				convertToInt(&value);
+				
+				if(eventReciver->vars[var][index].cval==NULL)
+					eventReciver->vars[var][index].cval=(char*)calloc(index2+2,1);
+				else if((signed)strlen(eventReciver->vars[var][index].cval)<index2+1)
+				{
+					eventReciver->vars[var][index].cval=(char*)realloc(eventReciver->vars[var][index].cval,index2+2);
+					eventReciver->vars[var][index].cval[index2+1]=(char)0;
+				}
+				eventReciver->vars[var][index].cval[index2]=(char)value.ival;
+					
+				return value;
+			}
+			effIndex=index+index2*eventReciver->dimension[var][0];
+//			perror("newlen "+QString::number(eventReciver->numlen[var])+ " var: " + QString::number(var));
+//			perror("index "+QString::number(index)+ " index2: " + QString::number(index2));
+//			perror("dimesion[0] "+QString::number(eventReciver->dimension[var][0])+ " dimension[1]: " + QString::number(eventReciver->dimension[var][1]));
+			switch(value.type)
+			{
+				case NINT:
+					eventReciver->vars[var][effIndex].ival=value.ival; eventReciver->vars[var][effIndex].type=NINT; break;
+				case NFLOAT:
+					eventReciver->vars[var][effIndex].fval=value.fval; eventReciver->vars[var][effIndex].type=NFLOAT; break;
+				case NBOOL:
+					eventReciver->vars[var][effIndex].cval=value.cval; eventReciver->vars[var][effIndex].type=NBOOL; break;
+				case NCHAR:
+//					perror("effIndex: "+QString::number(effIndex)+" source text: "+QString(value.cval));
+					if(value.cval==NULL)
+						eventReciver->vars[var][effIndex].cval=NULL;
+					else {
+						if(eventReciver->vars[var][effIndex].cval==NULL)
+							eventReciver->vars[var][effIndex].cval=(char*)malloc(strlen(value.cval)+1);
+						else eventReciver->vars[var][effIndex].cval=(char*)realloc(eventReciver->vars[var][effIndex].cval,strlen(value.cval)+1);
+						strcpy(eventReciver->vars[var][effIndex].cval,value.cval);
+					}
+					eventReciver->vars[var][effIndex].type=NCHAR;
+					break;
+				case NVECTOR:
+				case NMATRIX:
+					for(int c=0; c<eventReciver->numlen[value.ival]; c++)
+					{
+						convertToFloat(&eventReciver->vars[value.ival][c]);
+						eventReciver->vars[var][c].fval=eventReciver->vars[value.ival][c].fval;
+						eventReciver->vars[var][c].type=NFLOAT;
+					}
+					break;
+				default:
+					eventReciver->vars[var][effIndex].type=NNONE;
+			}
+			return value;
+		}
+		case SIF:
+		{
+			value=vertObj->exec();
+			if(value.type==NBOOL)
+				if(value.bval)
+					vertObj2->exec();
+			else if(value.type==NINT)
+				if(value.ival)
+					vertObj2->exec();
+			else if(value.type==NFLOAT)
+				if(value.fval.real()!=0.0)
+					vertObj2->exec();
+			if(nextObj==NULL)
+				return value;
+			else return nextObj->exec();
+		}
+		case SIFELSE:
+		{
+			value=vertObj->exec();
+			if(value.type==NBOOL)
+				if(value.bval)
+					vertObj2->exec();
+				else vertObj3->exec();
+			else if(value.type==NINT)
+				if(value.ival)
+					vertObj2->exec();
+				else vertObj3->exec();
+			else if(value.type==NFLOAT)
+				if(value.fval.real()!=0.0)
+					vertObj2->exec();
+				else vertObj3->exec();
+			else vertObj3->exec();
+			
+			if(nextObj==NULL)
+				return value;
+			else return nextObj->exec();
+		}
+		case SWHILE:
+		{
+			while(true)
+			{
+				value=vertObj->exec();
+				if(value.type==NBOOL)
+				{
+					if(!value.bval)
+						break;
+				}
+				else if(value.type==NINT)
+				{
+					if(value.ival==0)
+						break;
+				}
+				else if(value.type==NFLOAT)
+				{
+					if(value.fval.real()==0.0)
+						break;
+				}
+				else break;
+				vertObj2->exec();
+				if(eventReciver->status)
+				{
+					if(eventReciver->bbreak)
+					{
+						eventReciver->status=0;
+						eventReciver->bbreak=false;
+						break;
+					}
+					if(eventReciver->bcontinue)
+					{
+						eventReciver->status=0;
+						eventReciver->bcontinue=false;
+					}
+				}
+			}
+			if(nextObj==NULL)
+				return value;
+			else return nextObj->exec();
+		}
+		case SFOR:
+		{
+			if(vertObj3!=NULL)
+			{
+				for(vertObj->exec();;vertObj3->exec())
+				{
+					value=vertObj2->exec();
+					if(value.type==NBOOL)
+						if(!value.bval)
+							break;
+					else if(value.type==NINT)
+						if(value.ival==0)
+							break;
+					else if(value.type==NFLOAT)
+						if(value.fval.real()==0.0)
+							break;
+					else break;
+					horzObj->exec();
+					if(eventReciver->status)
+					{
+						if(eventReciver->bbreak)
+						{
+							eventReciver->status=0;
+							eventReciver->bbreak=false;
+							break;
+						}
+						else if(eventReciver->bcontinue)
+						{
+							eventReciver->status=0;
+							eventReciver->bcontinue=false;
+						}
+					}
+				}
+			}
+			else {
+				for(vertObj->exec();;)
+				{
+					value=vertObj2->exec();
+					if(value.type==NBOOL)
+						if(!value.bval)
+							break;
+					else if(value.type==NINT)
+						if(value.ival==0)
+							break;
+					else if(value.type==NFLOAT)
+						if(value.fval.real()==0.0)
+							break;
+					else break;
+					horzObj->exec();
+					if(eventReciver->status)
+					{
+						if(eventReciver->bbreak)
+						{
+							eventReciver->status=0;
+							eventReciver->bbreak=false;
+							break;
+						}
+						else if(eventReciver->bcontinue)
+						{
+							eventReciver->status=0;
+							eventReciver->bcontinue=false;
+						}
+					}
+				}
+			}
+			if(nextObj==NULL)
+				return value;
+			else return nextObj->exec();
+		}
+
+		case SUNEQUAL:
+		{
+			value.type=NBOOL;
+			Number n1=vertObj->exec();
+			Number n2=vertObj2->exec();
+			if(n1.type==NFLOAT)
+			{
+				if(n2.type==NFLOAT)
+					value.bval=(n1.fval!=n2.fval);
+				else if(n2.type==NBOOL)
+					value.bval=(n1.fval.real()!=(long double)n2.bval);
+				else if(n2.type==NINT)
+					value.bval=(n1.fval.real()!=(long double)n2.ival);
+				else value.bval=true;
+			}
+			else if(n2.type==NFLOAT)
+			{
+				if(n1.type==NBOOL)
+					value.bval=(n2.fval.real()!=(long double)n1.bval);
+				else if(n1.type==NINT)
+					value.bval=(n2.fval.real()!=(long double)n1.ival);
+				else value.bval=true;
+			}
+			else if(n1.type==NINT)
+			{
+				if(n2.type==NINT)
+					value.bval=(n1.ival!=n2.ival);
+				else if(n2.type==NBOOL)
+					value.bval=(n1.ival!=(long long)n2.bval);
+				else value.bval=true;
+			}
+			else if(n2.type==NINT)
+			{
+				if(n1.type==NBOOL)
+					value.bval=(n2.ival!=(long long)n1.bval);
+				else value.bval=true;
+			}
+			else if(n1.type==NCHAR)
+			{
+				if(n2.type==NCHAR)
+				{
+					if(n1.cval!=NULL && n2.cval!=NULL)
+						value.bval=(strcmp(n1.cval,n2.cval)!=0);
+					else value.bval=true;
+				}
+				else value.bval=true;
+			}
+			else if(n1.type==n2.type)
+				value.bval=false;
+			else value.bval=true;
+
+			return value;
+		}
+		case SNOT:
+		{
+			value=vertObj->exec();
+			convertToBool(&value);
+			value.bval=!value.bval;
+			return value;
+		}
+		case SAND:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			convertToBool(&value);
+			convertToBool(&n);
+			
+			value.bval=(value.bval&&n.bval);
+			return value;
+		}
+		case SOR:
+		{
+			value=vertObj->exec();
+			Number n=vertObj2->exec();
+			convertToBool(&value);
+			convertToBool(&n);
+			
+			value.bval=(value.bval||n.bval);
+			return value;
+		}
+
 		case MULT:
 		{
 			value=vertObj->exec();
@@ -4251,7 +4173,7 @@ Number Script::exec()
 				{
 					int index1=value.ival;
 					int index2=n.ival;
-					perror(QString::number(index1)+" "+QString::number(index2));
+//					perror(QString::number(index1)+" "+QString::number(index2));
 
 					eventReciver->vars[27]=(Number*)realloc(eventReciver->vars[27],sizeof(Number)*3);
 					for(int c=0; c<3;c++)
@@ -4428,6 +4350,113 @@ Number Script::exec()
 			}
 
 			return value;
+		}
+		case SPRINT:
+		{
+			char*eventContent=NULL;
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NFLOAT:
+				{
+					if(value.fval.imag()==0.0)
+					{
+						eventContent=(char*)malloc(42);
+						sprintf(eventContent,"%.*Lg",pref->outputLength,real(value.fval));
+					}
+					else {
+						eventContent=(char*)malloc(84);
+						if(value.fval.imag()<0.0)
+							sprintf(eventContent,"%.*Lg%.*Lgi",pref->outputLength,real(value.fval),pref->outputLength,imag(value.fval));
+						else sprintf(eventContent,"%.*Lg+%.*Lgi",pref->outputLength,real(value.fval),pref->outputLength,imag(value.fval));
+					}
+
+					break;
+				}
+				case NINT:
+				{
+					eventContent=(char*)malloc(30);
+					sprintf(eventContent,"%lli",value.ival);
+					break;
+				}
+				case NBOOL:
+					if(value.bval)
+					{
+						eventContent=(char*)malloc(5);
+						strcopy(eventContent,"true",4);
+					}
+					else {
+						eventContent=(char*)malloc(6);
+						strcopy(eventContent,"false",5);
+					}
+					break;
+				case NCHAR:
+				{
+					int slen=strlen(value.cval);
+					eventContent=(char*)malloc(slen+1);
+					strcopy(eventContent,value.cval,slen);
+					break;
+				}
+				case NVECTOR:
+				{
+					eventContent=(char*)calloc(1,1);
+					for(int c=0; c<eventReciver->dimension[value.ival][0];c++)
+					{
+						convertToFloat(&eventReciver->vars[value.ival][c]);
+						if(eventReciver->vars[value.ival][c].fval.imag()==0.0)
+						{
+							eventContent=(char*)realloc(eventContent,strlen(eventContent)+44);
+							sprintf(&eventContent[strlen(eventContent)]," %.*Lg",pref->outputLength,real(eventReciver->vars[value.ival][c].fval));
+						}
+						else {
+							eventContent=(char*)realloc(eventContent,strlen(eventContent)+86);
+							if(eventReciver->vars[value.ival][c].fval.imag()<0.0)
+								sprintf(&eventContent[strlen(eventContent)]," %.*Lg%.*Lgi",pref->outputLength,real(eventReciver->vars[value.ival][c].fval),pref->outputLength,imag(eventReciver->vars[value.ival][c].fval));
+							else sprintf(&eventContent[strlen(eventContent)]," %.*Lg+%.*Lgi",pref->outputLength,real(eventReciver->vars[value.ival][c].fval),pref->outputLength,imag(eventReciver->vars[value.ival][c].fval));
+						}
+					}
+					break;
+				}
+				case NMATRIX:
+				{
+					eventContent=(char*)calloc(1,1);
+					int effIndex;
+					for(int c=0; c<eventReciver->dimension[value.ival][0];c++)
+					{
+						for(int c1=0; c1<eventReciver->dimension[value.ival][1];c1++)
+						{
+							effIndex=c1*eventReciver->dimension[value.ival][0]+c;
+							convertToFloat(&eventReciver->vars[value.ival][effIndex]);
+							if(eventReciver->vars[value.ival][effIndex].fval.imag()==0.0)
+							{
+								eventContent=(char*)realloc(eventContent,strlen(eventContent)+45);
+								sprintf(&eventContent[strlen(eventContent)]," %.*Lg",pref->outputLength,real(eventReciver->vars[value.ival][effIndex].fval));
+							}
+							else {
+								eventContent=(char*)realloc(eventContent,strlen(eventContent)+87);
+								if(eventReciver->vars[value.ival][effIndex].fval.imag()<0.0)
+									sprintf(&eventContent[strlen(eventContent)]," %.*Lg%.*Lgi",pref->outputLength,real(eventReciver->vars[value.ival][effIndex].fval),pref->outputLength,imag(eventReciver->vars[value.ival][effIndex].fval));
+								else sprintf(&eventContent[strlen(eventContent)]," %.*Lg+%.*Lgi",pref->outputLength,real(eventReciver->vars[value.ival][effIndex].fval),pref->outputLength,imag(eventReciver->vars[value.ival][effIndex].fval));
+							}
+						}
+						sprintf(&eventContent[strlen(eventContent)],"\n");
+
+					}
+					break;
+				}
+				default:
+					eventContent=(char*)malloc(5);
+					strcopy(eventContent,"none",4);
+					break;
+			}
+
+			QCustomEvent *ev=new QCustomEvent(SIGPRINT);
+			ev->setData(eventContent);
+			QApplication::postEvent(eventReciver->eventReciver,ev);
+
+			if(nextObj==NULL)
+				return value;
+			else return nextObj->exec();
 		}
 		case SLESS:
 		{
@@ -4975,6 +5004,111 @@ Number Script::exec()
 			}
 			return value;
 		}
+		case SCAST:
+		{
+			Number n=vertObj->exec();
+			switch(value.type)
+			{
+				case NINT:
+					switch(n.type)
+					{
+						case NINT:
+							value.ival=n.ival;
+							break;
+						case NFLOAT:
+							value.ival=(long long)n.fval.real();
+							break;
+						case NCHAR:
+							char*end;
+							value.ival=strtoll(n.cval,&end,10);
+							if(end[0]!=(char)0)
+								value.ival=(long long)n.cval[0];
+							break;
+						case NBOOL:
+							value.ival=n.bval;
+							break;
+						default:
+							value.ival=0;
+					}
+					return value;
+				case NFLOAT:
+					switch(n.type)
+					{
+						case NINT:
+							value.fval=Complex((long double)n.ival,0.0);
+							break;
+						case NCHAR:
+							if(n.cval==NULL || strlen(n.cval)<=0)
+								value.fval=Complex(NAN,0.0);
+							else value.fval=Complex(strtold(n.cval,NULL),0.0);
+							break;
+						case NBOOL:
+							value.fval=Complex(n.bval,0.0);
+							break;
+						default:
+							value.fval=Complex(NAN,0.0);
+					}
+					return value;
+				case NBOOL:
+					switch(n.type)
+					{
+						case NINT:
+							value.bval=!(!(bool)n.ival);
+							break;
+						case NFLOAT:
+							if(n.fval.real()==0.0)
+								value.bval=false;
+							else value.bval=true;
+							break;
+						case NCHAR:
+							if(strcmp(n.cval,"true")==0)
+								value.bval=true;
+							else if(strcmp(n.cval,"false")==0)
+								value.bval=false;
+							else value.bval=!(!((bool)strtoll(n.cval,NULL,10)));
+							break;
+						case NBOOL:
+							value.bval=n.bval;
+							break;
+						default:
+							value.bval=false;
+					}
+					return value;
+				case NCHAR:
+					switch(n.type)
+					{
+						case NINT:
+							value.cval=(char*)malloc(25);
+							sprintf(value.cval,"%lli",n.ival);
+							break;
+						case NFLOAT:
+							value.cval=(char*)malloc(90);
+							sprintf(value.cval,"%Lg",n.fval.real());
+							if(value.fval.imag()!=0.0)
+							{
+								if(value.fval.imag()>0.0)
+									strcpy(value.cval,"+");
+								sprintf(&value.cval[strlen(value.cval)],"%Lg",n.fval.imag());
+								strcpy(value.cval,"i");
+							}
+								
+							break;
+						case NCHAR:
+							break;
+						case NBOOL:
+							if(n.bval)
+								strcpy(value.cval,"true");
+							else strcpy(value.cval,"false");
+							break;
+						default:
+							value.cval[0]=(char)0;
+					}
+					return value;
+				default:
+					value.type=NNONE;
+					return value;
+			}
+		}
 		case RSHIFT:
 		{
 			value=vertObj->exec();
@@ -5207,120 +5341,16 @@ Number Script::exec()
 			pthread_exit(0);
 			return value;
 		}
-		case SCAST:
-		{
-			Number n=vertObj->exec();
-			switch(value.type)
-			{
-				case NINT:
-					switch(n.type)
-					{
-						case NINT:
-							value.ival=n.ival;
-							break;
-						case NFLOAT:
-							value.ival=(long long)n.fval.real();
-							break;
-						case NCHAR:
-							char*end;
-							value.ival=strtoll(n.cval,&end,10);
-							if(end[0]!=(char)0)
-								value.ival=(long long)n.cval[0];
-							break;
-						case NBOOL:
-							value.ival=n.bval;
-							break;
-						default:
-							value.ival=0;
-					}
-					return value;
-				case NFLOAT:
-					switch(n.type)
-					{
-						case NINT:
-							value.fval=Complex((long double)n.ival,0.0);
-							break;
-						case NCHAR:
-							if(n.cval==NULL || strlen(n.cval)<=0)
-								value.fval=Complex(NAN,0.0);
-							else value.fval=Complex(strtold(n.cval,NULL),0.0);
-							break;
-						case NBOOL:
-							value.fval=Complex(n.bval,0.0);
-							break;
-						default:
-							value.fval=Complex(NAN,0.0);
-					}
-					return value;
-				case NBOOL:
-					switch(n.type)
-					{
-						case NINT:
-							value.bval=!(!(bool)n.ival);
-							break;
-						case NFLOAT:
-							if(n.fval.real()==0.0)
-								value.bval=false;
-							else value.bval=true;
-							break;
-						case NCHAR:
-							if(strcmp(n.cval,"true")==0)
-								value.bval=true;
-							else if(strcmp(n.cval,"false")==0)
-								value.bval=false;
-							else value.bval=!(!((bool)strtoll(n.cval,NULL,10)));
-							break;
-						case NBOOL:
-							value.bval=n.bval;
-							break;
-						default:
-							value.bval=false;
-					}
-					return value;
-				case NCHAR:
-					switch(n.type)
-					{
-						case NINT:
-							value.cval=(char*)malloc(25);
-							sprintf(value.cval,"%lli",n.ival);
-							break;
-						case NFLOAT:
-							value.cval=(char*)malloc(90);
-							sprintf(value.cval,"%Lg",n.fval.real());
-							if(value.fval.imag()!=0.0)
-							{
-								if(value.fval.imag()>0.0)
-									strcpy(value.cval,"+");
-								sprintf(&value.cval[strlen(value.cval)],"%Lg",n.fval.imag());
-								strcpy(value.cval,"i");
-							}
-								
-							break;
-						case NCHAR:
-							break;
-						case NBOOL:
-							if(n.bval)
-								strcpy(value.cval,"true");
-							else strcpy(value.cval,"false");
-							break;
-						default:
-							value.cval[0]=(char)0;
-					}
-					return value;
-				default:
-					value.type=NNONE;
-					return value;
-			}
-		}
 		case SRAND:
 		{
 			
 			value=vertObj->exec();
+			convertToFloat(&value);
 			value.type=NFLOAT;
 #if RAND_MAX < 1000000000
-			value.fval=Complex((((rand()*(1000000000/RAND_MAX))%1000000000)*value.fval.real())/1000000000,0.0);
+			value.fval=Complex((((rand()*(1000000000/RAND_MAX))%1000000000)*value.fval.real())/1000000000.0,0.0);
 #else
-			value.fval=Complex(((rand()%1000000000)*value.fval.real())/1000000000,0.0);
+			value.fval=Complex(((rand()%1000000000)*value.fval.real())/1000000000.0,0.0);
 #endif
 			return value;
 		}

@@ -7,9 +7,10 @@ MainObject *mainObj;
 int main( int argc, char **argv ) {
 //	lastResult=0.0F;
 	QApplication a( argc, argv );
+//	a.setStyle("sgi");
 	MainObject * mainObject = new MainObject;
 	mainObj=mainObject;
-//	a.setStyle("cde");
+
 	QFont stdFont("Helvetica");
 	stdFont.setPixelSize(14);
 	a.setFont(stdFont);

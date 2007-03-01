@@ -23,10 +23,10 @@ using namespace std;
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.6.7\n2006-02-26\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.8\n2006-03-01\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.6.7\n26.2.2006\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.6.8\n1.3.2006\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2006\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -57,6 +57,11 @@ using namespace std;
 #define QUIT				71
 #define SPREF				72
 #define VIEWSCRIPTIO		83
+#define EDITSELECTALL		175
+#define EDITORRUN			176
+#define EDITORMINIMIZE		177
+#define EDITORIMPORT		178
+#define EDITOREXPORT		179
 
 #define FILENEWSCRIPT		73
 #define FILENEWDIR			74
@@ -240,6 +245,11 @@ using namespace std;
 #define DRAWBACK			136
 #define DRAWCLEAR			137
 #define DRAWTEXT			138
+
+#define PPINVALIDCOMMAND	176
+#define PPINVALIDARGUMENT	177
+#define PPINVALIDPREF		178
+#define PPEMPTY				179
 
 #define NNONE				0x1
 #define NFLOAT				0x2

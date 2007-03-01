@@ -102,7 +102,7 @@
 //  - number object for standard-parser                         (v0.7)                  ok  //
 //  - support for complex numbers in standard parser            (v0.7)                  ok  //
 //  - include matrix- vector- ...-functions to standard-parser  (v0.7)                  ok  //
-//  - accelerate Calcultate classes                             (v0.7)                      //
+//  - accelerate Calcultate classes                             (v0.8)                      //
 //  - window for vector calculations                            (v0.8)                      //
 //  - window for matrix calculations                            (v0.8)                      //
 //  - statistic functions                                       (v0.9 beta)                 //
@@ -128,12 +128,12 @@
 //	- graph analyse window doesn't view result of integral correctly					ok	//
 //	- graph analyse window does not allways process mouse events						ok	//
 //	- preferences dialogs can't process mathematical expressions						ok  //
-//	- Script editor has no Menu bar															//
+//	- Script editor has no Menu bar														ok	//
 //	- converting floating point values does not work for all locale settings			ok	//
 //	- asymptotes are not alsways shown correctly										ok	//
 //	- calculator keys must be sorted													ok	//
 //	- Size of output-table in GraphSolveWidget is not resized							ok	//
-//	- text copying does not work in script console											//
+//	- text copying does not work in script console										ok	//
 //	- changing angle type does not work													ok	//
 //	- changing analyse precision does not work											ok	//
 //	- some script commands may cause problems in calculator mode						ok	//
@@ -145,6 +145,7 @@
 //	- 3rd, 5th ... root of -N returns only complex results								ok	//
 //	- result lines in polar cs were drawn wrong when angle type isn't rad				ok	//
 //	- array memory can't be deleted														ok	//
+//	- script load balancing doesn't work on fast (dual-core) CPUs							//
 
 
 //////////////////////////used variables//////////////////////////
@@ -550,7 +551,7 @@ MainObject() :QTabWidget()
 	calculator2=new CalcWidget(this,pref,vars,threadData);
 	graph = new GraphWidget(this,pref,vars,threadData);
 	table=new TableWidget(this,pref,vars);
-	scripting=new ScriptWidget(this,pref,vars);
+	scripting=new ScriptWidget(this,pref,vars,tabbarSize.bottom());
 	scriptIO=new ScriptIOWidget(this,pref,vars);
 //	addTab(calculator,EXTCALCH_STR6);
 //	addTab(calculator2,EXTCALCH_STR7);
@@ -585,6 +586,7 @@ MainObject() :QTabWidget()
 	QObject::connect(this,SIGNAL(editSignal(int)),scriptIO,SLOT(editSlot(int)));
 	QObject::connect(scripting,SIGNAL(runScript(QString*)),this,SLOT(runScriptSlot(QString*)));
 	QObject::connect(scripting,SIGNAL(runScript(QString*)),this,SIGNAL(runScript(QString*)));
+	QObject::connect(scripting,SIGNAL(controlScriptMenu(int)),this,SLOT(scriptMenuSlot(int)));
 	QObject::connect(this,SIGNAL(runScript(QString*)),scriptIO,SLOT(runScript(QString*)));
 	
 	if(readConfigFile() == -1)

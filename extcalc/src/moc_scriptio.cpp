@@ -1,7 +1,7 @@
 /****************************************************************************
 ** ScriptIOWidget meta object code from reading C++ file 'scriptio.h'
 **
-** Created: Mon Feb 26 10:33:58 2007
+** Created: Thu Mar 1 11:03:26 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -77,6 +77,10 @@ QMetaObject* ScriptIOWidget::staticMetaObject()
     };
     static const QUMethod slot_8 = {"scrollbarSlot", 1, param_slot_8 };
     static const QUMethod slot_9 = {"clearMemSlot", 0, 0 };
+    static const QUParameter param_slot_10[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_10 = {"contextMenuSlot", 1, param_slot_10 };
     static const QMetaData slot_tbl[] = {
 	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
 	{ "maximizeSlot()", &slot_1, QMetaData::Public },
@@ -87,7 +91,8 @@ QMetaObject* ScriptIOWidget::staticMetaObject()
 	{ "timerSlot()", &slot_6, QMetaData::Public },
 	{ "runSlot()", &slot_7, QMetaData::Public },
 	{ "scrollbarSlot(int)", &slot_8, QMetaData::Public },
-	{ "clearMemSlot()", &slot_9, QMetaData::Public }
+	{ "clearMemSlot()", &slot_9, QMetaData::Public },
+	{ "contextMenuSlot(int)", &slot_10, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -98,7 +103,7 @@ QMetaObject* ScriptIOWidget::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"ScriptIOWidget", parentObject,
-	slot_tbl, 10,
+	slot_tbl, 11,
 	signal_tbl, 1,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -145,6 +150,7 @@ bool ScriptIOWidget::qt_invoke( int _id, QUObject* _o )
     case 7: runSlot(); break;
     case 8: scrollbarSlot((int)static_QUType_int.get(_o+1)); break;
     case 9: clearMemSlot(); break;
+    case 10: contextMenuSlot((int)static_QUType_int.get(_o+1)); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }

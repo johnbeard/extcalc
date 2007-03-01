@@ -7,9 +7,13 @@
 #include <qsplitter.h>
 #include <qfont.h>
 #include <qpopupmenu.h>
+#include <qtoolbar.h>
+#include <qdockarea.h>
 #include <qfiledialog.h>
 #include <qinputdialog.h>
 #include <qlabel.h>
+#include <qiconset.h>
+#include <qaction.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -23,7 +27,6 @@ class LineNumberView :public QTextEdit
 public:
 	LineNumberView(QWidget*parent) :QTextEdit(parent)
 	{
-		
 	}
 	
 protected:
@@ -53,6 +56,7 @@ class ScriptWidget :public QWidget
 	QPushButton*maximizeButton,*runButton,*saveButton;
 	QFont *stdFont;
 	int fontWidth,fontHeight;
+	int menuBottom;
 	QPopupMenu*fileBrowserMenu;
 	QPixmap*modifiedIcon;
 	bool maximized;
@@ -60,15 +64,20 @@ class ScriptWidget :public QWidget
 	bool currentTextChanged;
 	QListViewItem*activeFileItem;
 	QListViewItem*clickedFileItem;
+	QToolBar*editorToolBar;
+	QDockArea*dockArea;
+	QPixmap*newIcon,*saveIcon,*saveallIcon,*undoIcon,*redoIcon,*cutIcon,*copyIcon,*pasteIcon,*importIcon,*exportIcon,*runIcon,*minimizeIcon;
+	QAction*newAction,*saveAction,*saveallAction,*undoAction,*redoAction,*cutAction,*copyAction,*pasteAction,*importAction,*exportAction,*runAction,*minimizeAction;
 
 	Q_OBJECT
 public:
-	
-	ScriptWidget(QWidget*parent,Preferences p,Variable*va) :QWidget(parent)
+
+	ScriptWidget(QWidget*parent,Preferences p,Variable*va,int mB) :QWidget(parent)
 	{
 		pref=p;
 		vars=va;
-		maximized=false;
+		menuBottom=mB;
+		maximized=true;
 		currentTextChanged=false;
 		activeFileItem=NULL;
 		clickedFileItem=NULL;
@@ -83,9 +92,18 @@ public:
 		maximizeButton=new QPushButton(SCRIPTEDITH_STR1,this);
 		runButton=new QPushButton(SCRIPTEDITH_STR2,this);
 		saveButton=new QPushButton(SCRIPTEDITH_STR3,this);
+		
+		maximizeButton->hide();
+		runButton->hide();
+		saveButton->hide();
+
 		fileBrowserMenu=new QPopupMenu(fileBrowser);
 		modifiedIcon=new QPixmap(QString(INSTALLDIR)+"/data/modified.png");
+		dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
+		editorToolBar=new QToolBar();
 		
+	
+	
 		fileBrowserMenu->insertItem(SCRIPTEDITH_STR4,FILEUPDATE);
 		fileBrowserMenu->insertSeparator();
 		fileBrowserMenu->insertItem(SCRIPTEDITH_STR5,FILENEWSCRIPT);
@@ -96,9 +114,79 @@ public:
 		fileBrowserMenu->insertSeparator();
 		fileBrowserMenu->insertItem(SCRIPTEDITH_STR9,FILERENAME);
 		fileBrowserMenu->insertItem(SCRIPTEDITH_STR10,FILEDELETE);
-		
+
+		newIcon=new QPixmap(INSTALLDIR+QString("/data/filenew.png"));
+		saveIcon=new QPixmap(INSTALLDIR+QString("/data/fileexport.png"));
+		saveallIcon=new QPixmap(INSTALLDIR+QString("/data/save_all.png"));
+		undoIcon=new QPixmap(INSTALLDIR+QString("/data/undo.png"));
+		redoIcon=new QPixmap(INSTALLDIR+QString("/data/redo.png"));
+		cutIcon=new QPixmap(INSTALLDIR+QString("/data/editcut.png"));
+		copyIcon=new QPixmap(INSTALLDIR+QString("/data/editcopy.png"));
+		pasteIcon=new QPixmap(INSTALLDIR+QString("/data/editpaste.png"));
+		importIcon=new QPixmap(INSTALLDIR+QString("/data/fileimport.png"));
+		exportIcon=new QPixmap(INSTALLDIR+QString("/data/filesaveas.png"));
+		runIcon=new QPixmap(INSTALLDIR+QString("/data/exec.png"));
+		minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
 		
 
+		newAction=new QAction(editorToolBar);
+		saveAction=new QAction(editorToolBar);
+		saveallAction=new QAction(editorToolBar);
+		undoAction=new QAction(editorToolBar);
+		redoAction=new QAction(editorToolBar);
+		cutAction=new QAction(editorToolBar);
+		copyAction=new QAction(editorToolBar);
+		pasteAction=new QAction(editorToolBar);
+		importAction=new QAction(editorToolBar);
+		exportAction=new QAction(editorToolBar);
+		runAction=new QAction(editorToolBar);
+		minimizeAction=new QAction(editorToolBar);
+		
+		newAction->setIconSet(*newIcon);
+		saveAction->setIconSet(*saveIcon);
+		saveallAction->setIconSet(*saveallIcon);
+		undoAction->setIconSet(*undoIcon);
+		redoAction->setIconSet(*redoIcon);
+		cutAction->setIconSet(*cutIcon);
+		copyAction->setIconSet(*copyIcon);
+		pasteAction->setIconSet(*pasteIcon);
+		importAction->setIconSet(*importIcon);
+		exportAction->setIconSet(*exportIcon);
+		runAction->setIconSet(*runIcon);
+		minimizeAction->setIconSet(*minimizeIcon);
+		
+		newAction->setToolTip("Create new script file");
+		saveAction->setToolTip("Save changes of current file");
+		saveallAction->setToolTip("Save changes of all modified files");
+		undoAction->setToolTip("Undo");
+		redoAction->setToolTip("Redo");
+		cutAction->setToolTip("Cut");
+		copyAction->setToolTip("Copy");
+		pasteAction->setToolTip("Paste");
+		importAction->setToolTip("Import script file");
+		exportAction->setToolTip("Export script file");
+		runAction->setToolTip("Run current script");
+		minimizeAction->setToolTip("Switch to minimized view");
+		
+		newAction->addTo(editorToolBar);
+		importAction->addTo(editorToolBar);
+		exportAction->addTo(editorToolBar);
+		editorToolBar->addSeparator();
+		saveAction->addTo(editorToolBar);
+		saveallAction->addTo(editorToolBar);
+		editorToolBar->addSeparator();
+		undoAction->addTo(editorToolBar);
+		redoAction->addTo(editorToolBar);
+		cutAction->addTo(editorToolBar);
+		copyAction->addTo(editorToolBar);
+		pasteAction->addTo(editorToolBar);
+		editorToolBar->addSeparator();
+		minimizeAction->addTo(editorToolBar);
+		editorToolBar->addSeparator();
+		runAction->addTo(editorToolBar);
+		dockArea->moveDockWindow(editorToolBar);
+		
+		
 		stdFont=new QFont("Courier");
 		stdFont->setPixelSize(16);
 		stdFont->setFixedPitch(true);
@@ -114,7 +202,7 @@ public:
 		lineNumbers->setVScrollBarMode(QScrollView::AlwaysOff);
 		lineNumbers->setHScrollBarMode(QScrollView::AlwaysOff);
 		lineNumbers->setWordWrap(QTextEdit::NoWrap);
-		lineNumbers->setText(" 1\n 2\n 3\n 4\n 5\n 6\n 7\n 8\n 9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21");
+		lineNumbers->setText(" 1");
 		lineNumbers->setPaper(backgroundBrush());
 		lineNumbers->setFixedWidth(fontWidth*3);
 		lineNumbers->setReadOnly(true);
@@ -140,6 +228,18 @@ public:
 		QObject::connect(fileBrowserMenu,SIGNAL(activated(int)),this,SLOT(fileBrowserMenuSlot(int)));
 		QObject::connect(editor,SIGNAL(textChanged()),this,SLOT(textChangedSlot()));
 		QObject::connect(saveButton,SIGNAL(released()),this,SLOT(saveSlot()));
+		QObject::connect(saveAction,SIGNAL(activated()),this,SLOT(saveSlot()));
+		QObject::connect(minimizeAction,SIGNAL(activated()),this,SLOT(maximizeButtonSlot()));
+		QObject::connect(runAction,SIGNAL(activated()),this,SLOT(runButtonSlot()));
+		QObject::connect(saveallAction,SIGNAL(activated()),this,SLOT(saveallSlot()));
+		QObject::connect(newAction,SIGNAL(activated()),this,SLOT(newSlot()));
+		QObject::connect(importAction,SIGNAL(activated()),this,SLOT(importSlot()));
+		QObject::connect(exportAction,SIGNAL(activated()),this,SLOT(exportSlot()));
+		QObject::connect(copyAction,SIGNAL(activated()),editor,SLOT(copy()));
+		QObject::connect(pasteAction,SIGNAL(activated()),editor,SLOT(paste()));
+		QObject::connect(cutAction,SIGNAL(activated()),editor,SLOT(cut()));
+		QObject::connect(undoAction,SIGNAL(activated()),editor,SLOT(undo()));
+		QObject::connect(redoAction,SIGNAL(activated()),editor,SLOT(redo()));
 	}
 	
 	
@@ -165,15 +265,20 @@ public slots:
 	void saveSlot();
 	void runButtonSlot();
 	void lineNumSlot(int,int);
+	void saveallSlot();
+	void newSlot();
+	void importSlot();
+	void exportSlot();
+
 	
 	
 protected:
 virtual void resizeEvent(QResizeEvent*);
 	
-	
 signals:
 	void prefChange(Preferences);
 	void runScript(QString*);
+	void controlScriptMenu(int);
 };
 
 
