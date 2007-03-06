@@ -155,18 +155,18 @@ public:
 		runAction->setIconSet(*runIcon);
 		minimizeAction->setIconSet(*minimizeIcon);
 		
-		newAction->setToolTip("Create new script file");
-		saveAction->setToolTip("Save changes of current file");
-		saveallAction->setToolTip("Save changes of all modified files");
-		undoAction->setToolTip("Undo");
-		redoAction->setToolTip("Redo");
-		cutAction->setToolTip("Cut");
-		copyAction->setToolTip("Copy");
-		pasteAction->setToolTip("Paste");
-		importAction->setToolTip("Import script file");
-		exportAction->setToolTip("Export script file");
-		runAction->setToolTip("Run current script");
-		minimizeAction->setToolTip("Switch to minimized view");
+		newAction->setToolTip(SCRIPTEDITH_STR12);
+		saveAction->setToolTip(SCRIPTEDITH_STR13);
+		saveallAction->setToolTip(SCRIPTEDITH_STR14);
+		undoAction->setToolTip(SCRIPTEDITH_STR15);
+		redoAction->setToolTip(SCRIPTEDITH_STR16);
+		cutAction->setToolTip(SCRIPTEDITH_STR17);
+		copyAction->setToolTip(SCRIPTEDITH_STR18);
+		pasteAction->setToolTip(SCRIPTEDITH_STR19);
+		importAction->setToolTip(SCRIPTEDITH_STR20);
+		exportAction->setToolTip(SCRIPTEDITH_STR21);
+		runAction->setToolTip(SCRIPTEDITH_STR22);
+		minimizeAction->setToolTip(SCRIPTEDITH_STR23);
 		
 		newAction->addTo(editorToolBar);
 		importAction->addTo(editorToolBar);

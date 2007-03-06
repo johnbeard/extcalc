@@ -97,7 +97,7 @@ class ScriptIOWidget :public QWidget
 			for(int c=0; c<VARNUM;c++)
 				vars[c].NewItem(0.0);
 			pref=pr;
-			maximized=false;
+			maximized=true;
 			scriptExec=false;
 			script=NULL;
 			inputMode=IMDEFAULT;
@@ -131,23 +131,23 @@ class ScriptIOWidget :public QWidget
 			t=new QTimer(this);
 			timerInterval=25;
 			redrawTime=20000;
-			
+
 			selectStartLine=selectStartRow=selectEndLine=selectEndRow=0;
 			
 			calcButtons=new  StandardButtons(this);
 			extButtons=new ExtButtons(this);
-			maximizeButton=new QPushButton(CALCWIDGETH_STR1,this);
+			maximizeButton=new QPushButton(CALCWIDGETC_STR2,this);
 			killButton=new QPushButton(SCRIPTIO_STR1,this);
 			killButton->setEnabled(false);
 			runButton=new QPushButton(SCRIPTIO_STR7,this);
 			runButton->setEnabled(false);
 			contextMenu=new QPopupMenu(this);
-			contextMenu->insertItem("Copy\tCtrl-C",EDITCOPY);
-			contextMenu->insertItem("Paste\tCtrl-V",EDITPASTE);
+			contextMenu->insertItem(SCRIPTIO_STR12,EDITCOPY);
+			contextMenu->insertItem(SCRIPTIO_STR13,EDITPASTE);
 			contextMenu->insertSeparator();
-			contextMenu->insertItem("Select All\tCtrl-A",EDITSELECTALL);
+			contextMenu->insertItem(SCRIPTIO_STR14,EDITSELECTALL);
 			contextMenu->insertSeparator();
-			contextMenu->insertItem("Clear All",EDITCUT);
+			contextMenu->insertItem(SCRIPTIO_STR15,EDITCUT);
 
 			ioFieldWidth=600;
 			ioFieldHeight=310;
@@ -177,6 +177,9 @@ class ScriptIOWidget :public QWidget
 			
 			calcButtons->setGeometry(20,380,280,200);
 			extButtons->setGeometry(320,420,300,160);
+			
+			calcButtons->hide();
+			extButtons->hide();
 
 			setFocusPolicy(QWidget::StrongFocus);
 

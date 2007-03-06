@@ -1479,8 +1479,8 @@ void ImportDialog::saveSlot()
 		  (openPath.find(pref.scriptPath+"/"+pref.scriptDirName) !=0 && !importFile))
 	{
 		if(importFile)
-			ErrorBox("File outside script code directory: "+savePath);
-		else ErrorBox("File outside script code directory: "+openPath);
+			ErrorBox(EXTCALCC_MSG6);
+		else ErrorBox(EXTCALCC_MSG7);
 	}
 	else
 	{
@@ -1488,10 +1488,10 @@ void ImportDialog::saveSlot()
 		
 		if(lstat(savePath,&testStat)==0)
 		{
-			if(YesNoBox("Really overwrite "+savePath+" ?")==1)
+			if(YesNoBox(EXTCALCC_MSG8)==1)
 				return;
 		}
-		system("cp "+openPath+" "+savePath);
+		system("cp -f "+openPath+" "+savePath);
 		emit updateScriptSignal(FILEUPDATE);
 		close();
 	}
@@ -1504,10 +1504,10 @@ void ImportDialog::openDialogSlot()
 	dialog=true;
 	if(!importFile) {
 		startPath=pref.scriptPath+"/"+pref.scriptDirName;
-		dialogText=QString("Choose a script file to export");
+		dialogText=QString(EXTCALCC_MSG9);
 	}
 	else {
-		dialogText=QString("Choose a file to import");
+		dialogText=QString(EXTCALCC_MSG10);
 		startPath=QString(getenv("HOME"));
 	}
 	
@@ -1515,7 +1515,7 @@ void ImportDialog::openDialogSlot()
 			startPath,
 	QString::null,
 	this,
-	"open file dialog",
+	EXTCALCC_MSG11,
 	dialogText);
 	dialog=false;
 	if(!path.isNull())
@@ -1533,24 +1533,10 @@ void ImportDialog::saveDialogSlot()
 			startPath,
 	QString::null,
 	this,
-	"save file dialog",
-	"Choose a filename to save under" );
+	EXTCALCC_MSG12,
+	EXTCALCC_MSG13 );
 	dialog=false;
 	if(!path.isNull())
 		savePathLine->setText(path);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -610,7 +610,7 @@ void ScriptIOWidget::mouseMoveEvent(QMouseEvent*me)
 void ScriptIOWidget::insert(QString text,bool redraw)
 {
 	int len=text.length();
-	int pos1=0,pos2=0;
+	int pos1=0,pos2=0,tabpos=0;
 	while((pos2=text.find("\n",pos1)+1)>0)
 	{
 		if(charNum-cursorX<pos2-pos1-1)
@@ -622,6 +622,12 @@ void ScriptIOWidget::insert(QString text,bool redraw)
 		else {
 			lines[cursorY].replace(cursorX,pos2-pos1-1,text.mid(pos1,pos2-pos1-1));
 			pos1=pos2;
+		}
+		while((tabpos=lines[cursorY].find('\t'))!=-1)
+		{
+			lines[cursorY].remove(tabpos,1);
+			for(int c=0; c<(8-tabpos%8); c++)
+				lines[cursorY].insert(tabpos,' ');
 		}
 		if(cursorY >= lines.GetLen()-1)
 		{
@@ -638,12 +644,20 @@ void ScriptIOWidget::insert(QString text,bool redraw)
 		else cursorY++;
 		cursorX=0;
 	}
+
+	
 	if(charNum-cursorX<len-pos1)
 	{
 		while((pos2=pos1+charNum-cursorX)<len)
 		{
 			lines[cursorY].replace(cursorX,charNum-cursorX,text.mid(pos1,charNum-cursorX));
 			pos1=pos2;
+			while((tabpos=lines[cursorY].find('\t'))!=-1)
+			{
+				lines[cursorY].remove(tabpos,1);
+				for(int c=0; c<(8-tabpos%8); c++)
+					lines[cursorY].insert(tabpos,' ');
+			}
 			if(cursorY >= lines.GetLen()-1)
 			{
 				lines.NewItem(QString());
@@ -664,6 +678,13 @@ void ScriptIOWidget::insert(QString text,bool redraw)
 	
 	lines[cursorY].replace(cursorX,len-pos1,text.mid(pos1,len-pos1));
 	cursorX+=len-pos1;
+	while((tabpos=lines[cursorY].find('\t'))!=-1)
+	{
+		lines[cursorY].remove(tabpos,1);
+		for(int c=0; c<(8-tabpos%8); c++)
+			lines[cursorY].insert(tabpos,' ');
+		cursorX+=(8-tabpos%8)-1;
+	}
 	
 	if(redraw)
 		repaint(20,50,ioFieldWidth,ioFieldHeight,false);
@@ -748,14 +769,11 @@ void ScriptIOWidget::runScript(QString*code)
 		semicolonLines.DeleteItem(0);
 	
 	runningPref=pref;
-	perror("complex before: "+QString::number(runningPref.complex));
-	int ret=preferencesPreprocessor(code,&runningPref);
-	perror("complex after: "+QString::number(runningPref.complex));
-	perror("return value: "+QString::number(ret));
 	
 	searchScripts(code);
 	countDifference=0;
 	initDebugging(code);
+	int ret=preferencesPreprocessor(code,&runningPref);
 
 	if(ret!=0)
 	{
@@ -1031,17 +1049,14 @@ int ScriptIOWidget::preferencesPreprocessor(QString *code,Preferences*pref)
 				configLine=code->mid(newlinePos+1,end-newlinePos-1);
 				code->remove(newlinePos+1,end-newlinePos-1);
 				pos=newlinePos;
-				perror("configLine1: "+configLine);
-				
 				configLine=configLine.stripWhiteSpace();
-				if(configLine.find("#CONFIG")==0)
+				if(configLine.find("#config")==0)
 					configLine=configLine.right(configLine.length()-7);
 				else return PPINVALIDCOMMAND;
 				if((commentPos=configLine.find("//"))!=-1)
 					configLine=configLine.left(commentPos);
 				
 				configLine=configLine.stripWhiteSpace();
-				perror("configLine2: "+configLine);
 				
 				if(configLine=="complexon")
 					pref->complex=true;

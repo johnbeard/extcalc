@@ -541,13 +541,28 @@ int bracketFindRev(char* string,char* searchString, int start)
 				else if(string[c] == '}')
 					brace++;
 				else if(string[c] == '(')
+				{
 					bracket--;
+					if(bracket == 0 && brace == 0 && sqbracket==0 && !quote)
+						if(strncmp(&string[c-searchLen+1],searchString,searchLen) == 0)
+							return c;
+				}
 				else if(string[c] == '[')
+				{
 					sqbracket--;
+					if(bracket == 0 && brace == 0 && sqbracket==0 && !quote)
+						if(strncmp(&string[c-searchLen+1],searchString,searchLen) == 0)
+							return c;
+				}
 				if(string[c] == ']')
 					sqbracket++;
 				else if(string[c] == '{')
+				{
 					brace--;
+					if(bracket == 0 && brace == 0 && sqbracket==0 && !quote)
+						if(strncmp(&string[c-searchLen+1],searchString,searchLen) == 0)
+							return c;
+				}
 				else if(string[c] == '\"')
 					quote=!quote;
 			}
@@ -2029,7 +2044,7 @@ char* Script::parse(char* line)
 		{
 			if(line[pos1+3]=='[' && line[len-1]==']' && len-pos1!=4)
 			{
-				if((pos2=bracketFind(line,"[",pos1+4))!=-1)
+				if((pos2=bracketFindRev(line,"["))!=-1)
 				{
 					if(line[pos2-1]!=']')
 					{
@@ -2176,7 +2191,7 @@ char* Script::parse(char* line)
 		{
 			if(line[1]=='[' && line[pos1-1]==']')
 			{
-				if((pos2=bracketFindRev(line,"]",pos1-2)) !=-1)
+				if((pos2=bracketFind(line,"]")) !=pos1-1)
 				{
 					if(line[pos2+1]!='[')
 					{
@@ -3044,7 +3059,7 @@ char* Script::parse(char* line)
 		}
 		else var=line[0]-65;
 		
-		if((pos1=bracketFind(line,"[",2))!=-1)
+		if((pos1=bracketFindRev(line,"["))>1)
 		{
 			if(line[pos1-1] !=']')
 			{
@@ -4140,7 +4155,7 @@ Number Script::exec()
 				case NCHAR:
 					n.type=NFLOAT; break;
 				case NVECTOR:
-					if(value.type!=NVECTOR)
+					if(value.type!=NVECTOR && value.type!=NMATRIX)
 					{
 						Number tmp=value;
 						value=n;
@@ -4148,7 +4163,7 @@ Number Script::exec()
 					}
 					break;
 				case NMATRIX:
-					if(value.type!=NMATRIX)
+					if(value.type!=NMATRIX && value.type!=NVECTOR)
 					{
 						Number tmp=value;
 						value=n;
@@ -4201,6 +4216,8 @@ Number Script::exec()
 			}
 			else if((value.type==NMATRIX || value.type==NVECTOR) && (n.type==NMATRIX || n.type==NVECTOR))					//matrix product
 			{
+				perror("Dimension value: "+QString::number(eventReciver->dimension[value.ival][0])+" "+QString::number(eventReciver->dimension[value.ival][1])+
+						" Dimension n: "+QString::number(eventReciver->dimension[n.ival][0])+" "+QString::number(eventReciver->dimension[n.ival][1]));
 				int min1=eventReciver->dimension[value.ival][0];
 				int min2=eventReciver->dimension[n.ival][1];
 				int minstep=eventReciver->dimension[value.ival][1];
@@ -5181,21 +5198,11 @@ Number Script::exec()
 		{
 			value=vertObj->exec();
 			Number n=vertObj2->exec();
-			switch(value.type)
-			{
-				case NBOOL:
-					value.ival=(long long)value.bval; value.type=NINT; break;
-				default:
-					value.type=NFLOAT; break;
-			}
-			switch(n.type)
-			{
-				case NBOOL:
-					n.ival=(long long)n.bval; n.type=NINT; break;
-				case NNONE:
-				default:
-					n.type=NFLOAT; break;
-			}
+			if(value.type!=NINT)
+				convertToFloat(&value);
+			if(n.type!=NINT)
+				convertToFloat(&n);
+			
 			if(value.type==NINT && n.type==NINT)
 				value.ival%=n.ival;
 			else if(value.type==NFLOAT && n.type==NFLOAT)

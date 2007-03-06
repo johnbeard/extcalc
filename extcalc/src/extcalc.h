@@ -489,11 +489,11 @@ MainObject() :QTabWidget()
 	QObject::connect(tableMenu,SIGNAL(activated(int)),this,SLOT(tableMenuSlot(int)));
 
 	scriptMenu=new QPopupMenu;
-	scriptMenu->insertItem("Export Script",EXPORTSCRIPT);
-	scriptMenu->insertItem("Import Script",IMPORTSCRIPT);
+	scriptMenu->insertItem(EXTCALCH_MENU62,EXPORTSCRIPT);
+	scriptMenu->insertItem(EXTCALCH_MENU63,IMPORTSCRIPT);
 	scriptMenu->insertSeparator();
-	scriptMenu->insertItem("Always clear Array Memory",CLEARMEMALWAYS);
-	scriptMenu->insertItem("Clear Array Memory now",CLEARMEMNOW);
+	scriptMenu->insertItem(EXTCALCH_MENU64,CLEARMEMALWAYS);
+	scriptMenu->insertItem(EXTCALCH_MENU65,CLEARMEMNOW);
 	QObject::connect(scriptMenu,SIGNAL(activated(int)),this,SLOT(scriptMenuSlot(int)));
 	
 	prefMenu=new QPopupMenu;
@@ -536,7 +536,7 @@ MainObject() :QTabWidget()
 	mainMenu->insertItem(EXTCALCH_MENU16,calcMenu,CALCULATOR);
 	mainMenu->insertItem(EXTCALCH_MENU17,graphMenu,GRAPH);
 	mainMenu->insertItem(EXTCALCH_MENU46,tableMenu,TABLE);
-	mainMenu->insertItem("Script",scriptMenu,SCRIPTM);
+	mainMenu->insertItem(EXTCALCH_MENU66,scriptMenu,SCRIPTM);
 	mainMenu->insertItem(EXTCALCH_MENU18,helpMenu,HELP);
 	
 	
@@ -805,7 +805,7 @@ class ImportDialog :public QWidget
 	Q_OBJECT
 	public:
 		ImportDialog(Preferences p,QWidget*parent,bool importF) 
-	:QWidget(parent,"Import/Export Script",Qt::WStyle_Dialog | Qt::WType_Dialog)
+	:QWidget(parent,EXTCALCH_STR14,Qt::WStyle_Dialog | Qt::WType_Dialog)
 		{
 			pref=p;
 			dialog=false;
@@ -813,14 +813,14 @@ class ImportDialog :public QWidget
 			
 			if(importFile)
 			{
-				mainLabel=new QLabel("Import Script File",this);
-				openPathLabel=new QLabel("File name to import",this);
-				savePathLabel=new QLabel("File name to save",this);
+				mainLabel=new QLabel(EXTCALCH_STR15,this);
+				openPathLabel=new QLabel(EXTCALCH_STR16,this);
+				savePathLabel=new QLabel(EXTCALCH_STR17,this);
 			}
 			else {
-				mainLabel=new QLabel("Export Script File",this);
-				openPathLabel=new QLabel("Script file to export",this);
-				savePathLabel=new QLabel("File name to save",this);
+				mainLabel=new QLabel(EXTCALCH_STR18,this);
+				openPathLabel=new QLabel(EXTCALCH_STR19,this);
+				savePathLabel=new QLabel(EXTCALCH_STR20,this);
 			}
 			openPathLine=new QLineEdit(this);
 			savePathLine=new QLineEdit(this);
