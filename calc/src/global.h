@@ -17,7 +17,7 @@
 using namespace std;
 
 
-#define VERSIONSTRING "Version: 0.6.6 2007-02-13\nCalculator algorithm: extcalc v0.6.5 2006-12-29"
+#define VERSIONSTRING "Version: 0.6.9 2007-03-08\nCalculator algorithm: extcalc v0.6.9 2007-03-08"
 #define AUTHORSTRING "Author:\nRainer Strobel\nhttp://extcalc-linux.sourceforge.net\n2007\n"
 
 
@@ -66,6 +66,7 @@ using namespace std;
 #define SREAL				150
 #define SIMAG				151
 #define SARG				152
+#define SVECTOR				169
 
 
 #define NNONE				0x1
@@ -105,6 +106,27 @@ using namespace std;
 #define RSHIFT				139
 #define LSHIFT				140
 #define XOR					141
+#define CPOW				153
+#define CROOT				154
+#define CSIN				155
+#define CCOS				156
+#define CTAN				157
+#define CSINH				158
+#define CCOSH				159
+#define CTANH				160
+#define CLN					161
+#define CLG					162
+#define CABS				163
+#define CDIVIDE				164
+#define SQRT				166
+#define CSQRT				167
+#define CURT				168
+#define SCALARPROD			170
+
+#define PPINVALIDCOMMAND	176
+#define PPINVALIDARGUMENT	177
+#define PPINVALIDPREF		178
+#define PPEMPTY				179
 
 #define RAD					6
 #define DEG					7
@@ -118,6 +140,8 @@ using namespace std;
 #define OCT					36
 #define DEC					38
 
+#define VARNUM				29
+#define VARDIMENSIONS		2
 
 #ifdef M_PIl
 #define PI					M_PIl
@@ -133,10 +157,11 @@ using namespace std;
 #define SEULER				"2.718281828459045235360287471352662497757"
 
 
-
 #ifndef NAN
 #define NAN (HUGE_VAL/HUGE_VAL)
 #endif
+
+#define CONSOLE
 
 typedef List<long double> Variable;
 typedef complex <long double> Complex;
@@ -151,22 +176,23 @@ struct Preferences
 	int outputLength;
 	int calcType;
 	int base;
-	int precisision;
+	int precision;
+	bool complex;
 };
 
 
 
 struct Number
 {
-	long double fval;
-	long double *fvector;		//complex, vector
-	int dimension;				//vector size
-	complex <long double> cfval;
+
+	complex <long double> fval;
 	long long ival;
 	bool bval;
 	char*cval;
 	int type;
 };
+
+
 struct ThreadSync
 {
 
@@ -178,7 +204,9 @@ struct ThreadSync
 	bool bcontinue;
 	bool error;
 	bool calcMode;
-	int numlen[27];
+	int numlen[VARNUM];
+	int dimension[VARNUM][VARDIMENSIONS];					//vector, matrix size
+
 	Number**vars;
 	List <Math*>subprograms;
 	List <char*>subprogramPath;
@@ -197,6 +225,9 @@ char*strins(char*dest,const char*src,int index);
 int strcopy(char*dest,char*src,int len);
 char* checkString(char*calcString,Preferences*pref);
 void printError(const char*,int,ThreadSync*);
+void convertToFloat(Number*num);
+inline void convertToInt(Number*num);
+inline void convertToBool(Number*num);
 
 
 
@@ -291,80 +322,81 @@ public:
 	virtual double calcVertObj();
 	virtual double calcHorzObj();
 };
-
 class Script :public Math
 {
 	Number value;
 	Math*nextObj,*vertObj2,*vertObj3;
 	ThreadSync*eventReciver;
+		
+	private:
+	
+		inline bool resizeVar(int var,int newlen);
 
+	public:
 
-public:
-
-	Script(Script*par,char*line,Preferences*pr,Variable*va,ThreadSync*evrec) :Math((Math*)par,pr,va)
-	{
-		horzObj=vertObj=vertObj2=vertObj3=nextObj=NULL;
-		value.type=NNONE;
-		eventReciver=evrec;
-		if(par==NULL)
-			split(line);
-		else if(line!=NULL)
+		Script(Script*par,char*line,Preferences*pr,Variable*va,ThreadSync*evrec) :Math((Math*)par,pr,va)
 		{
-			char*rest=parse(line);
-			if(rest!=NULL)
+			horzObj=vertObj=vertObj2=vertObj3=nextObj=NULL;
+			value.type=NNONE;
+			eventReciver=evrec;
+			value.cval=NULL;
+			if(par==NULL)
+				split(line);
+			else if(line!=NULL)
 			{
-				operation=SFAIL;
-				delete[]rest;
+				char*rest=parse(line);
+				if(rest!=NULL)
+				{
+					operation=SFAIL;
+					delete[]rest;
+				}
 			}
 		}
-	}
-	
-	~Script()
-	{
-		if(value.type==SVALUE && value.type==NCHAR && value.cval!=NULL)
+		~Script()
 		{
-			delete[]value.cval;
-			value.cval=NULL;
+			if(value.type==SVALUE && value.type==NCHAR && value.cval!=NULL)
+			{
+				free(value.cval);
+				value.cval=NULL;
+			}
+			if(horzObj!=NULL)
+			{
+				delete horzObj;
+				horzObj=NULL;
+			}
+			if(vertObj!=NULL)
+			{
+				delete vertObj;
+				vertObj=NULL;
+			}
+			if(vertObj2!=NULL)
+			{
+				delete vertObj2;
+				vertObj2=NULL;
+			}
+			if(vertObj3!=NULL)
+			{
+				delete vertObj3;
+				vertObj3=NULL;
+			}
+			if(nextObj!=NULL)
+			{
+				delete nextObj;
+				nextObj=NULL;
+			}
 		}
-		if(horzObj!=NULL)
-		{
-			delete horzObj;
-			horzObj=NULL;
-		}
-		if(vertObj!=NULL)
-		{
-			delete vertObj;
-			vertObj=NULL;
-		}
-		if(vertObj2!=NULL)
-		{
-			delete vertObj2;
-			vertObj2=NULL;
-		}
-		if(vertObj3!=NULL)
-		{
-			delete vertObj3;
-			vertObj3=NULL;
-		}
-		if(nextObj!=NULL)
-		{
-			delete nextObj;
-			nextObj=NULL;
-		}
-		
-	}
-	
-	char*parse(char*line);
-	virtual int split(char* line);
+		char*parse(char*line);
+		virtual int split(char* line);
 
 
-	virtual double calc();
-	virtual double calcVertObj();
-	virtual double calcHorzObj();
+		virtual double calc();
+		virtual double calcVertObj();
+		virtual double calcHorzObj();
 
-	virtual Number exec();
-	virtual Number execVertObj();
-	virtual Number execHorzObj();
+		virtual Number exec();
+		virtual Number execVertObj();
+		virtual Number execHorzObj();
+
 };
 
 #endif

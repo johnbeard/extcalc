@@ -44,35 +44,38 @@
 
 int main(int argc,char**argv)
 {
-	Variable *vars=new Variable[27];
+	Variable *vars=new Variable[VARNUM];
 	Number value;
 
-	for(int c=0; c<27;c++)
+	for(int c=0; c<VARNUM;c++)
 		vars[c].NewItem(0.0);
 	Preferences *pref=new Preferences;
 	pref->angle=RAD;
 	pref->calcType=SCIENTIFIC;
 	pref->base=DEC;
+	pref->complex=false;
 	bool ask=true;
 	char*input=NULL;
 	bool script=false;
 	Script*s;
 	ThreadSync scriptData;
-	scriptData.vars=new Number*[27];
-	for(int c=0; c<27;c++)
+	scriptData.vars=new Number*[VARNUM];
+	for(int c=0; c<VARNUM;c++)
 	{
 		scriptData.vars[c]=(Number*)malloc(sizeof(Number));
 		scriptData.numlen[c]=1;
+		for(int c1=0; c1<VARDIMENSIONS; c1++)
+			scriptData.dimension[c][c1]=1;
 		scriptData.vars[c][0].type=NNONE;
+		scriptData.vars[c][0].cval=NULL;
 	}
-	for(int c=0; c<27; c++)
-		scriptData.numlen[c]=0;
+
 	
 #ifndef NO_LONG_DOUBLE
-	pref->outputLength=pref->precisision=LDBL_DIG;
+	pref->outputLength=pref->precision=LDBL_DIG;
 	int maxLength=LDBL_DIG;
 #else 
-	pref->outputLength=pref->precisision=DBL_DIG;
+	pref->outputLength=pref->precision=DBL_DIG;
 	int maxLength=DBL_DIG;
 #endif
 
@@ -127,9 +130,9 @@ int main(int argc,char**argv)
 					else 
 					{
 #ifndef NO_LONG_DOUBLE
-					scriptData.vars[varCount][0].cfval=Complex(vars[varCount][0],strtold(var,NULL));
+					scriptData.vars[varCount][0].fval=Complex(vars[varCount][0],strtold(var,NULL));
 #else 
-					scriptData.vars[varCount][0].cfval=Complex(vars[varCount][0],strtod(var,NULL));
+					scriptData.vars[varCount][0].fval=Complex(vars[varCount][0],strtod(var,NULL));
 #endif
 						varCount++;
 						real=true;
@@ -230,9 +233,9 @@ int main(int argc,char**argv)
 			if(argc>c)
 			{
 				int outLen=atoi(argv[c+1]);
-				if(outLen<2 || outLen>pref->precisision)
+				if(outLen<2 || outLen>pref->precision)
 				{
-					printf("Invalid argument for -o!\n\nThe argument must be a number between 2 and %i.\nFor example: -o 8\n\nPlease use man calc for further information\n",pref->precisision);
+					printf("Invalid argument for -o!\n\nThe argument must be a number between 2 and %i.\nFor example: -o 8\n\nPlease use man calc for further information\n",pref->precision);
 					delete pref;
 					delete[] vars;
 					return 0;
@@ -242,15 +245,19 @@ int main(int argc,char**argv)
 				c++;
 			}
 			else {
-				printf("Invalid argument for -o!\n\nThe argument must be a number between 2 and %i.\nFor example: -o 8\n\nPlease use man calc for further information\n",pref->precisision);
+				printf("Invalid argument for -o!\n\nThe argument must be a number between 2 and %i.\nFor example: -o 8\n\nPlease use man calc for further information\n",pref->precision);
 				delete pref;
 				delete[] vars;
 				return 0;
 			}
 		}
+		else if(strcmp(argv[c],"-c")==0 || strcmp(argv[c],"--complex")==0)
+		{
+			pref->complex=true;
+		}
 		else if(strcmp(argv[c],"-h")==0 || strcmp(argv[c],"--help")==0)
 		{
-			printf("Usage:\ncalc \"input\"\nFor example: calc \"2*(3+7/2)\"\n\nOptions:\n-a, --angle (deg, rad, gra)\n-m, --mode (base, std, script)\n-b, --base (dec, hex, bin, oct) only in base mode\n-o, --output (2-18)\n-h, --help\n-v, --version\n\nPlease use man calc for  further information\n");
+			printf("Usage:\ncalc \"input\"\nFor example: calc \"2*(3+7/2)\"\n\nOptions:\n-a, --angle (deg, rad, gra)\n-m, --mode (base, std, script)\n-c, --complex\n-b, --base (dec, hex, bin, oct) only in base mode\n-o, --output (2-18)\n-h, --help\n-v, --version\n\nPlease use man calc for  further information\n");
 			delete pref;
 			delete[] vars;
 			return 0;		
@@ -322,9 +329,9 @@ int main(int argc,char**argv)
 		}		
 		input[fileinfo.st_size]=(char)0;
 	}
-	char*res=checkString(input,pref);
-	char*printString=new char[50];
 
+	char*printString=new char[50];
+	char*res=NULL;
 		
 	scriptData.error=false;
 	
@@ -342,15 +349,48 @@ int main(int argc,char**argv)
 	scriptData.bcontinue=false;
 	
 	scriptData.exit=false;
-
-	searchScripts(input,pref,vars,&scriptData);
-	scriptData.countDifference=0;
-	initDebugging(input,&scriptData);
+	
+	if(script)
+	{
+		
+		searchScripts(input,pref,vars,&scriptData);
+		scriptData.countDifference=0;
+		initDebugging(input,&scriptData);
+		int pret=preferencesPreprocessor(input,pref);
+		res=checkString(input,pref);
+		
+		if(pret!=0)
+		{
+			switch(pret)
+			{
+				case PPINVALIDCOMMAND:
+					fprintf(stderr,"\nPreference Preprocessor: Invalid preprocessor command\n");
+					break;
+				case PPINVALIDARGUMENT:
+					fprintf(stderr,"\nPreference Preprocessor: Invalid preference argument\n");
+					break;
+				case PPINVALIDPREF:
+					fprintf(stderr,"\nPreference Preprocessor: Invalid preference\n");
+					break;	
+				case PPEMPTY:
+					fprintf(stderr,"\nPreference Preprocessor: Result script file empty\n");
+					break;
+				default:
+					fprintf(stderr,"\nPreference Preprocessor: Unknown error\n");
+					break;
+			}
+			delete[]input;
+			delete[]printString;
+			delete[]vars;
+			delete pref;
+			if(tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo)!=0)
+				perror("tcsetattr fehler");
+			return 0;
+		}
 
 
 		
-	if(script)
-	{
+
 		scriptData.calcMode=false;
 		fprintf(stderr,"\nProcessing main file ...\n");
 		if(res==NULL)
@@ -360,6 +400,8 @@ int main(int argc,char**argv)
 			delete[]printString;
 			delete[]vars;
 			delete pref;
+			if(tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo)!=0)
+				perror("tcsetattr fehler");
 			return 0;
 		}
 		s=new Script((Script*)NULL,res,pref,vars,&scriptData);
@@ -380,6 +422,7 @@ int main(int argc,char**argv)
 	}
 	else 
 	{
+		res=checkString(input,pref);
 		scriptData.calcMode=true;
 		s=new Script((Script*)NULL,res,pref,vars,&scriptData);
 		value=s->exec();
@@ -393,14 +436,14 @@ int main(int argc,char**argv)
 		{
 			case NFLOAT:
 			{
-				if(value.cfval.imag()==0.0)
+				if(value.fval.imag()==0.0)
 				{
-					printf("%.*Lg",pref->outputLength,real(value.cfval));
+					printf("%.*Lg",pref->outputLength,real(value.fval));
 				}
 				else {
-					if(value.cfval.imag()>0.0)
-						printf("%.*Lg+%.*Lgi",pref->outputLength,real(value.cfval),pref->outputLength,imag(value.cfval));
-					else printf("%.*Lg%.*Lgi",pref->outputLength,real(value.cfval),pref->outputLength,imag(value.cfval));
+					if(value.fval.imag()>0.0)
+						printf("%.*Lg+%.*Lgi",pref->outputLength,real(value.fval),pref->outputLength,imag(value.fval));
+					else printf("%.*Lg%.*Lgi",pref->outputLength,real(value.fval),pref->outputLength,imag(value.fval));
 				}
 	
 				break;
@@ -433,7 +476,7 @@ int main(int argc,char**argv)
 		switch(value.type)
 		{
 			case NFLOAT:
-				ival=(long long)value.cfval.real();
+				ival=(long long)value.fval.real();
 				break;
 			case NINT:
 				ival=value.ival;
@@ -490,17 +533,17 @@ int main(int argc,char**argv)
 	for(int c=0; c<27; c++)
 	{
 		if(scriptData.vars[c][0].type==NINT)
-			scriptData.vars[c][0].cfval=Complex((long double)scriptData.vars[c][0].ival,0.0);
+			scriptData.vars[c][0].fval=Complex((long double)scriptData.vars[c][0].ival,0.0);
 		else if(scriptData.vars[c][0].type==NBOOL)
-			scriptData.vars[c][0].cfval=Complex((long double)scriptData.vars[c][0].bval,0.0);
+			scriptData.vars[c][0].fval=Complex((long double)scriptData.vars[c][0].bval,0.0);
 		else if(scriptData.vars[c][0].type!=NFLOAT)
-			scriptData.vars[c][0].cfval=Complex(NAN,0.0);
+			scriptData.vars[c][0].fval=Complex(NAN,0.0);
 		
-		sprintf(varString,"%.*Lg",maxLength,scriptData.vars[c][0].cfval.real());
+		sprintf(varString,"%.*Lg",maxLength,scriptData.vars[c][0].fval.real());
 		newVarString=strins(newVarString,varString,strlen(newVarString));
 		newVarString=strins(newVarString,"\n",strlen(newVarString));
 		
-		sprintf(varString,"%.*Lg",maxLength,scriptData.vars[c][0].cfval.imag());
+		sprintf(varString,"%.*Lg",maxLength,scriptData.vars[c][0].fval.imag());
 		newVarString=strins(newVarString,varString,strlen(newVarString));
 		newVarString=strins(newVarString,"\n",strlen(newVarString));
 	}
@@ -673,8 +716,87 @@ void loadSubScripts(ThreadSync*scriptData,Preferences*pref,Variable*vars,Script*
 }
 
 
+int preferencesPreprocessor(char *code,Preferences*pref)
+{
+	int pos=0,startPos=0,endPos=0,len;
+	bool comment=false,quote=false;
+	char*configString=NULL;
+	
+	
+	while(pos<=(len=strlen(code)))
+	{
+		if(quote)
+		{
+			if(code[pos]=='\"')
+				quote=false;
+		}
+		else if(comment)
+		{
+			if(code[pos]=='\n')
+				comment=false;
+		}
+		else if(code[pos]=='/' && code[pos+1]=='/')
+			comment=true;
+		else if(code[pos]=='\"')
+			quote=true;
+		else if(code[pos]=='#')
+		{
+			startPos=pos;
+			int configStartPos=startPos;
+			endPos=pos;
+			
+			if(strncmp(&code[startPos],"#config",7)==0)
+				configStartPos+=7;
+			else return PPINVALIDCOMMAND;
+			
+			while(code[endPos]!='\n' && endPos<=len) endPos++;
+			
 
+			
+			while((code[configStartPos]==' ' || code[configStartPos]=='\t') && configStartPos<=len) configStartPos++;
+			
+			configString=(char*)realloc(configString,endPos-configStartPos+1);
+			strcopy(configString,&code[configStartPos],endPos-configStartPos);
+		
 
+			if(strncmp(configString,"complexon",9)==0)
+				pref->complex=true;
+			else if(strncmp(configString,"complexoff",10)==0)
+				pref->complex=false;
+			else if(strncmp(configString,"angledeg",8)==0)
+				pref->angle=DEG;
+			else if(strncmp(configString,"anglerad",8)==0)
+				pref->angle=RAD;
+			else if(strncmp(configString,"anglegra",8)==0)
+				pref->angle=GRA;
+			else if(strncmp(configString,"modebase",8)==0)
+				pref->calcType=BASE;
+			else if(strncmp(configString,"modescientific",14)==0)
+				pref->calcType=SCIENTIFIC;
+			else if(strncmp(configString,"clearmemory",11)==0)
+				;//not used in calc
+			else if(strncmp(configString,"outputlength",12)==0)
+			{				int num=atoi(configString+12);
+				if(num>=2 && num<=pref->precision)
+					pref->outputLength=num;
+				else return PPINVALIDARGUMENT;
+			}
+			else return PPINVALIDPREF;
+			
+			memmove(&code[startPos],&code[endPos],len-endPos+1);
+			
+			if(endPos==len)
+				break;
+			pos=startPos;
+		}
+		pos++;
+	}
+	
+	if(strlen(code)<=0)
+		return PPEMPTY;
+	
+	return 0;
+}
 
 
 
