@@ -1867,7 +1867,7 @@ char* Script::parse(char* line)
 		delete[]recString2;
 		return NULL;
 	}
-	if((pos1=bracketFind(line,"*")) != -1)
+	if((pos1=bracketFindRev(line,"*")) != -1)
 	{
 		operation=SFAIL;
 		char*recString1=new char[pos1+1];
@@ -1886,7 +1886,7 @@ char* Script::parse(char* line)
 		delete[]recString2;
 		return NULL;
 	}
-	else if((pos1=bracketFind(line,"/")) != -1)
+	else if((pos1=bracketFindRev(line,"/")) != -1)
 	{
 		operation=SFAIL;
 		char*recString1=new char[pos1+1];
