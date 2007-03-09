@@ -47,7 +47,7 @@ class CalcPreferences :public QWidget
 			outputLenLabel=new QLabel(CALCPREFH_STR5,this);
 			calcModeLabel=new QLabel(CALCPREFH_STR6,this);
 			baseLabel=new QLabel(CALCPREFH_STR7,this);
-			complexBox=new QCheckBox("Complex",this);
+			complexBox=new QCheckBox(CALCPREFH_STR13,this);
 			
 			setGeometry(0,0,400,290);
 			setFixedWidth(400);

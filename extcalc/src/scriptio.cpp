@@ -610,7 +610,7 @@ void ScriptIOWidget::mouseMoveEvent(QMouseEvent*me)
 	int oldEndLine=selectEndLine,oldEndRow=selectEndRow;
 	selectEndLine=(me->y()-50)/charHeight+scrollbarPos;
 	selectEndRow=(me->x()-20)/charWidth;
-	perror(QString::number(selectStartLine)+" "+QString::number(selectStartRow)+" "+QString::number(selectEndLine)+" "+QString::number(selectEndRow));
+//	perror(QString::number(selectStartLine)+" "+QString::number(selectStartRow)+" "+QString::number(selectEndLine)+" "+QString::number(selectEndRow));
 	if(oldEndRow!=selectEndRow || oldEndLine!=selectEndLine)
 		repaint(20,50,ioFieldWidth,ioFieldHeight,false);
 }

@@ -3239,7 +3239,7 @@ Number Script::exec()
 		}
 		if(eventReciver->eventCount>200)
 		{
-			perror("events: "+QString::number(eventReciver->eventCount));
+//			perror("events: "+QString::number(eventReciver->eventCount));
 			usleep(1000);
 		}
 		if(eventReciver->usleep)
