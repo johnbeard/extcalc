@@ -51,16 +51,18 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(applicationdir)" "$(DESTDIR)$(icondir)" \
+am__installdirs = "$(DESTDIR)$(applicationdir)" \
+	"$(DESTDIR)$(exampledir)" "$(DESTDIR)$(icondir)" \
 	"$(DESTDIR)$(licensedir)" "$(DESTDIR)$(menuicondir)" \
 	"$(DESTDIR)$(translationsdir)"
 applicationDATA_INSTALL = $(INSTALL_DATA)
+exampleDATA_INSTALL = $(INSTALL_DATA)
 iconDATA_INSTALL = $(INSTALL_DATA)
 licenseDATA_INSTALL = $(INSTALL_DATA)
 menuiconDATA_INSTALL = $(INSTALL_DATA)
 translationsDATA_INSTALL = $(INSTALL_DATA)
-DATA = $(application_DATA) $(icon_DATA) $(license_DATA) \
-	$(menuicon_DATA) $(translations_DATA)
+DATA = $(application_DATA) $(example_DATA) $(icon_DATA) \
+	$(license_DATA) $(menuicon_DATA) $(translations_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
@@ -86,6 +88,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+GREP = @GREP@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -109,7 +112,6 @@ STRIP = @STRIP@
 VERSION = @VERSION@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
-ac_ct_STRIP = @ac_ct_STRIP@
 ac_qtlib = @ac_qtlib@
 ac_thread = @ac_thread@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
@@ -124,32 +126,41 @@ am__untar = @am__untar@
 bindir = @bindir@
 build_alias = @build_alias@
 datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host_alias = @host_alias@
+htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
+psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 licensedir = $(datadir)/extcalc/data
 icondir = $(datadir)/extcalc/data
+exampledir = $(datadir)/extcalc/data
 menuicondir = /usr/share/icons
 translationsdir = $(datadir)/extcalc/data
 applicationdir = /usr/share/applications
 license_DATA = license.txt
-icon_DATA = icon22.png icon48.png modified.png circle.png free.png line.png open.png rect.png rubber.png text.png
+icon_DATA = icon22.png icon48.png modified.png circle.png free.png line.png open.png rect.png rubber.png text.png editcopy.png editcut.png editdelete.png editpaste.png exec.png fileexport.png fileimport.png filenew.png filesaveas.png save_all.png redo.png undo.png view_top_bottom.png
 menuicon_DATA = icon48.png
 translations_DATA = qt_de.qm
+example_DATA = crossproduct dotproduct matrixproduct matrix-vector snake
 application_DATA = extcalc.desktop
 all: all-am
 
@@ -200,6 +211,23 @@ uninstall-applicationDATA:
 	  f=$(am__strip_dir) \
 	  echo " rm -f '$(DESTDIR)$(applicationdir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(applicationdir)/$$f"; \
+	done
+install-exampleDATA: $(example_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(exampledir)" || $(mkdir_p) "$(DESTDIR)$(exampledir)"
+	@list='$(example_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(exampleDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(exampledir)/$$f'"; \
+	  $(exampleDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(exampledir)/$$f"; \
+	done
+
+uninstall-exampleDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(example_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(exampledir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(exampledir)/$$f"; \
 	done
 install-iconDATA: $(icon_DATA)
 	@$(NORMAL_INSTALL)
@@ -307,7 +335,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(applicationdir)" "$(DESTDIR)$(icondir)" "$(DESTDIR)$(licensedir)" "$(DESTDIR)$(menuicondir)" "$(DESTDIR)$(translationsdir)"; do \
+	for dir in "$(DESTDIR)$(applicationdir)" "$(DESTDIR)$(exampledir)" "$(DESTDIR)$(icondir)" "$(DESTDIR)$(licensedir)" "$(DESTDIR)$(menuicondir)" "$(DESTDIR)$(translationsdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -352,8 +380,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-applicationDATA install-iconDATA \
-	install-licenseDATA install-menuiconDATA \
+install-data-am: install-applicationDATA install-exampleDATA \
+	install-iconDATA install-licenseDATA install-menuiconDATA \
 	install-translationsDATA
 
 install-exec-am:
@@ -380,22 +408,23 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-applicationDATA uninstall-iconDATA \
-	uninstall-info-am uninstall-licenseDATA uninstall-menuiconDATA \
-	uninstall-translationsDATA
+uninstall-am: uninstall-applicationDATA uninstall-exampleDATA \
+	uninstall-iconDATA uninstall-info-am uninstall-licenseDATA \
+	uninstall-menuiconDATA uninstall-translationsDATA
 
 .PHONY: all all-am check check-am clean clean-generic distclean \
 	distclean-generic distdir dvi dvi-am html html-am info info-am \
 	install install-am install-applicationDATA install-data \
-	install-data-am install-exec install-exec-am install-iconDATA \
-	install-info install-info-am install-licenseDATA install-man \
-	install-menuiconDATA install-strip install-translationsDATA \
-	installcheck installcheck-am installdirs maintainer-clean \
+	install-data-am install-exampleDATA install-exec \
+	install-exec-am install-iconDATA install-info install-info-am \
+	install-licenseDATA install-man install-menuiconDATA \
+	install-strip install-translationsDATA installcheck \
+	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
 	pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-applicationDATA uninstall-iconDATA uninstall-info-am \
-	uninstall-licenseDATA uninstall-menuiconDATA \
-	uninstall-translationsDATA
+	uninstall-applicationDATA uninstall-exampleDATA \
+	uninstall-iconDATA uninstall-info-am uninstall-licenseDATA \
+	uninstall-menuiconDATA uninstall-translationsDATA
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
