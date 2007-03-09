@@ -2280,7 +2280,7 @@ char* Script::parse(char* line)
 		delete[]recString2;
 		return NULL;
 	}
-	if((pos1=bracketFind(line,"*")) != -1)
+	if((pos1=bracketFindRev(line,"*")) != -1)
 	{
 		operation=SFAIL;
 		char*recString1=new char[pos1+1];
@@ -2299,7 +2299,7 @@ char* Script::parse(char* line)
 		delete[]recString2;
 		return NULL;
 	}
-	else if((pos1=bracketFind(line,"/")) != -1)
+	else if((pos1=bracketFindRev(line,"/")) != -1)
 	{
 		operation=SFAIL;
 		char*recString1=new char[pos1+1];
@@ -3237,6 +3237,11 @@ Number Script::exec()
 			eventReciver->status=0;
 			pthread_exit(0);
 		}
+		if(eventReciver->eventCount>200)
+		{
+			perror("events: "+QString::number(eventReciver->eventCount));
+			usleep(1000);
+		}
 		if(eventReciver->usleep)
 		{
 			eventReciver->usleep=false;
@@ -3326,7 +3331,7 @@ Number Script::exec()
 			int effIndex=index+index2*eventReciver->dimension[var][0];
 //			perror("matrix effIndex: "+QString::number(effIndex));
 			
-			if(index>=eventReciver->numlen[var] && eventReciver->vars[var][index].type==NCHAR)
+			if(index<eventReciver->numlen[var] && eventReciver->vars[var][index].type==NCHAR)
 			{
 				value.type=NINT;
 				if(eventReciver->vars[var][index].cval!=NULL && (signed)strlen(eventReciver->vars[var][index].cval)>index2)
@@ -4467,9 +4472,17 @@ Number Script::exec()
 					break;
 			}
 
+#ifndef CONSOLE
 			QCustomEvent *ev=new QCustomEvent(SIGPRINT);
 			ev->setData(eventContent);
 			QApplication::postEvent(eventReciver->eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+#else 
+			fprintf(stderr,"%s",eventContent);
+			free(eventContent);
+#endif
 
 			if(nextObj==NULL)
 				return value;
@@ -5342,10 +5355,14 @@ Number Script::exec()
 		}
 		case SSTOP:
 		{
-	//		perror("stop");
+#ifndef CONSOLE
 			QCustomEvent*killEvent=new QCustomEvent(SIGFINISHED);
 			QApplication::postEvent(eventReciver->eventReciver,killEvent);
 			pthread_exit(0);
+#else 
+			exit(0);
+#endif
+
 			return value;
 		}
 		case SRAND:
@@ -5431,28 +5448,50 @@ Number Script::exec()
 			if(value.type==NINT)
 				coords[1]=value.ival;
 			else coords[1]=(int)value.fval.real();
+			
+			
+#ifndef CONSOLE
 			QCustomEvent *ev=new QCustomEvent(SIGSETTEXTPOS);
 			ev->setData(coords);
 			QApplication::postEvent(eventReciver->eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+#else 
+			fprintf(stderr,"\033[%i;%iH",coords[1]+1,coords[0]+1);
+#endif
+
 			if(nextObj==NULL)
 				return value;
 			else return nextObj->exec();
 		}
 		case SCLEARTEXT:
 		{
-
+#ifndef CONSOLE
 			QCustomEvent*clearEvent=new QCustomEvent(SIGCLEARTEXT);
 			QApplication::postEvent(eventReciver->eventReciver,clearEvent);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+#else 
+			fprintf(stderr,"\033[2J");
+			fprintf(stderr,"\033[1;1H");
+#endif
+
 			if(nextObj==NULL)
 				return value;
 			else return nextObj->exec();
 		}
 		case SGETKEY:
 		{
+#ifndef CONSOLE
 			eventReciver->data=NULL;
 			QCustomEvent*clearEvent=new QCustomEvent(SIGGETKEY);
 			qApp->lock();
 			QApplication::postEvent(eventReciver->eventReciver,clearEvent);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
 			QApplication::sendPostedEvents();
 			qApp->unlock();
 			while(eventReciver->data==NULL)
@@ -5468,16 +5507,23 @@ Number Script::exec()
 			value.cval[0]=*((char*)(eventReciver->data));
 			value.fval=Complex((long double)value.cval[0],0.0);
 			free(eventReciver->data);
+#else 
+			value.cval[0]=(char)getchar();
+#endif
 			if(nextObj==NULL)
 				return value;
 			else return nextObj->exec();
 		}
 		case SKEYSTATE:
 		{
+#ifndef CONSOLE
 			eventReciver->data=NULL;
 			QCustomEvent*clearEvent=new QCustomEvent(SIGKEYSTATE);
 			qApp->lock();
 			QApplication::postEvent(eventReciver->eventReciver,clearEvent);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
 			QApplication::sendPostedEvents();
 			qApp->unlock();
 			while(eventReciver->data==NULL)
@@ -5493,16 +5539,46 @@ Number Script::exec()
 			value.cval[0]=*((char*)(eventReciver->data));
 			value.fval=Complex((long double)value.cval[0],0.0);
 			free(eventReciver->data);
+#else 
+			struct termios terminfo;
+			int time,min;
+			tcgetattr(fileno(stdout),&terminfo);
+			time=terminfo.c_cc[VTIME];
+			min=terminfo.c_cc[VMIN];
+			terminfo.c_cc[VTIME]=0;
+			terminfo.c_cc[VMIN]=0;
+
+			if(tcsetattr(fileno(stdout),TCSANOW,&terminfo)!=0)
+				perror("tcsetattr fehler");
+			int key=getchar();
+			if(key<=0)
+			{
+				key=0;
+				clearerr(stdin);
+			}
+			value.cval[0]=(char)key;
+
+			value.fval=(long double)value.cval[0];
+			
+			terminfo.c_cc[VTIME]=time;
+			terminfo.c_cc[VTIME]=min;
+			if(tcsetattr(fileno(stdout),TCSANOW,&terminfo)!=0)
+				perror("tcsetattr fehler");
+#endif
 			if(nextObj==NULL)
 				return value;
 			else return nextObj->exec();
 		}
 		case SGETLINE:
 		{
+#ifndef CONSOLE
 			eventReciver->data=NULL;
 			QCustomEvent*clearEvent=new QCustomEvent(SIGGETLINE);
 			qApp->lock();
 			QApplication::postEvent(eventReciver->eventReciver,clearEvent);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
 			QApplication::sendPostedEvents();
 			qApp->unlock();
 			while(eventReciver->data==NULL)
@@ -5516,18 +5592,45 @@ Number Script::exec()
 				usleep(5000);
 			}
 			int dataLen=strlen((char*)eventReciver->data);
-			value.cval=(char*)malloc(dataLen+1);
+			value.cval=(char*)realloc(value.cval,dataLen+1);
 			memcpy(value.cval,eventReciver->data,dataLen+1);
 			free(eventReciver->data);
+#else
+			struct termios terminfo;
+			tcgetattr(fileno(stdout),&terminfo);
+			terminfo.c_lflag |=ECHO;
+			terminfo.c_lflag |=ICANON;
+			if(tcsetattr(fileno(stdout),TCSANOW,&terminfo)!=0)
+				perror("tcsetattr fehler");
+			
+			
+			char*input=(char*)malloc(1001);
+			fgets(input,1000,stdin);
+
+			terminfo.c_lflag &=~ICANON;
+			terminfo.c_lflag &=~ECHO;
+			if(tcsetattr(fileno(stdout),TCSANOW,&terminfo)!=0)
+				perror("tcsetattr fehler");
+
+			value.cval=(char*)realloc(value.cval,strlen(input));
+			memcpy(value.cval,input,strlen(input)-1);
+			value.cval[strlen(input)-1]=(char)0;
+
+			free(input);			
+			
+#endif
 			if(nextObj==NULL)
 				return value;
 			else return nextObj->exec();
 		}
 		case SINIT:
 		{
+
 			value=nextObj->exec();
+#ifndef CONSOLE
 			QCustomEvent*killEvent=new QCustomEvent(SIGFINISHED);
 			QApplication::postEvent(eventReciver->eventReciver,killEvent);
+#endif
 			return value;
 		}
 		case SFAIL:

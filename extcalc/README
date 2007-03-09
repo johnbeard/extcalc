@@ -21,8 +21,8 @@ mathmatical functions, draw graphs and work with functions. You can also calcula
 
 
 2. INSTALLATION
-- unpack archive (tar -xzf extcalc-0.6.5.tar.gz)
-- switch to directory (cd extcalc-0.6.5)
+- unpack archive (tar -xzf extcalc-0.7.0.tar.gz)
+- switch to directory (cd extcalc-0.7.0)
 - run configure (./configure)
 - compile (make)
 - become root (su)
@@ -57,7 +57,7 @@ doc/                         documentation
 	   
 	   
 4. VERSION
-Version 0.6.5
+Version 0.7.0
 
 This is a TESTING VERSION!
 Parts of the program may not work or may work wrong!
@@ -82,12 +82,13 @@ zooming and moving graphs
 draw into graphics window
 save screenshots of graphics window
 complex numbers
-
-to do:
-script commands for file usage and graphics
 matrix calculation
 vector calculation
 
+to do:
+script commands for file usage and graphics
+window for matrix- and vector-operations
+statistic functions
 
 
 
@@ -100,10 +101,10 @@ Parts of the program may not work or calculated results may be wrong!
 Tested Distributions:
 Suse Linux 8.2         ok
 Suse Linux 9.2         ok
-Suse Linux 10.1        ok
+Suse Linux 10.2        ok
 Debian 3.1 Sarge       update needed
 Debian Etch            ok
-Mandriva 2006          ok
+Mandriva 2007          ok
 Fedora Core 2          ok
 Fedora Core 3 (64Bit)  ok
 Fedora Core 4          update needed
@@ -111,7 +112,6 @@ Fedora Core 5          ok
 Ubuntu Linux 5.10      ok
 Ubuntu Linux 6.06      ok
 Mepis Linux 6.0        ok
-Slackware 10           ok
 
 Debian 3.1 Sarge
              The program builds without errors, but if you want to use 

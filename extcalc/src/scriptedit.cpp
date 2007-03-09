@@ -132,10 +132,8 @@ void ScriptWidget::updateFileList()
 	QString startPath=pref.scriptPath+"/"+pref.scriptDirName;
 	scriptDir=opendir(startPath);
 	if(scriptDir==NULL)
-	{
-		MessageBox(SCRIPTEDITC_STR3);
 		return;
-	}
+
 	while((dirItem=readdir(scriptDir))!=NULL)
 	{
 		if(lstat(startPath+QString("/")+dirItem->d_name,&itemStat)==0 && dirItem->d_name[0]!='.')

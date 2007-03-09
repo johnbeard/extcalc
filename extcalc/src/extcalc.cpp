@@ -206,9 +206,11 @@ int MainObject::readConfigFile()
 			fwrite("SHOWWIN4=true\n",14,1,configFile);
 			fwrite("SHOWWIN5=true\n",14,1,configFile);
 			fwrite("SHOWWIN6=false\n",15,1,configFile);
-			fwrite("SCRIPTROOT=\n",12,1,configFile);
-			fwrite("CODEPATH=\n",10,1,configFile);
-			fwrite("DATAPATH=\n",10,1,configFile);
+			fwrite("SCRIPTROOT=",11,1,configFile);
+			fwrite(getenv("HOME"),strlen(getenv("HOME")),1,configFile);
+			fwrite("/.extcalc/script\n",17,1,configFile);
+			fwrite("CODEPATH=code\n",14,1,configFile);
+			fwrite("DATAPATH=data\n",14,1,configFile);
 			
 			fwrite("F1=sinX\n",8,1,configFile);
 			for(int c=1; c<9; c++)
@@ -625,6 +627,7 @@ int MainObject::readConfigFile()
 			pref.complex=false;
 		else pref.complex=true;
 	}
+	else ret=1;
 	
 	QString memStr=getConfigString(&confFile,"CLEARSCRIPTMEM");
 	if(memStr.length()>0)

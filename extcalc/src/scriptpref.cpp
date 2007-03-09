@@ -21,8 +21,6 @@ void ScriptPreferences::saveSlot()
 		return;
 	}
 	
-	
-
 	if(mainPath.length()>0)
 	{
 		
@@ -107,9 +105,22 @@ void ScriptPreferences::saveSlot()
 	else {
 		MessageBox(SCRIPTPREFC_STR7);
 		return;
-	}	
+	}
+	QString openDir=INSTALLDIR+QString("/data/");
+	QString saveDir=pref.scriptPath+"/"+pref.scriptDirName+"/";
+	struct stat testStat;
+	if(lstat(saveDir+"crossproduct",&testStat)!=0)
+		system("cp -f "+openDir+"crossproduct "+saveDir+"crossproduct");
+	if(lstat(saveDir+"dotproduct",&testStat)!=0)
+		system("cp -f "+openDir+"dotproduct "+saveDir+ "dotproduct");
+	if(lstat(saveDir+"matrixproduct",&testStat)!=0)
+		system("cp -f "+openDir+"matrixproduct "+saveDir+"matrixproduct");
+	if(lstat(saveDir+"matrix-vector",&testStat)!=0)
+		system("cp -f "+openDir+"matrix-vector "+saveDir+"matrix-vector");
+	if(lstat(saveDir+"snake",&testStat)!=0)
+		system("cp -f "+openDir+"snake "+saveDir+"snake");
 	
-	
+	pref.clearScriptMemory=memoryBox->isChecked();
 	
 	emit prefChange(pref);
 	close();

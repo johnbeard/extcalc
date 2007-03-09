@@ -23,10 +23,10 @@ using namespace std;
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.6.8\n2006-03-06\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.7.0\n2006-03-09\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.6.8\n6.3.2006\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.7.0\n9.3.2006\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2006\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -381,6 +381,7 @@ struct ThreadSync
 	int type;
 	int sleepTime;
 	int status;
+	int eventCount;
 	bool usleep;
 	bool exit;
 	bool bbreak;

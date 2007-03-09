@@ -358,13 +358,21 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 						bufLen=0;
 					}
 					else inputBuffer=(char*)realloc(inputBuffer,bufLen+2);
+					
 					if(bufferCursor!=bufLen)
-							memcpy(&inputBuffer[bufferCursor+1],&inputBuffer[bufferCursor],bufLen-bufferCursor+1);
+						memmove(&inputBuffer[bufferCursor+1],&inputBuffer[bufferCursor],bufLen-bufferCursor+1);
 					else inputBuffer[bufferCursor+1]=(char)0;
 					inputBuffer[bufferCursor]=(char)e->ascii();
 					bufferCursor++;
 					if(inputMode==IMGETLINE)
+					{
 						insert(e->text());
+						int cx=cursorX,cy=cursorY;
+						insert(&inputBuffer[bufferCursor],false);
+						cursorX=cx;
+						cursorY=cy;
+						repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+					}
 				}
 				else if(inputMode==IMGETKEY)
 				{
@@ -395,6 +403,7 @@ void ScriptIOWidget::wheelEvent(QWheelEvent*ev)
 
 void ScriptIOWidget::customEvent(QCustomEvent*ev)
 {
+	threadData->eventCount--;
 	if(scriptExec && script!=NULL)
 	{
 //		perror("customEvent: "+QString::number(pthread_self()));
@@ -752,6 +761,7 @@ void ScriptIOWidget::runScript(QString*code)
 	threadData->usleep=false;
 	threadData->bbreak=false;
 	threadData->bcontinue=false;
+	threadData->eventCount=0;
 	
 	errorFlag=false;
 	
@@ -1191,6 +1201,30 @@ void ScriptIOWidget::contextMenuSlot(int item)
 		{
 			QClipboard*board=QApplication::clipboard();
 			insert(board->text(QClipboard::Clipboard));
+			int bufLen=strlen(inputBuffer);
+			if(inputMode==IMGETLINE)
+			{
+				const char*clipText=board->text(QClipboard::Clipboard).ascii();
+				bufLen=strlen(inputBuffer)+board->text(QClipboard::Clipboard).length();
+				inputBuffer=(char*)realloc(inputBuffer,bufLen+1);
+				
+				if(bufferCursor==(signed)strlen(inputBuffer))
+				{
+					memcpy(&inputBuffer[bufferCursor],clipText,strlen(clipText)+1);
+					bufferCursor=bufLen;
+				}
+				else {
+					int cx=cursorX,cy=cursorY;
+					insert(&inputBuffer[bufferCursor],false);
+					cursorX=cx;
+					cursorY=cy;
+					memmove(&inputBuffer[bufferCursor+strlen(clipText)],&inputBuffer[bufferCursor],strlen(inputBuffer)-bufferCursor+1);
+					memcpy(&inputBuffer[bufferCursor],clipText,strlen(clipText));
+					bufferCursor+=strlen(clipText);
+					repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+				}
+			}
+				
 			break;
 		}
 		case EDITCUT:

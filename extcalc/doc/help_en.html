@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - Scientific Calculator </h1>
-  Version 0.6.5
+  Version 0.7.0
   <br>
   <br>
   <h3>Contents</h3>
@@ -25,15 +25,16 @@
   <a href="#scriptcom"><h5>3.4.1 Introduction</h5></a>
   <a href="#scriptedit"><h5>3.4.2 Script Editor</h5></a>
   <a href="#scriptsyntax"><h5>3.4.3 Scripting Language</h5></a>
-  <a href="#pref"><h4>3.5 Preferences</h4></a>
+  <a href="#matrixvector"><h4>3.5 Vector/Matrix Arithmetics</h4></a>
+  <a href="#pref"><h4>3.6 Preferences</h4></a>
   <a href="#else"><h3>4. Other</h3></a>
   <br>
   <br>
   <br>
   <a name="introduction"><h2>1. Introduction</h2></a>
   Extcalc is a scientific graphic calculator for Linux. Extcalc is able to process difficult
-  mathematical functions, to draw graph and to work with them. 
-  This is the documentation for version 0.6.5. 
+  mathematical functions, to draw graph and to work with them. It includes a C-like script language.<br>
+  This is the documentation for version 0.7.0. 
   <br>
   <br>
   <br>
@@ -41,8 +42,8 @@
   This description is only for the installation of the source code package (.tar.gz). If you install a binary package, you have to use the
   packet manager of your distribution.<br><br>
   <UL>
-  <LI> extract packet (tar -xzf extcalc-0.6.5.tar.gz)<br>
-  <LI> switch to directory (cd extcalc-0.6.5)<br>
+  <LI> extract packet (tar -xzf extcalc-0.7.0.tar.gz)<br>
+  <LI> switch to directory (cd extcalc-0.7.0)<br>
   <LI> configure (./configure)<br>
   <LI> compile (make)<br>
   <LI> become root (su)<br>
@@ -201,7 +202,8 @@ real, imag, abs, arg, conj<br>
 &lt;&lt; &gt;&gt;<br>
 x &amp; |<br>
 ^<br>
-root
+root<br>
+sprod
 </TD>
 
 <TR><TD>Script commands</TD>
@@ -246,6 +248,16 @@ A[][]<br>
   The variables from A to Z can be used to store results.<br>
   It is not possible to use non-decimal numbers in this mode and some of the logic functions are disabled.
   If you want to use logic functions, choose the base mode and not the normal mode.
+  <h4>Complex Numbers</h4>
+  By default, Extcalc uses real numbers for calculation. You can switch complex numbers on by enabling them in the 
+  cacluator preferences dialog or by choosing it at the calculator menu. Complex numbers can be written by using the i.
+  The following operations can use complex numbers:<br>
+  +  -  *  /  ^<br>
+  root  sqrt  curt<br>
+  sin  cos  tan<br>
+  sinh  cosh  tanh<br>
+  lg  ln<br>
+  abs  arg  conj  real imag<br>
   <br>
   <br> 
   <a name="calcbase"><h3>3.1.2 Base Mode</h3></a>
@@ -580,11 +592,13 @@ Rubber: If you want to erase a part of the drawn things, you can use this tool. 
   <br><br>
   Extcalc contains a script interpreter for running small scripts. You can edit and run this scripts directly with Extcalc. <br><br>
   <a name="scriptcom"><h3>3.4.1 Introduction</h3></a>
-The syntax for Extcalc scripts is similar to C-language syntax, but the normal calculator commands and operations can also be used in this scripts.
-You can't use script command in the normal calculator.
-The scripts programs run in a separate console, and you may the other extcalc functions while running a script.
-Scripts can be managed, edited and started from the integrated script editor.<br>
-In this version 0.6.5 are not all planned features included.<br><br>
+  The syntax for Extcalc scripts is similar to C-language syntax, but the normal calculator commands and operations can also be used in
+  this scripts.
+  You can't use all script command in the normal calculator. Loops and the command to run another script can only be used in script,
+  not in the calculator.
+  The scripts programs run in a separate console, and you may use the other extcalc functions while running a script.
+  Scripts can be managed, edited and started from the integrated script editor.<br>
+  In this version 0.7.0 are not all planned features included.<br><br>
 
   <a name="scriptedit"><h3>3.4.2 The Script-Editor</h3></a>
   <img src="scriptedit.jpg"></img>
@@ -592,7 +606,9 @@ In this version 0.6.5 are not all planned features included.<br><br>
   The integrated script editor has all important editor functions and you can use it to write, modify and run your scripts.<br><br>
   Before you can use this editor, you have to create the script directories. Normally, this is done at the first start of extcalc, but if you
   haven't done it there, you may need use the script preferences dialog from the preferences menu to create them.<br>
-  There you have to create a script root directory and set the names for a code subdirectory and a data subdirectory.<br><br>
+  There you have to create a script root directory and set the names for a code subdirectory and a data subdirectory.<br>
+  This new script code directory will contain some example scripts. Other example scripts can be found at the Extcalc homepage
+  <a href="http://extcalc-linux.sourceforge.net">extcalc-linux.sourceforge.net</a>.
   <h5>Create a New Script:</h5>
   To create a new script you just need to write into an empty editor window and press the "Save"-Button, or you press the right mouse button
   in the file list and choose "Create New Script".
@@ -604,6 +620,11 @@ In this version 0.6.5 are not all planned features included.<br><br>
   If you want to save any other modified code, you can choose the code with the right mouse button at the file list and choose "Save" so save it.<br>
   If you want to save all modified codes, press the right mouse button at the file list and choose "save all".<br>
   Before closing Extcalc, you were asked if you want to save all your codes, if you have not saved any changes.<br>
+  <h5>Import and Export Scripts</h5>
+  With the import function, you can copy a script from outside into the script code directory. With the export fuction, you
+  can copy it from the code directory to outside.<br>
+  You can import and export scripts by pressing the import or export button of the script editor, or by using the script menu.<br>
+  If you do this, you can see the import/export dialog where you can choose source and destination for copying.<br>
   <h5>Managing files:</h5>
 <DL>
 <DT>Subdirectories:
@@ -625,15 +646,15 @@ If is running while you change something, you can press the right mouse button a
   You can always stop a running script by pressing the "Kill"-Button at the script console window.<br>
   If the script does not stop before the timeout, an error message is displayed. You have to press the kill-button again to stop the script correctly.<br>
   <a name="scriptsyntax"><h3>3.4.3 Scripting Language</h3></a>
-  In version 0.6.5 of Extcalc, not all features are included. You can read more about the planned features 
+  In version 0.7.0 of Extcalc, not all features are included. You can read more about the planned features 
   at <a href="#else">Chapter 4</a>.<br>
   <h5>Problems:</h5>
-  This is a list of the current problems of the 0.6.5 version of the Extcalc Script Interpreter<br><br>
+  This is a list of the current problems of the 0.7.0 version of the Extcalc Script Interpreter<br><br>
   <OL>
   <LI>Speed<br>
   The extcalc scripts were ran by an Interpreter and so they run not as fast as compiled programms, but it will be optimized in later versions.<br><br>
   <LI>Variables:<br>
-  You can use the uppercase letters from A to Z as variables. Every variable can also be used as an Array.<br><br>
+  You can use the uppercase letters from A to Z as variables. Every variable can also be used as an array or a matrix.<br><br>
   <LI>Features<br>
   Most of the planned features is available, now, but this is only a calculator script interpreter that can be used to solve simple mathematical problems.
   It will never have the flexibility and power of a complex programming language like C.
@@ -665,9 +686,11 @@ If is running while you change something, you can press the right mouse button a
   If this script interpreter is unable to process your code, it prints out an error message and the line, where the error was found.
   But the interpreter doesn't have the original code format, so it can't exactly say, where to find the error in the code. The line number, which 
   the interpreter shows is calculated by searching for the semicolons in the code, so it may be that the shown error is above the shown line number.
-  Sometimes, the script interpreter may not find an error in the script. This is mainly, when the error is in an mathematical operation.<br>
+  Sometimes, the script interpreter may process a script without finding the errors inside. This happens, when the syntax is ok,
+  but the script contains logic errors.<br>
   If the console shows the error message "Preprocessor Error", it was unable to run the script interpreter. This may be because the file is empty, or because
   the file does not contain anything translatable, or if the code contains a backlash outside of a string.<br>
+  If the console shows the message "Preference Preprocessor: Error text", there is an error in the #config commands.
   <h5>Variables:</h5>
   You can use the uppercase letters from A to Z as variables.<br>
   This variables may be initialized directly in the code, or.<br>
@@ -678,7 +701,7 @@ If is running while you change something, you can press the right mouse button a
 <DT>float:
 <DD>floating point number of type long double (size depends on the system, normally 10 Bytes)
 <DT>int:
-<DD>integer number of type long long (8 Byte)
+<DD>integer number of type long long int (8 Byte)
 <DT>bool:
 <DD>boolean value of type bool (can be true or false)
 <DT>string:
@@ -693,15 +716,89 @@ If is running while you change something, you can press the right mouse button a
   Every variable type contains a correct floating point value for compatibility with the normal calculator algorithms.<br>
   <br>
   <h5>Arrays:</h5>
-Every variable can also be used as an Array.
-The normal value of the Array-Variable is stored at index 0.
-If you use a Variable without Index-Operator, you also use the element with index 0.
-A=5 is the same as A[0]=5.
-N-dimensional arrays were not supported in this version.
-Only if you want to access a single character from a string you have to use two index-operators [ ][ ].
-For example, A[3][1] is the second character of the fourth String.
-You always have to use two indexes, when you need access to the characters of a string, even if the String is not part of an Array.
-Then you have to set the first index to 0, for example A[0][4].<br>
+  Every variable can also be used as an Array.
+  The normal value of the Array-Variable is stored at index 0.
+  If you use a Variable without Index-Operator, you use the element with index 0.
+  A=5 is the same as A[0]=5.
+  N-dimensional arrays were not supported in this version.
+  An array can only have one or two dimensions.
+  If you want to use a two dimensional array, you have to write two index operators.
+  For example A[3][2]=5;
+  <h5>Matrices and Vectors:</h5>
+  If you have filled a one-dimensional array, you can use this variable as a vector.
+  If you want to use a variable as a vector, you have to write for example A[] for the
+  variable A. If there is nothing inside the brackets, the variable is used as vector.
+  For every vector operation, including print a vector out, all vector elements were
+  converted to float.<br>
+  Extcalc supports several vector operations:
+  <TABLE BORDER>
+  <TR><TH>Operation</TH><TH>Description</TH>
+  <TR>
+  <TD>vector+constant, constant+vector, vector-constant, constant-vector</TD>
+  <TD>Add a constant value to every element of the vector
+  </TD>
+  <TR>
+  <TD>vector+vector, vector-vector</TD>
+  <TD>Vector sum. Elements with the same index were added
+  </TD>
+  <TR>
+  <TD>dotproduct: vector°vector</TD>
+  <TD>Multiply two vectors with a scalar as result
+  </TD>
+  <TR>
+  <TD>crossproduct: vector*vector</TD>
+  <TD>Multiply two vectors with a vector as result. Both vectors must have three elements.
+  </TD>
+  <TR>
+  <TD>vector*constant, constant*vector</TD>
+  <TD>Every element of the vector is multiplied with the constant.
+  </TD>
+  </TABLE>
+   <br>
+  For matrix operations, you have to fill a two-dimensional array.<br>
+  You say that you want to use an array as a matrix, when you type for example A[][].
+  As at vector operations, all elements were converted to float.<br>
+  If you access a single element of a vector for example by typing A[2][3], the first index
+  [2], is the line (2 means the third line), and the second index [3] is the row (3 means the fourth row).<br>
+  Here is a list of supported matrix operations:
+  <TABLE BORDER>
+  <TR><TH>Operation</TH><TH>Description</TH>
+  <TR>
+  <TD>matrix+constant, constant+matrix, matrix-constant, constant-matrix</TD>
+  <TD>Add a constant value to every element of the matrix
+  </TD>
+  <TR>
+  <TD>matrix+matrix, matrix-matrix</TD>
+  <TD>Matrix sum. Elements with the same indices were added
+  </TD>
+  <TR>
+  <TD>matrixproduct: matrix*matrix</TD>
+  <TD>Multiply two matrices. The result is also a matrix.
+  </TD>
+  <TR>
+  <TD>vector*matrix</TD>
+  <TD>Multiply a vector with a matrix. The result is a matrix.
+  </TD>
+    <TR>
+  <TD>matrix*vector</TD>
+  <TD>Multiply a matrix with a vector. The result is a vector.
+  </TD>
+  <TR>
+  <TD>matrix*constant, constant*matrix</TD>
+  <TD>Every element of the matrix is multiplied with the constant.
+  </TD>
+  </TABLE>
+  <br>
+  General hints:<br>
+  <UL>
+  <LI>Matrices and vectors can be copied from one variable to another. You write for example
+  B=A[][] to copy the complete matrix A into B.</LI>
+  <LI>If you want to copy a single element of a Matrix A into B, write for example B=A[3][2].</LI>
+  <LI>When you write B=A, and A is a matrix, ONLY the first element of the matrix is copied. This is equal to B=A[0][0].</LI>
+  <LI>If you want to use the result Vector or result Matrix from the last operation, you can writ ans[] or ans[][].</LI>
+  <LI>The only way to make a matrix or a vector smaller, is to copy another, smaller vector or matrix into it.</LI>
+  <LI>When you want to erase all matrix an vector data, you must press th AC button.</LI>
+  </UL>
   <br><br>
   <h5>Commands:</h5>
   The following basic commands can be used for programming:<br><br>
@@ -886,13 +983,14 @@ Then you have to set the first index to 0, for example A[0][4].<br>
   <LI>Arrays<br>
   Syntax: <br>
   <pre>
-  Variable[index];                               //normal array
-  Variable[string-index][character-index];         //character in a string
+  Variable[index];                               //1-dimesional array
+  Variable[1. index][2. index];                 //2-dimensional array
   </pre>
   Every variable can also be an array, if you use the index-operator on it<br>
   Without index-operator, you always access the element with index 0.<br>
-  If you want to access a single character of a string, use the syntax as described above.
-  You also have to use this syntax if the string isn't part of an array, then the string-index is 0.<br>
+  If you want to access a single character of a string, you use the same syntax.
+  If you write one index, and the variable contains only a string at index 0, you access a character inside the string.<br>
+  If you write two indices and the element at the first index is a character, you also access a character inside the string.<br>
   Example:<br>
   <pre>
   A="          ";
@@ -919,6 +1017,7 @@ Then you have to set the first index to 0, for example A[0][4].<br>
   = set (like in C)
   -&gt; set (like in Calculator)
   [] index operator
+  [][] index operator matrix
 
   All other operators can be used like in the calculator.
   </pre>
@@ -934,6 +1033,31 @@ Then you have to set the first index to 0, for example A[0][4].<br>
   print(D+1);    //prints 235.45
   </pre>
   </OL>
+  
+  <h5>Script Preferences</h5>
+  It is possible to set special preferences for a script. This is often needed to guarantee that the script works, no matter how
+  the preferences made by the user are set.<br>
+  This preferences don't change the user settings. They were only changed for the script, that is executed<br>
+  This preferences are set inside the script code with the command #config.<br>
+  The Syntax is:<pre>#config PREFERENCE</pre>
+  Here is a list of possible preferences:
+  <pre>
+#config complexon             //switch complex numbers on
+#config complexoff            //switch complex numbers off
+
+#config angledeg              //set angle type to degrees
+#config anglerad              //set angle type to radian
+#config anglegra              //set angle type to grade
+
+#config modebase              //set base mode
+#config modescientific        //set scientific mode (default)
+
+#config outputlengthXX        //set length of floating point output; XX must be a number between 2 and the max. output length
+                              //the number is written directly behind outputlength without space
+
+#config clearmemory           //always clear array memory before starting
+</pre>
+
 
   <h5>Example codes:</h5>
   Example 1:<br>
@@ -1077,8 +1201,17 @@ Then you have to set the first index to 0, for example A[0][4].<br>
   print(X);
   print("\n\n");
   </pre>
+  <a name="matrixvector"><h2>3.5 Matrix/Vector Arithmetics</h2></a>
+  In version 0.7.0 of Extcalc, there is still no seperate window for matrix and vecor operations.
+  But this version already includes full matrix and vector support within the script parser.<br>
+  To make the vector and matrix support usable in this version, it includes some script programs.<br>
+  This script programs can be started from the script editor. They can be used for some matrix and vector calculations<br>
+  <br>
+  To start them, you have to choose the script program which you want to start. Then press the run button to translate the script.
+  Extcalc will switch to the script console. There, you can press the run button to start the script. To stop the script at any time,
+  just press the kill button.<br><br>
 
-  <a name="pref"><h2>3.5 Preferences</h2></a>
+  <a name="pref"><h2>3.6 Preferences</h2></a>
   Preferences can be changed directly by using the menu item "Calculator" for calculator preferences
   and the item "Graphic" for the preferences of the graphics window or
   by the preferences dialogs. You find them at the "Preferences"
@@ -1158,12 +1291,13 @@ Then you have to set the first index to 0, for example A[0][4].<br>
   zooming and moving graphics<br>
   saving screen shots<br>
   drawing into graphics window<br>
-  complex numbers<br> 
+  complex numbers<br>
+  matrix calculation<br> 
+  vector calculation<br> 
 
   <h5>To-do-list</h5>
   scripting functions for graph drawing and file usage<br> 
-  matrix calculation<br> 
-  vector calculation<br> 
+  sperate window for matrix and vector operations<br>
   statistic functions<br>
  
          

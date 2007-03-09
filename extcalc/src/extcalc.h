@@ -146,6 +146,7 @@
 //	- result lines in polar cs were drawn wrong when angle type isn't rad				ok	//
 //	- array memory can't be deleted														ok	//
 //	- script load balancing doesn't work on fast (dual-core) CPUs							//
+//	- inserting text into a running script doesn't work									ok	//
 
 
 //////////////////////////used variables//////////////////////////
@@ -443,7 +444,7 @@ MainObject() :QTabWidget()
 	calcTypeMenu=new QPopupMenu;
 	calcTypeMenu->insertItem(EXTCALCH_MENU31,SCIENTIFIC);
 	calcTypeMenu->insertItem(EXTCALCH_MENU32,BASE);
-	calcTypeMenu->insertItem("Complex",COMPLEXMENU);
+	calcTypeMenu->insertItem(EXTCALCH_MENU67,COMPLEXMENU);
 	calcTypeMenu->insertItem(EXTCALCH_MENU33,baseMenu,BASEMENU);
 	QObject::connect(calcTypeMenu,SIGNAL(activated(int)),this,SLOT(calcTypeMenuSlot(int)));
 	baseMenu->setItemChecked(pref.base,true);
@@ -589,23 +590,45 @@ MainObject() :QTabWidget()
 	QObject::connect(scripting,SIGNAL(controlScriptMenu(int)),this,SLOT(scriptMenuSlot(int)));
 	QObject::connect(this,SIGNAL(runScript(QString*)),scriptIO,SLOT(runScript(QString*)));
 	
-	if(readConfigFile() == -1)
+	pref.scriptPath=getenv("HOME")+QString("/.extcalc/script");
+	pref.scriptDirName="code";
+	pref.dataDirName="data";
+	
+	
+	int ret=readConfigFile();
+	if(ret==-1 || ret==1)
 	{
-		//first start
-		if(YesNoBox(EXTCALCH_STR10) == 0)
+		if(ret == -1)
 		{
-			pref.scriptPath=getenv("HOME")+QString("/.extcalc/script");
-			pref.scriptDirName="code";
-			pref.dataDirName="data";
+			//first start
+			ret=YesNoBox("Welcome to Extcalc!\n\nThis seems to be the first time, you start this program.\nFor this reason, Extcalc must create directories to store scripts and data.\nSay yes, if you want to change the script configuration!");
+		}
+		else if(ret==1)
+		{
+			ret=YesNoBox("Welcome To Extcalc 0.7.0!\n\nThis seems to be the first time, you start the new version of Extcalc.\nThe new version ships some script programs for matrix and vector arithmetics.\nThe script directories must exist to use them.\nSay yes, if you want to change the script configuration!");
+		}
+	
+		if(ret==0)
+		{
 			if(scriptPref != NULL)
 				delete scriptPref;
 			scriptPref=new ScriptPreferences(pref,(QWidget*)this);
 			QObject::connect(scriptPref,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-
+	
 			scriptPref->show();
 		}
-		else MessageBox(EXTCALCH_STR11);
+		else 
+		{
+			if(scriptPref != NULL)
+				delete scriptPref;
+			scriptPref=new ScriptPreferences(pref,(QWidget*)this);
+			QObject::connect(scriptPref,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+			scriptPref->saveSlot();
+			MessageBox("Default directories created.");
+		}
 	}
+	
+
 
 }
 

@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - wissenschaftlicher Taschenrechner </h1>
-  Version 0.6.5
+  Version 0.7.0
   <br>
   <br>
   <h3>Inhalt</h3>
@@ -25,36 +25,38 @@
   <a href="#scriptcom"><h5>3.4.1 Allgemeines</h5></a>
   <a href="#scriptedit"><h5>3.4.2 Der Script-Editor</h5></a>
   <a href="#scriptsyntax"><h5>3.4.3 Die Script-Sprache</h5></a>
-  <a href="#pref"><h4>3.5 Einstellungen</h4></a>
+  <a href="#matrixvector"><h4>3.5 Matrix-, Vektorrechnung</h4></a>  
+  <a href="#pref"><h4>3.6 Einstellungen</h4></a>
   <a href="#else"><h3>4. Sonstiges</h3></a>
   <br>
   <br>
   <br>
   <a name="introduction"><h2>1. Einleitung</h2></a>
-  Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner.
-  Diese Hilfe wurde für die Version 0.6.5 von Extcalc geschrieben.
+  Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner. Extcalc kann zum berechen komplizierter mathematischer Ausdr&uuml;cke,
+  zum Zeichnen von Funktionsgraphen, und zum Auswerten von Funktionen benutzt werden. Es enth&auml;lt auch eine C-&auml;hnliche Script-Sprache.<br>
+  Diese Hilfe wurde f&uuml;r die Version 0.7.0 von Extcalc geschrieben.
   <br>
   <br>
   <br>
   <a name="install"><h2>2. Installation</h2></a>
-  Dies ist die Beschreibung zur Installation von Extcalc aus dem Quellcode-Paket. Vorkompilierte Pakete müssen mit dem Paketmanager der jeweiligen
+  Dies ist die Beschreibung zur Installation von Extcalc aus dem Quellcode-Paket. Vorkompilierte Pakete m&uuml;ssen mit dem Paketmanager der jeweiligen
   Distribution installiert werden.<br><br>
-  - Paket auspacken (tar -xzf extcalc-0.6.5.tar.gz)<br>
-  - ins Verzeichnis wechseln (cd extcalc-0.6.5)<br>
+  - Paket auspacken (tar -xzf extcalc-0.7.0.tar.gz)<br>
+  - ins Verzeichnis wechseln (cd extcalc-0.7.0)<br>
   - konfigurieren (./configure --enable-language_de)<br>
   - kompilieren (make)<br>
   - root-rechte erlangen (su)<br>
   - installieren (make install)<br> 
-  <h5>Sprachunterstützung:</h5>
+  <h5>Sprachunterst&uuml;tzung:</h5>
   Um das Programm in Englisch zu installieren muss zur konfiguration nur "./configure" aufgerufen werden.
-  Für die deutsche Version muss "./configure --enable-language_de" aufgerufen werden.<br>
+  F&uuml;r die deutsche Version muss "./configure --enable-language_de" aufgerufen werden.<br>
    
   <a name="use"><h2>3. Bedienung</h2></a>
-  Da dies noch eine Enticklungsversion von Extcalc ist, kann sich die Bedienoberfläche noch
-  stark ändern. Diese Informationen beziehen sich auf die Version 0.6.5. Mit dem Reiter unter der
-  Menüleiste kann man zwischen den einzelnen Komponenten umschalten.Dies sind  ein Taschenrechner, ein Grafik-Fenster
+  Da dies noch eine Enticklungsversion von Extcalc ist, kann sich die Bedienoberfl&auml;che noch
+  stark &auml;ndern. Diese Informationen beziehen sich auf die Version 0.7.0. Mit dem Reiter unter der
+  Men&uuml;leiste kann man zwischen den einzelnen Komponenten umschalten.Dies sind  ein Taschenrechner, ein Grafik-Fenster
   zum Zeichnen und analysieren verschiedner Typen von Graphen, ein Tabellen-Fenster, ein Script-Editor und eine Script-Konsole zum
-  Ausführen von Scripten.
+  Ausf&uuml;hren von Scripten.
   <br>
   <br>
   <a name="calc"><h2>3.1 Taschenrechner</h2></a>
@@ -63,119 +65,119 @@
   <br>
   Das Taschenrechner-Fenster<br>
   <h4>Bedienelemente</h4>
-  Im Bild oben ist das Ein- und Ausgabefenster des Taschenrechners zu sehen. Hier können Rechnungen eingegeben werden,
+  Im Bild oben ist das Ein- und Ausgabefenster des Taschenrechners zu sehen. Hier k&ouml;nnen Rechnungen eingegeben werden,
   und auch die Ergebnisse werden dort angezeigt.<br>
-  Im Bild unten befinden sich zwei Tastenblöcke zur Eingabe von Rechnungen. Links der Zahlenblock mit einigen
+  Im Bild unten befinden sich zwei Tastenbl&ouml;cke zur Eingabe von Rechnungen. Links der Zahlenblock mit einigen
   Steuertasten, rechts der Funktionsblock mit allen Rechenfunktionen.<br>
-  In der Mitte rechts befinden sich noch zusätzliche Bedienelemente: Der Vollbild-Knopf, zum maximieren des Ein-  
+  In der Mitte rechts befinden sich noch zus&auml;tzliche Bedienelemente: Der Vollbild-Knopf, zum maximieren des Ein-  
   und Ausgabe Fensters, der Status-Umschaltknopf (siehe <a href="#calcstd">3.1.1</a> und <a href="#calcbase">3.1.2</a>)
-  und Schnelleinstellungmenü, das entweder, wie im Bild oben, das verwendete Winkelmaß, oder die Zahlenbasis anzeigt.
+  und Schnelleinstellungmen&uuml;, das entweder, wie im Bild oben, das verwendete Winkelma&szlig;, oder die Zahlenbasis anzeigt.
   <h4>Eingabe einer Rechnung</h4>
-  Es gibt zwei Möglichkeiten, eine Rechnung in Extcalc einzugeben:<br>
+  Es gibt zwei M&ouml;glichkeiten, eine Rechnung in Extcalc einzugeben:<br>
   <h5>1. Eingabe per Tastatur</h5>
   Dazu muss man nur in den Eingabebereich des Fensters klicken und dort die Rechnung eingeben
-  Zum Berechnen des Werts einfach die Eingabetaste drücken. Wird die Eingabetaste ohne weitere
-  Eingaben noch einmal gedrückt, wird die Berechnung wiederholt. Wenn man weiterschreibt, kann 
-  man automatisch in einer neuen Zeile eine neue Rechnung eingeben. Es ist auch möglich, alte
-  Berechnungen zu verändern und erneut berechnen zu lassen. Dazu muss man nur mit der Maus die
-  entsprechende Zeile auswählen und abändern. Der Text wird automatisch in die unterste Zeile 
+  Zum Berechnen des Werts einfach die Eingabetaste dr&uuml;cken. Wird die Eingabetaste ohne weitere
+  Eingaben noch einmal gedr&uuml;ckt, wird die Berechnung wiederholt. Wenn man weiterschreibt, kann 
+  man automatisch in einer neuen Zeile eine neue Rechnung eingeben. Es ist auch m&ouml;glich, alte
+  Berechnungen zu ver&auml;ndern und erneut berechnen zu lassen. Dazu muss man nur mit der Maus die
+  entsprechende Zeile ausw&auml;hlen und ab&auml;ndern. Der Text wird automatisch in die unterste Zeile 
   kopiert.<br>
-  Da es nicht möglich ist, mit der Tastatur alle Rechenzeichen einzugeben, ist es manchmal
-  nötig, die integrierten Tasten zu benützen.<br>
-  <h5>2. Eingabe über die Rechner-Tasten</h5>
-  Mit der integrierten Tastatur können alle unterstützten Rechenfunktionen eingegeben werden.
-  Um die Eingabe zu starten, ist es ebenfalls nötig, dass man mit der Maus in das Eingabefenster
-  klickt. Anschließend kann man mit den jeweiligen Tasten die Rechnung eingeben. Zum Ausführen 
-  der Berechnung drückt man die "="-Taste. Es ist auch möglich, vorher eingegebene Rechnungen zu
-  verändern und erneut berechnen zu lassen. Dazu muss man ebenfalls mit der Maus in die
-  entsprechende Zeile klicken und kann anschließend die Rechnung beliebeg verändern.<br>
+  Da es nicht m&ouml;glich ist, mit der Tastatur alle Rechenzeichen einzugeben, ist es manchmal
+  n&ouml;tig, die integrierten Tasten zu ben&uuml;tzen.<br>
+  <h5>2. Eingabe &uuml;ber die Rechner-Tasten</h5>
+  Mit der integrierten Tastatur k&ouml;nnen alle unterst&uuml;tzten Rechenfunktionen eingegeben werden.
+  Um die Eingabe zu starten, ist es ebenfalls n&ouml;tig, dass man mit der Maus in das Eingabefenster
+  klickt. Anschlie&szlig;end kann man mit den jeweiligen Tasten die Rechnung eingeben. Zum Ausf&uuml;hren 
+  der Berechnung dr&uuml;ckt man die "="-Taste. Es ist auch m&ouml;glich, vorher eingegebene Rechnungen zu
+  ver&auml;ndern und erneut berechnen zu lassen. Dazu muss man ebenfalls mit der Maus in die
+  entsprechende Zeile klicken und kann anschlie&szlig;end die Rechnung beliebeg ver&auml;ndern.<br>
   <br>
   <h5>Besondere Tasten:</h5>
   DEL<br>
-  Diese Taste entspricht der Rücktaste auf der Tastatur.<br>
+  Diese Taste entspricht der R&uuml;cktaste auf der Tastatur.<br>
   AC<br>
-  Diese Taste löscht alle bisherigen Eingaben und Ergebnisse.<br>
+  Diese Taste l&ouml;scht alle bisherigen Eingaben und Ergebnisse.<br>
   Shift<br>
-  Durch das drücken der Shift-Taste, kann man die Alternative Belegung der Tasten benützen.
-  Sobald man die Shift-Taste drückt, werden auf den anderen Tasten die entsprechenden 
+  Durch das dr&uuml;cken der Shift-Taste, kann man die Alternative Belegung der Tasten ben&uuml;tzen.
+  Sobald man die Shift-Taste dr&uuml;ckt, werden auf den anderen Tasten die entsprechenden 
   Alternativ-Funktionen angezeigt.<br>
   Alpha<br>
-  Diese Taste schaltet zur Tastaturbelegung für die Benutzung von Variablen um.<br>
+  Diese Taste schaltet zur Tastaturbelegung f&uuml;r die Benutzung von Variablen um.<br>
   hyp<br>
   Mit dieser Taste kann man den Sinus, Kosinus, Tangens hyperbolicus eingeben.<br>
   ANS<br>
-  Diese Taste dient zum Abfragen des Antwortspeichers. Durch drücken der Taste kann man mit 
+  Diese Taste dient zum Abfragen des Antwortspeichers. Durch dr&uuml;cken der Taste kann man mit 
   dem letzten Ergebnis weiterrechnen.<br>
   <br>
   <h5>Richtige Eingabe einer Rechenfunktion</h5>
   Vorrang bestimmter Funktionen:<br>
-  Eine Rechnung wird grundsätzlich unter Berücksichtigung folgender Regeln von links nach rechts verarbeitet.<br>
-  Prioritätsliste:<br>
+  Eine Rechnung wird grunds&auml;tzlich unter Ber&uuml;cksichtigung folgender Regeln von links nach rechts verarbeitet.<br>
+  Priorit&auml;tsliste:<br>
   1. Klammern<br> 
   2. Sonderoperationen: Integral, Differential<br>
-  3. Binäre Operatoren 1: Wurzel, hoch, ...<br> 
-  3. Unäre Operatoren: sin, cos, log, ...<br>
+  3. Bin&auml;re Operatoren 1: Wurzel, hoch, ...<br> 
+  3. Un&auml;re Operatoren: sin, cos, log, ...<br>
   4. Bitoperationen: &amp;, |, ...<br>
-  5. Binäre Operatoren 2: *, /<br>
-  6. Binäre Operatoren 3: +, -<br>
+  5. Bin&auml;re Operatoren 2: *, /<br>
+  6. Bin&auml;re Operatoren 3: +, -<br>
   7. Vergleichsoperatoren: ==, !=, ...<br>
   8. Zuweisungen: -&gt;, =<br>
   9. Logikoperatoren: &amp;&amp;, ||, ...<br>
-  Die Eingabe einer Wurzel ist nur über die Wurzel-Taste des Taschenrechners möglich. Es 
-  gibt dazu eine Quadratwurzeltaste, eine Kubikwurzeltaste und eine Taste für beliebige
+  Die Eingabe einer Wurzel ist nur &uuml;ber die Wurzel-Taste des Taschenrechners m&ouml;glich. Es 
+  gibt dazu eine Quadratwurzeltaste, eine Kubikwurzeltaste und eine Taste f&uuml;r beliebige
    Wurzeln.<br>
   Quadratwurzel:<br>
   <img src="sqrtbutton.jpg"></img>Quadratwurzeltaste<br>
   <img src="sqrt.jpg"></img>Berechnen eines Werts<br>
   <img src="sqrtbracket.jpg"></img>Rechnung unter der Wurzel<br>
-  Zum Berechnen der Quadratwurzel muss man zuerst die Wurzeltaste drücken und anschließend 
+  Zum Berechnen der Quadratwurzel muss man zuerst die Wurzeltaste dr&uuml;cken und anschlie&szlig;end 
   den Wert eingeben. Falls ein ganzer Rechenausdruck unter der Wurzel stehen soll,
   muss diser in Klammern gesetzt werden. Ohne Klammer wird die Wurzel von der Zahl berechnet, die
   unmittelbar hinter dem Wurzelzeichen steht.<br>
-  Die Kubikwurzel kann man durch Drücken der Tasten <img src="shift.jpg"></img>+
+  Die Kubikwurzel kann man durch Dr&uuml;cken der Tasten <img src="shift.jpg"></img>+
   <img src="curoot.jpg"></img> berechnen.<br>
   Beliebige Wurzeln:<br>
-  <img src="nrootbutton.jpg"></img>Taste für beliebige Wurzeln<br>
+  <img src="nrootbutton.jpg"></img>Taste f&uuml;r beliebige Wurzeln<br>
   <img src="nroot.jpg"></img>Berechnung eines Werts (sechste Wurzel aus Neun)<br>
   Zum Berechnen einer beliebigen Wurzel, wird zuerst der Grad eingegeben (z. B. 6) dann die Taste
-  <img src="nrootbutton.jpg"> eingebeben und schließlich der zu berechnende Wert.<br>
+  <img src="nrootbutton.jpg"> eingebeben und schlie&szlig;lich der zu berechnende Wert.<br>
   <br>
   Zufallszahlengenerator:<br>
-  Zum Erzeugen von Zufallszahlen steht die Rand-Funktion zur Verfügung.<br>
+  Zum Erzeugen von Zufallszahlen steht die Rand-Funktion zur Verf&uuml;gung.<br>
   <img src="randbutton.jpg"></img> Zufallszahlentaste<br>
   <img src="random.jpg"></img> Ausgabe einer Zufallszahl (Zwischen 0 und 10)<br>
   Die Zufallsfunktion erzeugt Zehnstellige Zufallszahlen. Nach dem rnd-Befehl MUSS ein Wert 
   eingegeben werden. Die Zufallszahl hat dann einen Wert zwichen 0 und dem eingegebenen Wert.
-  Es sind auch negative Zahlen möglich.<br>
+  Es sind auch negative Zahlen m&ouml;glich.<br>
   <br>
   Differentialrechnung:<br>
-  Der Taschenrechner kann Näherungswerte einer Differentialfunktion berechnen. Die Genauigkeit
-  beträgt dabei etwa 8 Stellen abhängig von der jeweiligen Gleichung.<br>
-  <img src="diffbutton.jpg"></img> Taste für Differential-Funktion<br>
+  Der Taschenrechner kann N&auml;herungswerte einer Differentialfunktion berechnen. Die Genauigkeit
+  betr&auml;gt dabei etwa 8 Stellen abh&auml;ngig von der jeweiligen Gleichung.<br>
+  <img src="diffbutton.jpg"></img> Taste f&uuml;r Differential-Funktion<br>
   <img src="diff.jpg"></img> Richtige Eingabe einer Differentialrechnung<br>
-  Die Funktion wird folgendermaßen benützt: d/dx(Grundfunktion,Stelle)<br>
+  Die Funktion wird folgenderma&szlig;en ben&uuml;tzt: d/dx(Grundfunktion,Stelle)<br>
   Die Grundfunktion muss als Parameter X enthalten (X-Taste verwenden). Beispiel: 2X^3-3X+3<br>
-  Nach dem Komma, wird der X-Wert angegeben, für den die Berechnung ausgeführt werden soll. Dies
-  ist immer eine konkrete Zahl. Als Ergebnis erhält man die Steigung an der angegebenen Stelle.<br>
+  Nach dem Komma, wird der X-Wert angegeben, f&uuml;r den die Berechnung ausgef&uuml;hrt werden soll. Dies
+  ist immer eine konkrete Zahl. Als Ergebnis erh&auml;lt man die Steigung an der angegebenen Stelle.<br>
   <br>
   Integralrechnung:<br>
-  Es ist auch möglich, eine näherungsweise Integralrechnung in Form einer Flächenberechnung 
-  durchzuführen. Es können nur integrierbare Funktionen angegeben werden, ansonsten bricht der Befehl
+  Es ist auch m&ouml;glich, eine n&auml;herungsweise Integralrechnung in Form einer Fl&auml;chenberechnung 
+  durchzuf&uuml;hren. Es k&ouml;nnen nur integrierbare Funktionen angegeben werden, ansonsten bricht der Befehl
   mit einer Fehlermeldung ab.<br>
   <img src="integralbutton.jpg"></img>Die Integral-Taste<br>
   <img src="integral.jpg"></img>Eingabe einer Integralrechnung<br>
   Benutzung der Funktion: Integralzeichen(Grundfunktion,Startwert,Endwert)<br>
   Die Grundfunktion wird genauso wie bei der Differentialrechnung eingegeben. z.B.: sin(X)*3<br>
-  Es wird dann die Fläche unter dem Grafen der Grundfunktion zwischen den Stellen Startwert
-  und Endwert berechnet. Die Angabe beider Werte ist nötig. Es wird nicht der Betrag der Fläche
-  berechnet. Bei Flächen unter der X-Achse erhält man ein negatives Ergebnis.
-  Bei Flächen, die über und unter der X-Achse liegen, wird die Differenz ausgegben.<br>
+  Es wird dann die Fl&auml;che unter dem Grafen der Grundfunktion zwischen den Stellen Startwert
+  und Endwert berechnet. Die Angabe beider Werte ist n&ouml;tig. Es wird nicht der Betrag der Fl&auml;che
+  berechnet. Bei Fl&auml;chen unter der X-Achse erh&auml;lt man ein negatives Ergebnis.
+  Bei Fl&auml;chen, die &uuml;ber und unter der X-Achse liegen, wird die Differenz ausgegben.<br>
   <br>
   Verwenden von Variablen:<br>
-  Zum Speichern von Werten stehen 26 Speicherplätze zur Verfügung, die mit den Großbuchstaben
+  Zum Speichern von Werten stehen 26 Speicherpl&auml;tze zur Verf&uuml;gung, die mit den Gro&szlig;buchstaben
   des Alphabets angesprochen werden. Auf der Integrierten Tastatur muss zum Setzen einer Variablen
-  zuerst der Wert eingegeben werden, dann die Taste <img src="setbutton.jpg"></img> gedrückt werden und
-  durch Drücken von <img src="alpha.jpg"></img>+Buchstabentaste der Wert zugewiesen werden.<br>
+  zuerst der Wert eingegeben werden, dann die Taste <img src="setbutton.jpg"></img> gedr&uuml;ckt werden und
+  durch Dr&uuml;cken von <img src="alpha.jpg"></img>+Buchstabentaste der Wert zugewiesen werden.<br>
   <img src="setvar.jpg"></img> Wert in Variable speichern<br>
   <img src="usevar.jpg"></img> Gespeicherten Wert benutzen<br>
   Eine Variable kann wie eine normale Zahl benutzt werden. Wenn in einer Variablen noch kein Wert
@@ -184,98 +186,109 @@
   <br>
   <br>
   <a name="calcstd"><h3>3.1.1 Standardmodus</h3></a>
-  Normalerweise befindet sich das Programm in diesem Modus. Alle Funktionen können wie oben beschrieben benutzt werden
+  Normalerweise befindet sich das Programm in diesem Modus. Alle Funktionen k&ouml;nnen wie oben beschrieben benutzt werden
   und die Ergebnisse werden immer als Gleitpunkt-Dezimalzahl ausgegeben und eingegeben. In der Schnelleinstellungsbox
-  unter dem Ausgabefenster kann man das Format für Winkelfunktionen umstellen.<br>
-  Es können alle Variablen von A bis Z verwendet werden, aber nicht alle Logik-Funktionen sind in diesem Modus
-  möglich. Nicht-dezimale Zahlen können nicht benutzt werden. Für alle Logik-operationen und für spezielle
+  unter dem Ausgabefenster kann man das Format f&uuml;r Winkelfunktionen umstellen.<br>
+  Es k&ouml;nnen alle Variablen von A bis Z verwendet werden, aber nicht alle Logik-Funktionen sind in diesem Modus
+  m&ouml;glich. Nicht-dezimale Zahlen k&ouml;nnen nicht benutzt werden. F&uuml;r alle Logik-operationen und f&uuml;r spezielle
   Zahlensysteme sollte der Base Modus verwendet werden.
   <br>
+  <h4>Komplexe Zahlen</h4>
+  Komplexe Zahlen sind im Rechner standardm&auml;&szlig;ig deaktiviert.<br>
+  Sie k&ouml;nnen entweder im Rechner-Einstellungsdialog unter Einstellungen-Men&uuml; oder direkt im Rechner-Men&uuml; aktiviert und deaktiviert werden.
+  Eine komplexe Zahl wird durch anh&auml;gen des Buchstabens i geschrieben.<br>
+  Folgende Operationen unterst&uuml;tzen komplexe Zahlen:<br>
+  + - * / ^<br>
+ root sqrt curt<br>
+ sin cos tan<br>
+ sinh cosh tanh<br>
+ lg ln<br>
+ abs arg conj real imag<br>
   <br>  
   <a name="calcbase"><h3>3.1.2 Base Modus</h3></a>
-  Drückt man den Rechenmodus-Knopf neben dem Vollbildknopf, dann schaltet der Rechner in den Base Modus. Die
-  Zusatzfunktionen, die in diesem Modus verfügbar sind, können nur im Rechnerfenster, nicht im Grafikmodus
-  genutzt werden. Beim Umschalten werden werden auf den Tasten sofort die zusätzlichen Logikfunktionen angezeigt.
-  Mit der Shift-Taste kann man zusätzliche Funktionen aufrufen. In der Schnelleinstellungsbox kann man einstellen,
-  welches Zahlensystem man benutzen möchte.<br>
-  Alle Berechnungen in diesem Modus werden mit Ganzzahlen durchgeführt, daduch kann man die meisten wissenschaftlichen
+  Dr&uuml;ckt man den Rechenmodus-Knopf neben dem Vollbildknopf, dann schaltet der Rechner in den Base Modus. Die
+  Zusatzfunktionen, die in diesem Modus verf&uuml;gbar sind, k&ouml;nnen nur im Rechnerfenster, nicht im Grafikmodus
+  genutzt werden. Beim Umschalten werden werden auf den Tasten sofort die zus&auml;tzlichen Logikfunktionen angezeigt.
+  Mit der Shift-Taste kann man zus&auml;tzliche Funktionen aufrufen. In der Schnelleinstellungsbox kann man einstellen,
+  welches Zahlensystem man benutzen m&ouml;chte.<br>
+  Alle Berechnungen in diesem Modus werden mit Ganzzahlen durchgef&uuml;hrt, daduch kann man die meisten wissenschaftlichen
   Funktionen nicht mehr sinnvoll nutzen.<br>
-  Da die Buchstaben A bis F im Base Modus für hexadezimale Zahlen belegt sind, können als Variablen nur noch 
+  Da die Buchstaben A bis F im Base Modus f&uuml;r hexadezimale Zahlen belegt sind, k&ouml;nnen als Variablen nur noch 
   die Buchstaben G bis Z verwendet werden.
-  Aber alle Logik-Operationen und Umrechnungen zwischen den verschiedenen Zahlensystemen können nur in dieser Einstellung
-  benutzt werden. Für die Berechnungen wird eine 64Bit Ganzzahl mit Vorzeichen verwendet.<br>
-  Zur Umrechnung zwischen verschiedenen Zahlensystemen setzt man vor die Zahl ein Kürzel für das entspechende
+  Aber alle Logik-Operationen und Umrechnungen zwischen den verschiedenen Zahlensystemen k&ouml;nnen nur in dieser Einstellung
+  benutzt werden. F&uuml;r die Berechnungen wird eine 64Bit Ganzzahl mit Vorzeichen verwendet.<br>
+  Zur Umrechnung zwischen verschiedenen Zahlensystemen setzt man vor die Zahl ein K&uuml;rzel f&uuml;r das entspechende
   Zahlensystem. <br>
   Eine Hexadezimalzahl wird so eingegeben: hex13F6<br>
-  Die anderen Kürzel sind: dec, oct, bin<br>
-  Für die Buchstaben in Hex-Zahlen dürfen nur Großbuchstaben verwendet werden.<br>
-  Wird eine Zahl in dem Zahlensystem eingegeben, das gerade voreingestellt ist, dann muss kein Kürzel vor die Zahl
+  Die anderen K&uuml;rzel sind: dec, oct, bin<br>
+  F&uuml;r die Buchstaben in Hex-Zahlen d&uuml;rfen nur Gro&szlig;buchstaben verwendet werden.<br>
+  Wird eine Zahl in dem Zahlensystem eingegeben, das gerade voreingestellt ist, dann muss kein K&uuml;rzel vor die Zahl
   geschrieben werden.<br><br>
-  Die zusätzlichen Funktionen können in zwei Gruppen eingeteilt werden:<br>
+  Die zus&auml;tzlichen Funktionen k&ouml;nnen in zwei Gruppen eingeteilt werden:<br>
   <br>
   Logische Operationen:<br>
   &amp&amp, ||, not<br>
-  Diese Operationen liefern als Ergebnis nur true oder false zurück.<br>
-  Die Zahl 0 repräsentiert false, alle Zahlen ungleich 0 sind true.<br>
+  Diese Operationen liefern als Ergebnis nur true oder false zur&uuml;ck.<br>
+  Die Zahl 0 repr&auml;sentiert false, alle Zahlen ungleich 0 sind true.<br>
   <br>
-  Binäre Operationen:<br>
+  Bin&auml;re Operationen:<br>
   &amp, |, &lt&lt, &gt&gt, ~, xor<br>
-  Diese Funktionen verändern jedes einzelne Bit innerhalb der Zahl<br>
+  Diese Funktionen ver&auml;ndern jedes einzelne Bit innerhalb der Zahl<br>
   
   <br>
   <br>  
   <a name="graph"><h2>3.2 Grafik</h2></a>
   Im Grafik-Modus des Rechners kann man verschiedene Funktionsgrafen zeichnen und auswerten
-  lassen. Extcalc unterstützt verschiedene Typen von Funktionen und verschiedene Koordinatensysteme.
-  Es folgt eine Liste der verfügbaren Graphen- und Koordinatensystemtypen:<br>
+  lassen. Extcalc unterst&uuml;tzt verschiedene Typen von Funktionen und verschiedene Koordinatensysteme.
+  Es folgt eine Liste der verf&uuml;gbaren Graphen- und Koordinatensystemtypen:<br>
   <h4>Graphentypen</h4>
   <h5>Standardgraph y(x)=X</h5>
-  Dies ist die Voreinstellung für alle Graphen. Es ist ein normaler 2D-Graph. Die zugehörige Funktion verwendet
-  die Variable X (es kann auch ein kleines x geschrieben werden). Für diese Graphen sollte ein kartesiches 
+  Dies ist die Voreinstellung f&uuml;r alle Graphen. Es ist ein normaler 2D-Graph. Die zugeh&ouml;rige Funktion verwendet
+  die Variable X (es kann auch ein kleines x geschrieben werden). F&uuml;r diese Graphen sollte ein kartesiches 
   2D-Koordinatensystem verwendet werden.
   <h5>Polarkoordinatengraph r(x)=X</h5>
-  Das ist die Einstellung für Graphen im polaren Koordinatensystem. Es wird der Radius r in Abhängigkeit vom 
-  Winkel X berechnet. Für diese Art von Graphen sollte man ein polares Koordinatensystem verwenden.
+  Das ist die Einstellung f&uuml;r Graphen im polaren Koordinatensystem. Es wird der Radius r in Abh&auml;ngigkeit vom 
+  Winkel X berechnet. F&uuml;r diese Art von Graphen sollte man ein polares Koordinatensystem verwenden.
   <h5>Parameterfunktionsgraph x(T)=T y(T)=T</h5>
-  Ein solcher Graph benötigt zwei Funktionen mit dem Parameter T. Es wird die X-Koordinate und die Y-Koordinate
-  jeweils mit einer eigenen Funktion in abhängigkeit vom Parameter T berechnet. Der Parameter T wird nicht im 
-  Koordinatensystem angetragen. Der Wertebereich von T kann in den Grafikeinstellungen verändert werden.
+  Ein solcher Graph ben&ouml;tigt zwei Funktionen mit dem Parameter T. Es wird die X-Koordinate und die Y-Koordinate
+  jeweils mit einer eigenen Funktion in abh&auml;ngigkeit vom Parameter T berechnet. Der Parameter T wird nicht im 
+  Koordinatensystem angetragen. Der Wertebereich von T kann in den Grafikeinstellungen ver&auml;ndert werden.
   <h5>Ungleichungen y(X) &lt X, y(X) &gt X, y(X) &lt=X, y(X) &gt=X</h5>
-  Bei dieser Art von Graphen, wird die Fläche farbig gezeichnet, in der die Ungleichungsbedingung erfüllt wird.
+  Bei dieser Art von Graphen, wird die Fl&auml;che farbig gezeichnet, in der die Ungleichungsbedingung erf&uuml;llt wird.
   <h5>3D-Graph y(x,z)=XZ</h5>
-  Für 3D-Graphen im kartesischen Koordinatensystem wird diese Einstellung verwendet. Die entsprechende Funktion
-  berechnet die Höhe y in Abhängigkeit von X und Z. Um 3D-Graphen korrekt anzeigen zu können, sollte ein 
+  F&uuml;r 3D-Graphen im kartesischen Koordinatensystem wird diese Einstellung verwendet. Die entsprechende Funktion
+  berechnet die H&ouml;he y in Abh&auml;ngigkeit von X und Z. Um 3D-Graphen korrekt anzeigen zu k&ouml;nnen, sollte ein 
   3D-Koordinatensystem eingestellt werden.
   <h5>Ortskurven und 3D-OrtskurvenY(Z)=Z+Zi</h5>
   Diese beiden Typen von Graphen dienen zur Anzeige von komplexen Funktionen. Der Funktionsparameter ist ein reeller Wert Z.
-  Bei einer normalen Ortskurve wird der Bereich von Z in den Graphik-Einstellungen angegeben. Der Real- und der Imaginär-Anteil
+  Bei einer normalen Ortskurve wird der Bereich von Z in den Graphik-Einstellungen angegeben. Der Real- und der Imagin&auml;r-Anteil
   werden an der X- bzw. Y-Achse des 2D-Koordinatensystems aufgetragen. Bei der 3D-Ortskurve ist der Z-Bereich entsprechend der
-  Z-Achse des 3D-Koordinatensystems. Der Parameter Z wird auf dieser Achse angetragen. Real- und Imaginäranteil des Ergebnisses
+  Z-Achse des 3D-Koordinatensystems. Der Parameter Z wird auf dieser Achse angetragen. Real- und Imagin&auml;ranteil des Ergebnisses
   werden an der X- und Y-Achse angetragen.
   <h5>Dynamische Graphen</h5>
-  Alle oben beschriebenen Typen können auch als dynamische Graphen verwendet werden. Diese Option kann in der
-  Funktionstabelle für jede Funktion einzeln ein- oder ausgeschaltet werden. Wird dynamische Grafik aktiviert,
-  dann kann man in der Funktion einen zusätzlichen Parameter A verwenden (Beispiel: y=AX). Dieser wird dann 
-  Zeitabhängig verändert. Der Start- und Endwert für den Parameter A, sowie die Schrittzahl und die Verzögerungszeit
-  für dynamische Graphen können im Grafik-Einstellungsdialog beliebig angepasst werden. Diese Art der Darstellung von 
-  Graphen ist allerdings sehr rechenintensiv. Für dynamische 3D-Graphik ist eine 3D-Graphikkarte ist nötig.
+  Alle oben beschriebenen Typen k&ouml;nnen auch als dynamische Graphen verwendet werden. Diese Option kann in der
+  Funktionstabelle f&uuml;r jede Funktion einzeln ein- oder ausgeschaltet werden. Wird dynamische Grafik aktiviert,
+  dann kann man in der Funktion einen zus&auml;tzlichen Parameter A verwenden (Beispiel: y=AX). Dieser wird dann 
+  Zeitabh&auml;ngig ver&auml;ndert. Der Start- und Endwert f&uuml;r den Parameter A, sowie die Schrittzahl und die Verz&ouml;gerungszeit
+  f&uuml;r dynamische Graphen k&ouml;nnen im Grafik-Einstellungsdialog beliebig angepasst werden. Diese Art der Darstellung von 
+  Graphen ist allerdings sehr rechenintensiv. F&uuml;r dynamische 3D-Graphik ist eine 3D-Graphikkarte ist n&ouml;tig.
   <br>
   <h4>Koordinatensysteme</h4>
   <h5>Standard-Koordinatensystem</h5>
   Das Standard-Koordinatensystem ist ein zweidimensionales kartesisches Koordinatensystem mit y- und x-Achse.
-  Es zur Anzeige von normalen Graphen des Typs y(x)=X und für Parametergraphen vorgesehen. Die Wertebereiche
-  der Axen können sowohl negativ als auch positiv eingestellt werden. Es können auch alle anderen Typen von 
-  Graphen in dieses Koordinatensystem eingezeichnet werden. Wenn man die rechte Maustaste drückt, kann man
+  Es zur Anzeige von normalen Graphen des Typs y(x)=X und f&uuml;r Parametergraphen vorgesehen. Die Wertebereiche
+  der Axen k&ouml;nnen sowohl negativ als auch positiv eingestellt werden. Es k&ouml;nnen auch alle anderen Typen von 
+  Graphen in dieses Koordinatensystem eingezeichnet werden. Wenn man die rechte Maustaste dr&uuml;ckt, kann man
   das Koordinatensystem mit der Maus verschieben. Mit dem Mausrad kann man hinein- und herauszoomen.
   <h5>Polarkoordinatensystem</h5>
   Dieses Koordinatensystem ist zum Anzeigen von polaren Graphen geeignet. Im Polarkoordinatensystem werden Winkel
   und Radius als Raster angezeigt. Der maximal angezeigte Winkel bzw. Radius wird immer ab dem Ursprung ins
-  Postitive gerechnet. Negative Werte sind nicht möglich. Es ist ebenfalls ein zweidimensionales Koordinatensystem.
-  Mit dem Mausrad kann man das Koordinatensystem vergrößern und verkleinern.
+  Postitive gerechnet. Negative Werte sind nicht m&ouml;glich. Es ist ebenfalls ein zweidimensionales Koordinatensystem.
+  Mit dem Mausrad kann man das Koordinatensystem vergr&ouml;&szlig;ern und verkleinern.
   <h5>3D-Koordinatensystem</h5>
-  Das kartesische 3D-Koordinatensystem ist zur Darstellung von 3D-Graphen geeignet. Es können aber auch alle anderen
-  Typen angezeigt werden. Die x- y- und z-Achsen können sowohl negative als auch positive Werte annehmen. Das
-  Koordinatensystem kann durch drüchen der rechten Maustaste mit der Maus gedreht werden. Mit dem Mausrad kann man
+  Das kartesische 3D-Koordinatensystem ist zur Darstellung von 3D-Graphen geeignet. Es k&ouml;nnen aber auch alle anderen
+  Typen angezeigt werden. Die x- y- und z-Achsen k&ouml;nnen sowohl negative als auch positive Werte annehmen. Das
+  Koordinatensystem kann durch dr&uuml;chen der rechten Maustaste mit der Maus gedreht werden. Mit dem Mausrad kann man
   das Bild zoomen.
   <br>
   
@@ -286,39 +299,39 @@
   <br>
   Das Grafikfenster ist in drei Teile aufgeteilt: Funktionstabelle, Ausgabefenster und Tastatur.<br>
   <h5>Funktionstabelle</h5>
-  In die erste Spalte der Tabelle werden alle Funktionen eingetragen, die benötigt werden. Es
-  können bis zu 20 verschiedene Funktionen eingegeben werden.<br>
-  Zur besseren Übersicht, kann man den verschiedenen Funktionen Farben zuweisen. Diese werden in der 
-  zweiten Spalte ausgewählt. Die Funktion wird dann in der Tabelle in der gewählten Farbe dargestellt,
-  und auch später in dieser Farbe gezeichnet.<br>
+  In die erste Spalte der Tabelle werden alle Funktionen eingetragen, die ben&ouml;tigt werden. Es
+  k&ouml;nnen bis zu 20 verschiedene Funktionen eingegeben werden.<br>
+  Zur besseren &Uuml;bersicht, kann man den verschiedenen Funktionen Farben zuweisen. Diese werden in der 
+  zweiten Spalte ausgew&auml;hlt. Die Funktion wird dann in der Tabelle in der gew&auml;hlten Farbe dargestellt,
+  und auch sp&auml;ter in dieser Farbe gezeichnet.<br>
   Da man nicht immer von allen Funktionen, die in der Tabelle eingetragen sind, auch einen Grafen
-  anzeigen möchte, lassen sich die Funktionen mit den Boxen in der dritten Spalte einzeln ein- oder
+  anzeigen m&ouml;chte, lassen sich die Funktionen mit den Boxen in der dritten Spalte einzeln ein- oder
   ausschalten.<br>
-  In der vierten Spalte kann der Typ der Funktion eingestellt werden. Es können normale Funktionen
-  der Form f(x)=X, Radiusfunktionen r(x)=X für das polare Koordinatensystem, Dreidimensionale Funktionen
+  In der vierten Spalte kann der Typ der Funktion eingestellt werden. Es k&ouml;nnen normale Funktionen
+  der Form f(x)=X, Radiusfunktionen r(x)=X f&uuml;r das polare Koordinatensystem, Dreidimensionale Funktionen
   y(xz)=XZ, Parameterfunktionen x=T; y=T, Ungleichungen eingegeben werden. In der letzten Spalte kann
-  noch ausgewählt werden, ob die Funktionen von dem Zeitparameter A abhängen sollen.
-  Es können auch Graphen mit verschiedenen Typen in ein Koordinatensystem eingezeichnet werden. Die 
-  Art des Koordinatensystems muss aber zusätzlich im Grafik-Menü oder in den Grafik-Einstellungen ausgewählt
+  noch ausgew&auml;hlt werden, ob die Funktionen von dem Zeitparameter A abh&auml;ngen sollen.
+  Es k&ouml;nnen auch Graphen mit verschiedenen Typen in ein Koordinatensystem eingezeichnet werden. Die 
+  Art des Koordinatensystems muss aber zus&auml;tzlich im Grafik-Men&uuml; oder in den Grafik-Einstellungen ausgew&auml;hlt
   werden.<br> 
   
   <br>
   <a name="graphsolve"><h3>3.2.2 Graphen auswerten</h3></a>
   <img src="analyse.jpg"></img>
   <br>
-  Durch drücken des "Analysieren"-Knopfes kann man den Rechner in den Analysemodus versetzen.
-  Hier können verschiedene Berechnungen an den Funktionen durchgeführt werden. Alle möglichen Operationen
-  kann man in der Auswahlbox unter der Funktionstabelle einstellen. Wird eine Operation ausgewählt, dann
-  kann man im Fenster sofort die entsprechenden Eingabefelder für die Parameter sehen.<br>
+  Durch dr&uuml;cken des "Analysieren"-Knopfes kann man den Rechner in den Analysemodus versetzen.
+  Hier k&ouml;nnen verschiedene Berechnungen an den Funktionen durchgef&uuml;hrt werden. Alle m&ouml;glichen Operationen
+  kann man in der Auswahlbox unter der Funktionstabelle einstellen. Wird eine Operation ausgew&auml;hlt, dann
+  kann man im Fenster sofort die entsprechenden Eingabefelder f&uuml;r die Parameter sehen.<br>
   Alle Analyseoperationen mit Ausnahme der Integralrechnung, der Differentialrechnung und dem Newtonverfahren 
   analysieren nur den im Ausgabefenster sichtbaren Bereich einer Funktion.<br>
-  Es können nur die Funktionen analysiert werden, die in der Funktionstabelle auf "Aktiv" gesetzt sind.<br>
-  Es können immer nur die zum Koordinatensystem passenden Funktionen analysiert werden, also im kartesichen
+  Es k&ouml;nnen nur die Funktionen analysiert werden, die in der Funktionstabelle auf "Aktiv" gesetzt sind.<br>
+  Es k&ouml;nnen immer nur die zum Koordinatensystem passenden Funktionen analysiert werden, also im kartesichen
   2D-Koordinatensystem normale Funktionen, Parameterfunktionen und Ungleichungsfunktionen, im polaren
   Koordinatensystem polare Funktionen und 3D-Funktionen nur im kartesischen 3D-Koordinatensystem.<br>
-  Der Funktionstyp, der analysiert werden soll, kann in der Box unter der Funktionstabelle ausgewählt werden.<br>
-  Für die verschiedenen Funktionstypen stehen jeweils nur bestimmte Analysefunktionen zur Verfügung. Welche 
-  Analysemethoden für welche Funktionen ausgeführt werden können, zeigt die Tabelle unten.<br><br>
+  Der Funktionstyp, der analysiert werden soll, kann in der Box unter der Funktionstabelle ausgew&auml;hlt werden.<br>
+  F&uuml;r die verschiedenen Funktionstypen stehen jeweils nur bestimmte Analysefunktionen zur Verf&uuml;gung. Welche 
+  Analysemethoden f&uuml;r welche Funktionen ausgef&uuml;hrt werden k&ouml;nnen, zeigt die Tabelle unten.<br><br>
   <table>
   <tr><td></td>					 		  <td>Standard</td> <td>Polar</td> <td>Parameter</td> <td>Ungleichungen</td> <td>3D-Graph</td>	<td>Ortskurve</td></tr>
   <tr><td>Y-Wert berechnen</td> 		  <td>x</td>		<td>x</td>	   <td>x</td>		  <td>x</td>		 <td>x</td>		 		<td>x</td></tr>
@@ -332,237 +345,325 @@
   <tr><td>Z-Wert berechnen</td> 		  <td> </td>		<td> </td>	   <td> </td>		  <td> </td>		 <td>x</td>				<td> </td></tr>
   </table>
   <br>
-  Folgende Analyseoperationen stehen zur Verfügung:<br>
+  Folgende Analyseoperationen stehen zur Verf&uuml;gung:<br>
   Y-Wert berechnen:<br>
   Bei dieser Operation werden zu einem beliebigen X-Wert, der entweder in die Eingabezeile geschrieben werden kann
-  oder per Mausklick im Ausgabefenster ausgewählt werden kann, die Y-Werte aller Funktionen berechnet werden.
-  Bei Parameterfunktionen kann es mehrere Y-Werte zu einem X-Wert geben. Bei 3D-Funktionen ist noch der gewüschte
+  oder per Mausklick im Ausgabefenster ausgew&auml;hlt werden kann, die Y-Werte aller Funktionen berechnet werden.
+  Bei Parameterfunktionen kann es mehrere Y-Werte zu einem X-Wert geben. Bei 3D-Funktionen ist noch der gew&uuml;schte
   Z-Wert anzugeben.<br>
   Nullstellen berechnen:<br>
-  Hier kann man eine Funktion aus der Auswahlbox aussuchen, und von dieser durch drücken des "Berechnen"-Knopfes
+  Hier kann man eine Funktion aus der Auswahlbox aussuchen, und von dieser durch dr&uuml;cken des "Berechnen"-Knopfes
   die Nullstellen berechnen lassen. Die Nullstellen werden dann in der Ausgabetabelle aufgelistet.<br>
   Newton-Verfahren:<br>
   Dies ist ein besonderes Verfahren zur Berechnung von Nullstellen. Man kann dabei eine Funktion aus der Auswahlbox 
-  wählen und den Startwert und die Anzahl der Schritte eingeben. Die Berechnung mit allen Zwichenergebnissen wird in
-  der Ausgabetabelle angezeigt. Da linke Feld in der letzten Zeile enthält das Endergebnis.<br>
+  w&auml;hlen und den Startwert und die Anzahl der Schritte eingeben. Die Berechnung mit allen Zwichenergebnissen wird in
+  der Ausgabetabelle angezeigt. Da linke Feld in der letzten Zeile enth&auml;lt das Endergebnis.<br>
   X-Werte berechnen:<br>
-  Hier kann man die zugehörigen X-Werte zu einem bestimmten Y-Wert berechnen lassen. Der Y-Wert muss in die Eingabezeile
-  eigegeben werden. Durch Drücken des "Berechnen"-Knopfes werden alle Ergebnisse in der Ausgabetabelle angezeigt.
+  Hier kann man die zugeh&ouml;rigen X-Werte zu einem bestimmten Y-Wert berechnen lassen. Der Y-Wert muss in die Eingabezeile
+  eigegeben werden. Durch Dr&uuml;cken des "Berechnen"-Knopfes werden alle Ergebnisse in der Ausgabetabelle angezeigt.
   Bei 3D-Funktionen ist noch der entsprechende Z-Wert anzugeben<br>
   Schnittpunkte berechnen:<br>
-  Bei dieser Operation können die Schnittpunkte von zwei Graphen berechnet werden. Die zugehörigen Funktionen müssen
-  in den Auswahlboxen ausgesucht werden und durch Drücken des "Berechnen"-Knopfes werden die Ergebnisse ausgegeben.
-  Bitte wählen sie nicht zweimal die gleiche Funktion aus. Bei Ungleichungen wird die Schnittfläche markiert.<br>
+  Bei dieser Operation k&ouml;nnen die Schnittpunkte von zwei Graphen berechnet werden. Die zugeh&ouml;rigen Funktionen m&uuml;ssen
+  in den Auswahlboxen ausgesucht werden und durch Dr&uuml;cken des "Berechnen"-Knopfes werden die Ergebnisse ausgegeben.
+  Bitte w&auml;hlen sie nicht zweimal die gleiche Funktion aus. Bei Ungleichungen wird die Schnittfl&auml;che markiert.<br>
   Extremwerte berechnen:<br>
-  Mit dieser Funktion werden alle Maximal- und Minimalwerte der ausgewählten Funktion berechnet.<br>
+  Mit dieser Funktion werden alle Maximal- und Minimalwerte der ausgew&auml;hlten Funktion berechnet.<br>
   Integral berechnen:<br>
-  Um die Fläche unter dem Graphen zwischen zwei Punkten zu berechnen, kann man diese Operation verwenden.
+  Um die Fl&auml;che unter dem Graphen zwischen zwei Punkten zu berechnen, kann man diese Operation verwenden.
   Es muss ein Startwert und ein Endwert eingegeben werden. Bei 3D-Funktionen wird der Raum unter dem Grafen berechnet.
-  Nach dem Drücken des "Berechnen"-Knopfes wird das Ergebnis in der Tabelle ausgegeben.<br>
+  Nach dem Dr&uuml;cken des "Berechnen"-Knopfes wird das Ergebnis in der Tabelle ausgegeben.<br>
   Differential berechnen.<br>
-  Diese Funktion berechnet die Steigung einer Funktion an einer bestimmten Stelle. Wenn man eine Funktion ausgewählt
-  und den X-Wert für die Berechnung eingegeben hat, erhält man durch drücken der "Berechnen"-Taste das Ergebnis in der
+  Diese Funktion berechnet die Steigung einer Funktion an einer bestimmten Stelle. Wenn man eine Funktion ausgew&auml;hlt
+  und den X-Wert f&uuml;r die Berechnung eingegeben hat, erh&auml;lt man durch dr&uuml;cken der "Berechnen"-Taste das Ergebnis in der
   Ausgabetabelle. Bei Parameterfunktionen wird bei diesem Punkt die kartesische Ableitung zu einem bestimmten T-Wert
   berechnet. Bei 3D-Funktionen werden die partiellen Ableitungen nach X und Z am angegebenen Punkt berechnet.<br>
   Z-Wert berechnen<br>
-  Hier muss der X-Wert und der Y-Wert ausgewählt werden. Wenn man den Berechnen-Knopf drückt, werden die zugehörigen
+  Hier muss der X-Wert und der Y-Wert ausgew&auml;hlt werden. Wenn man den Berechnen-Knopf dr&uuml;ckt, werden die zugeh&ouml;rigen
   Z-Werte angezeigt.<br>
   <br>
   <a name="graphscreenshot"><h3>3.2.3 Screenshots abspeichern</h3></a>
   Der Inhalt des Grafik-Fensters kann direkt als Bild abgespeichert werden. Dazu muss man in der Auswahl-Box unter dem Grafik-Fenster den Punkt
-  Screenshots/Zeichnen auswählen. Diese Einstellung bietet auch einige Zeichenfunktionen, mit denen man z. B. Deteils im Grafikfenster hervoreheben
+  Screenshots/Zeichnen ausw&auml;hlen. Diese Einstellung bietet auch einige Zeichenfunktionen, mit denen man z. B. Deteils im Grafikfenster hervoreheben
   kann.<br>
   <img src="screenshot.jpg"></img><br>
   <h5>Screenshot abspeichern:</h5>
-  Im oben dargestellten Fenster können Screenshots gespeichert werden.
-  Dabei kann die Größe des Screenshots, das Bildformat und der Dateiname zum Speichern eingestellt werden.
-  Zum Speichern muss man dann nur den Speichern-Knopf drücken. Dann wird das Bild im angegebenen Pfad gespeichert.
+  Im oben dargestellten Fenster k&ouml;nnen Screenshots gespeichert werden.
+  Dabei kann die Gr&ouml;&szlig;e des Screenshots, das Bildformat und der Dateiname zum Speichern eingestellt werden.
+  Zum Speichern muss man dann nur den Speichern-Knopf dr&uuml;cken. Dann wird das Bild im angegebenen Pfad gespeichert.
   <br>
   <h5>Zeichenfunktionen:</h5>
-  Falls man vor dem Abspeichern des Screenshots noch etwas anmerken oder hervorheben möchte, stellt Extcalc dazu verschiedene Zeichenfunktionen bereit.
+  Falls man vor dem Abspeichern des Screenshots noch etwas anmerken oder hervorheben m&ouml;chte, stellt Extcalc dazu verschiedene Zeichenfunktionen bereit.
   <br>
-  Die gezeichnete Fläche ist von den Graphen und dem Koordinatensystem unabhängig. Wenn das Koordinatensystem geändert oder verschoben wird, bzw. die
+  Die gezeichnete Fl&auml;che ist von den Graphen und dem Koordinatensystem unabh&auml;ngig. Wenn das Koordinatensystem ge&auml;ndert oder verschoben wird, bzw. die
   Graphen neu gezeichnent werden, bleibt das gezeichnete an der selben Stelle erhalten.<br>
-  Alle Zeichenfunktionen bieten einen Vorschau-Modus. Solange man die Maustaste gedrückt hält, wird nur die Vorschau eingezeichnet. Lässt man die
-  Maustaste los, so wird die Originalgraphik berechnet. Die Strichstärke kann sich dabei etwas verändern.<br>
+  Alle Zeichenfunktionen bieten einen Vorschau-Modus. Solange man die Maustaste gedr&uuml;ckt h&auml;lt, wird nur die Vorschau eingezeichnet. L&auml;sst man die
+  Maustaste los, so wird die Originalgraphik berechnet. Die Strichst&auml;rke kann sich dabei etwas ver&auml;ndern.<br>
   Es gibt folgende Standard-Zeichenfunktionen: Frei zeichnen, Linie, Rechteck, Kreis<br>
-  Bei diesen kann die Strichstärke und die Farbe eingestellt werden.<br>
-  Außerdem kann man noch Text einfügen. Dabei muss nach dem Drücken des Text-Knopfes der anzuzeigende Text eingegeben werden.
-  Bei gehaltener Maustaste ist wieder die Vorschau sichtbar, und beim Loslassen wird der Text eingefügt. Wenn man die Maustaste noch einmal drückt,
-  wird der selbe Text noch einmal eingefügt. Will man Textgröße, Farbe oder den Text selbst ändern, muss man den Text-Knopf noch einmal drücken.
-  Die Textgröße kann in der Box für die Strichstärke geändert werden.<br>
+  Bei diesen kann die Strichst&auml;rke und die Farbe eingestellt werden.<br>
+  Au&szlig;erdem kann man noch Text einf&uuml;gen. Dabei muss nach dem Dr&uuml;cken des Text-Knopfes der anzuzeigende Text eingegeben werden.
+  Bei gehaltener Maustaste ist wieder die Vorschau sichtbar, und beim Loslassen wird der Text eingef&uuml;gt. Wenn man die Maustaste noch einmal dr&uuml;ckt,
+  wird der selbe Text noch einmal eingef&uuml;gt. Will man Textgr&ouml;&szlig;e, Farbe oder den Text selbst &auml;ndern, muss man den Text-Knopf noch einmal dr&uuml;cken.
+  Die Textgr&ouml;&szlig;e kann in der Box f&uuml;r die Strichst&auml;rke ge&auml;ndert werden.<br>
   Radierer: Will man einen Teil des gezeichneten wieder entfernen, dann kann man den Radierer verwenden. Dieser macht die radierten Stellen wieder
-  transparent. In der Vorschau wird das radierte weiß gezeichnet.<br><br>
-  Außerdem können noch die letzten Schritte rückgängig gemacht werden, und das gesamte Bild kann gelöscht werden.
+  transparent. In der Vorschau wird das radierte wei&szlig; gezeichnet.<br><br>
+  Au&szlig;erdem k&ouml;nnen noch die letzten Schritte r&uuml;ckg&auml;ngig gemacht werden, und das gesamte Bild kann gel&ouml;scht werden.
   
   <br>
   
   <br>
   <a name="table"><h2>3.3 Tabellen</h2></a>
-  Extcalc bietet auch die Möglichkeit, Wertetabellen zu Funktionen erstellen zu lassen. <br>
+  Extcalc bietet auch die M&ouml;glichkeit, Wertetabellen zu Funktionen erstellen zu lassen. <br>
   <img src="table.jpg"> </img><br>
   Tabellenfenster von Extcalc<br><br>
   Zur Erstellung der Wertetabellen werden die selben Funktionen werwendet, wie bei Graphen.
-  Es können Wertetabellen von allen Arten von Funktionen erstellt werden. Die verwendeten Funktionen in der 
+  Es k&ouml;nnen Wertetabellen von allen Arten von Funktionen erstellt werden. Die verwendeten Funktionen in der 
   Funktionstabelle sind dieselben wie bei Graphen. In der Wertetabelle werden nur die Werte von den Funktionen berechnet,
-  die in der Funktionstabelle als aktiv gewählt sind. Es werden außerdem nur die Funktionen des Typs beachtet, 
-  der für die Tabellen gewählt ist. Der Funktionstyp der Tabellen kann direkt im Tabellenmenü aus der Auswahlbox
-  ausgewählt werden, oder im Menü unter Tabellen oder im Einstellungsdialog. Für die Tabellenerstellung wird immer ein
+  die in der Funktionstabelle als aktiv gew&auml;hlt sind. Es werden au&szlig;erdem nur die Funktionen des Typs beachtet, 
+  der f&uuml;r die Tabellen gew&auml;hlt ist. Der Funktionstyp der Tabellen kann direkt im Tabellenmen&uuml; aus der Auswahlbox
+  ausgew&auml;hlt werden, oder im Men&uuml; unter Tabellen oder im Einstellungsdialog. F&uuml;r die Tabellenerstellung wird immer ein
   Startwert und ein Endwert und die Anzahl der zu Berechenden Werte angegeben. <br>
   Bei Funktionen mit der Variablen x werden pro Funktion in einer Spalte die Werte angezeigt. Beim Parameterfunktionen 
-  gelten für den Parameter T dieselben Einstellungen wie beim Parameter x. In der Wertetabelle wird eine Spalte für 
-  die x-Werte und eine Spalte für die y-Werte erzeugt. Bei 3D-Funktionen wird bei jeder Funktion für jeden z-Wert 
+  gelten f&uuml;r den Parameter T dieselben Einstellungen wie beim Parameter x. In der Wertetabelle wird eine Spalte f&uuml;r 
+  die x-Werte und eine Spalte f&uuml;r die y-Werte erzeugt. Bei 3D-Funktionen wird bei jeder Funktion f&uuml;r jeden z-Wert 
   eine eigene Spalte erzeugt.<br>
   <br>
   <a name="script"><h2>3.4 Scriptprogrammierung</h2></a>
   <img src="scriptrun.jpg"></img>
   <br><br>
-  In Extcalc ist auch ein Script-Interpretor zur Programmierung des Taschenrechners enthalten. Die Programme können direkt mit 
-  Extcalc geschrieben und verwaltet und ausgeführt werden.<br><br>
+  In Extcalc ist auch ein Script-Interpretor zur Programmierung des Taschenrechners enthalten. Die Programme k&ouml;nnen direkt mit 
+  Extcalc geschrieben und verwaltet und ausgef&uuml;hrt werden.<br><br>
   <a name="scriptcom"><h3>3.4.1 Allgemeines</h3></a>
-  In Extcalc kann man kleine Script-Programme  schreiben und ausführen. Die Syntax ist ähnlich wie bei C, wobei auch die normalen 
-  Taschenrechner-Befehle im Programm verwendet werden können. Die Script-Befehle können allerdings nicht im normalen Rechner verwendet werden.
-  Wird ein Programm ausgeführt, dann läuft es in einem eigenen Konsolenfenster ab. Die anderen Funktionen des Rechners können noch normal benutzt werden.
+  In Extcalc kann man kleine Script-Programme  schreiben und ausf&uuml;hren. Die Syntax ist &auml;hnlich wie bei C, wobei auch die normalen 
+  Taschenrechner-Befehle im Programm verwendet werden k&ouml;nnen. Die Script-Befehle k&ouml;nnen allerdings nicht im normalen Rechner verwendet werden.
+  Wird ein Programm ausgef&uuml;hrt, dann l&auml;uft es in einem eigenen Konsolenfenster ab. Die anderen Funktionen des Rechners k&ouml;nnen noch normal benutzt werden.
   Zum Schreiben und Verwalten der verschiedenen Programme ist in Extcalc ein kleiner Script-Editor integriert.<br>
-  Der Script-Interprter hat in dieser Version noch nicht den vollständigen Funktionsumfang.
+  Der Script-Interprter hat in dieser Version noch nicht den vollst&auml;ndigen Funktionsumfang.<br>
+  Das Script-Verzeichnis enth&auml;lt bereits einige Beispiel-Programme. Um ein solches Programm auszuf&uuml;hren, muss es im Editor ausgew&auml;hlt werden.
+  Hat man es ausgew&auml;hlt, kann man den Ausf&uuml;hren-Knopf dr&uuml;cken, um es das Programm zu laden. Die Ansicht schaltet dann zur Script-Konsole.
+  Wenn man in der Script-Konsole den Ausf&uuml;hren-Knopf dr&uuml;ckt, wird das Programm gestartet. Es kann jederzeit beendet werden, indem man
+  den Abbrechen-Knopf dr&uuml;ckt.<br>
+  Weitere Beispielprogramme k&ouml;nnen auf der Projekt-Homepage <a href="http://extcalc-linux.sourceforge.net/">extcalc-linux.sourceforge.net</a> heruntergeladen werden.<br>
   <a name="scriptedit"><h3>3.4.2 Der Script-Editor</h3></a>
   Das Script-Editor Fenster bietet alle grundlegenden Editorfunktionen, um die Script-Programme zu schreiben und zu verwalten.
   Die Programme werden auch von dort aus aufgerufen.<br><br>
   <img src="scriptedit.jpg"></img>
   <br><br>
-  Bevor der Script-Editor benutzt werden kann, muss ein Verzeichnis zum Speichern der Programmcodes und der benötigten Daten erstellt werden.
-  Extcalc fordert Sie beim ersten Start dazu auf, diese Verzeichnisse anzulgegen. Wenn es zu diesem Zeitpunkt abgelehnt wurde, können die Verzeichnisse
-  jederzeit über Einstellungen->Scripting nachträglich angelegt und geändert werden.<br>
-  Dabei müssen Sie ein Grundverzeichnis auswählen, in dem zwei Unterverzeichnisse für Code und Daten mit den angegebenen Namen angelegt werden.<br><br>
+  Bevor der Script-Editor benutzt werden kann, muss ein Verzeichnis zum Speichern der Programmcodes und der ben&ouml;tigten Daten erstellt werden.
+  Extcalc fordert Sie beim ersten Start dazu auf, diese Verzeichnisse anzulgegen. Wenn es zu diesem Zeitpunkt abgelehnt wurde, k&ouml;nnen die Verzeichnisse
+  jederzeit &uuml;ber Einstellungen->Scripting nachtr&auml;glich angelegt und ge&auml;ndert werden.<br>
+  Dabei m&uuml;ssen Sie ein Grundverzeichnis ausw&auml;hlen, in dem zwei Unterverzeichnisse f&uuml;r Code und Daten mit den angegebenen Namen angelegt werden.<br><br>
   <h5>Neues Script anlegen:</h5>
-  Um ein neues Script anzulegen, können Sie entweder einfach den Code in das Editorfenster schreiben, und speichern drücken. Sie werden dann aufgefordert,
+  Um ein neues Script anzulegen, k&ouml;nnen Sie entweder einfach den Code in das Editorfenster schreiben, und speichern dr&uuml;cken. Sie werden dann aufgefordert,
   einen Dateinamen einzugeben und das Programm wird gespeichert.<br>
-  Oder Sie klicken mit der rechten Maustaste in die Dateienliste und wählen "Neue Code-Datei" aus.
+  Oder Sie klicken mit der rechten Maustaste in die Dateienliste und w&auml;hlen "Neue Code-Datei" aus.
   Die neue Datei wird sofort angelegt und im Editorfenster angezeigt.<br>
   <h5>Dateien laden und speichern:</h5>
   Um ein gespeichertes Programm zu laden, kann man es einfach in der Dateiliste anklicken. Der Programmcode wird dann im Editorfenster angezeigt.
-  Wurde vorher ein anderes Programm geändert, so bleiben die Änderungen erhalten. Das vorher geänderte Programm wird mit einem Symbol gekennzeichnet, aber
+  Wurde vorher ein anderes Programm ge&auml;ndert, so bleiben die &Auml;nderungen erhalten. Das vorher ge&auml;nderte Programm wird mit einem Symbol gekennzeichnet, aber
   noch nicht fest abgespeichert.<br>
-  Um das gerade geöffnete Programm zu speichern, kann man einfach dne Speichern-Knopf rechts unter dem Editorfenster drücken.<br>
-  Um eine vorher geänderte Datei, die noch nicht gespeichert wurde, abzuspeichern, kann man diese in der Dateiliste mit der rechten Maustaste auswählen
+  Um das gerade ge&ouml;ffnete Programm zu speichern, kann man einfach dne Speichern-Knopf rechts unter dem Editorfenster dr&uuml;cken.<br>
+  Um eine vorher ge&auml;nderte Datei, die noch nicht gespeichert wurde, abzuspeichern, kann man diese in der Dateiliste mit der rechten Maustaste ausw&auml;hlen
   und auf "Speichern" klicken.<br>
-  Um alle geänderten Dateien abzuspeichern, muss man mit der rechten Maustaste in die Dateiliste klicken und den Punkt "Alle speichern" auswählen.<br>
+  Um alle ge&auml;nderten Dateien abzuspeichern, muss man mit der rechten Maustaste in die Dateiliste klicken und den Punkt "Alle speichern" ausw&auml;hlen.<br>
   Vor dem Beenden des Programms werden Sie ebenfalls gefragt, ob Sie alle Dateien Abspeichern wollen.<br>
   Falls Sie Sonderzeichen aus der integrierten Tastatur in ihrem Code verwenden sollten, so werden diese beim Abspeichern durch die entsprechenden
-  Ascii-Befehle ausgetauscht, um problemloses Laden und Speichern und externes Editieren zu ermöglichen.<br>
+  Ascii-Befehle ausgetauscht, um problemloses Laden und Speichern und externes Editieren zu erm&ouml;glichen.<br>
   <h5>Umgang mit den Dateien:</h5>
   Unterverzeichnisse:<br>
-  Die Programmdateien können in Unterverzeichnissen angeordnet und bearbeitet werden. Die Unterverzeichnisse können in in der Dateiliste angelegt und
-  gelöscht werden.<br>
+  Die Programmdateien k&ouml;nnen in Unterverzeichnissen angeordnet und bearbeitet werden. Die Unterverzeichnisse k&ouml;nnen in in der Dateiliste angelegt und
+  gel&ouml;scht werden.<br>
   Umbenennen:<br>
-  Die Code-Dateien können selbstverständlich auch umbenannt werden. Datein zu verschieben ist momentan noch nicht möglich, wird aber bald eingebaut<br>
-  Löschen:<br>
-  Dateien und Verzeichnisse können jederzeit wieder gelöscht werden. Verzeichniss aber nur, wenn Sie leer sind.<br>
-  Änderungen außerhalb von Extcalc:<br>
-  Man kann die Dateien und Verzeichnisse auch außerhalb des Script-Editors ändern, umbenennen oder löschen. Um die Änderungen in Extcalc zu übernehmen,
-  muss in der Dateiliste die rechte Maustaste gedrückt und "Aktualisieren" gewählt werden. Geänderte Scripte können dann einfach angeklickt werden.<br>
-  Dies ist natürlich nicht nötig, wenn Extcalc während der Änderungen nicht gestartet war.<br>
+  Die Code-Dateien k&ouml;nnen selbstverst&auml;ndlich auch umbenannt werden. Datein zu verschieben ist momentan noch nicht m&ouml;glich, wird aber bald eingebaut<br>
+  L&ouml;schen:<br>
+  Dateien und Verzeichnisse k&ouml;nnen jederzeit wieder gel&ouml;scht werden. Verzeichniss aber nur, wenn Sie leer sind.<br>
+  &Auml;nderungen au&szlig;erhalb von Extcalc:<br>
+  Man kann die Dateien und Verzeichnisse auch au&szlig;erhalb des Script-Editors &auml;ndern, umbenennen oder l&ouml;schen. Um die &Auml;nderungen in Extcalc zu &uuml;bernehmen,
+  muss in der Dateiliste die rechte Maustaste gedr&uuml;ckt und "Aktualisieren" gew&auml;hlt werden. Ge&auml;nderte Scripte k&ouml;nnen dann einfach angeklickt werden.<br>
+  Dies ist nat&uuml;rlich nicht n&ouml;tig, wenn Extcalc w&auml;hrend der &Auml;nderungen nicht gestartet war.<br>
   Sonderzeichen:<br>
-  Selbstverständlich können beim Programmieren auch die Sondertasten auf der integrierten Tastatur von Extcalc verwendet werden. Beim Abspeichern werden
-  diese allerdings durch die jeweiligen ASCII-Befehle ausgetauscht, um Probleme beim Speichern und Laden zu verhindern und um zu ermöglichen, dass der Code
-  von einem externen Editor nicht beschädigt wird.<br>
-  <h5>Programme ausführen:</h5>
-  Um ein Programm auszuführen, wählt man es aus der Dateiliste aus und klickt auf den "Ausführen"-Knopf.<br>
-  Das Script-Programm wird dann übersetzt und die Ansicht wechselt in die Script-Konsole.<br>
+  Selbstverst&auml;ndlich k&ouml;nnen beim Programmieren auch die Sondertasten auf der integrierten Tastatur von Extcalc verwendet werden. Beim Abspeichern werden
+  diese allerdings durch die jeweiligen ASCII-Befehle ausgetauscht, um Probleme beim Speichern und Laden zu verhindern und um zu erm&ouml;glichen, dass der Code
+  von einem externen Editor nicht besch&auml;digt wird.<br>
+  <h5>Script-Programme importieren und exportieren</h5>
+  Um einen Script-Quellcode zu Importieren oder zu Exportieren, kann man entweder den entsprechenden Knopf im Script-Editor dr&uuml;cken,
+  oder im Men&uuml;punkt Script die gew&uuml;nschte Funktion ausw&auml;hlen.<br>
+  Wenn Sie einen Punkt gew&auml;hlt haben, wird der Import/Export-Dialog angezeigt, in dem Quelle und Ziel ausgesucht werden k&ouml;nnen.<br>
+  Mit der Importieren-Funktion kann ein Script-Programm in das Script-Verzeichnis geladen werden.<br>
+  Mit der Export-Funktion kann ein Script-Programm aus dme Script-Verzeichnis an eine beliebige Stelle kopiert werden.<br>
+
+  
+  <h5>Programme ausf&uuml;hren:</h5>
+  Um ein Programm auszuf&uuml;hren, w&auml;hlt man es aus der Dateiliste aus und klickt auf den "Ausf&uuml;hren"-Knopf.<br>
+  Das Script-Programm wird dann &uuml;bersetzt und die Ansicht wechselt in die Script-Konsole.<br>
   Auf der Script-Konsole werden dann eventuelle Fehler im Code angezeigt. Falls das Script ohne Fehler geladen werden konnte, kann man es mit dem
-  Ausfürhen-Knopf starten. Mit diesem Knopf kann immer das Programm ausgeführt werden, dass als letztes geladen wurde.
-  Es ist nicht möglich, zwei Programme gleicheitig zu starten. Falls bereits ein Programm läuft, wenn man ein Programm startet, wird abgefragt, ob
+  Ausf&uuml;rhen-Knopf starten. Mit diesem Knopf kann immer das Programm ausgef&uuml;hrt werden, dass als letztes geladen wurde.
+  Es ist nicht m&ouml;glich, zwei Programme gleicheitig zu starten. Falls bereits ein Programm l&auml;uft, wenn man ein Programm startet, wird abgefragt, ob
   das laufende Programm beendet, oder das neue nicht gestartet werden soll.<br>
-  Laufende Programme können jederzeit über den "Abbrechen"-Knopf unter der Script-Konsole beendet werden. Bei sehr hoher Prozessorbelastung ist es 
-  möglich, dass das Abbrechen-Signal nicht rechtzeitig vom Script empfangen wird. Man muss dann den Abbrechen-Knopf noch einmal drücken, um
+  Laufende Programme k&ouml;nnen jederzeit &uuml;ber den "Abbrechen"-Knopf unter der Script-Konsole beendet werden. Bei sehr hoher Prozessorbelastung ist es 
+  m&ouml;glich, dass das Abbrechen-Signal nicht rechtzeitig vom Script empfangen wird. Man muss dann den Abbrechen-Knopf noch einmal dr&uuml;cken, um
   das Programm korrekt zu Beenden.<br>
   <a name="scriptsyntax"><h3>3.4.3 Die Script-Sprache</h3></a>
-  In Version 0.6.5 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. Nähere Informationen zu den geplaten
+  In Version 0.7.0 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. N&auml;here Informationen zu den geplaten
   Funktionen finden Sie im <a href="#else">Kapitel 4</a>.<br>
   <h5>Probleme:</h5>
-  In der folgenden Liste sind Probleme aufgeführt, die in der Version 0.6.5 des Script-Interpreters noch vorhanden sind.<br><br>
+  In der folgenden Liste sind Probleme aufgef&uuml;hrt, die in der Version 0.6.5 des Script-Interpreters noch vorhanden sind.<br><br>
   1. Geschwindigkeit<br>
   Da die Programme von einem Interpreter abgearbeitet werden, laufen diese auch wesentlich langsamer, als kompilierte Programme.
-  Der Interpreter wird aber in späteren Versionen noch weiter optimiert.<br><br>
+  Der Interpreter wird aber in sp&auml;teren Versionen noch weiter optimiert.<br><br>
   2. Variablen:<br>
-  Es können nur die Großbuchstaben von A bis Z als Variablen verwendet werden. Jede Variable kann auch als Array benutzt werden.<br><br>
-  3. Geringere Möglichkeiten<br>
-  In dieser Version ist nur ein Teil der geplanten Funktionalitäten bereits aktiviert. Deshalb ist es nicht möglich, komplexe Probleme mit den
-  Script-Programmen zu lösen. Die Sprache wird in späteren Versionen noch so weit wie möglich ausgebaut. Sie ist aber trotzdem nur zum Lösen oder
+  Es k&ouml;nnen nur die Gro&szlig;buchstaben von A bis Z als Variablen verwendet werden. Jede Variable kann auch als Array benutzt werden.<br><br>
+  3. Geringere M&ouml;glichkeiten<br>
+  In dieser Version ist nur ein Teil der geplanten Funktionalit&auml;ten bereits aktiviert. Deshalb ist es nicht m&ouml;glich, komplexe Probleme mit den
+  Script-Programmen zu l&ouml;sen. Die Sprache wird in sp&auml;teren Versionen noch so weit wie m&ouml;glich ausgebaut. Sie ist aber trotzdem nur zum L&ouml;sen oder
   automatisieren kleinerer mathematischer Aufgaben da. Komplexe Programme sollten in einer kompletten Programmiersprache wie C geschrieben werden.
   <br><br>
-  4. Stabilität<br>
-  Die Script-Programmiersprache befindet sich wie das gesamte Programm noch in einem frühen Entwicklungsstadium. Deshalb kann hier nicht für die
-  Stabilität des Script-Interpreters garantiert werden. Bei einem Script-Interprter ergeben sich durch die Programmierbarkeit leider besonders viele
-  Fehlerquellen. Fehler werden selbstverständlich so schnell wie möglich behoben.<br>
+  4. Stabilit&auml;t<br>
+  Die Script-Programmiersprache befindet sich wie das gesamte Programm noch in einem fr&uuml;hen Entwicklungsstadium. Deshalb kann hier nicht f&uuml;r die
+  Stabilit&auml;t des Script-Interpreters garantiert werden. Bei einem Script-Interprter ergeben sich durch die Programmierbarkeit leider besonders viele
+  Fehlerquellen. Fehler werden selbstverst&auml;ndlich so schnell wie m&ouml;glich behoben.<br>
 
   <h5>Syntax:</h5>
-  Die Syntax der Extcalc Script-Sprache ist der C-Syntax ähnlich.<br>
+  Die Syntax der Extcalc Script-Sprache ist der C-Syntax &auml;hnlich.<br>
   Grundregeln:<br>
   - Befehle werden mit einem Semikolon ; abgeschlossen<br>
-  - Hinter Schleifen und bedingten Anweisungen folgt kein Semikolon, sonderen der auszuführende Befehl<br>
-  - Sollen mehrere Befehle ausgeführt werden, so werden diese zwischen geschweiften Klammern { } geschrieben<br>
-  - Es ist möglich, mathematische Operationen im Code zu verwenden. Auch diese werden mit einem Semikolon abgeschlossen<br>
-  - Es können beliebig vielse Leerzeilen, Tabulatoren oder Leerzeichen im Code enthalten sein.<br>
-  - Diese sind aber nicht zum Interpretieren des Programms nötig, und werden ohnehin vor dem Interpretieren entfernt<br>
-  - Es ist möglich, ganze Kommentare wie in C++ mit zwei Schrägstrichen // zu beginnen. Der Rest der Zeile wird dann ignoriert<br>
+  - Hinter Schleifen und bedingten Anweisungen folgt kein Semikolon, sonderen der auszuf&uuml;hrende Befehl<br>
+  - Sollen mehrere Befehle ausgef&uuml;hrt werden, so werden diese zwischen geschweiften Klammern { } geschrieben<br>
+  - Es ist m&ouml;glich, mathematische Operationen im Code zu verwenden. Auch diese werden mit einem Semikolon abgeschlossen<br>
+  - Es k&ouml;nnen beliebig vielse Leerzeilen, Tabulatoren oder Leerzeichen im Code enthalten sein.<br>
+  - Diese sind aber nicht zum Interpretieren des Programms n&ouml;tig, und werden ohnehin vor dem Interpretieren entfernt<br>
+  - Es ist m&ouml;glich, ganze Kommentare wie in C++ mit zwei Schr&auml;gstrichen // zu beginnen. Der Rest der Zeile wird dann ignoriert<br>
   - Der C-Kommenter /* ... */ kann noch NICHT verwendet werden<br>
   - Der Vergleichsoperator besteht wie in C aus ZWEI GLEICHHEITSZEICHEN ==, ein Gleichheitszeichen bedeutet Zuweisung<br>
-  - Will man eine Variable als Array verwenden, hängt man einfach den []-Operator an, das Array wird dann automatisch generiert<br>
+  - Will man eine Variable als Array verwenden, h&auml;ngt man einfach den []-Operator an, das Array wird dann automatisch generiert<br>
   - Es gibt keine Unterfunktionen. Die Befehle werden direkt in die Datei geschrieben<br>
-  - Es ist allerdings möglich, eine andere Code-Datei mit dem Befehl run() aufzurufen<br>
+  - Es ist allerdings m&ouml;glich, eine andere Code-Datei mit dem Befehl run() aufzurufen<br>
   <br>
   <h5>Fehlermeldungen:</h5>
   Beim Laden eines Scripts wird die Haupt-Datei und alle Unterprogramme, die aufgerufen werden von einem Interpreter in den Speicher geladen, ohne das
-  Script auszuführen. Das Speicher-Objekt, das dabei entsteht ist das ausführbare Script. Es kann unabhängig vom Quellcode so oft ausgeführt werden, wie 
+  Script auszuf&uuml;hren. Das Speicher-Objekt, das dabei entsteht ist das ausf&uuml;hrbare Script. Es kann unabh&auml;ngig vom Quellcode so oft ausgef&uuml;hrt werden, wie 
   man will.<br>
-  Falls beim Interpretieren des Script Fehler auftreten, werden diese auf der Script-Konsole angezeigt, und das Script kann nicht ausgeführt werden.
-  Da für den Interpreter die ursprüngliche Formatierung des Quelltextes nicht mehr existiert, wird die Zeilennummer anhand der im Code enthaltenen 
-  Strichpunkte ermittelt. Deshalb befindet sich der Fehler manchmal in einer Zeile überhalb der Zeile, die in der Fehlermeldung angegeben ist.<br>
-  Es kann auch vorkommen, dass ein Quellcode fehlerhaft ist, aber vom Interpreter dennoch übersetzt werden kann. Dies ist vor allem bei Fehlern innerhalb
+  Falls beim Interpretieren des Script Fehler auftreten, werden diese auf der Script-Konsole angezeigt, und das Script kann nicht ausgef&uuml;hrt werden.
+  Da f&uuml;r den Interpreter die urspr&uuml;ngliche Formatierung des Quelltextes nicht mehr existiert, wird die Zeilennummer anhand der im Code enthaltenen 
+  Strichpunkte ermittelt. Deshalb befindet sich der Fehler manchmal in einer Zeile &uuml;berhalb der Zeile, die in der Fehlermeldung angegeben ist.<br>
+  Es kann auch vorkommen, dass ein Quellcode fehlerhaft ist, aber vom Interpreter dennoch &uuml;bersetzt werden kann. Dies ist vor allem bei Fehlern innerhalb
   von Rechnungen der Fall.<br>
   Es kann auch vorkommen, dass nur die Fehlermeldung "Preprozessor Error" ausgegeben wird, und der Script-Interpreter gar nicht aufgerufen wird.
-  Dann ist die Datei entweder leer, oder enthält überhaupt keine interpretierbare Information, oder Sie enthält einen Rückschrägstrich außerhalb
+  Dann ist die Datei entweder leer, oder enth&auml;lt &uuml;berhaupt keine interpretierbare Information, oder Sie enth&auml;lt einen R&uuml;ckschr&auml;gstrich au&szlig;erhalb
   eines Strings.<br>
+  Wird eine Fehlermeldung in der Form "Preference Preprocessor: Fehlermeldung" ausgegeben, dann liegt ein Fehler in den 
+  #config-Anweisungen vor.<br>
   <h5>Variablen:</h5>
-  Als Variablen stehen wie oben genannt die Großbuchstaben von A bis Z zur Verfügung.<br>
-  Diese können mit festen Werten vorinitialisiert werden, oder im Programmablauf errechnet werden.<br>
+  Als Variablen stehen wie oben genannt die Gro&szlig;buchstaben von A bis Z zur Verf&uuml;gung.<br>
+  Diese k&ouml;nnen mit festen Werten vorinitialisiert werden, oder im Programmablauf errechnet werden.<br>
   Die Variablen sind nicht vorinitialisiert, d. h. es ist kein definierter Wert gespeichert, wenn die Variable noch nicht gesetzt wurde.
-  Sie kann aber dennoch benutzt werden, ohne einen Fehler auszulösen.<br>
-  Die Variablen können verschiedene Datentypen aufnehmen. Der Datentyp einer Variable kann sich auch während des Programms ändern.<br>
-  Folgende Typen stehen zur Verfügung:<br>
-  float:  Gleitkomma-Zahl vom Typ long double (Größe Systemabhängig, normalerweise 10 Byte)<br>
+  Sie kann aber dennoch benutzt werden, ohne einen Fehler auszul&ouml;sen.<br>
+  Die Variablen k&ouml;nnen verschiedene Datentypen aufnehmen. Der Datentyp einer Variable kann sich auch w&auml;hrend des Programms &auml;ndern.<br>
+  Folgende Typen stehen zur Verf&uuml;gung:<br>
+  float:  Gleitkomma-Zahl vom Typ long double (Gr&ouml;&szlig;e Systemabh&auml;ngig, normalerweise 10 Byte)<br>
   int: Ganzzahl vom Typ long long (8 Byte)<br>
   bool: Wahrheitswert vom Typ bool (kann true oder false sein)<br>
-  string: Text vom Type char* (Länge variabel, Speicher wird vom Interpreter korrekt reserviert und freigegeben)<br>
+  string: Text vom Type char* (L&auml;nge variabel, Speicher wird vom Interpreter korrekt reserviert und freigegeben)<br>
   <br>
   Wird einer Variable ein Komma-Zahl oder das Ergebnis einer Rechnung zugewiesen, so nimmt sie automatisch den Typ float an.
   Wird einer Variable eine Ganzzahl zugewiesen, nimmt Sie den Typ int an.
-  Ergebnisse aus Vergleichsoperationen haben standardmäßíg den Typ bool.
+  Ergebnisse aus Vergleichsoperationen haben standardm&auml;&szlig;íg den Typ bool.
   Text, auch Benutzereingaben haben den Type string.
-  Schlägt eine Operation fehl, liefert sie eine Variable vom Typ none.<br>
-  Egal welchen Typ eine Variable hat, der float-Teil der Variable enthält immer einen zum Inhalt passenden Wert.<br>
+  Schl&auml;gt eine Operation fehl, liefert sie eine Variable vom Typ none.<br>
+  Egal welchen Typ eine Variable hat, der float-Teil der Variable enth&auml;lt immer einen zum Inhalt passenden Wert.<br>
   <br><br>
   <h5>Arrays:</h5>
   Jede Variable kann auch als Array verwendet werden. Der vorher enthaltene Wert ist dann im Index 0 gespeichert.
   Um eine Variable als Array zu verwenden reicht es einem beliebigen Index einen Wert zuzuweisen, z. B. A[5]=4.323;. Dann
   wird automatisch ein Array mit 6 Elementen erzeugt. Ein Array kann auch Elemente verschiedenen Typs enthalten. Mehrdimensionale 
-  Arrays sind momentan nicht möglich.<br>
-  Eine Ausnahme sind Strings. Wenn man auf ein einzelnes Zeichen einer Zeichenkette zugreifen, so
-  kann man dies mit zwei Index-Operatoren tun, also z. B. A[4][7]=65; Will man auf ein Zeichen innerhalb eines Strings zugreifen, der nicht
-  Teil eines Arrays ist, muss mann dennoch zwei Index-Operatoren verwenden, weil ja nicht zwischen Array und einzelner Variable unterschieden werden kann.
-  Man schreibt dann einfach A[0][7]=66;<br><br>
-  <h5>Befehle:</h5>
-  Die folgenden Grundbefehle können in den Programmen bereits verwendet werden:<br><br>
+  Arrays sind momentan nicht m&ouml;glich. Ein Array kann nur eine oder zwei Dimensionen haben.<br>
+  &Uuml;ber den Index-Operator kann auch auf einzelnen Zeichen eines Strings zugegriffen werden. Dies geschieht entweder, wenn man einen Index
+  (A[5]) angiebt, und das erste Element in der Variable ist ein String, oder, wenn man zwei Indices angiebt (A[2][1]), und das Element
+  in der Variable, auf das der erste Index zeigt, ist ein String. <br><br>
+ <h5>Matrizen und Vektoren:</h5>
+  Um eine Variable als Vektor zu benutzen, muss zuerst ein 1-dimensionales Array mit Werten angelegt werden.
+  Zum Ausf&uuml;hren einer Vektor-Operation muss dann dem Variablennamen ein leerer Index-Operator angeh&auml;ngt werden.
+  Zum Beispiel A[] repr&auml;sentiert die Variable A als Vektor. Eine Vektor-Operation kann z. B A[]+B[], oder 5+A[] sein.
+  In der folgenden Tabelle sind die m&ouml;glichen Vektor-Operationen aufgelistet:<br>
+  <TABLE BORDER>
+  <TR><TH>Operation</TH><TH>Beschreibung</TH>
+  <TR>
+  <TD>Vektor+Konstante, Konstante+Vektor, Vektor-Konstante, Konstante-Vektor</TD>
+  <TD>Konstante zu jedem Element des Vektors zahlen.
+  </TD>
+  <TR>
+  <TD>Vektor+Vektor, Vektor-Vektor</TD>
+  <TD>Vectorsumme. Jeweils die Elemente der Vektoren mit gleichem Index werden addiert.
+  </TD>
+  <TR>
+  <TD>Skalarprodukt: Vektor°Vektor</TD>
+  <TD>Multiplikation zweier Vektoren mit einem Skalar als Ergebnis.
+  </TD>
+  <TR>
+  <TD>Kreuzprodukt: Vektor*Vektor</TD>
+  <TD>Multiplikation zweier Vektoren mit einem Vektor als Ergebnis. Beide Vektoren m&uuml;ssen 3 Elemente haben.
+  </TD>
+  <TR>
+  <TD>Vektor*Konstante, Konstante*Vektor</TD>
+  <TD>Jedes Element des Vektors wird mit einer Konstante multipliziert.
+  </TD>
+  </TABLE>
+   <br>
+  F&uuml;r Matrix-Operationen wird ein 2-dimensionales Array ben&ouml;tigt.<br>
+  Man benutzt dieses 2-dimensionale Array als Matrix, indem man z.B. A[][] schreibt.<br>
+  Um auf ein einzelnes Element der Matrix zuzugreifen schreibt man z.B. A[2][3],wobei der erste Index
+  [2], die Zeile angiebt (2 hei&szlig;t 3. Zeile) und der zweite Index [3] die Spalte  (3 steht f&uuml;r die 4. Spalte).<br>
+  Es folgt eine Liste der m&ouml;glichen Matrix-Operationen:
+  <TABLE BORDER>
+  <TR><TH>Operation</TH><TH>Beschreibung</TH>
+  <TR>
+  <TD>Matrix+Konstante, Konstante+Matrix, Matrix-Konstante, Konstante-Matrix</TD>
+  <TD>Eine Konstante wird zu jedem Element der Matrix addiert.
+  </TD>
+  <TR>
+  <TD>Matrix+Matrix, Matrix-Matrix</TD>
+  <TD>Matrix-Summe. Elemente mit gleichen Indices werden addiert.
+  </TD>
+  <TR>
+  <TD>matrixproduct: Matrix*Matrix</TD>
+  <TD>Matrixmultiplikation. Das Ergebnis ist ebenfalls eine Matrix.
+  </TD>
+  <TR>
+  <TD>Vektor*Matrix</TD>
+  <TD>Multiplikation eines Vektors mit einer Matrix. Das Ergebnis ist eine Matrix.
+  </TD>
+    <TR>
+  <TD>Matrix*Vektor</TD>
+  <TD>Multiplikation einer Matrix mit einem Vektor. Das Ergebnis ist ein Vektor.
+  </TD>
+  <TR>
+  <TD>Matrix*Konstante, Konstante*Matrix</TD>
+  <TD>Jedes Element der Matrix wird mit einer Konstante multipliziert.
+  </TD>
+  </TABLE>
+  <br>
+  Allgemeine Hinweise:<br>
+  <UL>
+  <LI>Matrizen und Vektoren k&ouml;nnen kopiert werden. Schreibt man z.B. B=A[][], dann wird die komplette Matrix A in B kopiert.</LI>
+  <LI>Will man nur ein einzelnes Element einer Matrix oder eines Vektors kopieren, dann schreibt man z.B. B=A[2][3].</LI>
+  <LI>Schreibt man B=A, und A ist eine Matrix, dann wird NUR das Element 0,0 der Matrix in B kopiert. Dies ist identisch mit B=A[0][0].</LI>
+  <LI>Will man den Vektor oder die Matrix aus dem Antwortspeicher benutzen, so kann man ans[] bzw. ans[][] schreiben.</LI>
+  <LI>Man kann eine Matrix oder einen Vektor nur verkleinern, indem man eine kleinere Matrix oder einen kleineren Vektor hineinkopiert.</LI>
+  <LI>Man kann den gesamten Array-Speicher l&ouml;schen, indem man die AC-Taste dr&uuml;ckt.</LI>
+  </UL> 
+
+
+
+<h5>Befehle:</h5>
+  Die folgenden Grundbefehle k&ouml;nnen in den Programmen bereits verwendet werden:<br><br>
   1. If<br>
   Syntax: <br>
  <pre>
  if( Bedingung )
-    Befehl für Bedingung wahr;
+    Befehl f&uuml;r Bedingung wahr;
   else 
-    Befehl für Bedingung falsch;
+    Befehl f&uuml;r Bedingung falsch;
   </pre>
-  Sollen merhrere Befehle ausgeführt werden, sind diese in geschweiften Klammern zu schreiben (ohne Strichpunkt am Ende)<br>
+  Sollen merhrere Befehle ausgef&uuml;hrt werden, sind diese in geschweiften Klammern zu schreiben (ohne Strichpunkt am Ende)<br>
   Beispiel:<br>
   <pre>
   if(A==5)
@@ -579,10 +680,10 @@
   Syntax: <br>
  <pre>
  while( Bedingung )
-    Befehl, der aufgeführt wird solange die Bedingung wahr ist;
+    Befehl, der aufgef&uuml;hrt wird solange die Bedingung wahr ist;
   </pre>
-  Sollen merhrere Befehle ausgeführt werden, sind diese in geschweiften Klammern zu schreiben<br>
-  Soll die Schleife immer laufen, kann man z. B. while(1) schreiben, so dass die Bedingung immer erfüllt ist.<br>
+  Sollen merhrere Befehle ausgef&uuml;hrt werden, sind diese in geschweiften Klammern zu schreiben<br>
+  Soll die Schleife immer laufen, kann man z. B. while(1) schreiben, so dass die Bedingung immer erf&uuml;llt ist.<br>
   Es muss aber eine Bedingung angegeben werden.<br>
   Beispiel:<br>
   <pre>
@@ -597,14 +698,14 @@
   3. For<br>
   Syntax: <br>
  <pre>
- for(Initialisierung; Bedingung; Zähl-Befehl)
-    Befehl, der aufgeführt wird solange die Bedingung wahr ist;
+ for(Initialisierung; Bedingung; Z&auml;hl-Befehl)
+    Befehl, der aufgef&uuml;hrt wird solange die Bedingung wahr ist;
   </pre>
-  Sollen merhrere Befehle ausgeführt werden, sind diese in geschweiften Klammern zu schreiben<br>
-  Bei Initialisierung kann man die Zählvariable auf einen Startwert setzen.<br>
-  Bei Bedingung wird die Bedingung angegeben, die erfüllt sein muss, damit die Schleife läuft.<br>
-  Bei Zähl-Befehl kann ein beliebiger Befehl angegeben werden, der bei jedem Schleifendurchlauf ausgeführt wird.<br>
-  Falls man keine Initialisierung oder keine Bedingung benötigt, ist dort einfach ein Semikolon zu schreiben, der Zähl-Befehl kann komplett weggelassen
+  Sollen merhrere Befehle ausgef&uuml;hrt werden, sind diese in geschweiften Klammern zu schreiben<br>
+  Bei Initialisierung kann man die Z&auml;hlvariable auf einen Startwert setzen.<br>
+  Bei Bedingung wird die Bedingung angegeben, die erf&uuml;llt sein muss, damit die Schleife l&auml;uft.<br>
+  Bei Z&auml;hl-Befehl kann ein beliebiger Befehl angegeben werden, der bei jedem Schleifendurchlauf ausgef&uuml;hrt wird.<br>
+  Falls man keine Initialisierung oder keine Bedingung ben&ouml;tigt, ist dort einfach ein Semikolon zu schreiben, der Z&auml;hl-Befehl kann komplett weggelassen
   werden.<br>
   Beispiel:<br>
   <pre>
@@ -621,13 +722,13 @@
  print( Ausgabedaten );
   </pre>
   Als Ausgabedaten kann eine Variable, ein Befehl oder eine Konstante (bzw. ein Text) angegeben werden.<br>
-  Es darf nur ein Element angegeben werden (Dieses darf natürlich aus mehreren Teilen bestehen).<br>
+  Es darf nur ein Element angegeben werden (Dieses darf nat&uuml;rlich aus mehreren Teilen bestehen).<br>
   Beispiel:<br>
   <pre>
   A=12;
   print(A+3);  //Ausgabe: 15
 
-  print("Hello World!\n");    // Der Text wird mit anschließender Leerzeile ausgegeben
+  print("Hello World!\n");    // Der Text wird mit anschlie&szlig;ender Leerzeile ausgegeben
 
   print(3&gt;5);  //Es wird false ausgegeben
   </pre>
@@ -637,7 +738,7 @@
   <pre>
   getline;
   </pre>
-  Der Befehl ist nur Sinnvoll, wenn der Rückgabewert wie im Beispiel gespeichert wird oder sofort ausgewertet wird.<br>
+  Der Befehl ist nur Sinnvoll, wenn der R&uuml;ckgabewert wie im Beispiel gespeichert wird oder sofort ausgewertet wird.<br>
   Beispiel:<br>
   <pre>
   X=getline;
@@ -651,13 +752,13 @@
   <pre>
   getkey;
   </pre>
-  Der Befehl ist nur Sinnvoll, wenn der Rückgabewert wie im Beispiel gespeichert wird oder sofort ausgewertet wird.<br>
-  Der Befehl blockiert das Programm, bis eine Taste gedrückt wurde.<br>
-  Der Rückgabewert ist ein String und muss deshalb evtl. konvertiert werden.<br>
+  Der Befehl ist nur Sinnvoll, wenn der R&uuml;ckgabewert wie im Beispiel gespeichert wird oder sofort ausgewertet wird.<br>
+  Der Befehl blockiert das Programm, bis eine Taste gedr&uuml;ckt wurde.<br>
+  Der R&uuml;ckgabewert ist ein String und muss deshalb evtl. konvertiert werden.<br>
   Beispiel:<br>
   <pre>
   F=0;
-  while(F!=97)  //Schleife läuft, bis die Taste a gedrückt wird
+  while(F!=97)  //Schleife l&auml;uft, bis die Taste a gedr&uuml;ckt wird
   {
     F=getkey;
     F=(int)F;
@@ -669,20 +770,20 @@
   <pre>
   keystate;
   </pre>
-  Der Befehl ist nur Sinnvoll, wenn der Rückgabewert wie im Beispiel gespeichert wird oder sofort ausgewertet wird.<br>
+  Der Befehl ist nur Sinnvoll, wenn der R&uuml;ckgabewert wie im Beispiel gespeichert wird oder sofort ausgewertet wird.<br>
   Der Befehl blockiert das Programm nicht.<br>
-  Falls gerade keine Taste gedrückt wurde, wird 0 zurückgeliefert<br>
-  Der Rückgabewert ist ein String und muss deshalb evtl. konvertiert werden.<br>
+  Falls gerade keine Taste gedr&uuml;ckt wurde, wird 0 zur&uuml;ckgeliefert<br>
+  Der R&uuml;ckgabewert ist ein String und muss deshalb evtl. konvertiert werden.<br>
   Beispiel:<br>
   <pre>
   F=0;
-  while(F!=97)  //Schleife läuft, bis die Taste a gedrückt wird
+  while(F!=97)  //Schleife l&auml;uft, bis die Taste a gedr&uuml;ckt wird
   {
    F= keystate;
     F=(int)F;
-    sleep(10000);                         //Bremst das Programm, für reibungsloses auslesen der Tastatur (10 ms pro Schleifendurchlauf)
+    sleep(10000);                         //Bremst das Programm, f&uuml;r reibungsloses auslesen der Tastatur (10 ms pro Schleifendurchlauf)
     if(F==0)    
-      print("a drücken zum Beenden\n");    //Dieser Text wird ständig ausgegeben
+      print("a dr&uuml;cken zum Beenden\n");    //Dieser Text wird st&auml;ndig ausgegeben
   }
   </pre>
 
@@ -691,9 +792,9 @@
   <pre>
   sleep( Zeit im Mikrosekunden );
   </pre>
-  Das Script wird für eine bestimmte Zeit angehalten.<br>
+  Das Script wird f&uuml;r eine bestimmte Zeit angehalten.<br>
   Falls man ein Programm drosseln will, sollte man diesen Befehl verwenden (keine leere Schleife verwenden, die sehr viel Rechenleistung verbraucht)<br>
-  Ein Programm kann durch geschicktes einbauen dieses Befehls auch schneller gemacht werden (z.B. Bei einer großen Menge von Ausgaben).<br>
+  Ein Programm kann durch geschicktes einbauen dieses Befehls auch schneller gemacht werden (z.B. Bei einer gro&szlig;en Menge von Ausgaben).<br>
   Beispiel siehe keystate<br>
 
   9. Typenkonvertierung<br>
@@ -702,7 +803,7 @@
   (Zieltyp)Variable;
   </pre>
   Der Zieltyp wird immer in Klammer geschrieben und muss einer von (int) (float) (string) (bool) sein.<br>
-  Es können auch Konstanten konvertiert werden.<br>
+  Es k&ouml;nnen auch Konstanten konvertiert werden.<br>
   Beispiel:<br>
   <pre>
   A=12.3545;
@@ -721,14 +822,14 @@
   <pre>
   run("Script-Pfad");
   </pre>
-  Es ist möglich, in einem Script eine andere Programm-Datei aufzurufen. Dazu wird der Script-Pfad relativ zum Script-Code Verzeichnis angegeben, 
-  so wie er auch im Editor-Fenster angezeigt wird. Der Pfad muss in Anführungszeichen stehen. Damit ist rekursive Programmierung möglich. Dies sollte
-  aber vermieden werden, weil es zu einem Stack-Overflow führen kann. Dieser kann wird schon nach einigen hundert Rekursions-Scritten eintreten, und 
-  der Absturz des Programms lässt sich dann vom Interpreter nicht verhindern.<br>
+  Es ist m&ouml;glich, in einem Script eine andere Programm-Datei aufzurufen. Dazu wird der Script-Pfad relativ zum Script-Code Verzeichnis angegeben, 
+  so wie er auch im Editor-Fenster angezeigt wird. Der Pfad muss in Anf&uuml;hrungszeichen stehen. Damit ist rekursive Programmierung m&ouml;glich. Dies sollte
+  aber vermieden werden, weil es zu einem Stack-Overflow f&uuml;hren kann. Dieser kann wird schon nach einigen hundert Rekursions-Scritten eintreten, und 
+  der Absturz des Programms l&auml;sst sich dann vom Interpreter nicht verhindern.<br>
   Beispiel:<br>
   <pre>
-  run("subprogram");    //Program heißt subprogram und befindet sich direkt im Code-Hauptverzeichnis
-  run("myprog/subroutine2"); //Programm heißt subroutine2 und befindet sich im Unterverzeichnis myprog
+  run("subprogram");    //Program hei&szlig;t subprogram und befindet sich direkt im Code-Hauptverzeichnis
+  run("myprog/subroutine2"); //Programm hei&szlig;t subroutine2 und befindet sich im Unterverzeichnis myprog
   </pre>
 
 
@@ -736,12 +837,14 @@
   Syntax: <br>
   <pre>
   Variable[index];                               //Normales Array
-  Variable[String-Index][Zeichen-Index];         //Zeichen in einem String
+  Variable[1. Index][2. Index];                  //2-Dimensionales Array
   </pre>
   Jede Variable ist auch ein Array, wenn man diese mit dem Index-Operator benutzt.<br>
   Ohne Index-Operator greift man automatisch auf das erste Element des Arrays zu.<br>
-  Wenn man auf ein Zeichen in einem String zugreifen will, ist die oben angegebene Syntax zu verwenden, 
-  auch wenn der String nicht Teil eines Arrays ist. Dann ist der String-Index gleich 0.<br>
+  Wenn man auf ein Zeichen in einem String zugreifen will, kann man entweder nur einen Index (A[2][4]) benutzen, wenn der 
+  String das erste oder einzige Element in der Variable ist, oder wenn man zwei Indices angiebt, und das Element der Variable 
+  das mit dem ersten Index ausgew&auml;hlt wird, ist ein String.<br>
+
   Beispiel:<br>
   <pre>
   A="          ";
@@ -750,7 +853,7 @@
   print(A);                            //gibt die Zeichen invertiert aus
   </pre>
 
-  12. Mögliche Operatoren<br>
+  12. M&ouml;gliche Operatoren<br>
   Operatorenliste <br>
   <pre>
   In Scriptinterpreter integrierte Operatoren (funktionieren mit allen Datentypen)
@@ -758,9 +861,9 @@
   - Subtraktion
   == Vergleich
   != Ungleich
-  &gt; Größer
+  &gt; Gr&ouml;&szlig;er
   &lt; Kleiner
-  &gt;= Größer gleich
+  &gt;= Gr&ouml;&szlig;er gleich
   &lt;= Kleiner gleich
   &amp;&amp; Logisches Und
   || Logisches Oder
@@ -768,11 +871,12 @@
   = Zuweisung (wie in C)
   -&gt; Zuweisung (wie im Taschenrechner)
   [] Index-Operator
+  [][] 2-Dimensionaler Index-Operator
 
   Alle anderen Operatoren funktionieren wie im Taschenrechner
-  Diese geben dann aber immer eine float-Zahl zurück
+  Diese geben dann aber immer eine float-Zahl zur&uuml;ck
   </pre>
-  Diese Operatoren können auch in einer Rechnung verwendet werden<br>
+  Diese Operatoren k&ouml;nnen auch in einer Rechnung verwendet werden<br>
   <pre>
   12.3545-&gt;A;
   (int)A-&gt;A; // A ist jetzt 12
@@ -783,6 +887,34 @@
   (float)C-&gt;D;   //Text kann als Zahl interpretiert werden, D wird auf Zahlenwert gesetzt
   print(D+1);    //Gibt 235.45 aus
   </pre>
+  
+  
+   <h5>Script Einstellungen</h5>
+  Es ist m&ouml;glich, die Einstellungen, mit denen ein Script ausgef&uuml;hrt wird, innerhalb des Scripts zu setzen. Dies ist oft n&ouml;tig,
+  um zu gew&auml;hrleisten, dass das Script-Programm unabh&auml;ngig von den Benutzer-Einstellungen l&auml;uft.<br>
+  Diese Einstellungen gelten nur f&uuml;r das Script, in dem sie stehen. Sie habe keinen Einfluss auf die Benutzer-Einstellungen.
+  Alle Einstellungen werden f&uuml;r das gesamte Script gesetzt, egal, wo sie im Script gestanden haben.<br>
+  Die Einstellungen werden im Script mit dem #config-Befehl gesetzt.<br>
+  Die Syntax is:<pre>#config EINSTELLUNG</pre>
+  Hier ist eine Liste der m&ouml;glichen Einstellungen:
+  <pre>
+#config complexon             //Komplexe Zahlen einschalten
+#config complexoff            //Komplexe Zahlen ausschalten
+
+#config angledeg              //Grad als Winkel-Format benutzen
+#config anglerad              //Radiant als Winkel-Format benutzen
+#config anglegra              //Neugrad als Winkel-Format benutzen
+
+#config modebase              //In Logik-Modus schalten
+#config modescientific        //Wissenschaftlichen Modus benutzen (Standard)
+
+#config outputlengthXX        //Stellenzahl f&uuml;r Ausgabe von Gleitpunktzahlen festlegen. XX ist eine Zahl zwischen 2 und der max. Stellenzahl
+                              //Die Stellenzahl wird ohne Leerschritt direkt hinter outputlength geschrieben
+
+#config clearmemory           //Array-Speicher vor dem Start l&ouml;schen
+</pre>
+  
+  
 
   <h5>Beispielprogramme:</h5>
   Programm 1:<br>
@@ -926,132 +1058,141 @@
   print(X);
   print("\n\n");
   </pre>
-
+  
+  
+  
+  <a name="matrixvector"><h2>3.5 Matrix-, Vektorrechnung</h2></a>
+  In Version 0.7.0 von Extcalc werden Matrizen und Vektoren intern bereits vollst&auml;ndig unterst&uuml;tzt.<br>
+  Ein eigenes Fenster f&uuml;r Matrix- und Vektor-Berechungen ist aber noch nicht vorhanden.<br>
+  Damit der Benutzer die neuen Funktionen dennoch benutzen kann, werden Script-Programme mitgeliefert, mit denen jeder Benutzer
+  die neuen Fuktionen benutzen kann. Diese Script-Programme werden beim ersten Start zu den Benutzerdateien kopiert und k&ouml;nnen dann
+  im Script-Editor ausgew&auml;hlt und ausgef&uuml;hrt werden.
+  <br>
+  Um ein solches Programm zu benutzen, muss es zuerst im Script-Editor ausgew&auml;hlt werden. Das Script wird dann angezeigt.
+  Um es zu laden, muss man im Script-Editor den Ausf&uuml;hren-Knopf dr&uuml;cken. Die Ansicht wechselt dann in die Script-Konsole.
+  Hier kann man das Programm mit dem Ausf&uuml;hren-Knopf starten. Um das Programm zu Beenden, muss man den Abbrechen-Knopf dr&uuml;cken.<br><br>
+  
+  
+  
   <a name="pref"><h2>3.5 Einstellungen</h2></a>
-  Die Einstellungen können entweder direkt über das Menü vorgenommen werden oder in den 
-  ausführlichen Einstellungs-Fenstern. Um die Einstellungen direkt zu ändern, gibt es im
-  Menü die Punkte "Rechner" und "Grafik". Dort können einige Einstellungen direkt geändert
+  Die Einstellungen k&ouml;nnen entweder direkt &uuml;ber das Men&uuml; vorgenommen werden oder in den 
+  ausf&uuml;hrlichen Einstellungs-Fenstern. Um die Einstellungen direkt zu &auml;ndern, gibt es im
+  Men&uuml; die Punkte "Rechner" und "Grafik". Dort k&ouml;nnen einige Einstellungen direkt ge&auml;ndert
   werden.<br>
-  Es besteht auch die Möglichkeit, die Einstellungen im Einstellungs-Fenster zu verändern.
-  Dazu muss man im Menü den Punkt "Einstellungen" und dann die entsprechende Komponente wählen.
-  In den Dialogen können alle Parameter, die einstellbar sind, konfiguriert werden.
+  Es besteht auch die M&ouml;glichkeit, die Einstellungen im Einstellungs-Fenster zu ver&auml;ndern.
+  Dazu muss man im Men&uuml; den Punkt "Einstellungen" und dann die entsprechende Komponente w&auml;hlen.
+  In den Dialogen k&ouml;nnen alle Parameter, die einstellbar sind, konfiguriert werden.
   <h3>Rechner-Einstellungen</h3>
   In diesem Dialog kann dass Ausgabeformat und der Rechner-Modus eingestellt werden. Der Rechner-Modus
   (Wissenschaftlich oder Logik) bezieht sich nur auf den Rechner selbst. Das Ausgabeformat und die Einstellung
-  für die Winkelfunktionen bezieht sich auf das gesamte Programm. Alle Einstellungen die in diesem Dialog enthalten
-  sind, können auch im Rechner-Menü verändert werden.
+  f&uuml;r die Winkelfunktionen bezieht sich auf das gesamte Programm. Alle Einstellungen die in diesem Dialog enthalten
+  sind, k&ouml;nnen auch im Rechner-Men&uuml; ver&auml;ndert werden.
   <h3>Graphik-Einstellungen</h3>
   Dieser Dialog ist in drei Tabs unterteilt.
   <h4>Koordinatensystem</h4>
-  Hier können die Größen der Koordinatensysteme eingestellt werden. Es können immer nur die Werte des aktuellen Koordinatensystems
-  verändert werden. Dieses kann auch hier eingestellt werden. Die Werte für das polare Koordinatensystem, maximaler Radius
-  und maximaler Winkel dürfen nur positive Werte haben. Es gibt auch noch zwei Knöpfe, um die Koordiatensysteme auf
-  Standardeinstellungen zurückzusetzen. Die Werte des Standard-Knopfs sind für die Darstellung der meisten Graphen geeignet.
+  Hier k&ouml;nnen die Gr&ouml;&szlig;en der Koordinatensysteme eingestellt werden. Es k&ouml;nnen immer nur die Werte des aktuellen Koordinatensystems
+  ver&auml;ndert werden. Dieses kann auch hier eingestellt werden. Die Werte f&uuml;r das polare Koordinatensystem, maximaler Radius
+  und maximaler Winkel d&uuml;rfen nur positive Werte haben. Es gibt auch noch zwei Kn&ouml;pfe, um die Koordiatensysteme auf
+  Standardeinstellungen zur&uuml;ckzusetzen. Die Werte des Standard-Knopfs sind f&uuml;r die Darstellung der meisten Graphen geeignet.
   Die Werte des Trigonometrisch-Knopfes sind optimal zur Darstellung von trigonometrischen Funktionen wie z. B. Sinus oder Kosinus.
-  Außerdem kann in diesem Dialog noch das Aussehen der Koordinatensysteme eingestellt werden. Das Raster, die Beschriftung und die
-  Achsen können ein- und ausgeschaltet werden und das Verhältnis zwischen der Skalierung der Koordinatenachsen und der Breite und
-  Höhe des Koordinatensystem-Fensters kann konstant eingestellt werden.
+  Au&szlig;erdem kann in diesem Dialog noch das Aussehen der Koordinatensysteme eingestellt werden. Das Raster, die Beschriftung und die
+  Achsen k&ouml;nnen ein- und ausgeschaltet werden und das Verh&auml;ltnis zwischen der Skalierung der Koordinatenachsen und der Breite und
+  H&ouml;he des Koordinatensystem-Fensters kann konstant eingestellt werden.
   <h4>Parameter T,A,Z</h4>
-  Nicht alle Parameter, die zum Zeichnen der verschiedenen Funktionen nötig sind, sind von der Größe des Koordinatensystems abhängig.
-  Alle anderen können hier eingestellt werden.<br><br>
+  Nicht alle Parameter, die zum Zeichnen der verschiedenen Funktionen n&ouml;tig sind, sind von der Gr&ouml;&szlig;e des Koordinatensystems abh&auml;ngig.
+  Alle anderen k&ouml;nnen hier eingestellt werden.<br><br>
   Parameter T:<br>
-  Der Parameter T dient als Parameter für Parameterfunktionen. Hier kann ein Startwert und ein Endwert gewählt werden.
-  Die Werte sollten nicht so hoch gewählt werden. Wenn man den größten Teil des Berechneten Graphen nicht sieht, wird 
+  Der Parameter T dient als Parameter f&uuml;r Parameterfunktionen. Hier kann ein Startwert und ein Endwert gew&auml;hlt werden.
+  Die Werte sollten nicht so hoch gew&auml;hlt werden. Wenn man den gr&ouml;&szlig;ten Teil des Berechneten Graphen nicht sieht, wird 
   der darstellbare Teil eventuell zu ungenau berechnet.<br><br>
   Parameter Z:<br>
-  Diese Einstellungen für den Parameter Z betreffen nur 2D-Ortskurven. 3D-Ortskurven verwenden die Einstellungen der Z-Achse
-  des Koordinatensystems. Hier gibt es zwei Möglichkeiten der Skalierung. Standard ist die logarithmische Skalierung. Das heisst,
-  wenn als Grenzwerte -3 und 3 eingestellt sind, läuft der Parameter zwischen 10^-3 und 10^3 in entsprechenden Schritten.
-  Dies ist bei den meisten Ortskurven sinnvoll. Ist die logarithmische Skalierung ausgeschaltet, dann läuft der Parameter linear
+  Diese Einstellungen f&uuml;r den Parameter Z betreffen nur 2D-Ortskurven. 3D-Ortskurven verwenden die Einstellungen der Z-Achse
+  des Koordinatensystems. Hier gibt es zwei M&ouml;glichkeiten der Skalierung. Standard ist die logarithmische Skalierung. Das heisst,
+  wenn als Grenzwerte -3 und 3 eingestellt sind, l&auml;uft der Parameter zwischen 10^-3 und 10^3 in entsprechenden Schritten.
+  Dies ist bei den meisten Ortskurven sinnvoll. Ist die logarithmische Skalierung ausgeschaltet, dann l&auml;uft der Parameter linear
   vom eingestellten Startwert zum eingestellten Endwert.<br><br>
   Parameter A:<br>
-  Das A ist der Parameter für alle dynamischen Graphen. Zur Darstellung des dynamischen Graphs muss zuerst ein Start- und ein
-  Endwert gewählt werden. Dann muss eine Schrittzahl angegeben werden. Für ruckelfreie Animationen sollte dieser Wert etwa 30 oder
-  höher sein. Im Einzelschritt-Modus sollte der Wert niedriger sein. Im automatischen Modus und für Animationen muss noch eine
-  Verzögerungszeit eingestellt werden. Die Verzögerungszeit ist in Schritten von 10ms einstellbar. Für ruckelfreie Animationen
+  Das A ist der Parameter f&uuml;r alle dynamischen Graphen. Zur Darstellung des dynamischen Graphs muss zuerst ein Start- und ein
+  Endwert gew&auml;hlt werden. Dann muss eine Schrittzahl angegeben werden. F&uuml;r ruckelfreie Animationen sollte dieser Wert etwa 30 oder
+  h&ouml;her sein. Im Einzelschritt-Modus sollte der Wert niedriger sein. Im automatischen Modus und f&uuml;r Animationen muss noch eine
+  Verz&ouml;gerungszeit eingestellt werden. Die Verz&ouml;gerungszeit ist in Schritten von 10ms einstellbar. F&uuml;r ruckelfreie Animationen
   sollte der Wert etwa auf 3 stehen.
   <h4>Rechenleistung/Genauigkeit</h4>
   Hier kann die Rechengenauigkeit beim Zeichnen von Graphen und die Genauigkeit bei Analysefunktionen eingestellt werden.
-  Dazu stehen drei Standard-Konfigurationen zur Verfügung: Hoch, Standard und Niedrig. Bei langsamen Systemen sollte die Einstellung
-  "Niedrig" gewählt werden, sonst die Einstellung "Standard". Die Werte für die Anzahl der Rechenschritte bei verschieden Graphen
-  muss normalerweise nicht geädert werden. Diese Werte müssen nur dann erhöht werden, wenn Bereiche eines Graphs wie z. B.
-  Asymptoten falsch dargestellt werden. Auch die Einstellung für die Analyse-Genauigkeit sollte nur erhöht werden, wenn Fehler
-  auftreten, z. B. wenn nicht alle Nullstellen gefunden werden. Die Genauigkeit der Ergebnisse ist immer so hoch, wie möglich
-  (unabhängig von dieser Einstellung).
+  Dazu stehen drei Standard-Konfigurationen zur Verf&uuml;gung: Hoch, Standard und Niedrig. Bei langsamen Systemen sollte die Einstellung
+  "Niedrig" gew&auml;hlt werden, sonst die Einstellung "Standard". Die Werte f&uuml;r die Anzahl der Rechenschritte bei verschieden Graphen
+  muss normalerweise nicht ge&auml;dert werden. Diese Werte m&uuml;ssen nur dann erh&ouml;ht werden, wenn Bereiche eines Graphs wie z. B.
+  Asymptoten falsch dargestellt werden. Auch die Einstellung f&uuml;r die Analyse-Genauigkeit sollte nur erh&ouml;ht werden, wenn Fehler
+  auftreten, z. B. wenn nicht alle Nullstellen gefunden werden. Die Genauigkeit der Ergebnisse ist immer so hoch, wie m&ouml;glich
+  (unabh&auml;ngig von dieser Einstellung).
   <h3>Tabellen Einstellungen</h3>
   Will man eine Wertetabelle zu einr Funktion erstellen, dann muss man hier die Grenzen und die Werteanzahl einstellen.
-  Außerdem kann noch der Funktionstyp, zu dem die Wertetabellen erstellt werden sollen, ausgewählt werden.
+  Au&szlig;erdem kann noch der Funktionstyp, zu dem die Wertetabellen erstellt werden sollen, ausgew&auml;hlt werden.
   <h3>Script-Einstellungen</h3>
-  Im Script-Einstellungsdialog kann der Pfad zum Script-Hauptverzeichnis und die Namen der Unterverzeichnisse für Quellcodes und
-  für Daten gewählt werden. Diese Einstellungen werden beim ersten Start von Extcalc schon abgefragt.
+  Im Script-Einstellungsdialog kann der Pfad zum Script-Hauptverzeichnis und die Namen der Unterverzeichnisse f&uuml;r Quellcodes und
+  f&uuml;r Daten gew&auml;hlt werden. Diese Einstellungen werden beim ersten Start von Extcalc schon abgefragt.
   <br>
   <br>
   <a name="else"><h2>4. Sonstiges</h2></a>
   <h5> Version</h5>
-  Extcalc Version 0.6.5<br>
+  Extcalc Version 0.7.0<br>
   Dies ist eine Testversion! Deshalb konnen einige Funktionen inaktiv oder fehlerhaft sein.<br>    
   <h5>Rechengenauigkeit:</h5>
   Aufgrund des Aufbaus eines PC-Prozessors und der verwendeten Variablen vom Typ long double (80 Bit)
   wird theoretisch eine maximale Stellengenauigkeit von 18 Dezimalstellen erreicht. Da die
   letzte Stelle vom Prozessor nicht immer richtig berechnet werden kann, ist die Ausgabe des
   Taschenrechners auf maximal 18 Dezimalstellen begrenzt. Die Stellengenauigkeit
-  beträgt bei einfachen Berechnungen 18 Stellen, bei Winkel- und Logarithmusfunktionen
+  betr&auml;gt bei einfachen Berechnungen 18 Stellen, bei Winkel- und Logarithmusfunktionen
   17 Stellen und bei Integralrechnungen etwa 9 Stellen und bei Differentialrechnungen etwa 8 Stellen.<br>
   Integral- und Differentialrechnung:<br>
-  Da sich diese Funktionen noch in der Entwicklung befinden, können die Ausgaben fehlerhaft 
-  sein. Es ist ausßerdem noch möglich, ungültige Funktionen einzugeben und dennoch einen Wert
+  Da sich diese Funktionen noch in der Entwicklung befinden, k&ouml;nnen die Ausgaben fehlerhaft 
+  sein. Es ist aus&szlig;erdem noch m&ouml;glich, ung&uuml;ltige Funktionen einzugeben und dennoch einen Wert
   zu erhalten.<br>
-  <h5>benötigte Software</h5>
+  <h5>ben&ouml;tigte Software</h5>
   Betriebssystem: Linux<br>
-  Abhängigkeiten: QT3.1 oder höher, OpenGL, gcc3 oder gcc4 (läuft nicht mit gcc 2.xx)<br>
+  Abh&auml;ngigkeiten: QT3.1 oder h&ouml;her, OpenGL, gcc3 oder gcc4 (l&auml;uft nicht mit gcc 2.xx)<br>
   <h5>Getestete Distributionen:</h5>
   <table>
   <tr><td>Suse Linux 8.2:</td><td>OK</td></tr>
   <tr><td>Suse Linux 9.2:</td><td>OK</td></tr>
-  <tr><td>Suse Linux 10.1:</td><td>OK</td></tr>
-  <tr><td>Debian 3.1 Sarge:</td><td>Update nötig</td></tr>
+  <tr><td>Suse Linux 10.2:</td><td>OK</td></tr>
+  <tr><td>Debian 3.1 Sarge:</td><td>Update n&ouml;tig</td></tr>
   <tr><td>Debian Etch:</td><td>OK</td></tr>
-  <tr><td>Ubuntu Linux 5.10:</td><td>OK</td></tr>
   <tr><td>Ubuntu Linux 6.06:</td><td>OK</td></tr>
+  <tr><td>Ubuntu Linux 6.10:</td><td>OK</td></tr>
   <tr><td>Mepis Linux 6.0:</td><td>OK</td></tr>
   <tr><td>Mandriva 2006:</td><td>OK</td></tr>
   <tr><td>Slackware 10:</td><td>OK</td></tr>
-  <tr><td>Fedora Core 3 (64Bit):</td><td>OK</td></tr>
-  <tr><td>Fedora Core 4:</td><td>Update nötig</td></tr>
   <tr><td>Fedora Core 5:</td><td>OK</td></tr>
+  <tr><td>Fedora Core 6:</td><td>OK</td></tr>
   <tr><td>OpenBSD 3.9:</td><td>s. Anmerkung</td></tr>
   </table>
 
   <h5>Debian 3.1 Sarge:</h5>
-  Ohne Update lässt sich Extcalc zwar installieren und starten, aber
+  Ohne Update l&auml;sst sich Extcalc zwar installieren und starten, aber
   das Grafikfenster bleibt schwarz und kann nichts anzeigen.<br>
-  Wenn dieser Fehler auftritt, müssen die X-Server und OpenGL-Pakete aktualisiert werden.<br>
-  <h5>Fedora Core 4:</h5>
-  Die Installation läuft fehlerfrei, aber das Programm bricht sofort
-  mit Speicherzugriffsfehler ab.<br>
-  Dies ist ein Fehler im Linker der Standardversion von FC4.<br>
-  Der Fehler tritt nicht mehr auf, wenn die Updates für gcc und g++ eingespielt werden.<br>
+  Wenn dieser Fehler auftritt, m&uuml;ssen die X-Server und OpenGL-Pakete aktualisiert werden.<br>
   <h5>OpenBSD 3.9:</h5>
-  Grundsätzlich ist der Code auf dem OpenBSD-System lauffähig, wenn QT installiert ist.<br>
+  Grunds&auml;tzlich ist der Code auf dem OpenBSD-System lauff&auml;hig, wenn QT installiert ist.<br>
   Beim Test traten allerdings einige Probleme auf:<br>
-  1. Bei der Installation von QT auf OpenBSD wird kein allgemeiner Link für libqt-mt gesetzt. Ohne diesen schlägt das Linken fehl.<br>
+  1. Bei der Installation von QT auf OpenBSD wird kein allgemeiner Link f&uuml;r libqt-mt gesetzt. Ohne diesen schl&auml;gt das Linken fehl.<br>
   2. Die QT-Environment-Variablen werden vom System nicht gesetzt. Dies muss von Hand, wie in der QT-Hilfe beschrieben, geschehen.<br>
-  3. Die pkg-config-Daten für die OpenGL- und die QT-Bibiliothek sind im System nicht vorhanden, weshalb die Installation mit dem Configure-Script
-  nicht möglich ist. Die Installation ist von Hand vorzunehmen. Zum Compilieren von Hand kann man im src-Verzeichnis qmake -o Makefile extcalc.pro
-  ausführen. Damit wird ein Makefile generiert, das mit make aufgerufen werden kann und dann ein lauffähiges Programm kompiliert.<br>
-  Unter diesen Umständen scheint es sinnvoller, zu warten bis ein vorkompiliertes BSD-Paket für Extcalc bereitgestellt wird.<br>
+  3. Die pkg-config-Daten f&uuml;r die OpenGL- und die QT-Bibiliothek sind im System nicht vorhanden, weshalb die Installation mit dem Configure-Script
+  nicht m&ouml;glich ist. Die Installation ist von Hand vorzunehmen. Zum Compilieren von Hand kann man im src-Verzeichnis qmake -o Makefile extcalc.pro
+  ausf&uuml;hren. Damit wird ein Makefile generiert, das mit make aufgerufen werden kann und dann ein lauff&auml;higes Programm kompiliert.<br>
+  Unter diesen Umst&auml;nden scheint es sinnvoller, zu warten bis ein vorkompiliertes BSD-Paket f&uuml;r Extcalc bereitgestellt wird.<br>
   
   <h5>Hardwareanforderungen:</h5>
   Prozessor mit ca. 1GHz (32Bit oder 64Bit)<br>
-  Genug RAM für die grafische Oberfläche<br>
+  Genug RAM f&uuml;r die grafische Oberfl&auml;che<br>
   Zum Drehen und Zoomen bei 3D-Grafik evtl. Maus mit Mausrad<br>
-  Für 3D-Grafik ist eine 3D-Karte empfehlenswert<br>
+  F&uuml;r 3D-Grafik ist eine 3D-Karte empfehlenswert<br>
   
 
   <h5>Fertige Funktionen</h5>
-  Grafische Oberfläche für Rechner<br>
-  Grafische Oberfläche für Grafikfunktionen<br> 
-  Verarbeitung mathematischer Ausdrücke<br>
+  Grafische Oberfl&auml;che f&uuml;r Rechner<br>
+  Grafische Oberfl&auml;che f&uuml;r Grafikfunktionen<br> 
+  Verarbeitung mathematischer Ausdr&uuml;cke<br>
   Graphen zeichnen<br>
   Berechnungen mit Graphen<br>
   Integralrechen, differentialrechnen<br>
@@ -1065,12 +1206,13 @@
   Verschiebbares und zoombares Graphik-Fenster<br>
   Abspeichern von Screenshots<br>
   Zeichnen im Graphikfenster<br>
-  Komplexe Zahlen<br>
-  
-  <h5>noch zu Tun</h5>
-  Script-Funktionen für Graphik und Dateioperationen<br>
+  Komplexe Zahlen<br>  
   Matrix-Berechnungen<br>
   Vektoren<br>
+  
+  <h5>noch zu Tun</h5>
+  Script-Funktionen f&uuml;r Graphik und Dateioperationen<br>
+  Fenster f&uuml;r Matrix- und Vektor-Operationen<br>
   Statistikfunktionen<br>
 
   </body>

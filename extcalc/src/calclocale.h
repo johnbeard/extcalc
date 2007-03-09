@@ -98,6 +98,7 @@
 #define EXTCALCH_MENU64 "Array-Speicher automatisch löschen"
 #define EXTCALCH_MENU65 "Array-Speicher jetzt löschen"
 #define EXTCALCH_MENU66 "Script"
+#define EXTCALCH_MENU67 "Komplexe Rechnung"
 
 #define EXTCALCC_MSG1 "Die Konfigurationsdatei "
 #define EXTCALCC_MSG2 " konnte nicht erstellt werden"
@@ -415,6 +416,7 @@
 #define SCRIPTPREFH_STR5 "Speichern"
 #define SCRIPTPREFH_STR6 "Abbrechen"
 #define SCRIPTPREFH_STR7 "Durchsuchen"
+#define SCRIPTPREFH_STR8 "Array-Speicher vor Script-Start löschen"
 
 #define SCRIPTPREFC_STR1 "Bitte geben Sie den Pfad vollständig an."
 #define SCRIPTPREFC_STR2 "Script-Hauptverzeichnis konnte nicht erzeugt werden."
@@ -517,6 +519,7 @@
 #define EXTCALCH_MENU64 "Always clear Array Memory"
 #define EXTCALCH_MENU65 "Clear Array Memory now"
 #define EXTCALCH_MENU66 "Script"
+#define EXTCALCH_MENU67 "Complex"
 
 #define EXTCALCC_MSG1 "Unable to write configfile "
 #define EXTCALCC_MSG2 " !"
@@ -839,6 +842,7 @@
 #define SCRIPTPREFH_STR5 "Save"
 #define SCRIPTPREFH_STR6 "Cancel"
 #define SCRIPTPREFH_STR7 "Search"
+#define SCRIPTPREFH_STR8 "Clear array memory after script running"
 
 #define SCRIPTPREFC_STR1 "Please insert complete Path"
 #define SCRIPTPREFC_STR2 "Can't create scripting root directory"

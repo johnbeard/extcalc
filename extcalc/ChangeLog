@@ -112,3 +112,11 @@ dialogs
 - added performance preferences dialog
 - installer generates menu entery
 - fixed some bugs, updated documentation
+
+0.7.0 vector, matrix, complex numbers
+- modified script parser algorithms to support matrix and vector atrithmetics
+- added possibility to switch complex numbers on and off
+- changed internal Number structure
+- redesigend script editor
+- added example scripts for matrix and vector arithmetics
+- updated documentation

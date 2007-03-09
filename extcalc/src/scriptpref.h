@@ -6,6 +6,7 @@
 #include <qlineedit.h>
 #include <qpushbutton.h>
 #include <qfiledialog.h>
+#include <qcheckbox.h>
 #include "global.h"
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -18,6 +19,7 @@ class ScriptPreferences :public QWidget
 	QPushButton*saveButton,*cancelButton,*fileDialogButton;
 	QLabel *infoLabel,*mainPathLabel,*scriptPathLabel,*dataPathLabel;
 	QLineEdit *mainPathLine,*scriptPathLine,*dataPathLine;
+	QCheckBox *memoryBox;
 	Preferences pref;
 	
 	
@@ -34,14 +36,15 @@ public:
 		mainPathLine=new QLineEdit(this);
 		scriptPathLine=new QLineEdit(this);
 		dataPathLine=new QLineEdit(this);
+		memoryBox=new QCheckBox(SCRIPTPREFH_STR8,this);
 		
 		saveButton=new QPushButton(SCRIPTPREFH_STR5,this);
 		cancelButton=new QPushButton(SCRIPTPREFH_STR6,this);
 		fileDialogButton=new QPushButton(SCRIPTPREFH_STR7,this);
 		
-		setGeometry(0,0,410,310);
+		setGeometry(0,0,410,350);
 		setFixedWidth(410);
-		setFixedHeight(310);
+		setFixedHeight(350);
 		
 		infoLabel->setGeometry(20,10,380,20);
 		mainPathLabel->setGeometry(20,60,380,20);
@@ -52,13 +55,17 @@ public:
 		scriptPathLine->setGeometry(20,160,280,20);
 		dataPathLine->setGeometry(20,230,280,20);
 		
-		saveButton->setGeometry(40,270,100,30);
-		cancelButton->setGeometry(180,270,100,30);
+		memoryBox->setGeometry(20,270,280,20);
+		
+		
+		saveButton->setGeometry(40,310,100,30);
+		cancelButton->setGeometry(180,310,100,30);
 		fileDialogButton->setGeometry(310,90,80,30);
 		
 		mainPathLine->setText(pref.scriptPath);
 		scriptPathLine->setText(pref.scriptDirName);
 		dataPathLine->setText(pref.dataDirName);
+		memoryBox->setChecked(pref.clearScriptMemory);
 		
 		QObject::connect(saveButton,SIGNAL(clicked()),this,SLOT(saveSlot()));
 		QObject::connect(fileDialogButton,SIGNAL(clicked()),this,SLOT(fileDialogSlot()));

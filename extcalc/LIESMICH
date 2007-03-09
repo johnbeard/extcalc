@@ -20,8 +20,8 @@ Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner für Linux. Er unte
 
 
 2. INSTALLATION
-- auspacken (tar -xzf extcalc-0.6.5.tar.gz)
-- in Verzeichnis wechseln (cd extcalc-0.6.5)
+- auspacken (tar -xzf extcalc-0.7.0.tar.gz)
+- in Verzeichnis wechseln (cd extcalc-0.7.0)
 - konfigurieren (./configure --enable-language_de)
 - kompilieren (make)
 - root werden (su)
@@ -50,7 +50,7 @@ doc/                 Dokumentation
    
 	   
 4. VERSION
-Version 0.6.5
+Version 0.7.0
 
 Dies ist eine Testversion!
 Teile des Programms sind noch nicht fertig und deshalb inaktiv oder fehlerhaft.
@@ -74,12 +74,13 @@ Zoomen und verschieben für alle Typen von Graphen
 Zeichnen im Grafikfenster
 Abspeichern von Screenshots des Grafikfensters
 Komplexe Zahlen
-
-Noch zu tun:
-Dateisystem-Befehle und Grafik-Befehle für Script-Sprache
 Matrixrechnung
 Vektorrechnung
 
+Noch zu tun:
+Dateisystem-Befehle und Grafik-Befehle für Script-Sprache
+Fenster für Vektor- und Matrix-Operationen
+Statistik-Funktionen
 
 
 5. HINWEISE
@@ -93,31 +94,23 @@ OpenGL
 Getestete Distributionen:
 Suse Linux 8.2:            getestet, ok
 Suse Linux 9.2:            getestet, ok
-Suse Linux 10.1:           getestet, ok
+Suse Linux 10.2:           getestet, ok
 Debian 3.1 Sarge:          Update benötigt
 Debian Etch:               getestet, ok
-Ubuntu Linux 5.10          getestet, ok
 Ubuntu Linux 6.06          getestet, ok
+Ubuntu Linux 6.10          getestet, ok
 Mandriva 2006:             getestet, ok
 Fedora Core 2:             getestet, ok
 Fedora Core 3 (64Bit):     getestet, ok
-Fedora Core 4:             Update benötigt
-Fedora Core 5:             getestet, ok
+Fedora Core 5:             Update benötigt
+Fedora Core 6:             getestet, ok
 Mepis Linux 6.0            getestet, ok
-Slackware 10:              getestet, ok
 
 Debian 3.1 Sarge:
               Das Programm lässt sich fehlerfrei kompilieren, aber das
               Grafik-Anzeigefenster ist schwarz und es können keine Graphen
               gezeichnet werden. Wenn dieses Problem auftritt, muss das Update
               für X-Server und OpenGL installiert werden.
-
-Fedora Core 4:
-              Installation läuft fehlerfrei
-              Programm bricht sofort mit Speicherzugriffsfehler ab 
-              Der Linker von FC4 erzeugt ohne Update einen fehlerhaften ELF-Header.
-              Um das Problem zu beheben, muss nur der Patch für gcc und g++ installiert werden.
-	
 
   
 
