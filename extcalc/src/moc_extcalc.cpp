@@ -1,7 +1,7 @@
 /****************************************************************************
 ** MainObject meta object code from reading C++ file 'extcalc.h'
 **
-** Created: Fri Mar 9 13:17:43 2007
+** Created: Wed Mar 14 19:46:19 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -152,14 +152,16 @@ QMetaObject* MainObject::staticMetaObject()
 	{ 0, &static_QUType_varptr, "\x03", QUParameter::In }
     };
     static const QUMethod signal_1 = {"runScript", 1, param_signal_1 };
+    static const QUMethod signal_2 = {"matrixEnterSignal", 0, 0 };
     static const QMetaData signal_tbl[] = {
 	{ "editSignal(int)", &signal_0, QMetaData::Public },
-	{ "runScript(QString*)", &signal_1, QMetaData::Public }
+	{ "runScript(QString*)", &signal_1, QMetaData::Public },
+	{ "matrixEnterSignal()", &signal_2, QMetaData::Public }
     };
     metaObj = QMetaObject::new_metaobject(
 	"MainObject", parentObject,
 	slot_tbl, 18,
-	signal_tbl, 2,
+	signal_tbl, 3,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
 	0, 0,
@@ -198,6 +200,12 @@ void MainObject::runScript( QString* t0 )
     activate_signal( clist, o );
 }
 
+// SIGNAL matrixEnterSignal
+void MainObject::matrixEnterSignal()
+{
+    activate_signal( staticMetaObject()->signalOffset() + 2 );
+}
+
 bool MainObject::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
@@ -230,6 +238,7 @@ bool MainObject::qt_emit( int _id, QUObject* _o )
     switch ( _id - staticMetaObject()->signalOffset() ) {
     case 0: editSignal((int)static_QUType_int.get(_o+1)); break;
     case 1: runScript((QString*)static_QUType_varptr.get(_o+1)); break;
+    case 2: matrixEnterSignal(); break;
     default:
 	return QTabWidget::qt_emit(_id,_o);
     }

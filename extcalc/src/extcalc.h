@@ -11,6 +11,7 @@
 #include "table.h"
 #include "scriptedit.h"
 #include "scriptio.h"
+#include "matrixwidget.h"
 #include "global.h"
 #include <qtabwidget.h>
 #include <qtabbar.h>
@@ -145,7 +146,7 @@
 //	- 3rd, 5th ... root of -N returns only complex results								ok	//
 //	- result lines in polar cs were drawn wrong when angle type isn't rad				ok	//
 //	- array memory can't be deleted														ok	//
-//	- script load balancing doesn't work on fast (dual-core) CPUs							//
+//	- script load balancing doesn't work on fast (dual-core) CPUs						ok	//
 //	- inserting text into a running script doesn't work									ok	//
 
 
@@ -233,6 +234,8 @@ class MainObject :public QTabWidget
 	TableWidget*table;
 	ScriptWidget*scripting;
 	ScriptIOWidget*scriptIO;
+	MatrixWidget*matrix;
+	QWidget*statistics;
 	Preferences pref;
 	QProcess*helpProcess;
 	QTabDialog*infoDialog;
@@ -386,8 +389,8 @@ MainObject() :QTabWidget()
 	pref.tableXEnd=pref.tableZEnd=10.0;
 	pref.tableXSteps=pref.tableZSteps=10;
 	pref.tableType=TABLENORMAL;
-	pref.showWindows[0]=pref.showWindows[2]=pref.showWindows[3]=pref.showWindows[4]=true;
-	pref.showWindows[1]=pref.showWindows[5]=false;
+	pref.showWindows[0]=pref.showWindows[2]=pref.showWindows[3]=pref.showWindows[4]=pref.showWindows[6]=true;
+	pref.showWindows[1]=pref.showWindows[5]=pref.showWindows[7]=false;
 
 
 	threadData=new ThreadSync;
@@ -520,6 +523,8 @@ MainObject() :QTabWidget()
 	viewMenu->insertItem(EXTCALCH_MENU53,VIEWCALC2);
 	viewMenu->insertItem(EXTCALCH_MENU54,VIEWGRAPH);
 	viewMenu->insertItem(EXTCALCH_MENU55,VIEWTABLE);
+	viewMenu->insertItem("Matrix/Vector",VIEWMATRIX);
+	viewMenu->insertItem("Statistics",VIEWSTATISTICS);
 	viewMenu->insertItem(EXTCALCH_MENU56,VIEWSCRIPTING);
 	viewMenu->insertItem(EXTCALCH_MENU61,VIEWSCRIPTIO);
 	QObject::connect(viewMenu,SIGNAL(activated(int)),this,SLOT(viewMenuSlot(int)));
@@ -554,6 +559,8 @@ MainObject() :QTabWidget()
 	table=new TableWidget(this,pref,vars);
 	scripting=new ScriptWidget(this,pref,vars,tabbarSize.bottom());
 	scriptIO=new ScriptIOWidget(this,pref,vars);
+	matrix=new MatrixWidget(this,pref,vars,threadData);
+	statistics=new QWidget(this);
 //	addTab(calculator,EXTCALCH_STR6);
 //	addTab(calculator2,EXTCALCH_STR7);
 //	addTab(graph,EXTCALCH_STR8);
@@ -565,11 +572,9 @@ MainObject() :QTabWidget()
 	table->hide();
 	scripting->hide();
 	scriptIO->hide();
+	matrix->hide();
+	statistics->hide();
 
-	
-	
-
-	
 	QObject::connect(helpMenu,SIGNAL(activated(int)),this,SLOT(helpMenuSlot(int)));
 	QObject::connect(prefMenu,SIGNAL(activated(int)),this,SLOT(prefMenuSlot(int)));
 	QObject::connect(calculator,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
@@ -578,6 +583,8 @@ MainObject() :QTabWidget()
 	QObject::connect(table,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 	QObject::connect(scripting,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 	QObject::connect(scriptIO,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+	QObject::connect(matrix,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+//	QObject::connect(statistics,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 	QObject::connect(this,SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChangeSlot(QWidget*)));
 	QObject::connect(this,SIGNAL(editSignal(int)),calculator,SLOT(editSlot(int)));
 	QObject::connect(this,SIGNAL(editSignal(int)),calculator2,SLOT(editSlot(int)));
@@ -585,10 +592,13 @@ MainObject() :QTabWidget()
 	QObject::connect(this,SIGNAL(editSignal(int)),table,SLOT(editSlot(int)));
 	QObject::connect(this,SIGNAL(editSignal(int)),scripting,SLOT(editSlot(int)));
 	QObject::connect(this,SIGNAL(editSignal(int)),scriptIO,SLOT(editSlot(int)));
+//	QObject::connect(this,SIGNAL(editSignal(int)),matrix,SLOT(editSlot(int)));
+//	QObject::connect(this,SIGNAL(editSignal(int)),statistics,SLOT(editSlot(int)));
 	QObject::connect(scripting,SIGNAL(runScript(QString*)),this,SLOT(runScriptSlot(QString*)));
 	QObject::connect(scripting,SIGNAL(runScript(QString*)),this,SIGNAL(runScript(QString*)));
 	QObject::connect(scripting,SIGNAL(controlScriptMenu(int)),this,SLOT(scriptMenuSlot(int)));
 	QObject::connect(this,SIGNAL(runScript(QString*)),scriptIO,SLOT(runScript(QString*)));
+	QObject::connect(this,SIGNAL(matrixEnterSignal()),matrix,SLOT(enterSlot()));
 	
 	pref.scriptPath=getenv("HOME")+QString("/.extcalc/script");
 	pref.scriptDirName="code";
@@ -704,8 +714,10 @@ void getPref(Preferences newPref)
 		   (indexOf(calculator2)!=-1)!=pref.showWindows[1] ||
 		   (indexOf(graph)!=-1)!=pref.showWindows[2] ||
 		   (indexOf(table)!=-1)!=pref.showWindows[3] ||
-		   (indexOf(scripting)!=-1)!=pref.showWindows[4] || 
-		   (indexOf(scriptIO)!=-1)!=pref.showWindows[5]
+		   (indexOf(matrix)!=-1)!=pref.showWindows[4] || 
+			(indexOf(statistics)!=-1)!=pref.showWindows[5] || 
+			(indexOf(scripting)!=-1)!=pref.showWindows[6] ||
+			(indexOf(scriptIO)!=-1)!=pref.showWindows[7]
 	   ) && !running)
 	{
 		running=true;
@@ -717,6 +729,10 @@ void getPref(Preferences newPref)
 			removePage(graph);
 		if(indexOf(table)!=-1)
 			removePage(table);
+		if(indexOf(matrix)!=-1)
+			removePage(matrix);
+		if(indexOf(statistics)!=-1)
+			removePage(statistics);
 		if(indexOf(scripting)!=-1)
 			removePage(scripting);
 		if(indexOf(scriptIO)!=-1)
@@ -730,8 +746,12 @@ void getPref(Preferences newPref)
 		if(pref.showWindows[3])
 			addTab(table,EXTCALCH_STR9);
 		if(pref.showWindows[4])
-			addTab(scripting,EXTCALCH_STR12);
+			addTab(matrix,"Matrix/Vector");
 		if(pref.showWindows[5])
+			addTab(statistics,"Statistics");
+		if(pref.showWindows[6])
+			addTab(scripting,EXTCALCH_STR12);
+		if(pref.showWindows[7])
 			addTab(scriptIO,EXTCALCH_STR13);
 	}
 	running=false;
@@ -781,6 +801,7 @@ void getPref(Preferences newPref)
 	calculator2->setPref(pref);
 	graph->setPref(pref);
 	table->setPref(pref);
+	matrix->setPref(pref);
 	scripting->setPref(pref);
 	scriptIO->setPref(pref);
 //	savePref(&pref);
@@ -803,13 +824,16 @@ void getPref(Preferences newPref)
 	viewMenu->setItemChecked(VIEWCALC2,pref.showWindows[1]);
 	viewMenu->setItemChecked(VIEWGRAPH,pref.showWindows[2]);
 	viewMenu->setItemChecked(VIEWTABLE,pref.showWindows[3]);
-	viewMenu->setItemChecked(VIEWSCRIPTING,pref.showWindows[4]);
-	viewMenu->setItemChecked(VIEWSCRIPTIO,pref.showWindows[5]);
+	viewMenu->setItemChecked(VIEWMATRIX,pref.showWindows[4]);
+	viewMenu->setItemChecked(VIEWSTATISTICS,pref.showWindows[5]);
+	viewMenu->setItemChecked(VIEWSCRIPTING,pref.showWindows[6]);
+	viewMenu->setItemChecked(VIEWSCRIPTIO,pref.showWindows[7]);
 }
 
 signals:
 	void editSignal(int);
 	void runScript(QString*);
+	void matrixEnterSignal();
 
 };
 
@@ -886,7 +910,6 @@ class ImportDialog :public QWidget
 		
 	signals:
 		void updateScriptSignal(int);
-
 };
 
 

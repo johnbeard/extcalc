@@ -23,10 +23,10 @@ using namespace std;
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.7.0\n2006-03-09\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.7.1\n2006-03-14\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.7.0\n9.3.2006\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.7.1\n14.3.2006\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2006\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -62,6 +62,8 @@ using namespace std;
 #define EDITORMINIMIZE		177
 #define EDITORIMPORT		178
 #define EDITOREXPORT		179
+#define VIEWMATRIX			180
+#define VIEWSTATISTICS		181
 
 #define FILENEWSCRIPT		73
 #define FILENEWDIR			74
@@ -319,7 +321,7 @@ struct Preferences
 	bool shift;
 	bool alpha;
 	bool hyp;
-	bool showWindows[6];
+	bool showWindows[8];
 	double xmin,xmax,ymin,ymax,zmin,zmax;
 	double rasterSizeX,rasterSizeY,rasterSizeZ;
 	double radiusMax,angleMax;

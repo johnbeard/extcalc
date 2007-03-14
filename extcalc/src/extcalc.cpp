@@ -206,6 +206,8 @@ int MainObject::readConfigFile()
 			fwrite("SHOWWIN4=true\n",14,1,configFile);
 			fwrite("SHOWWIN5=true\n",14,1,configFile);
 			fwrite("SHOWWIN6=false\n",15,1,configFile);
+			fwrite("SHOWWIN7=true\n",15,1,configFile);
+			fwrite("SHOWWIN8=false\n",15,1,configFile);
 			fwrite("SCRIPTROOT=",11,1,configFile);
 			fwrite(getenv("HOME"),strlen(getenv("HOME")),1,configFile);
 			fwrite("/.extcalc/script\n",17,1,configFile);
@@ -691,7 +693,7 @@ int MainObject::readConfigFile()
 			pref.tableType=TABLE3D;
 		
 	}
-	for(int c=0; c<6; c++)
+	for(int c=0; c<8; c++)
 	{
 		QString showWinString=getConfigString(&confFile,"SHOWWIN"+QString::number(c+1));
 		if(showWinString.lower() =="false")
@@ -972,7 +974,7 @@ void MainObject::writeConfigFile()
 	
 	
 	
-	for(int c=0; c<6;c++)
+	for(int c=0; c<8;c++)
 	{
 		configuration+="SHOWWIN";
 		configuration+=QString::number(c+1);
@@ -1077,6 +1079,13 @@ void MainObject::tabChangeSlot(QWidget*activeWidget)
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,true);
 		mainMenu->setItemVisible(SCRIPTM,false);
+	}
+	else if(activeWidget==(QWidget*)matrix)
+	{
+		mainMenu->setItemVisible(GRAPH,false);
+		mainMenu->setItemVisible(TABLE,false);
+		mainMenu->setItemVisible(SCRIPTM,false);
+		emit matrixEnterSignal();
 	}
 	else if(activeWidget==(QWidget*)scripting || activeWidget==(QWidget*)scriptIO)
 	{
@@ -1417,10 +1426,31 @@ void MainObject::viewMenuSlot(int item)
 				table->hide();
 			}
 			break;
-		case VIEWSCRIPTING:
+		case VIEWMATRIX:
 			pref.showWindows[4]=!pref.showWindows[4];
 			getPref(pref);
 			if(pref.showWindows[4])
+				showPage(matrix);
+			else {
+				resetFocus=true;
+				matrix->hide();
+			}
+			break;
+		case VIEWSTATISTICS:
+			//pref.showWindows[5]=!pref.showWindows[5];
+			pref.showWindows[5]=false;
+			getPref(pref);
+			if(pref.showWindows[5])
+				showPage(statistics);
+			else {
+				resetFocus=true;
+				statistics->hide();
+			}
+			break;
+		case VIEWSCRIPTING:
+			pref.showWindows[6]=!pref.showWindows[6];
+			getPref(pref);
+			if(pref.showWindows[6])
 				showPage(scripting);
 			else {
 				resetFocus=true;
@@ -1428,9 +1458,9 @@ void MainObject::viewMenuSlot(int item)
 			}
 			break;
 		case VIEWSCRIPTIO:
-			pref.showWindows[5]=!pref.showWindows[5];
+			pref.showWindows[7]=!pref.showWindows[7];
 			getPref(pref);
-			if(pref.showWindows[5])
+			if(pref.showWindows[7])
 				showPage(scriptIO);
 			else {
 				resetFocus=true;
@@ -1449,6 +1479,10 @@ void MainObject::viewMenuSlot(int item)
 			showPage(table);
 		else if(indexOf(graph)!=-1)
 			showPage(graph);
+		else if(indexOf(matrix)!=-1)
+			showPage(matrix);
+		else if(indexOf(statistics)!=-1)
+			showPage(statistics);
 		else if(indexOf(scripting)!=-1)
 			showPage(scripting);
 		else if(indexOf(scriptIO)!=-1)
