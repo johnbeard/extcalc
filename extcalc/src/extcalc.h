@@ -637,7 +637,7 @@ MainObject() :QTabWidget()
 			MessageBox("Default directories created.");
 		}
 	}
-	
+	readVarFile();
 
 
 }
@@ -647,7 +647,9 @@ MainObject() :QTabWidget()
 	delete[]vars;
 }
 int readConfigFile();
+void readVarFile();
 void writeConfigFile();
+void writeVarFile();
 
 
 

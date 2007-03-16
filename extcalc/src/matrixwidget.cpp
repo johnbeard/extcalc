@@ -11,13 +11,14 @@ void MatrixWidget::resizeEvent(QResizeEvent*)
 	outputTable->setGeometry(width/4+10,50,3*width/4-30,height-290);
 
 	standardButtons->setGeometry(20,height-220,280,200);
-	calcWidget->setGeometry(width/2+10,height-180,300,160);
+	calcWidget->setGeometry(320,height-180,width-340,160);
 	
-	operationBox->setGeometry(width/2+15,height-220,90,35);
-	sprodButton->setGeometry(width/2+115,height-220,35,35);
-	invertButton->setGeometry(width/2+160,height-220,35,35);
-	detButton->setGeometry(width/2+205,height-220,35,35);
-	
+	operationBox->setGeometry(320,height-220,95,35);
+	sprodButton->setGeometry(425,height-220,30,35);
+	invertButton->setGeometry(465,height-220,30,35);
+	detButton->setGeometry(505,height-220,30,35);
+	braceOpenButton->setGeometry(545,height-220,30,35);
+	braceCloseButton->setGeometry(585,height-220,30,35);
 }
 
 void MatrixWidget::setVarTable()
@@ -49,14 +50,71 @@ void MatrixWidget::setOutputTable(int num)
 {
 	outputTable->setNumRows(threadData->dimension[num][0]);
 	outputTable->setNumCols(threadData->dimension[num][1]);
-
+	int effIndex;
 	for(int c1=0; c1<threadData->dimension[num][0]; c1++)
 	{
 		for(int c2=0; c2<threadData->dimension[num][1]; c2++)
-			outputTable->setText(c1,c2,formatOutput(threadData->vars[num][c2*threadData->dimension[num][1]+c1],&pref));
+		{
+			effIndex=c2*threadData->dimension[num][0]+c1;
+			if(effIndex<threadData->numlen[num])
+				outputTable->setText(c1,c2,formatOutput(threadData->vars[num][effIndex],&pref));
+			else outputTable->setText(c1,c2,"invalid");
+			if(c1==threadData->dimension[num][0]-1)
+				outputTable->adjustColumn(c2);
+		}
 	}
+	
 }
 
+void MatrixWidget::resizeVar(int var,int rows,int cols)
+{
+	int newlen=rows*cols;
+	int oldDimension1=threadData->dimension[var][0],oldDimension2=threadData->dimension[var][1];
+	threadData->vars[var]=(Number*)realloc((void*)threadData->vars[var],sizeof(Number)*(newlen));
+	for(int c=threadData->numlen[var]; c<newlen; c++)
+	{
+		threadData->vars[var][c].type=NNONE;
+		threadData->vars[var][c].cval=NULL;
+	}
+	threadData->numlen[var]=newlen;
+	threadData->dimension[var][0]=rows;
+	threadData->dimension[var][1]=cols;
+
+
+	int oldEffIndex,newEffIndex;
+	Number nullNum;
+	nullNum.type=NONE;
+	nullNum.cval=NULL;
+
+	if(threadData->dimension[var][0]<oldDimension1)
+	{
+		for(int c=oldDimension2-1; c>=1; c--)
+		{
+			for(int c1=oldDimension1-1; c1>=0; c1--)
+			{
+							
+				oldEffIndex=c1+c*oldDimension1;
+				newEffIndex=c1+c*threadData->dimension[var][0];
+				memcpy(&threadData->vars[var][newEffIndex],&threadData->vars[var][oldEffIndex],sizeof(Number));
+				memcpy(&threadData->vars[var][oldEffIndex],&nullNum,sizeof(Number));
+			}
+		}
+	}
+	else if(threadData->dimension[var][0]>oldDimension1)
+	{
+		for(int c=1; c<oldDimension2; c++)
+		{
+			for(int c1=1; c1<oldDimension1; c1++)
+			{
+							
+				oldEffIndex=c1+c*oldDimension1;
+				newEffIndex=c1+c*threadData->dimension[var][0];
+				memcpy(&threadData->vars[var][newEffIndex],&threadData->vars[var][oldEffIndex],sizeof(Number));
+				memcpy(&threadData->vars[var][oldEffIndex],&nullNum,sizeof(Number));
+			}
+		}
+	}
+}
 
 
 
@@ -76,17 +134,32 @@ void MatrixWidget::getPref(Preferences p)
 
 void MatrixWidget::sprodButtonSlot()
 {
-	
+	calcWidget->setBold(false);
+	calcWidget->textInput(getUnicode(DEGREESTRING));
 }
 
 void MatrixWidget::invertButtonSlot()
 {
-	
+	calcWidget->setBold(false);
+	calcWidget->textInput("^-1");
 }
 
 void MatrixWidget::detButtonSlot()
 {
-	
+	calcWidget->setBold(false);
+	calcWidget->textInput("det");
+}
+
+void MatrixWidget::braceOpenButtonSlot()
+{
+	calcWidget->setBold(false);
+	calcWidget->textInput("[");
+}
+
+void MatrixWidget::braceCloseButtonSlot()
+{
+	calcWidget->setBold(false);
+	calcWidget->textInput("]");
 }
 
 void MatrixWidget::operationBoxSlot(const QString&)
@@ -97,7 +170,11 @@ void MatrixWidget::operationBoxSlot(const QString&)
 void MatrixWidget::buttonInputSlot(QString text)
 {
 	if(text == "calculate")
+	{
 		calcWidget->calculateKey();
+		setOutputTable(currentVar);
+		setVarTable();
+	}
 	else if(text == "backkey")
 		calcWidget->backKey();
 	else if(text == "clearall")
@@ -114,4 +191,50 @@ void MatrixWidget::enterSlot()
 	setVarTable();
 	setOutputTable(currentVar);
 }
+
+void MatrixWidget::varSelectionSlot(int row ,int)
+{
+	if(row!=currentVar)
+	{
+		currentVar=row;
+		setOutputTable(currentVar);
+		varTable->clearSelection();
+		varTable->selectRow(currentVar);
+	}
+}
+
+void MatrixWidget::varChangedSlot(int row,int col)
+{
+	int newsize=0;
+	if(col==1)
+	{
+		newsize=varTable->text(row,col).toInt();
+		if(newsize>0)
+			resizeVar(row,newsize,threadData->dimension[row][1]);
+	}
+	else
+	{
+		newsize=varTable->text(row,col).toInt();
+		if(newsize>0)
+			resizeVar(row,threadData->dimension[row][0],newsize);
+	}
+
+	setVarTable();
+	setOutputTable(currentVar);
+}
+
+void MatrixWidget::outputChangedSlot(int row,int col)
+{
+	int effIndex=threadData->dimension[currentVar][0]*col+row;
+	if(threadData->numlen[currentVar]<effIndex)
+		resizeVar(currentVar,threadData->dimension[currentVar][0],threadData->dimension[currentVar][1]);
+	
+	threadData->vars[currentVar][effIndex].type=NFLOAT;
+	threadData->vars[currentVar][effIndex].fval=Complex(runCalc(outputTable->text(row,col),&pref,vars),0.0);
+	
+	setOutputTable(currentVar);
+}
+
+
+
 

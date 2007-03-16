@@ -22,11 +22,12 @@ using namespace std;
 
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
+#define VARSFILE ".extcalc/vars.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.7.1\n2006-03-14\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.7.1\n2006-03-15\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.7.1\n14.3.2006\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.7.1\n15.3.2006\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2006\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -161,6 +162,8 @@ using namespace std;
 #define CSQRT				167
 #define CURT				168
 #define SCALARPROD			170
+#define DETERMINANT			182
+#define INVERT				183
 
 #define SSEMICOLON			83
 #define SCOMPARE			84

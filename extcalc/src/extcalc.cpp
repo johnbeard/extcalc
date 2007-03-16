@@ -43,6 +43,7 @@ int main( int argc, char **argv ) {
 void MainObject::closeEvent(QCloseEvent*e)
 {
 	writeConfigFile();
+	writeVarFile();
 	if(scripting->quitProgram())
 	{
 		e->accept();
@@ -970,10 +971,6 @@ void MainObject::writeConfigFile()
 		configuration+="dec";
 	configuration+="\n";
 	
-	
-	
-	
-	
 	for(int c=0; c<8;c++)
 	{
 		configuration+="SHOWWIN";
@@ -1059,6 +1056,148 @@ void MainObject::writeConfigFile()
 	fclose(configFile);
 }
 
+
+void MainObject::readVarFile()
+{
+	chdir(getenv("HOME"));
+
+	int fileLen;
+	struct stat fileStat;
+
+	if(lstat(CONFIGFILE,&fileStat) != 0)
+		return;
+	else fileLen=fileStat.st_size;
+
+	
+	FILE*varFile = fopen(VARSFILE,"r");
+	if(varFile == NULL)
+	{
+		MessageBox("Unable to read variables file: "+QString(CONFIGFILE));
+		return;
+	}
+	char* cConfFile = new char[fileLen+1];
+	fread((void*)cConfFile,fileLen,1,varFile);
+	cConfFile[fileLen]=(char)0;
+	QString configFile(cConfFile);
+	delete[]cConfFile;
+	fclose(varFile);
+	
+	int pos1=0,pos2=0;
+	QString num,num2;
+	for(int c=0; c<27;c++)
+	{
+		pos2=configFile.find(" ",pos1);
+		if(pos2==-1)
+			return;
+		num=configFile.mid(pos1,pos2-pos1);
+		threadData->numlen[c]=num.toInt();
+		if(threadData->numlen[c]<1 || threadData->numlen[c]>400)
+		{
+			threadData->numlen[c]=1;
+			return;
+		}
+		pos1=pos2+1;
+		pos2=configFile.find(" ",pos1);
+		if(pos2==-1)
+			return;
+		num=configFile.mid(pos1,pos2-pos1);
+		threadData->dimension[c][0]=num.toInt();
+		if(threadData->dimension[c][0]<1)
+		{
+			threadData->dimension[c][0]=1;
+			return;
+		}
+		pos1=pos2+1;
+		pos2=configFile.find("\n",pos1);
+		if(pos2==-1)
+			return;
+		num=configFile.mid(pos1,pos2-pos1);
+		threadData->dimension[c][1]=num.toInt();
+		if(threadData->dimension[c][1]<1)
+		{
+			threadData->dimension[c][1]=1;
+			return;
+		}
+		pos1=pos2+1;
+	}
+	
+	bool failure=false;
+	for(int c=0; c<27;c++)
+	{
+		
+		threadData->vars[c]=(Number*) realloc(threadData->vars[c],sizeof(Number)*threadData->numlen[c]);
+		
+		for(int c1=0; c1<threadData->numlen[c]; c1++)
+		{
+			if(failure)
+			{
+				threadData->vars[c][c1].cval=NULL;
+				threadData->vars[c][c1].type=NNONE;
+			}
+			pos2=configFile.find(" ",pos1);
+			if(pos2==-1)
+			{
+				failure=true;
+				c1--;
+			}
+			num=configFile.mid(pos1,pos2-pos1);
+			pos1=pos2+1;
+			
+			pos2=configFile.find(" ",pos1);
+			if(pos2==-1 && !failure)
+			{
+				failure=true;
+				c1--;
+			}
+			num2=configFile.mid(pos1,pos2-pos1);
+			pos1=pos2+1;
+			threadData->vars[c][c1].fval=Complex(strtold(num,NULL),strtold(num2,NULL));
+			threadData->vars[c][c1].type=NFLOAT;
+			threadData->vars[c][c1].cval=NULL;
+		}
+	}
+	
+}
+
+void MainObject::writeVarFile()
+{
+	FILE*configFile;
+
+	chdir(getenv("HOME"));
+	configFile = fopen(VARSFILE,"w");
+	if(configFile == NULL)
+	{
+		ErrorBox("Unable to write variables file: "+QString(VARSFILE));
+		return;
+	}
+	QString vars="";
+	
+	for(int c=0; c<27;c++)
+	{
+		if(threadData->numlen[c]<=400)
+			vars+=QString::number(threadData->numlen[c]);
+		else vars+="400";
+		vars+=" ";
+		vars+=QString::number(threadData->dimension[c][0]);
+		vars+=" ";
+		vars+=QString::number(threadData->dimension[c][1]);
+		vars+="\n";
+	}
+	for(int c=0; c<27;c++)
+	{
+		for(int c1=0; c1<threadData->numlen[c] && c1<400; c1++)
+		{
+			convertToFloat(&threadData->vars[c][c1]);
+			vars+=QString::number(threadData->vars[c][c1].fval.real(),'g',pref.precision);
+			vars+=" ";
+			vars+=QString::number(threadData->vars[c][c1].fval.imag(),'g',pref.precision);
+			vars+=" ";
+		}
+	}
+	
+	fwrite(vars,vars.length(),1,configFile);
+	fclose(configFile);
+}
 
 void MainObject::tabChangeSlot(QWidget*activeWidget)
 {

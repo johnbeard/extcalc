@@ -47,18 +47,18 @@ class CalcInput :public QTextEdit
 //	ScriptThread*script;
 	Script*scriptObject;
 	ThreadSync*threadData;
-	bool ansAvailable,ansDone;
+	bool ansAvailable,ansDone,autoBrace;
 
 	Preferences pref;
 	
 	Q_OBJECT
 	public:
-		CalcInput(QWidget*parentWin,Variable*va,ThreadSync*td
-				 ) :QTextEdit((QWidget*)parentWin)
+		CalcInput(QWidget*parentWin,Variable*va,ThreadSync*td,bool aB=false) :QTextEdit((QWidget*)parentWin)
 		{
 			vars=va;
 			threadData=td;
 			scriptExec=false;
+			autoBrace=aB;
 //			script=NULL;
 			stdFont=new QFont("Courier");
 			stdFont->setPixelSize(16);

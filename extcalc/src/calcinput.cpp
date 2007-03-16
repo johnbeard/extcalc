@@ -116,6 +116,15 @@ void CalcInput::keyPressEvent(QKeyEvent*e)
 				if(e->state()==Qt::Keypad && e->ascii()==',')
 					insert(".");
 				else insert(e->text());
+				
+				if(pos==(signed)text(para).length()-2 && autoBrace && e->ascii()>='A' && e->ascii()<='Z')
+				{
+					int var=(int)(e->ascii())-65;
+					if(threadData->dimension[var][0]!=1)
+						insert("[]");
+					if(threadData->dimension[var][1]!=1)
+						insert("[]");
+				}
 			}
 		}
 	}
@@ -404,9 +413,19 @@ void CalcInput::textInput(QString inputText)
 			ansDone=true;
 		}
 	}
-	
+
 	insert(inputText);
 	
+	if(pos==(signed)text(para).length()-2 && autoBrace && inputText[0]>='A' && inputText[0]<='Z')
+	{
+		int var=(int)(inputText.ascii()[0])-65;
+
+		if(threadData->dimension[var][0]!=1)
+			insert("[]");
+		if(threadData->dimension[var][1]!=1)
+			insert("[]");
+	}
+		
 }
 /*
 

@@ -24,7 +24,7 @@ class MatrixWidget :public QWidget
 	StandardButtons *standardButtons;
 	CalcTable*outputTable;
 	CalcTable*varTable;
-	QPushButton*sprodButton,*invertButton,*detButton;
+	QPushButton*sprodButton,*invertButton,*detButton,*braceOpenButton,*braceCloseButton;
 	QComboBox*operationBox;
 
 	CalcInput*calcWidget;
@@ -58,36 +58,48 @@ class MatrixWidget :public QWidget
 			varTable->horizontalHeader()->setLabel(0,"Type");
 			varTable->horizontalHeader()->setLabel(1,"Rows");
 			varTable->horizontalHeader()->setLabel(2,"Columns");
+			varTable->setSelectionMode(QTable::SingleRow);
+			varTable->selectRow(currentVar);
+			varTable->setColumnReadOnly(0,true);
 			setVarTable();
 			
 			sprodButton=new QPushButton(getUnicode(DEGREESTRING),this);
 			invertButton=new QPushButton("^-1",this);
+			braceOpenButton=new QPushButton("[",this);
+			braceCloseButton=new QPushButton("]",this);
 			detButton=new QPushButton("det",this);
 			operationBox=new QComboBox(this);
 			operationBox->insertItem("Calculator");
 			operationBox->insertItem("Inverse Matrix");
 			operationBox->insertItem("Linear System of Equations");
-			operationBox->insertItem("Polynomial Equations");
+//			operationBox->insertItem("Polynomial Equations");
 			operationBox->insertItem("Determinant");
 			operationBox->insertItem("Matrix Transfomrations");
 			operationBox->insertItem("Rank");
-			
-			calcWidget=new CalcInput(this,vars,threadData);
+
+			calcWidget=new CalcInput(this,vars,threadData,true);
 
 
 			QObject::connect(standardButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 			QObject::connect(sprodButton,SIGNAL(clicked()),this,SLOT(sprodButtonSlot()));
 			QObject::connect(invertButton,SIGNAL(clicked()),this,SLOT(invertButtonSlot()));
 			QObject::connect(detButton,SIGNAL(clicked()),this,SLOT(detButtonSlot()));
+			QObject::connect(braceOpenButton,SIGNAL(clicked()),this,SLOT(braceOpenButtonSlot()));
+			QObject::connect(braceCloseButton,SIGNAL(clicked()),this,SLOT(braceCloseButtonSlot()));
 			QObject::connect(operationBox,SIGNAL(activated(const QString&)),this,SLOT(operationBoxSlot(const QString&)));
 			QObject::connect(calcWidget,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 			QObject::connect(standardButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
+			QObject::connect(varTable,SIGNAL(currentChanged(int,int)),this,SLOT(varSelectionSlot(int,int)));
+			QObject::connect(varTable,SIGNAL(valueChanged(int,int)),this,SLOT(varChangedSlot(int,int)));
+			QObject::connect(outputTable,SIGNAL(valueChanged(int,int)),this,SLOT(outputChangedSlot(int,int)));
+			QObject::connect(calcWidget,SIGNAL(returnPressed()),this,SLOT(enterSlot()));
 		}
 	
 		void setPref(Preferences);
 	
 		void setVarTable();
 		void setOutputTable(int num);
+		void resizeVar(int var,int rows,int cols);
 		
 	
 	public slots:
@@ -95,9 +107,14 @@ class MatrixWidget :public QWidget
 		void sprodButtonSlot();
 		void invertButtonSlot();
 		void detButtonSlot();
+		void braceOpenButtonSlot();
+		void braceCloseButtonSlot();
 		void operationBoxSlot(const QString&);
 		void enterSlot();
 		void buttonInputSlot(QString);
+		void varSelectionSlot(int,int);
+		void varChangedSlot(int,int);
+		void outputChangedSlot(int,int);
 	
 	protected:
 		virtual void resizeEvent(QResizeEvent*);

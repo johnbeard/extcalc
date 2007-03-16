@@ -1023,7 +1023,7 @@ char* checkStringAnsi(char* str,Preferences*pref)
 		if(
 				 (calcString[c]=='\\' ||
 				 ((pref->calcType==SCIENTIFIC && calcString[c] >= 'A' || calcString[c]>='G') && calcString[c]<='Z') ||
-				 (calcString[c] >= 'a' && calcString[c]<='z' && calcString[c]!='x'))
+				 (calcString[c] >= 'a' && calcString[c]<='z' && calcString[c]!='e' && calcString[c]!='x'))
 				 && 
 				 (//calcString[c-1] == '!' ||
 				 calcString[c-1] == '.' ||
@@ -2886,6 +2886,11 @@ char* Script::parse(char* line)
 			operation=SCONJ;
 			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
 		}
+		else if(strncmp(line,"det",3) == 0 && pref->complex)
+		{
+			operation=DETERMINANT;
+			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+		}
 		else if(strncmp(line,"i",1) == 0  && pref->complex)
 		{
 			operation=SVALUE;
@@ -2928,14 +2933,20 @@ char* Script::parse(char* line)
 			printError("Second operand of ^ invalid",semicolonCount,eventReciver->eventReciver);
 		else 
 		{
-			if(pref->complex)
-				operation=CPOW;
-			else operation=POW;
+			if(strcmp(recString2,"-1")==0)
+				operation=INVERT;
+			else {
+				if(pref->complex)
+					operation=CPOW;
+				else operation=POW;
+			}
 		}
 		strcopy(recString1,line,pos1);
 		strcopy(recString2,&line[pos1+1],len-pos1-1);
 		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+		if(operation!=INVERT)
+			vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+		else vertObj2=NULL;
 			
 		delete[]recString1;
 		delete[]recString2;
@@ -3827,7 +3838,6 @@ Number Script::exec()
 						
 						oldEffIndex=c1+c*oldDimension1;
 						newEffIndex=c1+c*eventReciver->dimension[var][0];
-//						perror("\nresize: c "+QString::number(c)+ " c1: " + QString::number(c1));
 						memcpy(&eventReciver->vars[var][newEffIndex],&eventReciver->vars[var][oldEffIndex],sizeof(Number));
 						memcpy(&eventReciver->vars[var][oldEffIndex],&nullNum,sizeof(Number));
 					}
@@ -4221,8 +4231,8 @@ Number Script::exec()
 			}
 			else if((value.type==NMATRIX || value.type==NVECTOR) && (n.type==NMATRIX || n.type==NVECTOR))					//matrix product
 			{
-				perror("Dimension value: "+QString::number(eventReciver->dimension[value.ival][0])+" "+QString::number(eventReciver->dimension[value.ival][1])+
-						" Dimension n: "+QString::number(eventReciver->dimension[n.ival][0])+" "+QString::number(eventReciver->dimension[n.ival][1]));
+			//	perror("Dimension value: "+QString::number(eventReciver->dimension[value.ival][0])+" "+QString::number(eventReciver->dimension[value.ival][1])+
+			//			" Dimension n: "+QString::number(eventReciver->dimension[n.ival][0])+" "+QString::number(eventReciver->dimension[n.ival][1]));
 				int min1=eventReciver->dimension[value.ival][0];
 				int min2=eventReciver->dimension[n.ival][1];
 				int minstep=eventReciver->dimension[value.ival][1];
