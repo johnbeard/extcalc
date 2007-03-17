@@ -1,7 +1,7 @@
 /****************************************************************************
 ** CalcInput meta object code from reading C++ file 'calcinput.h'
 **
-** Created: Thu Mar 15 18:03:04 2007
+** Created: Sat Mar 17 16:18:20 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -69,13 +69,15 @@ QMetaObject* CalcInput::staticMetaObject()
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
     };
     static const QUMethod signal_0 = {"prefChange", 1, param_signal_0 };
+    static const QUMethod signal_1 = {"calcSignal", 0, 0 };
     static const QMetaData signal_tbl[] = {
-	{ "prefChange(Preferences)", &signal_0, QMetaData::Public }
+	{ "prefChange(Preferences)", &signal_0, QMetaData::Public },
+	{ "calcSignal()", &signal_1, QMetaData::Public }
     };
     metaObj = QMetaObject::new_metaobject(
 	"CalcInput", parentObject,
 	slot_tbl, 2,
-	signal_tbl, 1,
+	signal_tbl, 2,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
 	0, 0,
@@ -108,6 +110,12 @@ void CalcInput::prefChange( Preferences t0 )
     activate_signal( clist, o );
 }
 
+// SIGNAL calcSignal
+void CalcInput::calcSignal()
+{
+    activate_signal( staticMetaObject()->signalOffset() + 1 );
+}
+
 bool CalcInput::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
@@ -123,6 +131,7 @@ bool CalcInput::qt_emit( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->signalOffset() ) {
     case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
+    case 1: calcSignal(); break;
     default:
 	return QTextEdit::qt_emit(_id,_o);
     }

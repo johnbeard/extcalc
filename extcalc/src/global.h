@@ -24,12 +24,12 @@ using namespace std;
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #define VARSFILE ".extcalc/vars.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.7.1\n2006-03-15\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.7.1\n2007-03-17\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.7.1\n15.3.2006\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.7.1\n17.3.2007\n\n"+QString(DEVVERSION)
 #endif
-#define AUTHORSTRING "Autor:\nRainer Strobel  2006\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
+#define AUTHORSTRING "Autor:\nRainer Strobel  2007\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
 
 #define FILEM				1
@@ -423,6 +423,8 @@ QString formatOutput(Number num,Preferences*pref,ThreadSync*varData=NULL);
 QColor getColor(QString colorName);
 QString getColorName(QColor col);
 long double runCalc(QString,Preferences*,Variable*);
+long double determinant(int,long double*);
+long double gauss(int sizex,int sizey,long double*matrix);
 void printError(const char*,int,QObject*);
 void convertToFloat(Number*num);
 inline void convertToInt(Number*num);

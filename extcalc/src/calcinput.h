@@ -107,6 +107,7 @@ class CalcInput :public QTextEdit
 
 	signals:
 		void prefChange(Preferences);
+		void calcSignal();
 };
 
 

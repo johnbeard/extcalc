@@ -63,31 +63,41 @@ void MatrixWidget::setOutputTable(int num)
 				outputTable->adjustColumn(c2);
 		}
 	}
-	
 }
 
 void MatrixWidget::resizeVar(int var,int rows,int cols)
 {
 	int newlen=rows*cols;
 	int oldDimension1=threadData->dimension[var][0],oldDimension2=threadData->dimension[var][1];
-	threadData->vars[var]=(Number*)realloc((void*)threadData->vars[var],sizeof(Number)*(newlen));
-	for(int c=threadData->numlen[var]; c<newlen; c++)
+
+	if(oldDimension1==rows)
 	{
-		threadData->vars[var][c].type=NNONE;
-		threadData->vars[var][c].cval=NULL;
+		threadData->vars[var]=(Number*)realloc((void*)threadData->vars[var],sizeof(Number)*newlen);
+		for(int c=threadData->numlen[var]; c<newlen; c++)
+		{
+			threadData->vars[var][c].type=NNONE;
+			threadData->vars[var][c].cval=NULL;
+		}
 	}
+	
+	
+	
 	threadData->numlen[var]=newlen;
 	threadData->dimension[var][0]=rows;
 	threadData->dimension[var][1]=cols;
 
 
 	int oldEffIndex,newEffIndex;
-	Number nullNum;
-	nullNum.type=NONE;
-	nullNum.cval=NULL;
 
-	if(threadData->dimension[var][0]<oldDimension1)
+
+	if(threadData->dimension[var][0]>oldDimension1)
 	{
+		threadData->vars[var]=(Number*)realloc((void*)threadData->vars[var],sizeof(Number)*newlen);
+		for(int c=threadData->numlen[var]; c<newlen; c++)
+		{
+			threadData->vars[var][c].type=NNONE;
+			threadData->vars[var][c].cval=NULL;
+		}
 		for(int c=oldDimension2-1; c>=1; c--)
 		{
 			for(int c1=oldDimension1-1; c1>=0; c1--)
@@ -96,24 +106,24 @@ void MatrixWidget::resizeVar(int var,int rows,int cols)
 				oldEffIndex=c1+c*oldDimension1;
 				newEffIndex=c1+c*threadData->dimension[var][0];
 				memcpy(&threadData->vars[var][newEffIndex],&threadData->vars[var][oldEffIndex],sizeof(Number));
-				memcpy(&threadData->vars[var][oldEffIndex],&nullNum,sizeof(Number));
 			}
 		}
 	}
-	else if(threadData->dimension[var][0]>oldDimension1)
+	else if(threadData->dimension[var][0]<oldDimension1)
 	{
 		for(int c=1; c<oldDimension2; c++)
 		{
-			for(int c1=1; c1<oldDimension1; c1++)
+			for(int c1=0; c1<oldDimension1; c1++)
 			{
 							
 				oldEffIndex=c1+c*oldDimension1;
 				newEffIndex=c1+c*threadData->dimension[var][0];
 				memcpy(&threadData->vars[var][newEffIndex],&threadData->vars[var][oldEffIndex],sizeof(Number));
-				memcpy(&threadData->vars[var][oldEffIndex],&nullNum,sizeof(Number));
 			}
 		}
+		threadData->vars[var]=(Number*)realloc((void*)threadData->vars[var],sizeof(Number)*newlen);
 	}
+	
 }
 
 

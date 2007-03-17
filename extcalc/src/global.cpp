@@ -1808,7 +1808,7 @@ char* Script::parse(char* line)
 		return NULL;
 	}
 	
-//	perror(line);
+	perror(line);
 	int pos1;
 	int len=strlen(line);
 
@@ -2886,7 +2886,7 @@ char* Script::parse(char* line)
 			operation=SCONJ;
 			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
 		}
-		else if(strncmp(line,"det",3) == 0 && pref->complex)
+		else if(strncmp(line,"det",3) == 0)
 		{
 			operation=DETERMINANT;
 			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
@@ -2933,20 +2933,19 @@ char* Script::parse(char* line)
 			printError("Second operand of ^ invalid",semicolonCount,eventReciver->eventReciver);
 		else 
 		{
-			if(strcmp(recString2,"-1")==0)
-				operation=INVERT;
-			else {
-				if(pref->complex)
-					operation=CPOW;
-				else operation=POW;
-			}
+			if(pref->complex)
+				operation=CPOW;
+			else operation=POW;
 		}
 		strcopy(recString1,line,pos1);
 		strcopy(recString2,&line[pos1+1],len-pos1-1);
 		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		if(operation!=INVERT)
+		if(strcmp(recString2,"-1")!=0)
 			vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		else vertObj2=NULL;
+		else {
+			operation=INVERT;
+			vertObj2=NULL;
+		}
 			
 		delete[]recString1;
 		delete[]recString2;
@@ -4740,6 +4739,90 @@ Number Script::exec()
 			else value.fval=pow(value.fval,n.fval);
 			return value;
 		}
+		case INVERT:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NFLOAT:
+					value.fval=Complex(1.0)/value.fval;
+					return value;
+				case NMATRIX:
+					
+					long double*matrix;
+					long double mainDet;
+					int size,effIndex;
+					if(eventReciver->dimension[value.ival][0]>eventReciver->dimension[value.ival][1])
+						size=eventReciver->dimension[value.ival][1];
+					else size=eventReciver->dimension[value.ival][0];
+					
+					matrix=(long double*)malloc(size*size*sizeof(long double));
+					for(int c1=0; c1<size; c1++)
+						for(int c2=0; c2<size; c2++)
+					{
+						effIndex=c1+c2*eventReciver->dimension[value.ival][0];
+						if(effIndex<eventReciver->numlen[value.ival])
+						{
+							convertToFloat(&eventReciver->vars[value.ival][effIndex]);
+							matrix[c1+size*c2]=eventReciver->vars[value.ival][effIndex].fval.real();
+						}
+					}
+					mainDet=gauss(size,size,matrix);
+					mainDet=1.0/mainDet;
+					
+					resizeVar(27,size*size);
+					eventReciver->dimension[27][0]=eventReciver->dimension[27][1]=size;
+					
+					int pos1,pos2,effSrcIndex,effDestIndex,vz;
+					for(int c3=0; c3<size; c3++)
+					{
+						for(int c4=0; c4<size; c4++)
+						{
+							effIndex=c3+c4*eventReciver->dimension[value.ival][0];
+
+							pos1=0;
+							for(int c1=0; c1<size; c1++)
+							{
+								
+								if(c1!=c3)
+								{
+									pos2=0;
+									for(int c2=0; c2<size; c2++)
+									{
+										effDestIndex=pos1+(size-1)*pos2;
+										effSrcIndex=c1+c2*eventReciver->dimension[value.ival][0];
+										if(c2!=c4)
+										{
+											perror("copy: "+QString::number(c1)+" "+QString::number(c2)+" "+QString::number(pos1)+" "+QString::number(pos2)+" ");
+											if(effSrcIndex<eventReciver->numlen[value.ival])
+												matrix[effDestIndex]=eventReciver->vars[value.ival][effSrcIndex].fval.real();
+											else matrix[effDestIndex]=NAN;
+											pos2++;
+										}
+									}
+									pos1++;
+								}
+							}
+							vz=(c3+c4)%2;
+							if(vz==0)
+								vz=1;
+							else vz=-1;
+							effDestIndex=c4+c3*size;
+							long double subDet=gauss(size-1,size-1,matrix);
+							perror("subDet: "+QString::number(c3)+" "+QString::number(c4)+" "+QString::number((double)subDet));
+							eventReciver->vars[27][effDestIndex].fval=Complex(mainDet*(long double)vz*subDet);
+							eventReciver->vars[27][effDestIndex].type=NFLOAT;
+						}
+					}
+					free(matrix);
+					value.ival=27;
+					return value;
+				default:
+					convertToFloat(&value);
+					value.fval=Complex(1.0)/value.fval;
+					return value;
+			}
+		}
 		case SQRT:
 		{
 			value=vertObj->exec();
@@ -5340,6 +5423,37 @@ Number Script::exec()
 		
 		return value;
 		}
+		case DETERMINANT:
+		{
+			value=vertObj->exec();
+			if(value.type!=NMATRIX)
+			{
+				convertToFloat(&value);
+				return value;
+			}
+			long double*matrix;
+			int size,effIndex;
+			if(eventReciver->dimension[value.ival][0]>eventReciver->dimension[value.ival][1])
+				size=eventReciver->dimension[value.ival][1];
+			else size=eventReciver->dimension[value.ival][0];
+			
+			matrix=(long double*)malloc(size*size*sizeof(long double));
+			
+			for(int c1=0; c1<size; c1++)
+				for(int c2=0; c2<size; c2++)
+			{
+				effIndex=c1+c2*eventReciver->dimension[value.ival][0];
+				if(effIndex<eventReciver->numlen[value.ival])
+				{
+					convertToFloat(&eventReciver->vars[value.ival][effIndex]);
+					matrix[c1+size*c2]=eventReciver->vars[value.ival][effIndex].fval.real();
+				}
+			}
+			value.type=NFLOAT;
+			value.fval=Complex(gauss(size,size,matrix));
+			free(matrix);
+			return value;
+		}
 		case SRUN:
 		{
 			if(eventReciver->subprograms[var]!=NULL)
@@ -5679,6 +5793,102 @@ bool Script::resizeVar(int var,int newlen)
 	eventReciver->numlen[var]=newlen;
 	return true;
 }
+
+long double determinant(int size,long double*matrix)
+{
+	if(size>2)
+	{
+		long double ret=0.0;
+		long double*nextMatrix=(long double*)malloc(sizeof(long double)*(size-1)*(size-1));
+		int pos=0;
+		for(int c=0; c<size; c++)
+		{
+			pos=0;
+			perror("sub-matrix index: "+QString::number(c));
+			for(int c2=1; c2<size; c2++)
+				for(int c1=0; c1<size; c1++)
+			{
+				if(c!=c1)
+				{
+					perror("element "+QString::number(c1)+" "+QString::number(c2));
+					nextMatrix[pos]=matrix[c1+size*c2];
+					pos++;
+				}
+			}
+			if(c%2==0)
+				ret+=matrix[c]*determinant(size-1,nextMatrix);
+			else ret-=matrix[c]*determinant(size-1,nextMatrix);
+		}
+		free(nextMatrix);
+		return ret;
+	}
+	else if(size==2)
+		return matrix[0]*matrix[3]-matrix[1]*matrix[2];
+	else return matrix[0];
+}
+
+long double gauss(int sizex,int sizey,long double*matrix)
+{
+	long double fakt,ret=1.0;
+	int offset=0;
+	int size=sizex;
+	if(size>sizey)
+		size=sizey;
+	perror("gauss:");
+	for(int c2=0; c2<sizey; c2++)
+	{
+		for(int c3=0; c3<sizex; c3++)
+			fprintf(stdout,"%Lg\t",matrix[c3*sizey+c2]);
+		fprintf(stdout,"\n");
+	}
+	
+	for(int c1=0; c1<sizex; c1++)
+	{
+		if(matrix[c1*sizey+c1]==0.0)
+		{
+			int swapIndex=0;
+			for(int c2=c1+1; c2<sizey; c2++)
+				if(matrix[c1*sizey+c2]!=0.0)
+				{
+					swapIndex=c2;
+					break;
+				}
+			if(swapIndex==0)
+			{
+				offset++;
+				continue;
+			}
+			else
+			{
+				long double tmp;
+				for(int c2=0; c2<sizex; c2++)
+				{
+					tmp=matrix[swapIndex+c2*sizey];
+					matrix[swapIndex+c2*sizey]=matrix[c1+c2*sizey];
+					matrix[c1+c2*sizey]=tmp;
+				}
+				ret=-ret;
+			}
+		}
+//		perror("offset: "+QString::number(offset));
+		for(int c2=c1+1-offset; c2<sizex; c2++)
+		{
+			fakt=matrix[c1*sizey+c2]/matrix[c1*sizey+c1-offset];
+//			perror("fakt: "+QString::number((double)fakt));
+			for(int c3=c1; c3<sizex; c3++)
+				matrix[c3*sizey+c2]-=matrix[c3*sizey+c1-offset]*fakt;
+		}
+
+	}
+	
+
+	
+	for(int c=0; c<size; c++)
+		ret*=matrix[c*size+c];
+	return ret;
+}
+
+
 
 void printError(const char*text,int num,QObject*eventReciver)
 {

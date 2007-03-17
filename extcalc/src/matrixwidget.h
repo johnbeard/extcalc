@@ -92,7 +92,7 @@ class MatrixWidget :public QWidget
 			QObject::connect(varTable,SIGNAL(currentChanged(int,int)),this,SLOT(varSelectionSlot(int,int)));
 			QObject::connect(varTable,SIGNAL(valueChanged(int,int)),this,SLOT(varChangedSlot(int,int)));
 			QObject::connect(outputTable,SIGNAL(valueChanged(int,int)),this,SLOT(outputChangedSlot(int,int)));
-			QObject::connect(calcWidget,SIGNAL(returnPressed()),this,SLOT(enterSlot()));
+			QObject::connect(calcWidget,SIGNAL(calcSignal()),this,SLOT(enterSlot()));
 		}
 	
 		void setPref(Preferences);
