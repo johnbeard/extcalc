@@ -1064,7 +1064,7 @@ void MainObject::readVarFile()
 	int fileLen;
 	struct stat fileStat;
 
-	if(lstat(CONFIGFILE,&fileStat) != 0)
+	if(lstat(VARSFILE,&fileStat) != 0)
 		return;
 	else fileLen=fileStat.st_size;
 
@@ -1124,21 +1124,24 @@ void MainObject::readVarFile()
 	bool failure=false;
 	for(int c=0; c<27;c++)
 	{
-		
 		threadData->vars[c]=(Number*) realloc(threadData->vars[c],sizeof(Number)*threadData->numlen[c]);
 		
 		for(int c1=0; c1<threadData->numlen[c]; c1++)
 		{
+			
 			if(failure)
 			{
 				threadData->vars[c][c1].cval=NULL;
 				threadData->vars[c][c1].type=NNONE;
+				continue;
 			}
+			
 			pos2=configFile.find(" ",pos1);
 			if(pos2==-1)
 			{
 				failure=true;
 				c1--;
+				continue;
 			}
 			num=configFile.mid(pos1,pos2-pos1);
 			pos1=pos2+1;
@@ -1148,6 +1151,7 @@ void MainObject::readVarFile()
 			{
 				failure=true;
 				c1--;
+				continue;
 			}
 			num2=configFile.mid(pos1,pos2-pos1);
 			pos1=pos2+1;
@@ -1156,7 +1160,6 @@ void MainObject::readVarFile()
 			threadData->vars[c][c1].cval=NULL;
 		}
 	}
-	
 }
 
 void MainObject::writeVarFile()

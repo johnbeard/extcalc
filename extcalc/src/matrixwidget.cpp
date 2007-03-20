@@ -10,15 +10,31 @@ void MatrixWidget::resizeEvent(QResizeEvent*)
 	varTable->setGeometry(20,50,width/4-30,height-290);
 	outputTable->setGeometry(width/4+10,50,3*width/4-30,height-290);
 
-	standardButtons->setGeometry(20,height-220,280,200);
-	calcWidget->setGeometry(320,height-180,width-340,160);
-	
 	operationBox->setGeometry(320,height-220,95,35);
 	sprodButton->setGeometry(425,height-220,30,35);
 	invertButton->setGeometry(465,height-220,30,35);
 	detButton->setGeometry(505,height-220,30,35);
 	braceOpenButton->setGeometry(545,height-220,30,35);
 	braceCloseButton->setGeometry(585,height-220,30,35);
+	
+	switch(state)
+	{
+		case MATCALC:
+			standardButtons->setGeometry(20,height-220,280,200);
+			calcWidget->setGeometry(320,height-180,width-340,160);
+			break;
+		case MATLSE:
+			matrixLabel->setGeometry(20,height-220,140,20);
+			vectorLabel->setGeometry(160,height-220,140,20);
+			matrixBox->setGeometry(20,height-190,120,25);
+			vectorBox->setGeometry(160,height-190,120,25);
+			size1Label->setGeometry(20,height-155,100,20);
+			size1Box->setGeometry(140,height-155,140,20);
+			size2Label->setGeometry(20,height-135,280,80);
+			calcButton->setGeometry(180,height-45,100,25);
+			resultTable->setGeometry(320,height-180,width-340,160);
+			break;
+	}
 }
 
 void MatrixWidget::setVarTable()
@@ -126,6 +142,61 @@ void MatrixWidget::resizeVar(int var,int rows,int cols)
 	
 }
 
+void MatrixWidget::resetInterface()
+{
+	size1Box->hide();
+	size2Box->hide();
+	matrixBox->hide();
+	vectorBox->hide();
+	matrixLabel->hide();
+	vectorLabel->hide();
+	size1Label->hide();
+	size2Label->hide();
+	resultLabel->hide();
+	calcButton->hide();
+	calcWidget->hide();
+	standardButtons->hide();
+	resultTable->hide();
+	
+	switch(state)
+	{
+		case MATCALC:
+			calcWidget->show();
+			standardButtons->show();
+			break;
+		case MATLSE:
+			size1Box->show();
+//			size2Box->show();
+			matrixBox->show();
+			vectorBox->show();
+			matrixLabel->show();
+			vectorLabel->show();
+			size1Label->show();
+			size2Label->show();
+			resultLabel->show();
+			calcButton->show();
+			resultTable->show();
+			resultTable->setNumRows(1);
+			resultTable->setNumCols(1);
+			matrixBox->setCurrentItem(currentVar);
+			matrixBoxSlot(currentVar);
+			size1Label->setText("Unknowns:");
+			matrixLabel->setText("Matrix");
+			vectorLabel->setText("Vector");
+			size2Label->setText("Choose a Matrix\nor a Matrix and a Vector\nto insert data\n");
+			break;
+		case MATGENERATE:
+			break;
+		case MATDET:
+			break;
+		case MATINV:
+			break;
+		case MATRANK:
+			break;
+	}
+	resizeEvent(NULL);
+}
+
 
 
 void MatrixWidget::setPref(Preferences p)
@@ -172,9 +243,10 @@ void MatrixWidget::braceCloseButtonSlot()
 	calcWidget->textInput("]");
 }
 
-void MatrixWidget::operationBoxSlot(const QString&)
+void MatrixWidget::operationBoxSlot(int index)
 {
-	
+	state=index;
+	resetInterface();
 }
 
 void MatrixWidget::buttonInputSlot(QString text)
@@ -240,11 +312,151 @@ void MatrixWidget::outputChangedSlot(int row,int col)
 		resizeVar(currentVar,threadData->dimension[currentVar][0],threadData->dimension[currentVar][1]);
 	
 	threadData->vars[currentVar][effIndex].type=NFLOAT;
-	threadData->vars[currentVar][effIndex].fval=Complex(runCalc(outputTable->text(row,col),&pref,vars),0.0);
+	long double num=runCalc(outputTable->text(row,col),&pref,vars);
+	threadData->vars[currentVar][effIndex].fval=Complex(num);
 	
 	setOutputTable(currentVar);
 }
 
+void MatrixWidget::matrixBoxSlot(int)
+{
+	if(state==MATLSE)
+	{
+		int size=threadData->dimension[matrixBox->currentItem()][0];
+		if(threadData->dimension[matrixBox->currentItem()][1]>size)
+		{
+			if(vectorBox->currentItem()==0)
+				size=threadData->dimension[matrixBox->currentItem()][1]-1;
+			else size=threadData->dimension[matrixBox->currentItem()][1];
+		}	
+		size1Box->setValue(size);
+		size1BoxSlot(size);
+		size2Label->setText("Choose a vector\nor set number of unknowns\nand insert data");
+		if(currentVar!=matrixBox->currentItem())
+		{
+			currentVar=matrixBox->currentItem();
+			setOutputTable(currentVar);
+		}
+	}
+}
+
+void MatrixWidget::vectorBoxSlot(int)
+{
+	if(state==MATLSE && vectorBox->currentItem()!=0)
+	{
+		if(vectorBox->currentItem()-1==matrixBox->currentItem())
+		{
+			vectorBox->setCurrentItem(0);
+			size2Label->setText("Can't choose the same variable twice!\nChoose a matrix,\nor a matrix and a vector\nto insert data");
+		}
+		else size2Label->setText("Set number of unknowns\nand insert data");
+
+		if(vectorBox->currentItem()!=0 && currentVar!=vectorBox->currentItem()-1)
+		{
+			currentVar=vectorBox->currentItem()-1;
+			if(threadData->dimension[currentVar][0] > size1Box->value())
+				size1BoxSlot(threadData->dimension[currentVar][0]);
+			else setOutputTable(currentVar);
+		}
+	}
+}
+
+void MatrixWidget::size1BoxSlot(int newsize)
+{
+	if(state==MATLSE)
+	{
+		if(vectorBox->currentItem()==0)
+		{
+			resizeVar(matrixBox->currentItem(),newsize,newsize+1);
+			if(currentVar!=matrixBox->currentItem())
+				currentVar=vectorBox->currentItem()-1;
+		}
+		else
+		{
+			resizeVar(matrixBox->currentItem(),newsize,newsize);
+			resizeVar(vectorBox->currentItem()-1,newsize,1);
+		}
+		size2Label->setText("Insert data \nand press calculate button");
+		setOutputTable(currentVar);
+	}
+}
+
+void MatrixWidget::calcButtonSlot()
+{
+	switch(state)
+	{
+		case MATLSE:
+		{
+			int size=size1Box->value(),effSrcIndex,effDestIndex;
+			perror("size: "+QString::number(size));
+			int matVar=matrixBox->currentItem(),vecVar=vectorBox->currentItem()-1;
+			perror("matVar: "+QString::number(matVar)+"vecVar: "+QString::number(vecVar));
+			long double *matrix=(long double*)malloc(sizeof(long double)*size*(size+1));
+			for(int c1=0; c1<size; c1++)
+			{
+				for(int c2=0; c2<size; c2++)
+				{
+					effSrcIndex=c2+c1*threadData->dimension[matVar][0];
+					effDestIndex=c2+c1*size;
+					if(effSrcIndex<threadData->numlen[matVar])
+						matrix[effDestIndex]=threadData->vars[matVar][effSrcIndex].fval.real();
+					else matrix[effDestIndex]=NAN;
+				}
+				if(vecVar==-1)
+				{
+					if(c1+size*size<threadData->numlen[matVar])
+						matrix[c1+size*size]=threadData->vars[matVar][c1+size*size].fval.real();
+					else matrix[c1+size*size]=NAN;
+				}
+				else {
+					if(c1<threadData->numlen[vecVar])
+						matrix[c1+size*size]=threadData->vars[vecVar][c1].fval.real();
+					else matrix[c1+size*size]=NAN;
+				}
+			}
+			gauss(size+1,size,matrix);
+			resultTable->setNumRows(size);
+			resultTable->setNumCols(1);
+
+			if(matrix[(size-1)*size+size-1]==0.0)
+			{
+				resultTable->setNumCols(size+1);
+				for(int c2=0; c2<size; c2++)
+				{
+					for(int c3=0; c3<size+1; c3++)
+						resultTable->setText(c2,c3,formatOutput(matrix[c3*size+c2],&pref));
+				}
+				if(matrix[size*size+size-1]==0.0)
+					size2Label->setText("More than one result found\nShowing matrix");
+				else size2Label->setText("No results found\nShowing matrix");
+			}
+			else {
+				long double *results=(long double*)malloc(sizeof(long double)*size);
+				for(int c=size-1; c>=0; c--)
+				{
+					results[c]=matrix[size*size+c];
+					for(int c1=c; c1<size; c1++)
+					{
+						if(c!=c)
+							results[c]-=results[c1]*matrix[c+c1*size];
+					}
+					results[c]/=matrix[c+c*size];
+					resultTable->setText(c,0,formatOutput(results[c],&pref));
+				}
+				free(results);
+				size2Label->setText("Showing result Vector");
+			}
+			
+			for(int c=0; c<resultTable->numCols(); c++)
+				resultTable->adjustColumn(c);
+
+			
+			
+			free(matrix);
+			break;
+		}
+	}
+}
 
 
 

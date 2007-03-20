@@ -4198,16 +4198,23 @@ Number Script::exec()
 			}
 			else if(value.type==NVECTOR && n.type==NVECTOR)					//cross product
 			{
-				if(eventReciver->dimension[n.ival][0]>=3 && eventReciver->dimension[value.ival][0]>=3)
+				if(eventReciver->dimension[n.ival][0]==3 && eventReciver->dimension[value.ival][0]==3)
 				{
 					int index1=value.ival;
 					int index2=n.ival;
 //					perror(QString::number(index1)+" "+QString::number(index2));
 
 					eventReciver->vars[27]=(Number*)realloc(eventReciver->vars[27],sizeof(Number)*3);
+					
+					if(eventReciver->numlen[n.ival]<3)
+						resizeVar(n.ival,3);
+					if(eventReciver->numlen[value.ival]<3)
+						resizeVar(value.ival,3);
+					
 					for(int c=0; c<3;c++)
 					{
 						eventReciver->vars[27][c].type=NFLOAT;
+						eventReciver->vars[27][c].cval=NULL;
 						convertToFloat(&eventReciver->vars[index1][c]);
 						convertToFloat(&eventReciver->vars[index2][c]);
 					}
@@ -4237,8 +4244,11 @@ Number Script::exec()
 				int minstep=eventReciver->dimension[value.ival][1];
 				int effIndex1=0,effIndex2=0,effIndexD=0;
 				
-				if(eventReciver->dimension[n.ival][0]<minstep)
-					minstep=eventReciver->dimension[n.ival][0];
+				if(eventReciver->dimension[n.ival][0]!=minstep)
+				{
+					value.type=NNONE;
+					return value;
+				}
 
 				resizeVar(27,min1*min2);
 				for(int c=0; c<min1; c++)								//row
@@ -4752,9 +4762,12 @@ Number Script::exec()
 					long double*matrix;
 					long double mainDet;
 					int size,effIndex;
-					if(eventReciver->dimension[value.ival][0]>eventReciver->dimension[value.ival][1])
+					if(eventReciver->dimension[value.ival][0]==eventReciver->dimension[value.ival][1])
 						size=eventReciver->dimension[value.ival][1];
-					else size=eventReciver->dimension[value.ival][0];
+					else{
+						value.type=NNONE;
+						return value;
+					}
 					
 					matrix=(long double*)malloc(size*size*sizeof(long double));
 					for(int c1=0; c1<size; c1++)
@@ -4779,11 +4792,9 @@ Number Script::exec()
 						for(int c4=0; c4<size; c4++)
 						{
 							effIndex=c3+c4*eventReciver->dimension[value.ival][0];
-
 							pos1=0;
 							for(int c1=0; c1<size; c1++)
 							{
-								
 								if(c1!=c3)
 								{
 									pos2=0;
@@ -4793,7 +4804,6 @@ Number Script::exec()
 										effSrcIndex=c1+c2*eventReciver->dimension[value.ival][0];
 										if(c2!=c4)
 										{
-											perror("copy: "+QString::number(c1)+" "+QString::number(c2)+" "+QString::number(pos1)+" "+QString::number(pos2)+" ");
 											if(effSrcIndex<eventReciver->numlen[value.ival])
 												matrix[effDestIndex]=eventReciver->vars[value.ival][effSrcIndex].fval.real();
 											else matrix[effDestIndex]=NAN;
@@ -4809,8 +4819,8 @@ Number Script::exec()
 							else vz=-1;
 							effDestIndex=c4+c3*size;
 							long double subDet=gauss(size-1,size-1,matrix);
-							perror("subDet: "+QString::number(c3)+" "+QString::number(c4)+" "+QString::number((double)subDet));
 							eventReciver->vars[27][effDestIndex].fval=Complex(mainDet*(long double)vz*subDet);
+							
 							eventReciver->vars[27][effDestIndex].type=NFLOAT;
 						}
 					}
@@ -5433,9 +5443,13 @@ Number Script::exec()
 			}
 			long double*matrix;
 			int size,effIndex;
-			if(eventReciver->dimension[value.ival][0]>eventReciver->dimension[value.ival][1])
+			if(eventReciver->dimension[value.ival][0]==eventReciver->dimension[value.ival][1])
 				size=eventReciver->dimension[value.ival][1];
-			else size=eventReciver->dimension[value.ival][0];
+			else
+			{
+				value.type=NNONE;
+				return value;
+			}
 			
 			matrix=(long double*)malloc(size*size*sizeof(long double));
 			
@@ -5834,15 +5848,15 @@ long double gauss(int sizex,int sizey,long double*matrix)
 	int size=sizex;
 	if(size>sizey)
 		size=sizey;
-	perror("gauss:");
+	/*perror("gauss:");
 	for(int c2=0; c2<sizey; c2++)
 	{
 		for(int c3=0; c3<sizex; c3++)
 			fprintf(stdout,"%Lg\t",matrix[c3*sizey+c2]);
 		fprintf(stdout,"\n");
-	}
+	}*/
 	
-	for(int c1=0; c1<sizex; c1++)
+	for(int c1=0; c1<size; c1++)
 	{
 		if(matrix[c1*sizey+c1]==0.0)
 		{
@@ -5871,13 +5885,20 @@ long double gauss(int sizex,int sizey,long double*matrix)
 			}
 		}
 //		perror("offset: "+QString::number(offset));
-		for(int c2=c1+1-offset; c2<sizex; c2++)
+		for(int c2=c1+1-offset; c2<sizey; c2++)
 		{
 			fakt=matrix[c1*sizey+c2]/matrix[c1*sizey+c1-offset];
 //			perror("fakt: "+QString::number((double)fakt));
 			for(int c3=c1; c3<sizex; c3++)
 				matrix[c3*sizey+c2]-=matrix[c3*sizey+c1-offset]*fakt;
 		}
+	/*	perror("loop:");
+		for(int c2=0; c2<sizey; c2++)
+		{
+			for(int c3=0; c3<sizex; c3++)
+				fprintf(stdout,"%Lg\t",matrix[c3*sizey+c2]);
+			fprintf(stdout,"\n");
+		}*/
 
 	}
 	
