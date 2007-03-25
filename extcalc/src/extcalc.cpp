@@ -1174,6 +1174,7 @@ void MainObject::writeVarFile()
 		return;
 	}
 	QString vars="";
+	char*buffer=(char*)malloc(100);
 	
 	for(int c=0; c<27;c++)
 	{
@@ -1191,12 +1192,15 @@ void MainObject::writeVarFile()
 		for(int c1=0; c1<threadData->numlen[c] && c1<400; c1++)
 		{
 			convertToFloat(&threadData->vars[c][c1]);
-			vars+=QString::number(threadData->vars[c][c1].fval.real(),'g',pref.precision);
+			sprintf(buffer,"%.*Lg",pref.precision,threadData->vars[c][c1].fval.real());
+			vars+=QString(buffer);
 			vars+=" ";
-			vars+=QString::number(threadData->vars[c][c1].fval.imag(),'g',pref.precision);
+			sprintf(buffer,"%.*Lg",pref.precision,threadData->vars[c][c1].fval.imag());
+			vars+=QString(buffer);
 			vars+=" ";
 		}
 	}
+	free(buffer);
 	
 	fwrite(vars,vars.length(),1,configFile);
 	fclose(configFile);

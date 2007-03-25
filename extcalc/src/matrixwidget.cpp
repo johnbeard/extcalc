@@ -29,10 +29,28 @@ void MatrixWidget::resizeEvent(QResizeEvent*)
 			matrixBox->setGeometry(20,height-190,120,25);
 			vectorBox->setGeometry(160,height-190,120,25);
 			size1Label->setGeometry(20,height-155,100,20);
-			size1Box->setGeometry(140,height-155,140,20);
+			size1Box->setGeometry(140,height-155,85,20);
+			sizeButton->setGeometry(230,height-155,50,20);
 			size2Label->setGeometry(20,height-135,280,80);
 			calcButton->setGeometry(180,height-45,100,25);
 			resultTable->setGeometry(320,height-180,width-340,160);
+			break;
+		case MATGENERATE:
+			vectorLabel->setGeometry(20,height-220,140,20);
+			matrixLabel->setGeometry(160,height-220,140,20);
+			typeBox->setGeometry(20,height-190,120,25);
+			matrixBox->setGeometry(160,height-190,120,25);
+			size1Label->setGeometry(20,height-155,100,20);
+			size1Box->setGeometry(140,height-155,85,20);
+			sizeButton->setGeometry(230,height-155,50,20);
+			label1->setGeometry(20,height-130,140,20);
+			input1->setGeometry(160,height-130,120,20);
+			label2->setGeometry(20,height-105,140,20);
+			input2->setGeometry(160,height-105,120,20);
+			label3->setGeometry(20,height-80,140,20);
+			input3->setGeometry(160,height-80,120,20);
+			
+			calcButton->setGeometry(180,height-45,100,25);
 			break;
 	}
 }
@@ -59,6 +77,10 @@ void MatrixWidget::setVarTable()
 	varTable->horizontalHeader()->setLabel(0,"Type");
 	varTable->horizontalHeader()->setLabel(1,"Rows");
 	varTable->horizontalHeader()->setLabel(2,"Columns");
+	
+	setOutputTable(currentVar);
+	varTable->clearSelection();
+	varTable->selectRow(currentVar);
 }
 
 
@@ -98,7 +120,6 @@ void MatrixWidget::resizeVar(int var,int rows,int cols)
 	
 	
 	
-	threadData->numlen[var]=newlen;
 	threadData->dimension[var][0]=rows;
 	threadData->dimension[var][1]=cols;
 
@@ -108,6 +129,7 @@ void MatrixWidget::resizeVar(int var,int rows,int cols)
 
 	if(threadData->dimension[var][0]>oldDimension1)
 	{
+		threadData->numlen[var]=newlen;
 		threadData->vars[var]=(Number*)realloc((void*)threadData->vars[var],sizeof(Number)*newlen);
 		for(int c=threadData->numlen[var]; c<newlen; c++)
 		{
@@ -121,7 +143,8 @@ void MatrixWidget::resizeVar(int var,int rows,int cols)
 							
 				oldEffIndex=c1+c*oldDimension1;
 				newEffIndex=c1+c*threadData->dimension[var][0];
-				memcpy(&threadData->vars[var][newEffIndex],&threadData->vars[var][oldEffIndex],sizeof(Number));
+				if(oldEffIndex<threadData->numlen[var])
+					memcpy(&threadData->vars[var][newEffIndex],&threadData->vars[var][oldEffIndex],sizeof(Number));
 			}
 		}
 	}
@@ -134,10 +157,12 @@ void MatrixWidget::resizeVar(int var,int rows,int cols)
 							
 				oldEffIndex=c1+c*oldDimension1;
 				newEffIndex=c1+c*threadData->dimension[var][0];
-				memcpy(&threadData->vars[var][newEffIndex],&threadData->vars[var][oldEffIndex],sizeof(Number));
+				if(newEffIndex<threadData->numlen[var])
+					memcpy(&threadData->vars[var][newEffIndex],&threadData->vars[var][oldEffIndex],sizeof(Number));
 			}
 		}
 		threadData->vars[var]=(Number*)realloc((void*)threadData->vars[var],sizeof(Number)*newlen);
+		threadData->numlen[var]=newlen;
 	}
 	
 }
@@ -152,11 +177,19 @@ void MatrixWidget::resetInterface()
 	vectorLabel->hide();
 	size1Label->hide();
 	size2Label->hide();
-	resultLabel->hide();
 	calcButton->hide();
 	calcWidget->hide();
 	standardButtons->hide();
 	resultTable->hide();
+	sizeButton->hide();
+	label1->hide();
+	label2->hide();
+	label3->hide();
+	input1->hide();
+	input2->hide();
+	input3->hide();
+	typeBox->hide();
+	calcButton->setEnabled(true);
 	
 	switch(state)
 	{
@@ -165,6 +198,9 @@ void MatrixWidget::resetInterface()
 			standardButtons->show();
 			break;
 		case MATLSE:
+			size1Box->setMinValue(1);
+			size1Box->setMaxValue(20);
+			vectorLabel->setText("Vector");
 			size1Box->show();
 //			size2Box->show();
 			matrixBox->show();
@@ -173,19 +209,30 @@ void MatrixWidget::resetInterface()
 			vectorLabel->show();
 			size1Label->show();
 			size2Label->show();
-			resultLabel->show();
+			calcButton->setText("Calculate");
 			calcButton->show();
 			resultTable->show();
 			resultTable->setNumRows(1);
 			resultTable->setNumCols(1);
 			matrixBox->setCurrentItem(currentVar);
 			matrixBoxSlot(currentVar);
+			sizeButton->show();
 			size1Label->setText("Unknowns:");
 			matrixLabel->setText("Matrix");
 			vectorLabel->setText("Vector");
 			size2Label->setText("Choose a Matrix\nor a Matrix and a Vector\nto insert data\n");
 			break;
 		case MATGENERATE:
+			vectorLabel->setText("Type");
+			vectorLabel->show();
+			typeBox->show();
+			matrixLabel->show();
+			matrixBox->show();
+			size1Box->show();
+			size1Label->show();
+			sizeButton->show();
+			calcButton->setText("Generate");
+			calcButton->show();
 			break;
 		case MATDET:
 			break;
@@ -312,7 +359,12 @@ void MatrixWidget::outputChangedSlot(int row,int col)
 		resizeVar(currentVar,threadData->dimension[currentVar][0],threadData->dimension[currentVar][1]);
 	
 	threadData->vars[currentVar][effIndex].type=NFLOAT;
-	long double num=runCalc(outputTable->text(row,col),&pref,vars);
+	long double num;
+	char*end;
+	num=strtold(outputTable->text(row,col),&end);
+	if(end[0]!=(char)0)
+		num=runCalc(outputTable->text(row,col),&pref,vars);
+
 	threadData->vars[currentVar][effIndex].fval=Complex(num);
 	
 	setOutputTable(currentVar);
@@ -331,10 +383,11 @@ void MatrixWidget::matrixBoxSlot(int)
 		}	
 		size1Box->setValue(size);
 		size1BoxSlot(size);
-		size2Label->setText("Choose a vector\nor set number of unknowns\nand insert data");
+
 		if(currentVar!=matrixBox->currentItem())
 		{
 			currentVar=matrixBox->currentItem();
+			setVarTable();
 			setOutputTable(currentVar);
 		}
 	}
@@ -347,16 +400,15 @@ void MatrixWidget::vectorBoxSlot(int)
 		if(vectorBox->currentItem()-1==matrixBox->currentItem())
 		{
 			vectorBox->setCurrentItem(0);
-			size2Label->setText("Can't choose the same variable twice!\nChoose a matrix,\nor a matrix and a vector\nto insert data");
+			WarningBox("Can't choose the same variable twice!\nChoose a matrix,\nor a matrix and a vector\nto insert data");
 		}
-		else size2Label->setText("Set number of unknowns\nand insert data");
 
-		if(vectorBox->currentItem()!=0 && currentVar!=vectorBox->currentItem()-1)
+		if(vectorBox->currentItem()!=0)
 		{
 			currentVar=vectorBox->currentItem()-1;
-			if(threadData->dimension[currentVar][0] > size1Box->value())
-				size1BoxSlot(threadData->dimension[currentVar][0]);
-			else setOutputTable(currentVar);
+			setVarTable();
+			setOutputTable(currentVar);
+			size1BoxSlot(threadData->dimension[currentVar][0]);
 		}
 	}
 }
@@ -367,19 +419,131 @@ void MatrixWidget::size1BoxSlot(int newsize)
 	{
 		if(vectorBox->currentItem()==0)
 		{
+			if(threadData->dimension[matrixBox->currentItem()][0]==newsize &&threadData->dimension[matrixBox->currentItem()][1]==newsize+1)
+			{
+				calcButton->setEnabled(true);
+				size2Label->setText("Insert data \nand press calculate button");
+			}
+			else {
+				calcButton->setEnabled(false);
+				size2Label->setText("Press set button to adjust size");
+			}
+		}
+		else
+		{
+			if(threadData->dimension[matrixBox->currentItem()][0]==newsize &&
+				threadData->dimension[matrixBox->currentItem()][1]==newsize &&
+				threadData->dimension[vectorBox->currentItem()-1][0]==newsize &&
+				threadData->dimension[vectorBox->currentItem()-1][1]==1)
+			{
+				calcButton->setEnabled(true);
+				size2Label->setText("Insert data \nand press calculate button");
+			}
+			else {
+				calcButton->setEnabled(false);
+				size2Label->setText("Press set button to adjust size");
+			}
+		}
+	}
+}
+
+void MatrixWidget::sizeButtonSlot()
+{
+	if(state==MATLSE)
+	{
+		int newsize=size1Box->value();
+		if(vectorBox->currentItem()==0)
+		{
 			resizeVar(matrixBox->currentItem(),newsize,newsize+1);
 			if(currentVar!=matrixBox->currentItem())
-				currentVar=vectorBox->currentItem()-1;
+				currentVar=matrixBox->currentItem();
 		}
 		else
 		{
 			resizeVar(matrixBox->currentItem(),newsize,newsize);
 			resizeVar(vectorBox->currentItem()-1,newsize,1);
 		}
-		size2Label->setText("Insert data \nand press calculate button");
+		setOutputTable(currentVar);
+		calcButton->setEnabled(true);
+	}
+	else if(state==MATGENERATE)
+	{
+		int newsize=size1Box->value();
+		resizeVar(matrixBox->currentItem(),newsize,newsize);
 		setOutputTable(currentVar);
 	}
 }
+
+
+void MatrixWidget::typeBoxSlot(int index)
+{
+	if(state==MATGENERATE)
+	{
+		switch(index)
+		{
+			case 3:				//rotate x
+				size1Box->setMinValue(2);
+				size1Box->setMaxValue(3);
+				label1->setText("x angle");
+				label1->show();
+				label2->hide();
+				label3->hide();
+				input1->show();
+				input2->hide();
+				input3->hide();
+				break;
+			case 4:				//rotate y
+				size1Box->setMinValue(3);
+				size1Box->setMaxValue(3);
+				label1->setText("y angle");
+				label1->show();
+				label2->hide();
+				label3->hide();
+				input1->show();
+				input2->hide();
+				input3->hide();
+				break;
+			case 5:				//rotate z
+				size1Box->setMinValue(3);
+				size1Box->setMaxValue(3);
+				label1->setText("z angle");
+				label1->show();
+				label2->hide();
+				label3->hide();
+				input1->show();
+				input2->hide();
+				input3->hide();
+				break;
+			case 6:				//scale
+				size1Box->setMinValue(2);
+				size1Box->setMaxValue(3);
+				label1->setText("x scale");
+				label2->setText("y scale");
+				label3->setText("z scale");
+				label1->show();
+				label2->show();
+				label3->show();
+				input1->show();
+				input2->show();
+				input3->show();
+				break;	
+			default:
+				size1Box->setMinValue(1);
+				size1Box->setMaxValue(20);
+				label1->hide();
+				label2->hide();
+				label3->hide();
+				input1->hide();
+				input2->hide();
+				input3->hide();
+		}
+	}
+}
+
+
+
+
+
 
 void MatrixWidget::calcButtonSlot()
 {
@@ -453,6 +617,142 @@ void MatrixWidget::calcButtonSlot()
 			
 			
 			free(matrix);
+			break;
+		}
+		case MATGENERATE:
+		{
+			int var=matrixBox->currentItem();
+			int size=size1Box->value();
+			long double num;
+			switch(typeBox->currentItem())
+			{
+				case 0:							//identity matrix
+					resizeVar(var,size,size);
+					for(int c1=0; c1<size; c1++)
+						for(int c2=0; c2<size; c2++)
+					{
+						threadData->vars[var][size*c1+c2].type=NFLOAT;
+						if(c1==c2)
+							threadData->vars[var][size*c1+c2].fval=Complex(1.0,0.0);
+						else threadData->vars[var][size*c1+c2].fval=Complex(0.0,0.0);
+					}
+					break;
+				case 1:							//zero matrix
+					resizeVar(var,size,size);
+					for(int c1=0; c1<size; c1++)
+						for(int c2=0; c2<size; c2++)
+					{
+						threadData->vars[var][size*c1+c2].type=NFLOAT;
+						threadData->vars[var][size*c1+c2].fval=Complex(0.0,0.0);
+					}
+					break;
+				case 2:						//zero vector
+					resizeVar(var,size,1);
+					for(int c=0; c<size; c++)
+					{
+						threadData->vars[var][c].type=NFLOAT;
+						threadData->vars[var][c].fval=Complex(0.0,0.0);
+					}	
+					break;
+				case 3:					//x-rotate mtrix
+					resizeVar(var,size,size);
+					
+					num=runCalc(input1->text(),&pref,vars);
+					if(pref.angle==DEG)
+						num*=PI/180.0;
+					else if(pref.angle==GRA)
+						num*=PI/200.0;
+					for(int c=0; c<threadData->numlen[var]; c++)
+						threadData->vars[var][c].type=NFLOAT;
+					if(size==2)
+					{
+						threadData->vars[var][0].fval=Complex(cosl(num));
+						threadData->vars[var][1].fval=Complex(sinl(num));
+						threadData->vars[var][2].fval=Complex(-1.0*sinl(num));
+						threadData->vars[var][3].fval=Complex(cosl(num));
+					}
+					else 
+					{
+						threadData->vars[var][0].fval=Complex(1.0);
+						threadData->vars[var][1].fval=Complex(0.0);
+						threadData->vars[var][2].fval=Complex(0.0);
+						threadData->vars[var][3].fval=Complex(0.0);
+						threadData->vars[var][4].fval=Complex(cosl(num));
+						threadData->vars[var][5].fval=Complex(sinl(num));
+						threadData->vars[var][6].fval=Complex(0.0);
+						threadData->vars[var][7].fval=Complex(-1.0*sinl(num));
+						threadData->vars[var][8].fval=Complex(cosl(num));
+					}
+					break;
+				case 4:					//y-rotate matrix
+					resizeVar(var,size,size);
+					num=runCalc(input1->text(),&pref,vars);
+					if(pref.angle==DEG)
+						num*=PI/180.0;
+					else if(pref.angle==GRA)
+						num*=PI/200.0;
+					for(int c=0; c<threadData->numlen[var]; c++)
+						threadData->vars[var][c].type=NFLOAT;
+					
+					threadData->vars[var][0].fval=Complex(cosl(num));
+					threadData->vars[var][1].fval=Complex(0.0);
+					threadData->vars[var][2].fval=Complex(-1.0*sinl(num));
+					threadData->vars[var][3].fval=Complex(0.0);
+					threadData->vars[var][4].fval=Complex(1.0);
+					threadData->vars[var][5].fval=Complex(0.0);
+					threadData->vars[var][6].fval=Complex(sinl(num));
+					threadData->vars[var][7].fval=Complex(0.0);
+					threadData->vars[var][8].fval=Complex(cosl(num));
+					break;
+				case 5:					//z-rotate matrix
+					resizeVar(var,size,size);
+					num=runCalc(input1->text(),&pref,vars);
+					if(pref.angle==DEG)
+						num*=PI/180.0;
+					else if(pref.angle==GRA)
+						num*=PI/200.0;
+					for(int c=0; c<threadData->numlen[var]; c++)
+						threadData->vars[var][c].type=NFLOAT;
+					
+					threadData->vars[var][0].fval=Complex(cosl(num));
+					threadData->vars[var][1].fval=Complex(sinl(num));
+					threadData->vars[var][2].fval=Complex(0.0);
+					threadData->vars[var][3].fval=Complex(-1.0*sinl(num));
+					threadData->vars[var][4].fval=Complex(cosl(num));
+					threadData->vars[var][5].fval=Complex(0.0);
+					threadData->vars[var][6].fval=Complex(0.0);
+					threadData->vars[var][7].fval=Complex(0.0);
+					threadData->vars[var][8].fval=Complex(1.0);
+					break;
+				case 6:					//scale matrix
+					resizeVar(var,size,size);
+					for(int c=0; c<threadData->numlen[var]; c++)
+					{
+						threadData->vars[var][c].type=NFLOAT;
+						threadData->vars[var][c].fval=Complex(0.0);
+					}
+					
+					if(size==2)
+					{
+						num=runCalc(input1->text(),&pref,vars);
+						threadData->vars[var][0].fval=Complex(num);
+						num=runCalc(input2->text(),&pref,vars);
+						threadData->vars[var][2].fval=Complex(num);
+					}
+					else if(size==3)
+					{
+						num=runCalc(input1->text(),&pref,vars);
+						threadData->vars[var][9].fval=Complex(num);
+						num=runCalc(input2->text(),&pref,vars);
+						threadData->vars[var][4].fval=Complex(num);
+						num=runCalc(input3->text(),&pref,vars);
+						threadData->vars[var][8].fval=Complex(num);
+					}
+					break;
+			}
+			currentVar=var;
+			setVarTable();
+			setOutputTable(currentVar);
 			break;
 		}
 	}

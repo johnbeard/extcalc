@@ -30,9 +30,10 @@ class MatrixWidget :public QWidget
 	QPushButton*sprodButton,*invertButton,*detButton,*braceOpenButton,*braceCloseButton;
 	QComboBox*operationBox;
 	QSpinBox *size1Box,*size2Box;
-	QComboBox *matrixBox,*vectorBox;
-	QLabel *matrixLabel,*vectorLabel,*size1Label,*size2Label,*resultLabel;
-	QPushButton *calcButton;
+	QComboBox *matrixBox,*vectorBox,*typeBox;
+	QLabel *matrixLabel,*vectorLabel,*size1Label,*size2Label,*label1,*label2,*label3;
+	QLineEdit *input1,*input2,*input3;
+	QPushButton *calcButton,*sizeButton;
 
 	CalcInput*calcWidget;
 	int currentVar;
@@ -92,11 +93,18 @@ class MatrixWidget :public QWidget
 			size2Label=new QLabel(" ",this);
 			matrixLabel=new QLabel(" ",this);
 			vectorLabel=new QLabel(" ",this);
-			resultLabel=new QLabel(" ",this);
+			label1=new QLabel(" ",this);
+			label2=new QLabel(" ",this);
+			label3=new QLabel(" ",this);
+			input1=new QLineEdit(this);
+			input2=new QLineEdit(this);
+			input3=new QLineEdit(this);
 			calcButton=new QPushButton("Calculate",this);
+			sizeButton=new QPushButton("Set",this);
 			resultTable=new CalcTable(this,0,true);
 			matrixBox=new QComboBox(this);
 			vectorBox=new QComboBox(this);
+			
 			vectorBox->insertItem("no vector");
 			for(int c=0; c<26; c++)
 			{
@@ -104,6 +112,14 @@ class MatrixWidget :public QWidget
 				matrixBox->insertItem(headLine);
 				vectorBox->insertItem(headLine);
 			}
+			typeBox=new QComboBox(this);
+			typeBox->insertItem("Identity Matrix");
+			typeBox->insertItem("Zero Matrix");
+			typeBox->insertItem("Zero Vector");
+			typeBox->insertItem("X-Rotation Matrix");
+			typeBox->insertItem("Y-Rotation Matrix");
+			typeBox->insertItem("Z-Rotation Matrix");
+			typeBox->insertItem("Scaling Matrix");
 			resetInterface();
 
 
@@ -124,7 +140,9 @@ class MatrixWidget :public QWidget
 			QObject::connect(calcButton,SIGNAL(pressed()),this,SLOT(calcButtonSlot()));
 			QObject::connect(matrixBox,SIGNAL(activated(int)),this,SLOT(matrixBoxSlot(int)));
 			QObject::connect(vectorBox,SIGNAL(activated(int)),this,SLOT(vectorBoxSlot(int)));
+			QObject::connect(typeBox,SIGNAL(activated(int)),this,SLOT(typeBoxSlot(int)));
 			QObject::connect(size1Box,SIGNAL(valueChanged(int)),this,SLOT(size1BoxSlot(int)));
+			QObject::connect(sizeButton,SIGNAL(pressed()),this,SLOT(sizeButtonSlot()));
 			
 		}
 	
@@ -152,6 +170,8 @@ class MatrixWidget :public QWidget
 		void matrixBoxSlot(int);
 		void vectorBoxSlot(int);
 		void size1BoxSlot(int);
+		void sizeButtonSlot();
+		void typeBoxSlot(int);
 	
 	protected:
 		virtual void resizeEvent(QResizeEvent*);
