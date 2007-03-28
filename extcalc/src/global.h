@@ -24,10 +24,10 @@ using namespace std;
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #define VARSFILE ".extcalc/vars.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.7.1\n2007-03-25\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.7.1\n2007-03-28\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.7.1\n25.3.2007\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.7.1\n28.3.2007\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2007\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -226,9 +226,8 @@ using namespace std;
 #define MATCALC				0
 #define MATLSE				1
 #define MATGENERATE			2
-#define MATDET				3
+#define MATANALYSE			3
 #define MATINV				4
-#define MATRANK				5
 
 #define GRAPHSTD			41
 #define GRAPHPOLAR			42

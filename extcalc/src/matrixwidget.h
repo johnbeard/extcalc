@@ -19,7 +19,6 @@
 
 class MatrixWidget :public QWidget
 {
-	
 	Preferences pref;
 	ThreadSync*threadData;
 	Variable*vars;
@@ -82,9 +81,8 @@ class MatrixWidget :public QWidget
 			operationBox->insertItem("Calculator");
 			operationBox->insertItem("Linear System of Equations");
 			operationBox->insertItem("Generate Matrix");
-			operationBox->insertItem("Determinant");
+			operationBox->insertItem("Analyse Matrix");
 			operationBox->insertItem("Inverse Matrix");
-			operationBox->insertItem("Rank/Gauss");
 
 			calcWidget=new CalcInput(this,vars,threadData,true);
 			size1Box=new QSpinBox(1,20,1,this);

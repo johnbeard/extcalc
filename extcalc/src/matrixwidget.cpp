@@ -36,6 +36,7 @@ void MatrixWidget::resizeEvent(QResizeEvent*)
 			resultTable->setGeometry(320,height-180,width-340,160);
 			break;
 		case MATGENERATE:
+			calcWidget->setGeometry(320,height-180,width-340,160);
 			vectorLabel->setGeometry(20,height-220,140,20);
 			matrixLabel->setGeometry(160,height-220,140,20);
 			typeBox->setGeometry(20,height-190,120,25);
@@ -49,8 +50,31 @@ void MatrixWidget::resizeEvent(QResizeEvent*)
 			input2->setGeometry(160,height-105,120,20);
 			label3->setGeometry(20,height-80,140,20);
 			input3->setGeometry(160,height-80,120,20);
-			
 			calcButton->setGeometry(180,height-45,100,25);
+			break;
+		case MATANALYSE:
+			matrixLabel->setGeometry(20,height-220,120,25);
+			matrixBox->setGeometry(160,height-220,120,25);
+			size2Label->setGeometry(20,height-190,240,25);
+			label1->setGeometry(20,height-160,140,20);
+			input1->setGeometry(160,height-160,120,20);
+			label2->setGeometry(20,height-135,140,20);
+			input2->setGeometry(160,height-135,120,20);
+			label3->setGeometry(20,height-110,140,20);
+			input3->setGeometry(160,height-110,120,20);
+			vectorLabel->setGeometry(320,height-180,width-340,20);
+			resultTable->setGeometry(320,height-155,width-340,135);
+			calcButton->setGeometry(180,height-45,100,25);
+			break;
+		case MATINV:
+			matrixLabel->setGeometry(20,height-220,120,25);
+			matrixBox->setGeometry(140,height-220,140,25);
+			size1Label->setGeometry(20,height-180,100,20);
+			size1Box->setGeometry(140,height-180,85,20);
+			sizeButton->setGeometry(230,height-180,50,20);
+			size2Label->setGeometry(20,height-150,280,80);
+			calcButton->setGeometry(180,height-45,100,25);
+			resultTable->setGeometry(320,height-180,width-340,160);
 			break;
 	}
 }
@@ -111,31 +135,29 @@ void MatrixWidget::resizeVar(int var,int rows,int cols)
 	if(oldDimension1==rows)
 	{
 		threadData->vars[var]=(Number*)realloc((void*)threadData->vars[var],sizeof(Number)*newlen);
+		threadData->numlen[var]=newlen;
 		for(int c=threadData->numlen[var]; c<newlen; c++)
 		{
 			threadData->vars[var][c].type=NNONE;
 			threadData->vars[var][c].cval=NULL;
 		}
 	}
-	
-	
-	
+
 	threadData->dimension[var][0]=rows;
 	threadData->dimension[var][1]=cols;
 
-
 	int oldEffIndex,newEffIndex;
-
 
 	if(threadData->dimension[var][0]>oldDimension1)
 	{
-		threadData->numlen[var]=newlen;
+		
 		threadData->vars[var]=(Number*)realloc((void*)threadData->vars[var],sizeof(Number)*newlen);
 		for(int c=threadData->numlen[var]; c<newlen; c++)
 		{
 			threadData->vars[var][c].type=NNONE;
 			threadData->vars[var][c].cval=NULL;
 		}
+		threadData->numlen[var]=newlen;
 		for(int c=oldDimension2-1; c>=1; c--)
 		{
 			for(int c1=oldDimension1-1; c1>=0; c1--)
@@ -143,7 +165,7 @@ void MatrixWidget::resizeVar(int var,int rows,int cols)
 							
 				oldEffIndex=c1+c*oldDimension1;
 				newEffIndex=c1+c*threadData->dimension[var][0];
-				if(oldEffIndex<threadData->numlen[var])
+				if(oldEffIndex<threadData->numlen[var] &&newEffIndex<threadData->numlen[var])
 					memcpy(&threadData->vars[var][newEffIndex],&threadData->vars[var][oldEffIndex],sizeof(Number));
 			}
 		}
@@ -157,14 +179,13 @@ void MatrixWidget::resizeVar(int var,int rows,int cols)
 							
 				oldEffIndex=c1+c*oldDimension1;
 				newEffIndex=c1+c*threadData->dimension[var][0];
-				if(newEffIndex<threadData->numlen[var])
+				if(oldEffIndex<threadData->numlen[var] && newEffIndex<threadData->numlen[var])
 					memcpy(&threadData->vars[var][newEffIndex],&threadData->vars[var][oldEffIndex],sizeof(Number));
 			}
 		}
 		threadData->vars[var]=(Number*)realloc((void*)threadData->vars[var],sizeof(Number)*newlen);
 		threadData->numlen[var]=newlen;
 	}
-	
 }
 
 void MatrixWidget::resetInterface()
@@ -202,7 +223,6 @@ void MatrixWidget::resetInterface()
 			size1Box->setMaxValue(20);
 			vectorLabel->setText("Vector");
 			size1Box->show();
-//			size2Box->show();
 			matrixBox->show();
 			vectorBox->show();
 			matrixLabel->show();
@@ -223,9 +243,11 @@ void MatrixWidget::resetInterface()
 			size2Label->setText("Choose a Matrix\nor a Matrix and a Vector\nto insert data\n");
 			break;
 		case MATGENERATE:
+			calcWidget->show();
 			vectorLabel->setText("Type");
 			vectorLabel->show();
 			typeBox->show();
+			matrixLabel->setText("Variable");
 			matrixLabel->show();
 			matrixBox->show();
 			size1Box->show();
@@ -233,12 +255,53 @@ void MatrixWidget::resetInterface()
 			sizeButton->show();
 			calcButton->setText("Generate");
 			calcButton->show();
+			input1->setReadOnly(false);
+			input2->setReadOnly(false);
+			input2->setReadOnly(false);
 			break;
-		case MATDET:
+		case MATANALYSE:
+			resultTable->show();
+			resultTable->setNumRows(1);
+			resultTable->setNumCols(1);
+			matrixLabel->setText("Variable");
+			matrixLabel->show();
+			matrixBox->show();
+			matrixBox->setCurrentItem(currentVar);
+			label1->show();
+			label2->show();
+			label3->show();
+			input1->show();
+			input2->show();
+			input3->show();
+			input1->setReadOnly(true);
+			input2->setReadOnly(true);
+			input3->setReadOnly(true);
+			vectorLabel->setText("Gauss");
+			vectorLabel->show();
+			size2Label->setText("");
+			size2Label->show();
+			calcButton->setText("Calculate");
+			calcButton->show();
+			matrixBoxSlot(currentVar);
 			break;
 		case MATINV:
-			break;
-		case MATRANK:
+			resultTable->show();
+			resultTable->setNumRows(1);
+			resultTable->setNumCols(1);
+			matrixLabel->setText("Matrix");
+			matrixLabel->show();
+			matrixBox->show();
+			matrixBox->setCurrentItem(currentVar);
+			size1Box->setMinValue(1);
+			size1Box->setMaxValue(20);
+			size1Box->show();
+			size1Label->show();
+			size2Label->setText("");
+			size2Label->show();
+			sizeButton->show();
+			calcButton->setText("Calculate");
+			calcButton->show();
+			matrixBoxSlot(currentVar);
 			break;
 	}
 	resizeEvent(NULL);
@@ -372,7 +435,7 @@ void MatrixWidget::outputChangedSlot(int row,int col)
 
 void MatrixWidget::matrixBoxSlot(int)
 {
-	if(state==MATLSE)
+	if(state==MATLSE || state==MATGENERATE || state==MATINV)
 	{
 		int size=threadData->dimension[matrixBox->currentItem()][0];
 		if(threadData->dimension[matrixBox->currentItem()][1]>size)
@@ -390,7 +453,90 @@ void MatrixWidget::matrixBoxSlot(int)
 			setVarTable();
 			setOutputTable(currentVar);
 		}
+		if(state==MATINV)
+			size2Label->setText("");
+
 	}
+	else if(state==MATANALYSE)
+	{
+		int var=matrixBox->currentItem();
+		long double det,num;
+		int rank=0;
+		if(threadData->dimension[var][1]!=1)
+		{
+			size2Label->setText("Type: Matrix");
+			int effIndex;
+			long double*matrix=(long double*)malloc(sizeof(long double)*threadData->dimension[var][0]*threadData->dimension[var][1]);
+			for(int c1=0; c1<threadData->dimension[var][1]; c1++)
+			{
+				for(int c2=0; c2<threadData->dimension[var][0]; c2++)
+				{
+					effIndex=c2+c1*threadData->dimension[var][0];
+					if(effIndex<threadData->numlen[var])
+						matrix[effIndex]=threadData->vars[var][effIndex].fval.real();
+					else matrix[effIndex]=NAN;
+				}
+			}
+			det=gauss(threadData->dimension[var][1],threadData->dimension[var][0],matrix);
+			rank=threadData->dimension[var][0];
+			for(int c=threadData->dimension[var][0]-1; c>=0; c--)
+			{
+				perror(formatOutput(matrix[c+threadData->dimension[var][0]*(threadData->dimension[var][1]-1)],&pref));
+				if(matrix[c+threadData->dimension[var][0]*(threadData->dimension[var][1]-1)]==0.0)
+					rank=c;
+				else break;
+			}
+			label1->setText("Dimensions:");
+			input1->setText(QString::number(threadData->dimension[var][0])+"x"+QString::number(threadData->dimension[var][1]));
+			label2->setText("Determinant:");
+			if(threadData->dimension[var][0]==threadData->dimension[var][0])
+				input2->setText(formatOutput(det,&pref));
+			else input2->setText("not possible");
+			label3->setText("Rank:");
+			input3->setText(QString::number(rank));
+			resultTable->setNumRows(threadData->dimension[var][0]);
+			resultTable->setNumCols(threadData->dimension[var][1]);
+			
+			for(int c1=0; c1<threadData->dimension[var][1]; c1++)
+			{
+				for(int c2=0; c2<threadData->dimension[var][0]; c2++)
+				{
+					effIndex=c2+c1*threadData->dimension[var][0];
+					resultTable->setText(c2,c1,formatOutput(matrix[effIndex],&pref));
+				}
+			}
+		}
+		else if(threadData->dimension[var][0]!=1)
+		{
+			size2Label->setText("Type: Vector");
+			label1->setText("Size:");
+			input1->setText(QString::number(threadData->dimension[var][0]));
+			label2->setText("Absolute:");
+			num=0.0;
+			for(int c=0; c<threadData->dimension[var][0] && c<threadData->numlen[var]; c++)
+				num+=threadData->vars[var][c].fval.real()*threadData->vars[var][c].fval.real();
+			input2->setText(formatOutput(sqrtl(num),&pref));
+			label3->setText("");
+			input3->setText("");
+			resultTable->setNumRows(0);
+			resultTable->setNumCols(0);
+		}
+		else {
+			size2Label->setText("Type: Scalar");
+			label1->setText("Absolute:");
+			input1->setText(formatOutput(fabsl(threadData->vars[var][0].fval.real()),&pref));
+			label2->setText("");
+			input2->setText("");
+			label3->setText("");
+			input3->setText("");
+			resultTable->setNumRows(0);
+			resultTable->setNumCols(0);
+		}
+		currentVar=matrixBox->currentItem();
+		setVarTable();
+		setOutputTable(currentVar);
+	}
+	
 }
 
 void MatrixWidget::vectorBoxSlot(int)
@@ -463,13 +609,15 @@ void MatrixWidget::sizeButtonSlot()
 			resizeVar(matrixBox->currentItem(),newsize,newsize);
 			resizeVar(vectorBox->currentItem()-1,newsize,1);
 		}
+		setVarTable();
 		setOutputTable(currentVar);
 		calcButton->setEnabled(true);
 	}
-	else if(state==MATGENERATE)
+	else if(state==MATGENERATE || state==MATINV)
 	{
 		int newsize=size1Box->value();
 		resizeVar(matrixBox->currentItem(),newsize,newsize);
+		setVarTable();
 		setOutputTable(currentVar);
 	}
 }
@@ -753,6 +901,99 @@ void MatrixWidget::calcButtonSlot()
 			currentVar=var;
 			setVarTable();
 			setOutputTable(currentVar);
+			break;
+		}
+		case MATANALYSE:
+		{
+			matrixBox->setCurrentItem(currentVar);
+			matrixBoxSlot(currentVar);
+			break;
+		}
+		case MATINV:
+		{
+			long double*matrix;
+			long double mainDet;
+			int size=size1Box->value(),effIndex;
+			int var=matrixBox->currentItem();
+			
+			if(threadData->dimension[var][0]!=threadData->dimension[var][1])
+			{
+				size2Label->setText("Number of rows of matrix must \nbe equal to number of columns.");
+				resultTable->setNumRows(1);
+				resultTable->setNumCols(1);
+				break;
+			}
+			else size2Label->setText("");
+			
+			resultTable->setNumRows(size);
+			resultTable->setNumCols(size);
+
+			matrix=(long double*)malloc(size*size*sizeof(long double));
+			for(int c1=0; c1<size; c1++)
+				for(int c2=0; c2<size; c2++)
+			{
+				effIndex=c1+c2*threadData->dimension[var][0];
+				if(effIndex<threadData->numlen[var])
+				{
+					convertToFloat(&threadData->vars[var][effIndex]);
+					matrix[c1+size*c2]=threadData->vars[var][effIndex].fval.real();
+				}
+			}
+			mainDet=gauss(size,size,matrix);
+			if(mainDet==0.0)
+			{
+				size2Label->setText("Can't calculate inverse matrix.\nDeterminant is equal 0.");
+				resultTable->setNumRows(1);
+				resultTable->setNumCols(1);
+				break;
+			}
+			mainDet=1.0/mainDet;
+			
+			resizeVar(27,size,size);
+			threadData->dimension[27][0]=threadData->dimension[27][1]=size;
+			
+			int pos1,pos2,effSrcIndex,effDestIndex,vz;
+			for(int c3=0; c3<size; c3++)
+			{
+				for(int c4=0; c4<size; c4++)
+				{
+					effIndex=c3+c4*threadData->dimension[var][0];
+					pos1=0;
+					for(int c1=0; c1<size; c1++)
+					{
+						if(c1!=c3)
+						{
+							pos2=0;
+							for(int c2=0; c2<size; c2++)
+							{
+								effDestIndex=pos1+(size-1)*pos2;
+								effSrcIndex=c1+c2*threadData->dimension[var][0];
+								if(c2!=c4)
+								{
+									if(effSrcIndex<threadData->numlen[var])
+										matrix[effDestIndex]=threadData->vars[var][effSrcIndex].fval.real();
+									else matrix[effDestIndex]=NAN;
+									pos2++;
+								}
+							}
+							pos1++;
+						}
+					}
+					vz=(c3+c4)%2;
+					if(vz==0)
+						vz=1;
+					else vz=-1;
+					effDestIndex=c4+c3*size;
+					long double subDet=gauss(size-1,size-1,matrix);
+					threadData->vars[27][effDestIndex].fval=Complex(mainDet*(long double)vz*subDet);
+					threadData->vars[27][effDestIndex].type=NFLOAT;
+					resultTable->setText(c4,c3,formatOutput(threadData->vars[27][effDestIndex].fval.real(),&pref));
+					if(c4==size-1)
+						resultTable->adjustColumn(c3);
+				}
+				
+			}
+			free(matrix);
 			break;
 		}
 	}

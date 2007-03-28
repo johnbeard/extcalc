@@ -117,7 +117,7 @@ void CalcInput::keyPressEvent(QKeyEvent*e)
 					insert(".");
 				else insert(e->text());
 				
-				if(autoBrace && e->ascii()>='A' && e->ascii()<='Z')
+				if(autoBrace && (e->ascii()>='A' && e->ascii()<='Z' || e->ascii()=='s' && pos>1 && text(para)[pos-2]=='a' && text(para)[pos-1]=='n'))
 				{
 					int var=(int)(e->ascii())-65;
 					if(threadData->dimension[var][0]!=1)
@@ -227,6 +227,8 @@ void CalcInput::calculateKey()
 			threadData->vars[26][c].fval=threadData->vars[nResult.ival][c].fval;
 		}
 		threadData->numlen[26]=threadData->numlen[nResult.ival];
+		threadData->dimension[26][0]=threadData->dimension[nResult.ival][0];
+		threadData->dimension[26][1]=threadData->dimension[nResult.ival][1];
 	}
 	else if(nResult.type==NMATRIX)
 	{
@@ -235,13 +237,20 @@ void CalcInput::calculateKey()
 		{
 			convertToFloat(&threadData->vars[nResult.ival][c]);
 			threadData->vars[26][c].type=NFLOAT;
+			threadData->vars[26][c].cval=NULL;
 			threadData->vars[26][c].fval=threadData->vars[nResult.ival][c].fval;
 		}
 		threadData->numlen[26]=threadData->numlen[nResult.ival];
 		threadData->dimension[26][0]=threadData->dimension[nResult.ival][0];
 		threadData->dimension[26][1]=threadData->dimension[nResult.ival][1];
 	}
-	else threadData->vars[26][0]=nResult;
+	else{
+		threadData->vars[26]=(Number*)realloc(threadData->vars[26],sizeof(Number));
+		threadData->vars[26][0]=nResult;
+		threadData->numlen[26]=1;
+		threadData->dimension[26][0]=1;
+		threadData->dimension[26][1]=1;
+	}
 //	while(strResult->length() < (unsigned)(lineLength-3))
 //		strResult->insert(0,' ');
 	setAlignment(Qt::AlignRight);
@@ -430,7 +439,7 @@ void CalcInput::textInput(QString inputText)
 
 	insert(inputText);
 	
-	if(autoBrace && inputText[0]>='A' && inputText[0]<='Z')
+	if(autoBrace && (inputText[0]>='A' && inputText[0]<='Z' || inputText=="ans"))
 	{
 		int var=(int)(inputText.ascii()[0])-65;
 
