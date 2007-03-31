@@ -620,7 +620,7 @@ void GraphSolveWidget::calculateYVal(QString text)
 	double num=runCalc(text,&pref,vars);
 	if(num != NAN && text.length()>0)
 	{
-		double oldX=vars[23][0];
+		double oldX=vars[23];
 		int count=0;
 		for(int c=0; c<20; c++)
 		{
@@ -635,7 +635,7 @@ void GraphSolveWidget::calculateYVal(QString text)
 					return;
 				Calculate cal(NULL,checkedFunction,&pref,vars);
 				delete[]checkedFunction;
-				vars[23][0]=num;
+				vars[23]=num;
 
 				double y=cal.calc();
 				QString result;
@@ -649,7 +649,7 @@ void GraphSolveWidget::calculateYVal(QString text)
 
 
 		}
-		vars[23][0]=oldX;
+		vars[23]=oldX;
 	}
 	outputTable->adjustColumn(0);
 }
@@ -681,7 +681,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 	delete[]cf;
 	if(varIndex!=23)
 	{
-		cleanFunction.replace('X',"("+QString::number((double)vars[23][0],'g',pref.precision)+")");
+		cleanFunction.replace('X',"("+QString::number((double)vars[23],'g',pref.precision)+")");
 		cleanFunction.replace((char)(varIndex+65),"X");
 	}
 	
@@ -703,7 +703,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 	delete[]cf;
 	if(varIndex!=23)
 	{
-		cleanFunction.replace('X',"("+QString::number((double)vars[23][0],'g',pref.precision)+")");
+		cleanFunction.replace('X',"("+QString::number((double)vars[23],'g',pref.precision)+")");
 		cleanFunction.replace((char)(varIndex+65),"X");
 	}
 	cleanFunction+=",X)";
@@ -731,7 +731,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 	}
 	else
 	{
-		vars[23][0]=scanPos;
+		vars[23]=scanPos;
 		fx1=cfx->calc();
 		dfx1=cdfx->calc();
 	}
@@ -757,7 +757,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 		}
 		else {
 			
-			vars[23][0]=scanPos;
+			vars[23]=scanPos;
 			fx1=cfx->calc();
 			dfx1=cdfx->calc();
 		}
@@ -775,7 +775,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 				dfx1=sdfx->exec().fval.real();
 			}
 			else {
-				vars[23][0]=scanPos;
+				vars[23]=scanPos;
 				fx1=cfx->calc();
 				dfx1=cdfx->calc();
 			}
@@ -792,7 +792,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 					dfx1=sdfx->exec().fval.real();
 				}
 				else {
-					vars[23][0]=scanPos;
+					vars[23]=scanPos;
 					fx1=cfx->calc();
 					dfx1=cdfx->calc();
 				}
@@ -809,7 +809,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 							ndfx1=sdfx->exec().fval.real();
 						}
 						else {
-							vars[23][0]=x1;
+							vars[23]=x1;
 							nfx1=cfx->calc();
 							ndfx1=cdfx->calc();
 						}
@@ -855,9 +855,9 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 							rfYEnd=sfx->exec().fval.real();
 						}
 						else {
-							vars[23][0]=rfXStart;
+							vars[23]=rfXStart;
 							rfYStart=cfx->calc();
-							vars[23][0]=rfXEnd;
+							vars[23]=rfXEnd;
 							rfYEnd=cfx->calc();
 						}
 						x1=rfXEnd-rfYEnd*(rfXEnd-rfXStart)/(rfYEnd-rfYStart);
@@ -868,7 +868,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 							fx1=sfx->exec().fval.real();
 						}
 						else {
-							vars[23][0]=x1;
+							vars[23]=x1;
 							fx1=cfx->calc();
 						}
 						
@@ -894,7 +894,7 @@ int GraphSolveWidget::calculateRoots(QString function,long double startValue, lo
 								dfx1=sdfx->exec().fval.real();
 							}
 							else {
-								vars[23][0]=scanPos;
+								vars[23]=scanPos;
 								fx1=cfx->calc();
 								dfx1=cdfx->calc();
 							}
@@ -979,7 +979,7 @@ void GraphSolveWidget::calculateNewton(QString function)
 	for(int c=0; c<spinBox->value(); c++)
 	{
 		outputTable->setText(c,0,formatOutput(x1,&pref));
-		vars[23][0]=x1;
+		vars[23]=x1;
 		fx1=cfx.calc();
 		outputTable->setText(c,1,formatOutput(fx1,&pref));
 		dfx1=cdfx.calc();
@@ -1037,7 +1037,7 @@ void GraphSolveWidget::solveButtonSlot()
 		long double A=runCalc(aLine->text(),&pref,vars);
 		if(A==NAN)
 			A=0;
-		vars[0][0]=A;
+		vars[0]=A;
 	}
 	switch(solveType)
 	{
@@ -1137,7 +1137,7 @@ void GraphSolveWidget::solveButtonSlot()
 						{
 							if(solveType==GRAPHPARAMETER)
 							{
-								vars[19][0]=tValues[c];
+								vars[19]=tValues[c];
 								yValues[c]=cyf->calc();
 								emit addHorizontalLine(yValues[c]);
 							}
@@ -1178,8 +1178,8 @@ void GraphSolveWidget::solveButtonSlot()
 					double xVal=runCalc(xLine->text(),&pref,vars);
 					double zVal=runCalc(x2Line->text(),&pref,vars);
 					
-					vars[23][0]=xVal;
-					vars[25][0]=zVal;
+					vars[23]=xVal;
+					vars[25]=zVal;
 					double result=runCalc(pref.functions[funcIndex],&pref,vars);
 					QString yString;
 					if(pref.outputType==FIXEDNUM)
@@ -1308,7 +1308,7 @@ void GraphSolveWidget::solveButtonSlot()
 						{
 							if(solveType==GRAPHPARAMETER)
 							{
-								vars[19][0]=tValues[c];
+								vars[19]=tValues[c];
 								xValues[c]=cxf->calc();
 								emit addVerticalLine(xValues[c]);
 							}
@@ -1352,7 +1352,7 @@ void GraphSolveWidget::solveButtonSlot()
 			
 					QString function=pref.functions[funcIndex];
 					function+="-("+QString::number(yval,'g',pref.precision)+")";
-					vars[25][0]=zVal;
+					vars[25]=zVal;
 			
 					long double*xValues;
 					int num=calculateRoots(function,pref.xmin,pref.xmax,&xValues);
@@ -1441,7 +1441,7 @@ void GraphSolveWidget::solveButtonSlot()
 				Calculate ca(NULL,cleanFunc,&pref,vars);
 				for(int c=0; c<INTEGRAL3DSTEPS; c++)
 				{
-					vars[25][0]=zStart+c*zStep;
+					vars[25]=zStart+c*zStep;
 					result+=ca.calc()*zStep;
 				}
 				emit add3dYLine(start,zStart);
@@ -1494,7 +1494,7 @@ void GraphSolveWidget::solveButtonSlot()
 				yFunction=pref.functions[funcIndex].right(pref.functions[funcIndex].length()-1-pref.functions[funcIndex].find("\\"));
 				xFunction.replace('T',"X");
 				yFunction.replace('T',"X");
-				vars[23][0]=pos;
+				vars[23]=pos;
 				double xPos=runCalc(xFunction,&pref,vars);
 				double yPos=runCalc(yFunction,&pref,vars);
 				xFunction="d/dx("+xFunction+","+QString::number(pos,'g',pref.precision)+")";
@@ -1516,7 +1516,7 @@ void GraphSolveWidget::solveButtonSlot()
 				emit removeLines();
 				emit add3dYLine(pos,zVal);
 				
-				vars[25][0]=zVal;
+				vars[25]=zVal;
 				QString functionString="d/dx("+pref.functions[funcIndex]+","+QString::number(pos,'g',pref.precision)+")";
 				double result=runCalc(functionString,&pref,vars);
 				outputTable->setText(0,0,formatOutput(result,&pref));
@@ -1571,7 +1571,7 @@ void GraphSolveWidget::solveButtonSlot()
 			emit add3dZLine(xVal,yVal);
 			
 			QString function=pref.functions[funcIndex];
-			vars[23][0]=xVal;
+			vars[23]=xVal;
 			function+="-("+QString::number(yVal,'g',pref.precision)+")";
 			
 			

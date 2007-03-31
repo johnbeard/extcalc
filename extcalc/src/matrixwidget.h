@@ -150,6 +150,7 @@ class MatrixWidget :public QWidget
 		void setOutputTable(int num);
 		void resizeVar(int var,int rows,int cols);
 		void resetInterface();
+		void setHeader(CalcTable*);
 	
 	public slots:
 		void getPref(Preferences);

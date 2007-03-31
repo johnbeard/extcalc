@@ -761,8 +761,8 @@ void GraphOutput::processStdFunction(QString function)
 	gettimeofday(&t1,NULL);
 	for(int c=0; c<PRECISION2D; c++)
 	{
-		vars[23][0]=xStart+(double)c*xStep;
-		objectCoordinates[index][2*c]  =vars[23][0];
+		vars[23]=xStart+(double)c*xStep;
+		objectCoordinates[index][2*c]  =vars[23];
 		objectCoordinates[index][2*c+1]=ca1.calc();
 	}
 	gettimeofday(&t2,NULL);
@@ -812,10 +812,10 @@ void GraphOutput::processPolarFunction(QString function)
 	gettimeofday(&t1,NULL);
 	for(int c=0; c<=PRECISION2D; c++)
 	{
-		vars[23][0]=xStart+(double)c*xStep;
+		vars[23]=xStart+(double)c*xStep;
 		r=ca1.calc();
-		objectCoordinates[index][c*2]=cos(vars[23][0]*multiplier)*r;
-		objectCoordinates[index][c*2+1]=sin(vars[23][0]*multiplier)*r;
+		objectCoordinates[index][c*2]=cos(vars[23]*multiplier)*r;
+		objectCoordinates[index][c*2+1]=sin(vars[23]*multiplier)*r;
 	}
 	gettimeofday(&t2,NULL);
 
@@ -865,7 +865,7 @@ void GraphOutput::processParameterFunction(QString function)
 	gettimeofday(&t1,NULL);
 	for(int c=0; c<pref.parameterSteps; c++)
 	{
-		vars[19][0]=xStart+(double)c*xStep;
+		vars[19]=xStart+(double)c*xStep;
 		objectCoordinates[index][2*c]=ca1.calc();
 		objectCoordinates[index][2*c+1]=ca2.calc();
 	}
@@ -952,10 +952,10 @@ void GraphOutput::process3dFunction(QString function)
 
 	for(int c=0; c<PRECISION3D; c++)
 	{
-		vars[25][0]=zStart+c*zStep;
+		vars[25]=zStart+c*zStep;
 		for(int c1=0; c1<PRECISION3D; c1++)
 		{
-			vars[23][0]=xStart+c1*xStep;
+			vars[23]=xStart+c1*xStep;
 			coordinates[PRECISION3D*c+c1]=ca1.calc();
 		}
 	}
@@ -1079,7 +1079,7 @@ void GraphOutput::processInequaityFunction(QString function1,QString function2,i
 	for(int c=0; c<=PRECISION2D; c++)
 	{
 		x=xStart+(double)c*xStep;
-		vars[23][0]=x;
+		vars[23]=x;
 		y1=ca1.calc();
 		y2=ca2.calc();
 		
@@ -1467,7 +1467,7 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 
 	for(int c=0; c<objectInfo.GetLen(); c++)
 	{
-		vars[0][0]=objectInfo[c].dynamicParameter;
+		vars[0]=objectInfo[c].dynamicParameter;
 		if(!ret);
 		else if(objectInfo[c].type == GRAPHSTD)
 		{
@@ -1483,8 +1483,8 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 
 			for(int c1=0; c1<steps; c1++)
 			{
-				vars[23][0]=xStart+c1*xStep;
-				objectCoordinates[c][(startStep+c1)*2]=vars[23][0];
+				vars[23]=xStart+c1*xStep;
+				objectCoordinates[c][(startStep+c1)*2]=vars[23];
 				objectCoordinates[c][(startStep+c1)*2+1]=ca.calc();
 			}
 		}
@@ -1519,7 +1519,7 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 			for(int c1=0; c1<steps; c1++)
 			{
 				x=xStart+(double)c1*xStep;
-				vars[23][0]=x;
+				vars[23]=x;
 				y1=ca.calc();
 				y2=ca2.calc();
 		
@@ -1712,8 +1712,8 @@ void GraphOutput::processFunction(int index)
 			case GRAPHPOLAR:
 				for(int c=0; c<=dynamicSteps; c++)
 				{
-					vars[0][0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=vars[0][0];
+					vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
+					info.dynamicParameter=vars[0];
 					objectInfo.NewItem(info);
 					processPolarFunction(pref.functions[index]);
 					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
@@ -1722,8 +1722,8 @@ void GraphOutput::processFunction(int index)
 			case GRAPHPARAMETER:
 				for(int c=0; c<=dynamicSteps; c++)
 				{
-					vars[0][0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=vars[0][0];
+					vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
+					info.dynamicParameter=vars[0];
 					objectInfo.NewItem(info);
 					processParameterFunction(pref.functions[index]);
 					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
@@ -1754,8 +1754,8 @@ void GraphOutput::processFunction(int index)
 			case GRAPH3D:
 				for(int c=0; c<=dynamicSteps; c++)
 				{
-					vars[0][0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=vars[0][0];
+					vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
+					info.dynamicParameter=vars[0];
 					objectInfo.NewItem(info);
 					process3dFunction(pref.functions[index]);
 					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
@@ -1768,8 +1768,8 @@ void GraphOutput::processFunction(int index)
 				
 				for(int c=0; c<=dynamicSteps; c++)
 				{
-					vars[0][0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=vars[0][0];
+					vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
+					info.dynamicParameter=vars[0];
 					info.type=pref.functionTypes[index];
 					info.color=pref.functionColors[index];
 					info.dynamic=true;
@@ -1861,8 +1861,8 @@ void GraphOutput::processFunction(int index)
 			default:
 				for(int c=0; c<=dynamicSteps; c++)
 				{
-					vars[0][0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=vars[0][0];
+					vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
+					info.dynamicParameter=vars[0];
 					objectInfo.NewItem(info);
 					processStdFunction(pref.functions[index]);
 					drawRules[ruleIndex][c+1]=objects.GetLen()-1;

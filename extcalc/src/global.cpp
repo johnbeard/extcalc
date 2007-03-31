@@ -1512,16 +1512,7 @@ int Calculate::split(char* line)
 		var=((int)line[0])-65;
 		
 		if(len>1)
-		{
-			if(line[1]=='[' && line[len-1]==']')
-			{
-				operation=ARRAY;
-				char*recString1=new char[len-2];
-				strcopy(recString1,&line[2],len-3);
-				horzObj=new Calculate(this,recString1,pref,vars);
-			}
-			else var=-1;
-		}
+			var=-1;
 		else 
 		{
 			operation=NONE;
@@ -1562,7 +1553,7 @@ double Calculate::calc()
 			}
 			else if(var!=-1)
 			{
-				return vars[var][0];
+				return vars[var];
 			}
 			else if(number!=NAN)
 			{
@@ -1605,14 +1596,6 @@ double Calculate::calc()
 			return vertObj->calc()*horzObj->calc();
 		case DIVIDE:
 			return vertObj->calc()/horzObj->calc();
-		case ARRAY:
-		{
-			double dIndex=horzObj->calc();
-			int index=(int)dIndex;
-			if(index>=0 && index<vars[var].GetLen())
-				return vars[var][index];
-			else return NAN;
-		}
 		case POW:
 			return pow(vertObj->calc(),horzObj->calc());
 		case SQRT:
@@ -1651,7 +1634,7 @@ double Calculate::calc()
 			return atanh(vertObj->calc());
 		case DIFF:
 		{
-			double savedX=vars[23][0];
+			double savedX=vars[23];
 			double point;
 			if(vertObj!= NULL)
 				point=vertObj->calc();
@@ -1661,28 +1644,18 @@ double Calculate::calc()
 			double step=(point*1e-6);
 			if(step<1e-6)
 				step=1e-6;
-			vars[23][0]=point-step;
+			vars[23]=point-step;
 			double w1=horzObj->calc();
-			vars[23][0]=point+step;
+			vars[23]=point+step;
 			double w2=horzObj->calc();
-			vars[23][0]=savedX;
+			vars[23]=savedX;
 			return((w2-w1)/(2*step));
 		}
 		case MODULO:
 			return fmod(vertObj->calc(),horzObj->calc());
 		case INTEGRAL:
 		{
-			double savedX=vars[23][0];
-//     Verzweigung:
-//
-//         end
-//          |
-//         NONE - start
-//           |
-//        INTEGRAL - function
-//
-//        integral(function,start,end);
-
+			double savedX=vars[23];
 			double complete=(double)0.0;
 			if(vertObj == NULL || horzObj == NULL)
 				return NAN;
@@ -1701,9 +1674,9 @@ double Calculate::calc()
 			double * line1=new double;
 			double *line2=new double[3];
 			double y,oldy;
-			vars[23][0]=start;
+			vars[23]=start;
 			oldy=horzObj->calc();
-			vars[23][0]=end;
+			vars[23]=end;
 			y=horzObj->calc();
 			line1[0]=(y+oldy)*(end-start)/2.0;
 			double fail=1e+308,oldfail=0.0;
@@ -1719,7 +1692,7 @@ double Calculate::calc()
 				steps=(int)pow(2.0,(double)(num-1));
 				for(int c=1; c<=steps; c++)
 				{
-					vars[23][0]=start+((2*c-1)*(end-start))/pow(2.0,(double)num);
+					vars[23]=start+((2*c-1)*(end-start))/pow(2.0,(double)num);
 					line1[0]+=horzObj->calc();
 				}
 				line1[0]=0.5*(line1[0]*(end-start)/pow(2.0,(double)(num-1))+line2[0]);
@@ -1749,7 +1722,7 @@ double Calculate::calc()
 			}
 			complete=line1[num-1];
 
-			vars[23][0]=savedX;
+			vars[23]=savedX;
 			if(inverse)
 				return -complete;
 			else return complete;
@@ -5378,9 +5351,9 @@ Number Script::exec()
 		double * line1=new double;						//	Romberg's Method
 		double *line2=new double[3];
 		double y,oldy;
-		vars[23][0]=start;
+		vars[23]=start;
 		oldy=horzObj->calc();
-		vars[23][0]=end;
+		vars[23]=end;
 		y=horzObj->calc();
 		line1[0]=(y+oldy)*(end-start)/2.0;
 		double fail=HUGE_VAL,oldfail=0.0;
@@ -5399,7 +5372,7 @@ Number Script::exec()
 			
 			for(int c=1; c<=steps; c++)
 			{
-				vars[23][0]=start+((2*c-1)*(end-start))/pow(2.0,(double)num);
+				vars[23]=start+((2*c-1)*(end-start))/pow(2.0,(double)num);
 				line1[0]+=horzObj->calc();
 			}
 			line1[0]=0.5*(line1[0]*(end-start)/pow(2.0,(double)(num-1))+line2[0]);

@@ -112,6 +112,7 @@ void MatrixWidget::setOutputTable(int num)
 {
 	outputTable->setNumRows(threadData->dimension[num][0]);
 	outputTable->setNumCols(threadData->dimension[num][1]);
+	setHeader(outputTable);
 	int effIndex;
 	for(int c1=0; c1<threadData->dimension[num][0]; c1++)
 	{
@@ -125,6 +126,7 @@ void MatrixWidget::setOutputTable(int num)
 				outputTable->adjustColumn(c2);
 		}
 	}
+	
 }
 
 void MatrixWidget::resizeVar(int var,int rows,int cols)
@@ -234,6 +236,7 @@ void MatrixWidget::resetInterface()
 			resultTable->show();
 			resultTable->setNumRows(1);
 			resultTable->setNumCols(1);
+			setHeader(resultTable);
 			matrixBox->setCurrentItem(currentVar);
 			matrixBoxSlot(currentVar);
 			sizeButton->show();
@@ -263,6 +266,7 @@ void MatrixWidget::resetInterface()
 			resultTable->show();
 			resultTable->setNumRows(1);
 			resultTable->setNumCols(1);
+			setHeader(resultTable);
 			matrixLabel->setText("Variable");
 			matrixLabel->show();
 			matrixBox->show();
@@ -288,6 +292,7 @@ void MatrixWidget::resetInterface()
 			resultTable->show();
 			resultTable->setNumRows(1);
 			resultTable->setNumCols(1);
+			setHeader(resultTable);
 			matrixLabel->setText("Matrix");
 			matrixLabel->show();
 			matrixBox->show();
@@ -305,6 +310,19 @@ void MatrixWidget::resetInterface()
 			break;
 	}
 	resizeEvent(NULL);
+}
+
+void MatrixWidget::setHeader(CalcTable*table)
+{
+	QHeader*tableHeader=table->horizontalHeader();
+	for(int c=0; c<tableHeader->count(); c++)
+		tableHeader->setLabel(c,QString::number(c));
+	tableHeader->adjustHeaderSize();
+	tableHeader=table->verticalHeader();
+	for(int c=0; c<tableHeader->count(); c++)
+		tableHeader->setLabel(c,QString::number(c));
+	tableHeader->adjustHeaderSize();
+		
 }
 
 
@@ -496,7 +514,7 @@ void MatrixWidget::matrixBoxSlot(int)
 			input3->setText(QString::number(rank));
 			resultTable->setNumRows(threadData->dimension[var][0]);
 			resultTable->setNumCols(threadData->dimension[var][1]);
-			
+			setHeader(resultTable);
 			for(int c1=0; c1<threadData->dimension[var][1]; c1++)
 			{
 				for(int c2=0; c2<threadData->dimension[var][0]; c2++)
@@ -729,6 +747,7 @@ void MatrixWidget::calcButtonSlot()
 			gauss(size+1,size,matrix);
 			resultTable->setNumRows(size);
 			resultTable->setNumCols(1);
+			setHeader(resultTable);
 
 			if(matrix[(size-1)*size+size-1]==0.0)
 			{
@@ -921,12 +940,14 @@ void MatrixWidget::calcButtonSlot()
 				size2Label->setText("Number of rows of matrix must \nbe equal to number of columns.");
 				resultTable->setNumRows(1);
 				resultTable->setNumCols(1);
+				setHeader(resultTable);
 				break;
 			}
 			else size2Label->setText("");
 			
 			resultTable->setNumRows(size);
 			resultTable->setNumCols(size);
+			setHeader(resultTable);
 
 			matrix=(long double*)malloc(size*size*sizeof(long double));
 			for(int c1=0; c1<size; c1++)
@@ -945,6 +966,7 @@ void MatrixWidget::calcButtonSlot()
 				size2Label->setText("Can't calculate inverse matrix.\nDeterminant is equal 0.");
 				resultTable->setNumRows(1);
 				resultTable->setNumCols(1);
+				setHeader(resultTable);
 				break;
 			}
 			mainDet=1.0/mainDet;

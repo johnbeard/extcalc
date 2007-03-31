@@ -256,7 +256,7 @@ MainObject() :QTabWidget()
 
 	vars=new Variable [27];
 	for(int c=0; c<27;c++)
-		vars[c].NewItem(0.0);
+		vars[c]=0.0;
 	Number n0;
 	n0.type=NFLOAT;
 	vecs=new Vector [VARNUM];

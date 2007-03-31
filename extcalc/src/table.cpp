@@ -100,7 +100,7 @@ void TableWidget::calculateButtonSlot()
 				
 				for(int c=0; c<=pref.tableXSteps;c++)
 				{
-					vars[23][0]=((long double)c)*tableXStep+pref.tableXStart;
+					vars[23]=((long double)c)*tableXStep+pref.tableXStart;
 					outputTable->setText(c,outputTable->numCols()-1,QString::number(ca.calc()));
 				}
 			}
@@ -118,7 +118,7 @@ void TableWidget::calculateButtonSlot()
 				Calculate ca(NULL,cleanString,&pref,vars);
 				for(int c=0; c<=pref.tableXSteps;c++)
 				{
-					vars[23][0]=(long double)c*tableXStep+pref.tableXStart;
+					vars[23]=(long double)c*tableXStep+pref.tableXStart;
 					outputTable->setText(c,outputTable->numCols()-1,QString::number(ca.calc()));
 				}
 			}
@@ -139,7 +139,7 @@ void TableWidget::calculateButtonSlot()
 				Calculate caY(NULL,cleanStringY,&pref,vars);
 				for(int c=0; c<=pref.tableXSteps;c++)
 				{
-					vars[19][0]=(long double)c*tableXStep+pref.tableXStart;
+					vars[19]=(long double)c*tableXStep+pref.tableXStart;
 					outputTable->setText(c,outputTable->numCols()-2,QString::number(caX.calc()));
 					outputTable->setText(c,outputTable->numCols()-1,QString::number(caY.calc()));
 				}
@@ -161,7 +161,7 @@ void TableWidget::calculateButtonSlot()
 				Calculate ca(NULL,cleanString,&pref,vars);
 				for(int c=0; c<=pref.tableXSteps;c++)
 				{
-					vars[23][0]=(long double)c*tableXStep+pref.tableXStart;
+					vars[23]=(long double)c*tableXStep+pref.tableXStart;
 					outputTable->setText(c,outputTable->numCols()-1,QString::number(ca.calc()));
 				}
 			}
@@ -182,8 +182,8 @@ void TableWidget::calculateButtonSlot()
 				{
 					for(int c1=0; c1<=pref.tableZSteps;c1++)
 					{
-						vars[23][0]=(long double)c*tableXStep+pref.tableXStart;
-						vars[25][0]=(long double)c1*tableZStep+pref.tableZStart;
+						vars[23]=(long double)c*tableXStep+pref.tableXStart;
+						vars[25]=(long double)c1*tableZStep+pref.tableZStart;
 						outputTable->setText(c,outputTable->numCols()-10+c1,QString::number(ca.calc()));
 					}
 				}

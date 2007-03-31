@@ -95,7 +95,7 @@ class ScriptIOWidget :public QWidget
 		//	vars=va;
 			vars=new Variable [VARNUM];
 			for(int c=0; c<VARNUM;c++)
-				vars[c].NewItem(0.0);
+				vars[c]=0.0;
 			pref=pr;
 			maximized=true;
 			scriptExec=false;

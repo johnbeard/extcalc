@@ -318,7 +318,7 @@ using namespace std;
 
 class Math;
 
-typedef List<long double> Variable;
+typedef long double Variable;
 
 
 struct Preferences
