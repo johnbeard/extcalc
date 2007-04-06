@@ -2545,7 +2545,86 @@ char* Script::parse(char* line)
 		delete[]recString1;
 		return NULL;
 	}
+	else if((pos1=bracketFind(line,"readfile(")) == 0)
+	{
+		operation=SFREAD;
+		int pos2=bracketFind(line,")");
+		if(pos2<10)
+		{
+			printError("Closing bracket for readfile not found",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char*recString1=new char[pos2-8];
+		strcopy(recString1,&line[9],pos2-9);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		delete[]recString1;
 
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"writefile(")) == 0)
+	{
+		operation=SFWRITE;
+		var=-1;
+		int pos1=bracketFind(line,",",10);
+		if(pos1<11 || pos1>len-2)
+		{
+			printError("Invalid use of writefile",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char* filename=new char[pos1-9];
+		char* input=new char[len-pos1-1];
+		strcopy(filename,&line[10],pos1-10);
+		strcopy(input,&line[pos1+1],len-pos1-2);
+
+
+		vertObj=new Script(this,filename,pref,vars,eventReciver);
+		vertObj2=new Script(this,input,pref,vars,eventReciver);
+		delete[]input;
+		delete[]filename;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"removefile(")) == 0)
+	{
+		operation=SFREMOVE;
+		int pos2=bracketFind(line,")");
+		if(pos2<12)
+		{
+			printError("Closing bracket for removefile not found",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char*recString1=new char[pos2-10];
+		strcopy(recString1,&line[11],pos2-11);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		delete[]recString1;
+
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"appendfile(")) == 0)
+	{
+		operation=SFAPPEND;
+		var=-1;
+		int pos1=bracketFind(line,",",11);
+		if(pos1<12 || pos1>len-2)
+		{
+			printError("Invalid use of appendfile",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char* filename=new char[pos1-10];
+		char* input=new char[len-pos1-1];
+		strcopy(filename,&line[11],pos1-11);
+		strcopy(input,&line[pos1+1],len-pos1-2);
+
+
+		vertObj=new Script(this,filename,pref,vars,eventReciver);
+		vertObj2=new Script(this,input,pref,vars,eventReciver);
+		delete[]input;
+		delete[]filename;
+		return NULL;
+	}
 	else if((pos1=bracketFind(line,"run(")) == 0)
 	{
 		if(eventReciver->calcMode)
@@ -5533,6 +5612,134 @@ Number Script::exec()
 			
 			return value;
 		}
+		case SFREAD:
+		{
+			value=vertObj->exec();
+			if(value.type!=NCHAR || value.cval[0]==(char)0)
+			{
+				value.type=NNONE;
+				return value;
+			}
+			int pathlen=strlen(value.cval);
+			char*eventContent=(char*)malloc(pathlen+1);
+			memcpy(eventContent,value.cval,pathlen);
+			eventReciver->data=NULL;
+			QCustomEvent*fileEvent=new QCustomEvent(SIGFILEREAD);
+			fileEvent->setData(eventContent);
+			qApp->lock();
+			QApplication::postEvent(eventReciver->eventReciver,fileEvent);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+			QApplication::sendPostedEvents();
+			qApp->unlock();
+			
+
+			while(eventReciver->data==NULL)
+			{
+				if(eventReciver->status)
+					if(eventReciver->exit)
+				{
+					eventReciver->exit=false;
+					pthread_exit(0);
+				}
+				usleep(5000);
+			}
+			int dataLen=strlen((char*)eventReciver->data);
+			value.cval=(char*)malloc(dataLen+1);
+			memcpy(value.cval,eventReciver->data,dataLen+1);
+			free(eventReciver->data);
+			
+			
+			return value;
+		}
+		case SFAPPEND:
+		{
+			value=vertObj->exec();
+			if(value.type!=NCHAR)
+			{
+				value.type=NNONE;
+				return value;
+			}
+			Number n=vertObj2->exec();
+			char*eventContent;
+			int pathlen=strlen(value.cval);
+			if(n.type!=NCHAR)
+			{
+				convertToFloat(&n);
+				eventContent=(char*)malloc(100+pathlen);
+				strcpy(eventContent,value.cval);
+				sprintf(&eventContent[pathlen+1],"%.*Lg",pref->outputLength,n.fval.real());
+			}
+			else {
+				eventContent=(char*)malloc(strlen(n.cval)+pathlen+2);
+				strcpy(eventContent,value.cval);
+				strcpy(&eventContent[pathlen+1],n.cval);
+			}
+			
+			QCustomEvent *ev=new QCustomEvent(SIGFILEAPPEND);
+			ev->setData(eventContent);
+			QApplication::postEvent(eventReciver->eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+			
+			return value;
+		}
+		case SFWRITE:
+		{
+			value=vertObj->exec();
+			if(value.type!=NCHAR)
+			{
+				value.type=NNONE;
+				return value;
+			}
+			Number n=vertObj2->exec();
+			char*eventContent;
+			int pathlen=strlen(value.cval);
+			if(n.type!=NCHAR)
+			{
+				convertToFloat(&n);
+				eventContent=(char*)malloc(100+pathlen);
+				strcpy(eventContent,value.cval);
+				sprintf(&eventContent[pathlen+1],"%.*Lg",pref->outputLength,n.fval.real());
+			}
+			else {
+				eventContent=(char*)malloc(strlen(n.cval)+pathlen+2);
+				strcpy(eventContent,value.cval);
+				strcpy(&eventContent[pathlen+1],n.cval);
+			}
+			
+			QCustomEvent *ev=new QCustomEvent(SIGFILEWRITE);
+			ev->setData(eventContent);
+			QApplication::postEvent(eventReciver->eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+			
+			
+			return value;
+		}
+		case SFREMOVE:
+		{
+			value=vertObj->exec();
+			if(value.type!=NCHAR)
+			{
+				value.type=NNONE;
+				return value;
+			}
+			char*eventContent=(char*)malloc(strlen(value.cval)+1);
+			strcpy(eventContent,value.cval);
+			QCustomEvent *ev=new QCustomEvent(SIGFILEREMOVE);
+			ev->setData(eventContent);
+			QApplication::postEvent(eventReciver->eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+			
+			return value;
+		}
+				
 		case SSLEEP:
 		{
 			value=vertObj->exec();

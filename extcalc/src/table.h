@@ -6,6 +6,7 @@
 #include <qcombobox.h>
 #include <qclipboard.h>
 #include <qapplication.h>
+#include <qinputdialog.h>
 #include "functiontable.h"
 #include "buttons.h"
 
@@ -26,13 +27,18 @@ class TableWidget :public QWidget
 	QComboBox*typeBox;
 	Variable*vars;
 	bool fullscreen;
+	List <double>vertValues;
+	List <double>horzValues;
+	QHeader*horzHeader,*vertHeader;
+	ThreadSync*threadData;
 	
 	Q_OBJECT
 public:
-	TableWidget(QWidget*parent,Preferences p,Variable*va) :QWidget(parent)
+	TableWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td) :QWidget(parent)
 	{
 		pref=p;
 		vars=va;
+		threadData=td;
 		fullscreen=false;
 		extButtons=new ExtButtons(this);
 		standardButtons=new StandardButtons(this);
@@ -41,6 +47,10 @@ public:
 		outputTable=new CalcTable(this,0,true);
 		outputTable->setNumRows(10);
 		outputTable->setNumCols(4);
+		horzHeader=outputTable->horizontalHeader();
+		vertHeader=outputTable->verticalHeader();
+		horzHeader->setClickEnabled(true);
+		vertHeader->setClickEnabled(true);
 		
 		calculateButton=new QPushButton(TABLEH_STR1,this);
 		maximizeButton=new QPushButton(TABLEH_STR2,this);
@@ -51,6 +61,7 @@ public:
 		typeBox->insertItem(TABLEH_STR5);
 		typeBox->insertItem(TABLEH_STR6);
 		typeBox->insertItem(TABLEH_STR7);
+		typeBox->insertItem("Complex");
 		
 		QObject::connect(standardButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
@@ -64,6 +75,8 @@ public:
 		QObject::connect(standardButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
 		QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
 		QObject::connect(typeBox,SIGNAL(activated(const QString&)),this,SLOT(typeBoxSlot(const QString&)));
+		QObject::connect(horzHeader,SIGNAL(clicked(int)),this,SLOT(horzHeaderSlot(int)));
+		QObject::connect(vertHeader,SIGNAL(clicked(int)),this,SLOT(vertHeaderSlot(int)));
 	}
 	
 	void setPref(Preferences);
@@ -78,6 +91,9 @@ public slots:
 	void maximizeButtonSlot();
 	void buttonInputSlot(QString);
 	void editSlot(int);
+	void horzHeaderSlot(int);
+	void vertHeaderSlot(int);
+	void tableMenuSlot(int);
 	
 protected:
 	virtual void resizeEvent(QResizeEvent*);

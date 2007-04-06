@@ -43,6 +43,45 @@ void TableWidget::setPref(Preferences p)
 		typeBox->setCurrentText(TABLEH_STR6);
 	else if(pref.tableType==TABLE3D)
 		typeBox->setCurrentText(TABLEH_STR7);
+	else if(pref.tableType==TABLECOMPLEX)
+		typeBox->setCurrentText("Complex");
+	
+	
+	outputTable->setNumRows(pref.tableXSteps);
+	double tableXStep=(pref.tableXEnd-pref.tableXStart)/(pref.tableXSteps-1);
+	double tableZStep=(pref.tableZEnd-pref.tableZStart)/(pref.tableZSteps-1);
+
+	int oldNum=vertValues.GetLen();
+	
+	if(oldNum<pref.tableXSteps)
+	{
+		for(int c=oldNum; c<pref.tableXSteps; c++)
+			vertValues.NewItem(c*tableXStep+pref.tableXStart);
+	}
+	else {
+		for(int c=pref.tableXSteps; c<oldNum; c++)
+			vertValues.DeleteItem(pref.tableXSteps);
+	}
+	for(int c=0; c<pref.tableXSteps; c++)
+	{
+		vertValues[c]=c*tableXStep+pref.tableXStart;
+		vertHeader->setLabel(c,QString::number(vertValues[c],'g',5));
+	}
+	
+	oldNum=horzValues.GetLen();
+	if(oldNum<pref.tableZSteps)
+	{
+		for(int c=oldNum; c<pref.tableZSteps; c++)
+			horzValues.NewItem(c*tableZStep+pref.tableZStart);
+	}
+	else {
+		for(int c=pref.tableZSteps; c<oldNum; c++)
+			horzValues.DeleteItem(pref.tableZSteps);
+	}
+	for(int c=0; c<pref.tableZSteps; c++)
+		horzValues[c]=c*tableZStep+pref.tableZStart;
+
+
 	standardButtons->setPref(pref);
 	extButtons->setPref(pref);
 	functionTable->setPref(pref);
@@ -79,12 +118,6 @@ void TableWidget::tableEditSlot(QString string)
 void TableWidget::calculateButtonSlot()
 {
 	outputTable->setNumCols(0);
-	outputTable->setNumRows(pref.tableXSteps);//pref.tableSteps
-	double tableXStep=(pref.tableXEnd-pref.tableXStart)/(pref.tableXSteps-1);
-	double tableZStep=(pref.tableZEnd-pref.tableZStart)/(pref.tableZSteps-1);
-	
-	for(int c=0; c<pref.tableXSteps; c++)
-		outputTable->verticalHeader()->setLabel(c,QString::number(c*tableXStep+pref.tableXStart));
 	
 	if(pref.tableType==TABLENORMAL)
 	{
@@ -94,14 +127,15 @@ void TableWidget::calculateButtonSlot()
 			if(pref.functionTypes[c]==GRAPHSTD &&pref.activeFunctions[c])
 			{
 				outputTable->setNumCols(outputTable->numCols()+1);
-				outputTable->horizontalHeader()->setLabel(outputTable->numCols()-1,"y"+QString::number(c+1)+"(x)");
+				horzHeader->setLabel(outputTable->numCols()-1,"y"+QString::number(c+1)+"(x)");
 				char*cleanString=checkString(pref.functions[c],&pref);
 				Calculate ca(NULL,cleanString,&pref,vars);
 				
-				for(int c=0; c<=pref.tableXSteps;c++)
+				for(int c=0; c<pref.tableXSteps;c++)
 				{
-					vars[23]=((long double)c)*tableXStep+pref.tableXStart;
-					outputTable->setText(c,outputTable->numCols()-1,QString::number(ca.calc()));
+					perror("value: "+QString::number(c));
+					vars[23]=vertValues[c];
+					outputTable->setText(c,outputTable->numCols()-1,formatOutput(ca.calc(),&pref));
 				}
 			}
 		}
@@ -116,10 +150,10 @@ void TableWidget::calculateButtonSlot()
 				outputTable->horizontalHeader()->setLabel(outputTable->numCols()-1,"r"+QString::number(c+1)+"(x)");
 				char*cleanString=checkString(pref.functions[c],&pref);
 				Calculate ca(NULL,cleanString,&pref,vars);
-				for(int c=0; c<=pref.tableXSteps;c++)
+				for(int c=0; c<pref.tableXSteps;c++)
 				{
-					vars[23]=(long double)c*tableXStep+pref.tableXStart;
-					outputTable->setText(c,outputTable->numCols()-1,QString::number(ca.calc()));
+					vars[23]=vertValues[c];
+					outputTable->setText(c,outputTable->numCols()-1,formatOutput(ca.calc(),&pref));
 				}
 			}
 		}
@@ -137,11 +171,11 @@ void TableWidget::calculateButtonSlot()
 				char*cleanStringY=checkString(pref.functions[c].right(pref.functions[c].length()-1-pref.functions[c].find("\\")),&pref);
 				Calculate caX(NULL,cleanStringX,&pref,vars);
 				Calculate caY(NULL,cleanStringY,&pref,vars);
-				for(int c=0; c<=pref.tableXSteps;c++)
+				for(int c=0; c<pref.tableXSteps;c++)
 				{
-					vars[19]=(long double)c*tableXStep+pref.tableXStart;
-					outputTable->setText(c,outputTable->numCols()-2,QString::number(caX.calc()));
-					outputTable->setText(c,outputTable->numCols()-1,QString::number(caY.calc()));
+					vars[19]=vertValues[c];
+					outputTable->setText(c,outputTable->numCols()-2,formatOutput(caX.calc(),&pref));
+					outputTable->setText(c,outputTable->numCols()-1,formatOutput(caY.calc(),&pref));
 				}
 			}
 		}
@@ -159,10 +193,10 @@ void TableWidget::calculateButtonSlot()
 				outputTable->horizontalHeader()->setLabel(outputTable->numCols()-1,"y"+QString::number(c+1)+"(x)");
 				char*cleanString=checkString(pref.functions[c],&pref);
 				Calculate ca(NULL,cleanString,&pref,vars);
-				for(int c=0; c<=pref.tableXSteps;c++)
+				for(int c=0; c<pref.tableXSteps;c++)
 				{
-					vars[23]=(long double)c*tableXStep+pref.tableXStart;
-					outputTable->setText(c,outputTable->numCols()-1,QString::number(ca.calc()));
+					vars[23]=vertValues[c];
+					outputTable->setText(c,outputTable->numCols()-1,formatOutput(ca.calc(),&pref));
 				}
 			}
 		}
@@ -173,22 +207,45 @@ void TableWidget::calculateButtonSlot()
 		{
 			if(pref.functionTypes[c]==GRAPH3D &&pref.activeFunctions[c])
 			{
-				outputTable->setNumCols(outputTable->numCols()+10);
+				outputTable->setNumCols(outputTable->numCols()+pref.tableZSteps);
 				for(int c1=0; c1<pref.tableZSteps;c1++)
-					outputTable->horizontalHeader()->setLabel(outputTable->numCols()-10+c1,"y"+QString::number(c+1)+"(x"+QString::number((double)c1*tableZStep+pref.tableZStart)+")");
+					outputTable->horizontalHeader()->setLabel(outputTable->numCols()-pref.tableZSteps+c1,"y"+QString::number(c+1)+"(x"+QString::number(horzValues[c1],'g',5)+")");
 				char*cleanString=checkString(pref.functions[c],&pref);
 				Calculate ca(NULL,cleanString,&pref,vars);
-				for(int c=0; c<=pref.tableXSteps;c++)
+				for(int c2=0; c2<pref.tableXSteps;c2++)
 				{
-					for(int c1=0; c1<=pref.tableZSteps;c1++)
+					for(int c1=0; c1<pref.tableZSteps;c1++)
 					{
-						vars[23]=(long double)c*tableXStep+pref.tableXStart;
-						vars[25]=(long double)c1*tableZStep+pref.tableZStart;
-						outputTable->setText(c,outputTable->numCols()-10+c1,QString::number(ca.calc()));
+						vars[23]=vertValues[c2];
+						vars[25]=horzValues[c1];
+						outputTable->setText(c2,outputTable->numCols()-pref.tableZSteps+c1,formatOutput(ca.calc(),&pref));
 					}
 				}
 			}
 		}
+	}
+	else if(pref.tableType==TABLECOMPLEX)
+	{
+		bool complexPref=pref.complex;
+		pref.complex=true;
+		for(int c=0; c<20;c++)
+		{
+			if((pref.functionTypes[c]==GRAPHCOMPLEX || pref.functionTypes[c]==GRAPHCOMP3D) &&pref.activeFunctions[c])
+			{
+				outputTable->setNumCols(outputTable->numCols()+1);
+				horzHeader->setLabel(outputTable->numCols()-1,"F"+QString::number(c+1)+"(z)");
+				char*cleanString=checkString(pref.functions[c],&pref);
+				Script ca(NULL,cleanString,&pref,vars,threadData);
+				threadData->vars[25][0].type=NFLOAT;
+				for(int c=0; c<pref.tableXSteps;c++)
+				{
+					perror("value: "+QString::number(c));
+					threadData->vars[25][0].fval=Complex(vertValues[c]);
+					outputTable->setText(c,outputTable->numCols()-1,formatOutput(ca.exec(),&pref));
+				}
+			}
+		}
+		pref.complex=complexPref;
 	}
 }
 
@@ -229,6 +286,8 @@ void TableWidget::typeBoxSlot(const QString&str)
 		pref.tableType=TABLEINEQUAITY;
 	else if(str==TABLEH_STR7)
 		pref.tableType=TABLE3D;
+	else if(str=="Complex")
+		pref.tableType=TABLECOMPLEX;
 	emit prefChange(pref);
 }
 
@@ -313,10 +372,55 @@ void TableWidget::editSlot(int type)
 	}
 }
 
+void TableWidget::horzHeaderSlot(int index)
+{
+	bool ok;
 
+	if(pref.tableType!=TABLE3D)
+		return;
+	index=index%pref.tableZSteps;
+	QString input = QInputDialog::getText(
+			"Extcalc - Table", "Enter column value "+QString::number(index+1)+":", QLineEdit::Normal,
+	QString::null, &ok, this );
+	if ( ok && input.length()>0 )
+	{
+		perror("horzIndex "+QString::number(index));
+		horzValues[index]=runCalc(input,&pref,vars);
+		calculateButtonSlot();
+	}
+	
+}
 
+void TableWidget::vertHeaderSlot(int index)
+{
+	bool ok;
+	QString input = QInputDialog::getText(
+			"Extcalc - Table", "Enter row value "+QString::number(index+1)+":", QLineEdit::Normal,
+	QString::null, &ok, this );
+	if ( ok && input.length()>0 )
+	{
+		vertValues[index]=runCalc(input,&pref,vars);
+		vertHeader->setLabel(index,QString::number(vertValues[index],'g',5));
+		calculateButtonSlot();
+	}
+}
 
-
-
+void TableWidget::tableMenuSlot(int item)
+{
+	if(item==RESETTABLE)
+	{
+		double tableXStep=(pref.tableXEnd-pref.tableXStart)/(pref.tableXSteps-1);
+		double tableZStep=(pref.tableZEnd-pref.tableZStart)/(pref.tableZSteps-1);
+		
+		for(int c=0; c<vertValues.GetLen(); c++)
+		{
+			vertValues[c]=pref.tableXStart+c*tableXStep;
+			vertHeader->setLabel(c,QString::number(vertValues[c],'g',5));
+		}
+		for(int c=0; c<horzValues.GetLen(); c++)
+			horzValues[c]=pref.tableZStart+c*tableZStep;
+		calculateButtonSlot();
+	}
+}
 
 

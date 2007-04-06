@@ -93,8 +93,8 @@
 //      - Arrays                                                                        ok  //
 //      - run other scripts: run                                                        ok  //
 //      - graph output functions: point, line, circle, ... (in a later version)             //
-//      - usage of files (in a later version)                                               //
-//      - change preferences (in a later version)                                           //
+//      - usage of files (in a later version)                                           ok  //
+//      - change preferences (in a later version)                                       ok  //
 //      - script debugging tool                                                         ok  //
 //  - load and save scripts                                     (v0.5)                  ok  //
 //  - script editor window                                      (v0.5)                  ok  //
@@ -104,8 +104,8 @@
 //  - support for complex numbers in standard parser            (v0.7)                  ok  //
 //  - include matrix- vector- ...-functions to standard-parser  (v0.7)                  ok  //
 //  - accelerate Calcultate classes                             (v0.8)                      //
-//  - window for vector calculations                            (v0.8)                      //
-//  - window for matrix calculations                            (v0.8)                      //
+//  - window for vector calculations                            (v0.8)                  ok  //
+//  - window for matrix calculations                            (v0.8)                  ok  //
 //  - statistic functions                                       (v0.9 beta)                 //
 //  - beta-tests, bugfixing, optimizing                         (v1.0 stable)               //
 /////////////////////////////////////////////TODO/////////////////////////////////////////////
@@ -485,12 +485,15 @@ MainObject() :QTabWidget()
 	tableTypeMenu->insertItem(EXTCALCH_MENU40,TABLEPARAMETER);
 	tableTypeMenu->insertItem(EXTCALCH_MENU41,TABLEINEQUAITY);
 	tableTypeMenu->insertItem(EXTCALCH_MENU42,TABLE3D);
+	tableTypeMenu->insertItem("Complex",TABLECOMPLEX);
 	QObject::connect(tableTypeMenu,SIGNAL(activated(int)),this,SLOT(tableTypeMenuSlot(int)));
 	
 	tableMenu=new QPopupMenu;
 	tableMenu->insertItem(EXTCALCH_MENU43,STANDARDTABLE);
+	tableMenu->insertItem("Reset Input Values",RESETTABLE);
 	tableMenu->insertItem(EXTCALCH_MENU44,tableTypeMenu,TABLETYPE);
 	QObject::connect(tableMenu,SIGNAL(activated(int)),this,SLOT(tableMenuSlot(int)));
+
 
 	scriptMenu=new QPopupMenu;
 	scriptMenu->insertItem(EXTCALCH_MENU62,EXPORTSCRIPT);
@@ -556,7 +559,7 @@ MainObject() :QTabWidget()
 	calculator=new CalcWidget(this,pref,vars,threadData);
 	calculator2=new CalcWidget(this,pref,vars,threadData);
 	graph = new GraphWidget(this,pref,vars,threadData);
-	table=new TableWidget(this,pref,vars);
+	table=new TableWidget(this,pref,vars,threadData);
 	scripting=new ScriptWidget(this,pref,vars,tabbarSize.bottom());
 	scriptIO=new ScriptIOWidget(this,pref,vars);
 	matrix=new MatrixWidget(this,pref,vars,threadData);
@@ -599,6 +602,7 @@ MainObject() :QTabWidget()
 	QObject::connect(scripting,SIGNAL(controlScriptMenu(int)),this,SLOT(scriptMenuSlot(int)));
 	QObject::connect(this,SIGNAL(runScript(QString*)),scriptIO,SLOT(runScript(QString*)));
 	QObject::connect(this,SIGNAL(matrixEnterSignal()),matrix,SLOT(enterSlot()));
+	QObject::connect(tableMenu,SIGNAL(activated(int)),table,SLOT(tableMenuSlot(int)));
 	
 	pref.scriptPath=getenv("HOME")+QString("/.extcalc/script");
 	pref.scriptDirName="code";
@@ -795,6 +799,8 @@ void getPref(Preferences newPref)
 	tableTypeMenu->setItemChecked(TABLEPOLAR,false);
 	tableTypeMenu->setItemChecked(TABLEINEQUAITY,false);
 	tableTypeMenu->setItemChecked(TABLE3D,false);
+	tableTypeMenu->setItemChecked(TABLECOMPLEX,false);
+
 	
 	scriptMenu->setItemChecked(CLEARMEMALWAYS,true);
 

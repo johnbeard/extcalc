@@ -692,6 +692,8 @@ int MainObject::readConfigFile()
 			pref.tableType=TABLEINEQUAITY;
 		else if(tableType.lower() == "3d")
 			pref.tableType=TABLE3D;
+		else if(tableType.lower() == "complex")
+			pref.tableType=TABLECOMPLEX;
 		
 	}
 	for(int c=0; c<8; c++)
@@ -960,6 +962,8 @@ void MainObject::writeConfigFile()
 		configuration+="inequaity";
 	else if(pref.tableType==TABLE3D)
 		configuration+="3d";
+	else if(pref.tableType==TABLECOMPLEX)
+		configuration+="complex";
 	configuration+="\nBASE=";
 	if(pref.base == HEX)
 		configuration+="hex";

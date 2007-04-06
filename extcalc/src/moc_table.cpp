@@ -1,7 +1,7 @@
 /****************************************************************************
 ** TableWidget meta object code from reading C++ file 'table.h'
 **
-** Created: Tue Mar 13 19:26:19 2007
+** Created: Wed Apr 4 10:51:05 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -80,6 +80,18 @@ QMetaObject* TableWidget::staticMetaObject()
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
     static const QUMethod slot_8 = {"editSlot", 1, param_slot_8 };
+    static const QUParameter param_slot_9[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_9 = {"horzHeaderSlot", 1, param_slot_9 };
+    static const QUParameter param_slot_10[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_10 = {"vertHeaderSlot", 1, param_slot_10 };
+    static const QUParameter param_slot_11[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_11 = {"tableMenuSlot", 1, param_slot_11 };
     static const QMetaData slot_tbl[] = {
 	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
 	{ "selectionChangedSlot(int,int)", &slot_1, QMetaData::Public },
@@ -89,7 +101,10 @@ QMetaObject* TableWidget::staticMetaObject()
 	{ "typeBoxSlot(const QString&)", &slot_5, QMetaData::Public },
 	{ "maximizeButtonSlot()", &slot_6, QMetaData::Public },
 	{ "buttonInputSlot(QString)", &slot_7, QMetaData::Public },
-	{ "editSlot(int)", &slot_8, QMetaData::Public }
+	{ "editSlot(int)", &slot_8, QMetaData::Public },
+	{ "horzHeaderSlot(int)", &slot_9, QMetaData::Public },
+	{ "vertHeaderSlot(int)", &slot_10, QMetaData::Public },
+	{ "tableMenuSlot(int)", &slot_11, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -100,7 +115,7 @@ QMetaObject* TableWidget::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"TableWidget", parentObject,
-	slot_tbl, 9,
+	slot_tbl, 12,
 	signal_tbl, 1,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -146,6 +161,9 @@ bool TableWidget::qt_invoke( int _id, QUObject* _o )
     case 6: maximizeButtonSlot(); break;
     case 7: buttonInputSlot((QString)static_QUType_QString.get(_o+1)); break;
     case 8: editSlot((int)static_QUType_int.get(_o+1)); break;
+    case 9: horzHeaderSlot((int)static_QUType_int.get(_o+1)); break;
+    case 10: vertHeaderSlot((int)static_QUType_int.get(_o+1)); break;
+    case 11: tableMenuSlot((int)static_QUType_int.get(_o+1)); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }

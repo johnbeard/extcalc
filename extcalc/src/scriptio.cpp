@@ -501,6 +501,102 @@ void ScriptIOWidget::customEvent(QCustomEvent*ev)
 				free(ev->data());
 				break;
 			}
+			case SIGFILEREAD:
+			{
+				QString path((char*)ev->data());
+				free(ev->data());
+
+				int pos=path.findRev('/');
+				if(pos!=-1)
+					path=path.right(path.length()-pos-1);
+				path=pref.scriptPath+"/"+pref.dataDirName+"/"+path;
+				
+
+				char*fileData;
+				struct stat fileStat;
+				FILE*f;
+				if(pref.scriptPath.length()>0 && lstat(path,&fileStat)==0)
+				{
+					f=fopen(path,"r");
+					if(f!=NULL && fileStat.st_size>0 && S_ISREG(fileStat.st_mode))
+					{
+						fileData=new char[fileStat.st_size+1];
+						fileData[fileStat.st_size]=(char)0;
+						fread(fileData,fileStat.st_size,1,f);
+						fclose(f);
+					}
+					else fileData=NULL;
+				}
+				else fileData=NULL;
+				
+				if(fileData==NULL)
+					threadData->data=calloc(2,1);
+				else threadData->data=fileData;
+				break;
+			}
+			case SIGFILEAPPEND:
+			{
+				QString path((char*)ev->data());
+				int pathLen=strlen((char*)ev->data());
+
+				int pos=path.findRev('/');
+				if(pos!=-1)
+					path=path.right(path.length()-pos-1);
+				path=pref.scriptPath+"/"+pref.dataDirName+"/"+path;
+				
+				FILE*f;
+				if(pref.scriptPath.length()>0)
+				{
+					f=fopen(path,"a");
+					if(f!=NULL)
+					{
+						int dataLen=strlen(&((char*)ev->data())[pathLen+1]);
+						fwrite(&((char*)ev->data())[pathLen+1],dataLen,1,f);
+						fclose(f);
+					}
+				}
+				free(ev->data());
+				break;
+			}
+			case SIGFILEWRITE:
+			{
+				QString path((char*)ev->data());
+				int pathLen=strlen((char*)ev->data());
+
+				int pos=path.findRev('/');
+				if(pos!=-1)
+					path=path.right(path.length()-pos-1);
+				path=pref.scriptPath+"/"+pref.dataDirName+"/"+path;
+				
+				FILE*f;
+				if(pref.scriptPath.length()>0)
+				{
+					f=fopen(path,"w");
+					if(f!=NULL)
+					{
+						int dataLen=strlen(&((char*)ev->data())[pathLen+1]);
+						fwrite(&((char*)ev->data())[pathLen+1],dataLen,1,f);
+						fclose(f);
+					}
+				}
+				free(ev->data());
+				break;
+			}
+			case SIGFILEREMOVE:
+			{
+				QString path((char*)ev->data());
+				free(ev->data());
+
+				int pos=path.findRev('/');
+				if(pos!=-1)
+					path=path.right(path.length()-pos-1);
+				path=pref.scriptPath+"/"+pref.dataDirName+"/"+path;
+				
+				if(pref.scriptPath.length()>0)
+					remove(path);
+				
+				break;
+			}
 			case SIGFINISHED:		//script stopped
 			{
 				gettimeofday(&currentTime,NULL);

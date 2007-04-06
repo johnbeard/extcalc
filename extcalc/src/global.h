@@ -24,10 +24,10 @@ using namespace std;
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #define VARSFILE ".extcalc/vars.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.7.1\n2007-03-28\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.7.4\n2007-04-06\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.7.1\n28.3.2007\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.7.4\n6.4.2007\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2007\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -100,6 +100,7 @@ using namespace std;
 #define GRAPHTYPE			31
 #define TABLETYPE			56
 #define STANDARDTABLE		57
+#define RESETTABLE			184
 
 #define EXPORTSCRIPT		171
 #define IMPORTSCRIPT		172
@@ -211,6 +212,10 @@ using namespace std;
 #define SIMAG				151
 #define SARG				152
 #define SVECTOR				169
+#define SFREAD				186
+#define SFWRITE				187
+#define SFAPPEND			188
+#define SFREMOVE			189
 
 #define CALCYVAL			0
 #define CALCZEROS			1
@@ -246,6 +251,7 @@ using namespace std;
 #define TABLEPARAMETER		52
 #define TABLEINEQUAITY		53
 #define TABLE3D				54
+#define TABLECOMPLEX		185
 
 #define DRAWNONE			130
 #define DRAWFREE			131
@@ -278,7 +284,18 @@ using namespace std;
 #define SIGGETKEY			50004
 #define SIGKEYSTATE			50005
 #define SIGDEBUG			50006
-#define SIGFINISHED			50010
+#define SIGFILEREAD			50007
+#define SIGFILEWRITE		50008
+#define SIGFILEAPPEND		50009
+#define SIGFILEREMOVE		50010
+#define SIGDRAWPOINT		50011
+#define SIGDRAWLINE			50012
+#define SIGDRAWPOLYGON		50013
+#define SIGDRAWCLEAR		50014
+#define SIGDRAWSTARTLIST	50015
+#define SIGDRAWENDLIST		50016
+#define SIGDRAWCALLLIST		50017
+#define SIGFINISHED			50020
 
 #define ROOTSTRING			8730
 #define PISTRING			960
