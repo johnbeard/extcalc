@@ -92,9 +92,11 @@
 //      - type converting (int) (float) ...                                             ok  //
 //      - Arrays                                                                        ok  //
 //      - run other scripts: run                                                        ok  //
-//      - graph output functions: point, line, circle, ... (in a later version)             //
+//      - 2D-graph output functions: point, line, circle, ... (in a later version)          //
+//      - OpenGL 3D-Graphics (in a later version)                                       ok  //
 //      - usage of files (in a later version)                                           ok  //
 //      - change preferences (in a later version)                                       ok  //
+//      - macros (in a later version)                                                       //
 //      - script debugging tool                                                         ok  //
 //  - load and save scripts                                     (v0.5)                  ok  //
 //  - script editor window                                      (v0.5)                  ok  //
@@ -103,7 +105,6 @@
 //  - number object for standard-parser                         (v0.7)                  ok  //
 //  - support for complex numbers in standard parser            (v0.7)                  ok  //
 //  - include matrix- vector- ...-functions to standard-parser  (v0.7)                  ok  //
-//  - accelerate Calcultate classes                             (v0.8)                      //
 //  - window for vector calculations                            (v0.8)                  ok  //
 //  - window for matrix calculations                            (v0.8)                  ok  //
 //  - statistic functions                                       (v0.9 beta)                 //
@@ -143,7 +144,7 @@
 //	- dynamic graphs are not shown correctly when coordinate system is moved			ok	//
 //	- debug messages in graph calculation												ok	//
 //	- CPU-load is 100% when waiting for keyboart input									ok	//
-//	- 3rd, 5th ... root of -N returns only complex results								ok	//
+//	- 3rd, 5th ... root of  N returns only complex results								ok	//
 //	- result lines in polar cs were drawn wrong when angle type isn't rad				ok	//
 //	- array memory can't be deleted														ok	//
 //	- script load balancing doesn't work on fast (dual-core) CPUs						ok	//
@@ -387,6 +388,7 @@ MainObject() :QTabWidget()
 	pref.moveUpDown=false;
 	pref.tableXStart=pref.tableZStart=0.0;
 	pref.tableXEnd=pref.tableZEnd=10.0;
+	pref.tableAValue=0.0;
 	pref.tableXSteps=pref.tableZSteps=10;
 	pref.tableType=TABLENORMAL;
 	pref.showWindows[0]=pref.showWindows[2]=pref.showWindows[3]=pref.showWindows[4]=pref.showWindows[6]=true;
@@ -561,7 +563,7 @@ MainObject() :QTabWidget()
 	graph = new GraphWidget(this,pref,vars,threadData);
 	table=new TableWidget(this,pref,vars,threadData);
 	scripting=new ScriptWidget(this,pref,vars,tabbarSize.bottom());
-	scriptIO=new ScriptIOWidget(this,pref,vars);
+	scriptIO=new ScriptIOWidget(this,pref,vars,graph->getShareContext());
 	matrix=new MatrixWidget(this,pref,vars,threadData);
 	statistics=new QWidget(this);
 //	addTab(calculator,EXTCALCH_STR6);

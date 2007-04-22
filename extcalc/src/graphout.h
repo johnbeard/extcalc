@@ -102,11 +102,12 @@ class GraphOutput :public QGLWidget
 	int current3dSteps;
 	int current2dSteps;
 	int currentSolvePrec;
+
 	
 	
 Q_OBJECT
 public:
-	GraphOutput(QWidget*parent,Variable*va,ThreadSync*td) :QGLWidget(parent)
+	GraphOutput(QWidget*parent,Variable*va,ThreadSync*td,QGLWidget*shareWidget=NULL) :QGLWidget(parent,0,shareWidget)
 	{
 		axes=0xffffffff;
 		pref.solvePrec=currentSolvePrec=1;
@@ -118,7 +119,7 @@ public:
 		backMap=new QPixmap*[BACKSTEPS];
 		for(int c=0; c<BACKSTEPS; c++)
 			backMap[c]=NULL;
-		
+
 		draw=new QPainter();
 		texture=0xffffffff;
 		current2dSteps=200;
@@ -138,8 +139,8 @@ public:
 		timer = new QTimer(this);
 		QObject::connect(timer,SIGNAL(timeout()),this,SLOT(timerSlot()));
 	}
-	
-	
+
+
 	void processStdFunction(QString);
 	void processPolarFunction(QString);
 	void processParameterFunction(QString);
@@ -153,12 +154,11 @@ public:
 	GLuint drawPolarAxes();
 	GLuint draw3dAxes();
 	void generateTexture();
-
 	
 	void setPref(Preferences newPref);
 	void clearGL();
 	void setGLColor(float y);
-	
+
 public slots:
 	void drawHorizontalLine(double y);
 	void drawVerticalLine(double x);
@@ -189,7 +189,6 @@ signals:
 	void leftMButtonPressed(double,double);
 	void redrawSignal();
 	void screenshotSignal(QPixmap*);
-
 };
 
 

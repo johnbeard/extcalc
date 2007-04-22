@@ -64,9 +64,9 @@ class MatrixWidget :public QWidget
 				varTable->verticalHeader()->setLabel(c,headLine);
 			}
 			varTable->verticalHeader()->setLabel(26,"ans");
-			varTable->horizontalHeader()->setLabel(0,"Type");
-			varTable->horizontalHeader()->setLabel(1,"Rows");
-			varTable->horizontalHeader()->setLabel(2,"Columns");
+			varTable->horizontalHeader()->setLabel(0,MATRIXWIDGETH_STR1);
+			varTable->horizontalHeader()->setLabel(1,MATRIXWIDGETH_STR2);
+			varTable->horizontalHeader()->setLabel(2,MATRIXWIDGETH_STR3);
 			varTable->setSelectionMode(QTable::SingleRow);
 			varTable->selectRow(currentVar);
 			varTable->setColumnReadOnly(0,true);
@@ -78,11 +78,11 @@ class MatrixWidget :public QWidget
 			braceCloseButton=new QPushButton("]",this);
 			detButton=new QPushButton("det",this);
 			operationBox=new QComboBox(this);
-			operationBox->insertItem("Calculator");
-			operationBox->insertItem("Linear System of Equations");
-			operationBox->insertItem("Generate Matrix");
-			operationBox->insertItem("Analyse Matrix");
-			operationBox->insertItem("Inverse Matrix");
+			operationBox->insertItem(MATRIXWIDGETH_STR4);
+			operationBox->insertItem(MATRIXWIDGETH_STR5);
+			operationBox->insertItem(MATRIXWIDGETH_STR6);
+			operationBox->insertItem(MATRIXWIDGETH_STR7);
+			operationBox->insertItem(MATRIXWIDGETH_STR8);
 
 			calcWidget=new CalcInput(this,vars,threadData,true);
 			size1Box=new QSpinBox(1,20,1,this);
@@ -97,13 +97,13 @@ class MatrixWidget :public QWidget
 			input1=new QLineEdit(this);
 			input2=new QLineEdit(this);
 			input3=new QLineEdit(this);
-			calcButton=new QPushButton("Calculate",this);
-			sizeButton=new QPushButton("Set",this);
+			calcButton=new QPushButton(MATRIXWIDGETH_STR9,this);
+			sizeButton=new QPushButton(MATRIXWIDGETH_STR10,this);
 			resultTable=new CalcTable(this,0,true);
 			matrixBox=new QComboBox(this);
 			vectorBox=new QComboBox(this);
 			
-			vectorBox->insertItem("no vector");
+			vectorBox->insertItem(MATRIXWIDGETH_STR11);
 			for(int c=0; c<26; c++)
 			{
 				headLine[0]=(char)(c+65);
@@ -111,13 +111,13 @@ class MatrixWidget :public QWidget
 				vectorBox->insertItem(headLine);
 			}
 			typeBox=new QComboBox(this);
-			typeBox->insertItem("Identity Matrix");
-			typeBox->insertItem("Zero Matrix");
-			typeBox->insertItem("Zero Vector");
-			typeBox->insertItem("X-Rotation Matrix");
-			typeBox->insertItem("Y-Rotation Matrix");
-			typeBox->insertItem("Z-Rotation Matrix");
-			typeBox->insertItem("Scaling Matrix");
+			typeBox->insertItem(MATRIXWIDGETH_STR12);
+			typeBox->insertItem(MATRIXWIDGETH_STR13);
+			typeBox->insertItem(MATRIXWIDGETH_STR14);
+			typeBox->insertItem(MATRIXWIDGETH_STR15);
+			typeBox->insertItem(MATRIXWIDGETH_STR16);
+			typeBox->insertItem(MATRIXWIDGETH_STR17);
+			typeBox->insertItem(MATRIXWIDGETH_STR18);
 			resetInterface();
 
 
@@ -180,15 +180,5 @@ class MatrixWidget :public QWidget
 		void prefChange(Preferences);
 	
 };
-
-
-
-
-
-
-
-
-
-
 
 #endif

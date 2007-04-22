@@ -98,9 +98,9 @@ void MatrixWidget::setVarTable()
 	varTable->adjustColumn(0);
 	varTable->adjustColumn(1);
 	varTable->adjustColumn(2);
-	varTable->horizontalHeader()->setLabel(0,"Type");
-	varTable->horizontalHeader()->setLabel(1,"Rows");
-	varTable->horizontalHeader()->setLabel(2,"Columns");
+	varTable->horizontalHeader()->setLabel(0,MATRIXWIDGETH_STR1);
+	varTable->horizontalHeader()->setLabel(1,MATRIXWIDGETH_STR2);
+	varTable->horizontalHeader()->setLabel(2,MATRIXWIDGETH_STR3);
 	
 	setOutputTable(currentVar);
 	varTable->clearSelection();
@@ -223,7 +223,7 @@ void MatrixWidget::resetInterface()
 		case MATLSE:
 			size1Box->setMinValue(1);
 			size1Box->setMaxValue(20);
-			vectorLabel->setText("Vector");
+			vectorLabel->setText(MATRIXWIDGETC_STR1);
 			size1Box->show();
 			matrixBox->show();
 			vectorBox->show();
@@ -231,7 +231,7 @@ void MatrixWidget::resetInterface()
 			vectorLabel->show();
 			size1Label->show();
 			size2Label->show();
-			calcButton->setText("Calculate");
+			calcButton->setText(MATRIXWIDGETH_STR9);
 			calcButton->show();
 			resultTable->show();
 			resultTable->setNumRows(1);
@@ -240,23 +240,23 @@ void MatrixWidget::resetInterface()
 			matrixBox->setCurrentItem(currentVar);
 			matrixBoxSlot(currentVar);
 			sizeButton->show();
-			size1Label->setText("Unknowns:");
-			matrixLabel->setText("Matrix");
-			vectorLabel->setText("Vector");
-			size2Label->setText("Choose a Matrix\nor a Matrix and a Vector\nto insert data\n");
+			size1Label->setText(MATRIXWIDGETC_STR2);
+			matrixLabel->setText(MATRIXWIDGETC_STR3);
+			vectorLabel->setText(MATRIXWIDGETC_STR1);
+			size2Label->setText(MATRIXWIDGETC_STR4);
 			break;
 		case MATGENERATE:
 			calcWidget->show();
-			vectorLabel->setText("Type");
+			vectorLabel->setText(MATRIXWIDGETH_STR1);
 			vectorLabel->show();
 			typeBox->show();
-			matrixLabel->setText("Variable");
+			matrixLabel->setText(MATRIXWIDGETC_STR5);
 			matrixLabel->show();
 			matrixBox->show();
 			size1Box->show();
 			size1Label->show();
 			sizeButton->show();
-			calcButton->setText("Generate");
+			calcButton->setText(MATRIXWIDGETC_STR6);
 			calcButton->show();
 			input1->setReadOnly(false);
 			input2->setReadOnly(false);
@@ -267,7 +267,7 @@ void MatrixWidget::resetInterface()
 			resultTable->setNumRows(1);
 			resultTable->setNumCols(1);
 			setHeader(resultTable);
-			matrixLabel->setText("Variable");
+			matrixLabel->setText(MATRIXWIDGETC_STR5);
 			matrixLabel->show();
 			matrixBox->show();
 			matrixBox->setCurrentItem(currentVar);
@@ -280,11 +280,11 @@ void MatrixWidget::resetInterface()
 			input1->setReadOnly(true);
 			input2->setReadOnly(true);
 			input3->setReadOnly(true);
-			vectorLabel->setText("Gauss");
+			vectorLabel->setText(MATRIXWIDGETC_STR7);
 			vectorLabel->show();
 			size2Label->setText("");
 			size2Label->show();
-			calcButton->setText("Calculate");
+			calcButton->setText(MATRIXWIDGETH_STR9);
 			calcButton->show();
 			matrixBoxSlot(currentVar);
 			break;
@@ -293,7 +293,7 @@ void MatrixWidget::resetInterface()
 			resultTable->setNumRows(1);
 			resultTable->setNumCols(1);
 			setHeader(resultTable);
-			matrixLabel->setText("Matrix");
+			matrixLabel->setText(MATRIXWIDGETC_STR3);
 			matrixLabel->show();
 			matrixBox->show();
 			matrixBox->setCurrentItem(currentVar);
@@ -304,7 +304,7 @@ void MatrixWidget::resetInterface()
 			size2Label->setText("");
 			size2Label->show();
 			sizeButton->show();
-			calcButton->setText("Calculate");
+			calcButton->setText(MATRIXWIDGETH_STR9);
 			calcButton->show();
 			matrixBoxSlot(currentVar);
 			break;
@@ -482,7 +482,7 @@ void MatrixWidget::matrixBoxSlot(int)
 		int rank=0;
 		if(threadData->dimension[var][1]!=1)
 		{
-			size2Label->setText("Type: Matrix");
+			size2Label->setText(MATRIXWIDGETC_STR8);
 			int effIndex;
 			long double*matrix=(long double*)malloc(sizeof(long double)*threadData->dimension[var][0]*threadData->dimension[var][1]);
 			for(int c1=0; c1<threadData->dimension[var][1]; c1++)
@@ -504,13 +504,13 @@ void MatrixWidget::matrixBoxSlot(int)
 					rank=c;
 				else break;
 			}
-			label1->setText("Dimensions:");
+			label1->setText(MATRIXWIDGETC_STR9);
 			input1->setText(QString::number(threadData->dimension[var][0])+"x"+QString::number(threadData->dimension[var][1]));
-			label2->setText("Determinant:");
+			label2->setText(MATRIXWIDGETC_STR10);
 			if(threadData->dimension[var][0]==threadData->dimension[var][0])
 				input2->setText(formatOutput(det,&pref));
-			else input2->setText("not possible");
-			label3->setText("Rank:");
+			else input2->setText(MATRIXWIDGETC_STR11);
+			label3->setText(MATRIXWIDGETC_STR12);
 			input3->setText(QString::number(rank));
 			resultTable->setNumRows(threadData->dimension[var][0]);
 			resultTable->setNumCols(threadData->dimension[var][1]);
@@ -523,13 +523,14 @@ void MatrixWidget::matrixBoxSlot(int)
 					resultTable->setText(c2,c1,formatOutput(matrix[effIndex],&pref));
 				}
 			}
+			free(matrix);
 		}
 		else if(threadData->dimension[var][0]!=1)
 		{
-			size2Label->setText("Type: Vector");
-			label1->setText("Size:");
+			size2Label->setText(MATRIXWIDGETC_STR13);
+			label1->setText(MATRIXWIDGETC_STR14);
 			input1->setText(QString::number(threadData->dimension[var][0]));
-			label2->setText("Absolute:");
+			label2->setText(MATRIXWIDGETC_STR15);
 			num=0.0;
 			for(int c=0; c<threadData->dimension[var][0] && c<threadData->numlen[var]; c++)
 				num+=threadData->vars[var][c].fval.real()*threadData->vars[var][c].fval.real();
@@ -540,8 +541,8 @@ void MatrixWidget::matrixBoxSlot(int)
 			resultTable->setNumCols(0);
 		}
 		else {
-			size2Label->setText("Type: Scalar");
-			label1->setText("Absolute:");
+			size2Label->setText(MATRIXWIDGETC_STR16);
+			label1->setText(MATRIXWIDGETC_STR15);
 			input1->setText(formatOutput(fabsl(threadData->vars[var][0].fval.real()),&pref));
 			label2->setText("");
 			input2->setText("");
@@ -564,7 +565,7 @@ void MatrixWidget::vectorBoxSlot(int)
 		if(vectorBox->currentItem()-1==matrixBox->currentItem())
 		{
 			vectorBox->setCurrentItem(0);
-			WarningBox("Can't choose the same variable twice!\nChoose a matrix,\nor a matrix and a vector\nto insert data");
+			WarningBox(MATRIXWIDGETC_STR17);
 		}
 
 		if(vectorBox->currentItem()!=0)
@@ -586,11 +587,11 @@ void MatrixWidget::size1BoxSlot(int newsize)
 			if(threadData->dimension[matrixBox->currentItem()][0]==newsize &&threadData->dimension[matrixBox->currentItem()][1]==newsize+1)
 			{
 				calcButton->setEnabled(true);
-				size2Label->setText("Insert data \nand press calculate button");
+				size2Label->setText( MATRIXWIDGETC_STR18);
 			}
 			else {
 				calcButton->setEnabled(false);
-				size2Label->setText("Press set button to adjust size");
+				size2Label->setText(MATRIXWIDGETC_STR19);
 			}
 		}
 		else
@@ -601,11 +602,11 @@ void MatrixWidget::size1BoxSlot(int newsize)
 				threadData->dimension[vectorBox->currentItem()-1][1]==1)
 			{
 				calcButton->setEnabled(true);
-				size2Label->setText("Insert data \nand press calculate button");
+				size2Label->setText(MATRIXWIDGETC_STR20);
 			}
 			else {
 				calcButton->setEnabled(false);
-				size2Label->setText("Press set button to adjust size");
+				size2Label->setText(MATRIXWIDGETC_STR21);
 			}
 		}
 	}
@@ -650,7 +651,7 @@ void MatrixWidget::typeBoxSlot(int index)
 			case 3:				//rotate x
 				size1Box->setMinValue(2);
 				size1Box->setMaxValue(3);
-				label1->setText("x angle");
+				label1->setText(MATRIXWIDGETC_STR22);
 				label1->show();
 				label2->hide();
 				label3->hide();
@@ -661,7 +662,7 @@ void MatrixWidget::typeBoxSlot(int index)
 			case 4:				//rotate y
 				size1Box->setMinValue(3);
 				size1Box->setMaxValue(3);
-				label1->setText("y angle");
+				label1->setText(MATRIXWIDGETC_STR23);
 				label1->show();
 				label2->hide();
 				label3->hide();
@@ -672,7 +673,7 @@ void MatrixWidget::typeBoxSlot(int index)
 			case 5:				//rotate z
 				size1Box->setMinValue(3);
 				size1Box->setMaxValue(3);
-				label1->setText("z angle");
+				label1->setText(MATRIXWIDGETC_STR24);
 				label1->show();
 				label2->hide();
 				label3->hide();
@@ -683,9 +684,9 @@ void MatrixWidget::typeBoxSlot(int index)
 			case 6:				//scale
 				size1Box->setMinValue(2);
 				size1Box->setMaxValue(3);
-				label1->setText("x scale");
-				label2->setText("y scale");
-				label3->setText("z scale");
+				label1->setText(MATRIXWIDGETC_STR25);
+				label2->setText(MATRIXWIDGETC_STR26);
+				label3->setText(MATRIXWIDGETC_STR27);
 				label1->show();
 				label2->show();
 				label3->show();
@@ -718,9 +719,7 @@ void MatrixWidget::calcButtonSlot()
 		case MATLSE:
 		{
 			int size=size1Box->value(),effSrcIndex,effDestIndex;
-			perror("size: "+QString::number(size));
 			int matVar=matrixBox->currentItem(),vecVar=vectorBox->currentItem()-1;
-			perror("matVar: "+QString::number(matVar)+"vecVar: "+QString::number(vecVar));
 			long double *matrix=(long double*)malloc(sizeof(long double)*size*(size+1));
 			for(int c1=0; c1<size; c1++)
 			{
@@ -758,8 +757,8 @@ void MatrixWidget::calcButtonSlot()
 						resultTable->setText(c2,c3,formatOutput(matrix[c3*size+c2],&pref));
 				}
 				if(matrix[size*size+size-1]==0.0)
-					size2Label->setText("More than one result found\nShowing matrix");
-				else size2Label->setText("No results found\nShowing matrix");
+					size2Label->setText(MATRIXWIDGETC_STR28);
+				else size2Label->setText(MATRIXWIDGETC_STR29);
 			}
 			else {
 				long double *results=(long double*)malloc(sizeof(long double)*size);
@@ -775,7 +774,7 @@ void MatrixWidget::calcButtonSlot()
 					resultTable->setText(c,0,formatOutput(results[c],&pref));
 				}
 				free(results);
-				size2Label->setText("Showing result Vector");
+				size2Label->setText(MATRIXWIDGETC_STR30);
 			}
 			
 			for(int c=0; c<resultTable->numCols(); c++)
@@ -937,7 +936,7 @@ void MatrixWidget::calcButtonSlot()
 			
 			if(threadData->dimension[var][0]!=threadData->dimension[var][1])
 			{
-				size2Label->setText("Number of rows of matrix must \nbe equal to number of columns.");
+				size2Label->setText(MATRIXWIDGETC_STR31);
 				resultTable->setNumRows(1);
 				resultTable->setNumCols(1);
 				setHeader(resultTable);
@@ -963,7 +962,7 @@ void MatrixWidget::calcButtonSlot()
 			mainDet=gauss(size,size,matrix);
 			if(mainDet==0.0)
 			{
-				size2Label->setText("Can't calculate inverse matrix.\nDeterminant is equal 0.");
+				size2Label->setText(MATRIXWIDGETC_STR32);
 				resultTable->setNumRows(1);
 				resultTable->setNumCols(1);
 				setHeader(resultTable);

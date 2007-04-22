@@ -44,7 +44,7 @@ void TableWidget::setPref(Preferences p)
 	else if(pref.tableType==TABLE3D)
 		typeBox->setCurrentText(TABLEH_STR7);
 	else if(pref.tableType==TABLECOMPLEX)
-		typeBox->setCurrentText("Complex");
+		typeBox->setCurrentText(TABLEH_STR9);
 	
 	
 	outputTable->setNumRows(pref.tableXSteps);
@@ -121,7 +121,7 @@ void TableWidget::calculateButtonSlot()
 	
 	if(pref.tableType==TABLENORMAL)
 	{
-		
+		vars[0]=pref.tableAValue;
 		for(int c=0; c<20;c++)
 		{
 			if(pref.functionTypes[c]==GRAPHSTD &&pref.activeFunctions[c])
@@ -133,7 +133,6 @@ void TableWidget::calculateButtonSlot()
 				
 				for(int c=0; c<pref.tableXSteps;c++)
 				{
-					perror("value: "+QString::number(c));
 					vars[23]=vertValues[c];
 					outputTable->setText(c,outputTable->numCols()-1,formatOutput(ca.calc(),&pref));
 				}
@@ -142,6 +141,7 @@ void TableWidget::calculateButtonSlot()
 	}
 	else if(pref.tableType==TABLEPOLAR)
 	{
+		vars[0]=pref.tableAValue;
 		for(int c=0; c<20;c++)
 		{
 			if(pref.functionTypes[c]==GRAPHPOLAR &&pref.activeFunctions[c])
@@ -160,6 +160,7 @@ void TableWidget::calculateButtonSlot()
 	}
 	else if(pref.tableType==TABLEPARAMETER)
 	{
+		vars[0]=pref.tableAValue;
 		for(int c=0; c<20;c++)
 		{
 			if(pref.functionTypes[c]==GRAPHPARAMETER &&pref.activeFunctions[c])
@@ -182,6 +183,7 @@ void TableWidget::calculateButtonSlot()
 	}
 	else if(pref.tableType==TABLEINEQUAITY)
 	{
+		vars[0]=pref.tableAValue;
 		for(int c=0; c<20;c++)
 		{
 			if((pref.functionTypes[c]==GRAPHIEGE || 
@@ -203,6 +205,7 @@ void TableWidget::calculateButtonSlot()
 	}
 	else if(pref.tableType==TABLE3D)  
 	{
+		vars[0]=pref.tableAValue;
 		for(int c=0; c<20;c++)
 		{
 			if(pref.functionTypes[c]==GRAPH3D &&pref.activeFunctions[c])
@@ -226,6 +229,7 @@ void TableWidget::calculateButtonSlot()
 	}
 	else if(pref.tableType==TABLECOMPLEX)
 	{
+		threadData->vars[0][0].fval=Complex(pref.tableAValue);
 		bool complexPref=pref.complex;
 		pref.complex=true;
 		for(int c=0; c<20;c++)
@@ -235,11 +239,16 @@ void TableWidget::calculateButtonSlot()
 				outputTable->setNumCols(outputTable->numCols()+1);
 				horzHeader->setLabel(outputTable->numCols()-1,"F"+QString::number(c+1)+"(z)");
 				char*cleanString=checkString(pref.functions[c],&pref);
+				if(cleanString==NULL || strlen(cleanString)<=0)
+				{
+					for(int c=0; c<pref.tableXSteps; c++)
+						outputTable->setText(c,outputTable->numCols()-1,"nan");
+					continue;
+				}
 				Script ca(NULL,cleanString,&pref,vars,threadData);
 				threadData->vars[25][0].type=NFLOAT;
 				for(int c=0; c<pref.tableXSteps;c++)
 				{
-					perror("value: "+QString::number(c));
 					threadData->vars[25][0].fval=Complex(vertValues[c]);
 					outputTable->setText(c,outputTable->numCols()-1,formatOutput(ca.exec(),&pref));
 				}
@@ -286,7 +295,7 @@ void TableWidget::typeBoxSlot(const QString&str)
 		pref.tableType=TABLEINEQUAITY;
 	else if(str==TABLEH_STR7)
 		pref.tableType=TABLE3D;
-	else if(str=="Complex")
+	else if(str==TABLEH_STR9)
 		pref.tableType=TABLECOMPLEX;
 	emit prefChange(pref);
 }
@@ -380,11 +389,10 @@ void TableWidget::horzHeaderSlot(int index)
 		return;
 	index=index%pref.tableZSteps;
 	QString input = QInputDialog::getText(
-			"Extcalc - Table", "Enter column value "+QString::number(index+1)+":", QLineEdit::Normal,
+			TABLEH_STR10, TABLEH_STR11+QString::number(index+1)+":", QLineEdit::Normal,
 	QString::null, &ok, this );
 	if ( ok && input.length()>0 )
 	{
-		perror("horzIndex "+QString::number(index));
 		horzValues[index]=runCalc(input,&pref,vars);
 		calculateButtonSlot();
 	}
@@ -395,7 +403,7 @@ void TableWidget::vertHeaderSlot(int index)
 {
 	bool ok;
 	QString input = QInputDialog::getText(
-			"Extcalc - Table", "Enter row value "+QString::number(index+1)+":", QLineEdit::Normal,
+			TABLEH_STR10, TABLEH_STR12+QString::number(index+1)+":", QLineEdit::Normal,
 	QString::null, &ok, this );
 	if ( ok && input.length()>0 )
 	{

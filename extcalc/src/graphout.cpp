@@ -367,9 +367,6 @@ GLuint GraphOutput::draw3dAxes()
 		glVertex3f(xAxes+xSize*-0.015,yAxes,pref.zmax-zSize*0.015);
 		glVertex3f(xAxes,yAxes,pref.zmax);
 	}
-	
-
-
 
 	glEnd();	
 	
@@ -930,7 +927,6 @@ void GraphOutput::process3dFunction(QString function)
 	func = checkString(function,&pref);
 
 
-
 	double xStart,xStep,zStart,zStep;
 	xStart=pref.xmin;
 	zStart=pref.zmin;
@@ -1332,7 +1328,7 @@ void GraphOutput::paintGL()
 			glLoadIdentity();
 			glScalef(20.0/xSize,20.0/ySize,1.0f);
 			glTranslatef((pref.xmin+pref.xmax)*-0.5f,(pref.ymin+pref.ymax)*-0.5,0.0f);
-			glDisable(GL_DEPTH_TEST);
+		//	glDisable(GL_DEPTH_TEST);
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
 			glFrustum(-10.0,10.0,-10.0,10.0,1.0,100.0);
@@ -2394,11 +2390,11 @@ void GraphOutput::draw3dZLine(double x,double y)
 	glEnd();
 	glEndList();
 	additionalObjects.NewItem(list);
-	repaint();	
-	
+	repaint();
 	
 }
-	
+
+
 void GraphOutput::removeLines()
 {
 	while(additionalObjects.GetLen() > 0)

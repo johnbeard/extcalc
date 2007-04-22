@@ -61,7 +61,7 @@ public:
 		typeBox->insertItem(TABLEH_STR5);
 		typeBox->insertItem(TABLEH_STR6);
 		typeBox->insertItem(TABLEH_STR7);
-		typeBox->insertItem("Complex");
+		typeBox->insertItem(TABLEH_STR9);
 		
 		QObject::connect(standardButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));

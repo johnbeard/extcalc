@@ -1,7 +1,7 @@
 /****************************************************************************
 ** MatrixWidget meta object code from reading C++ file 'matrixwidget.h'
 **
-** Created: Sat Mar 31 20:27:49 2007
+** Created: Sun Apr 22 05:26:31 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!

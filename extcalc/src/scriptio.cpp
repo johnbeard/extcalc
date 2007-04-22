@@ -54,6 +54,7 @@ void ScriptIOWidget::killSlot()
 			if(pref.clearScriptMemory)
 				clearMemSlot();
 		}
+		setTextMode(true);
 	}
 }
 
@@ -69,92 +70,100 @@ void ScriptIOWidget::clearMemSlot()
 
 void ScriptIOWidget::paintEvent(QPaintEvent*)
 {
-	buffer->fill();
-	QPainter p;
-	p.begin(buffer);
-	p.setFont(*drawFont);
-	p.setBackgroundMode(Qt::OpaqueMode);
-	int lineMemLen=lines.GetLen();
-	int scrollbarPos;
-	
-	if(inputMode==IMSCRIPTING)
+	if(textMode)
 	{
-		scrollbarPos=lineMemLen-lineNum;
-		for(int c=scrollbarPos; c<scrollbarPos+lineNum; c++)
-		p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c]);
-	}
-	else {
-		if(inputMode!=IMDEFAULT)
+		buffer->fill();
+		QPainter p;
+		p.begin(buffer);
+		p.setFont(*drawFont);
+		p.setBackgroundMode(Qt::OpaqueMode);
+		int lineMemLen=lines.GetLen();
+		int scrollbarPos;
+		
+		if(inputMode==IMSCRIPTING)
+		{
 			scrollbarPos=lineMemLen-lineNum;
-		else scrollbarPos=scrollBar->value();
-		
-		int startRow,startLine,endRow,endLine;
-		if(selectStartLine> selectEndLine || selectStartLine==selectEndLine && selectStartRow>selectEndRow)
-		{
-			startRow=selectEndRow;
-			startLine=selectEndLine;
-			endRow=selectStartRow;
-			endLine=selectStartLine;
+			for(int c=scrollbarPos; c<scrollbarPos+lineNum; c++)
+			p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c]);
 		}
-		else{
-			startRow=selectStartRow;
-			startLine=selectStartLine;
-			endRow=selectEndRow;
-			endLine=selectEndLine;
-		}
-		if(startLine<scrollbarPos && endLine>=scrollbarPos)
-		{
-			p.setBackgroundColor(QColor(0,0,0));
-			p.setPen(QColor(255,255,255));
-		}
-		
-		for(int c=scrollbarPos; c<scrollbarPos+lineNum; c++)
-		{
-			if(c!=startLine &&c!=endLine)
-				p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c]);
-			else if(startLine==endLine)
+		else {
+			if(inputMode!=IMDEFAULT)
+				scrollbarPos=lineMemLen-lineNum;
+			else scrollbarPos=scrollBar->value();
+			
+			int startRow,startLine,endRow,endLine;
+			if(selectStartLine> selectEndLine || selectStartLine==selectEndLine && selectStartRow>selectEndRow)
 			{
-				p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c].left(startRow));
+				startRow=selectEndRow;
+				startLine=selectEndLine;
+				endRow=selectStartRow;
+				endLine=selectStartLine;
+			}
+			else{
+				startRow=selectStartRow;
+				startLine=selectStartLine;
+				endRow=selectEndRow;
+				endLine=selectEndLine;
+			}
+			if(startLine<scrollbarPos && endLine>=scrollbarPos)
+			{
 				p.setBackgroundColor(QColor(0,0,0));
 				p.setPen(QColor(255,255,255));
-				p.drawText(startRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].mid(startRow,startRow-endRow));
-				p.setBackgroundColor(QColor(255,255,255));
-				p.setPen(QColor(0,0,0));
-				p.drawText(endRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].right(lines[c].length()-endRow));
-	
 			}
-			else {
-				
-				if(c==startLine)
+			
+			for(int c=scrollbarPos; c<scrollbarPos+lineNum; c++)
+			{
+				if(c!=startLine &&c!=endLine)
+					p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c]);
+				else if(startLine==endLine)
 				{
 					p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c].left(startRow));
 					p.setBackgroundColor(QColor(0,0,0));
 					p.setPen(QColor(255,255,255));
-					p.drawText(startRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].right(lines[c].length()-startRow));
-				}
-				if(c==endLine)
-				{
-					p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c].left(endRow));
+					p.drawText(startRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].mid(startRow,startRow-endRow));
 					p.setBackgroundColor(QColor(255,255,255));
 					p.setPen(QColor(0,0,0));
 					p.drawText(endRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].right(lines[c].length()-endRow));
+		
+				}
+				else {
+					
+					if(c==startLine)
+					{
+						p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c].left(startRow));
+						p.setBackgroundColor(QColor(0,0,0));
+						p.setPen(QColor(255,255,255));
+						p.drawText(startRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].right(lines[c].length()-startRow));
+					}
+					if(c==endLine)
+					{
+						p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c].left(endRow));
+						p.setBackgroundColor(QColor(255,255,255));
+						p.setPen(QColor(0,0,0));
+						p.drawText(endRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].right(lines[c].length()-endRow));
+					}
 				}
 			}
 		}
+	
+		
+	
+	
+		
+		
+		if((hasFocus() && inputMode==IMDEFAULT) || inputMode==IMGETLINE)
+			p.drawLine(charWidth*cursorX,charHeight*(cursorY-scrollbarPos),charWidth*cursorX,charHeight*(cursorY+1-scrollbarPos));
+	
+		p.end();
+		p.begin(this);
+		p.drawPixmap(20,50,*buffer);
+		p.end();
 	}
+	else {
+		
 
-	
-
-
-	
-	
-	if((hasFocus() && inputMode==IMDEFAULT) || inputMode==IMGETLINE)
-		p.drawLine(charWidth*cursorX,charHeight*(cursorY-scrollbarPos),charWidth*cursorX,charHeight*(cursorY+1-scrollbarPos));
-
-	p.end();
-	p.begin(this);
-	p.drawPixmap(20,50,*buffer);
-	p.end();
+		glWindow->repaint(true);
+	}
 
 }
 
@@ -164,6 +173,39 @@ void ScriptIOWidget::resizeEvent(QResizeEvent*)
 {
 	int width=geometry().right()-geometry().left();
 	int height=geometry().bottom()-geometry().top();
+	
+	
+
+	/*some testing
+	double plbd[3]={-5.0,-5.0,-5.0},prbd[3]={ 5.0,-5.0,-5.0},prfd[3]={ 5.0,-5.0, 5.0},plfd[3]={-5.0,-5.0, 5.0};
+	double plbu[3]={-5.0, 5.0,-5.0},prbu[3]={ 5.0, 5.0,-5.0},prfu[3]={ 5.0, 5.0, 5.0},plfu[3]={-5.0, 5.0, 5.0};
+	
+	glWindow->clearAllLists();
+	int num=glWindow->startList();
+	glWindow->setDrawColor(QColor(255,0,0));
+	glWindow->drawPolygon(plbd,prbd,prbu);
+	glWindow->drawPolygon(plbd,prbu,plbu);
+	glWindow->setDrawColor(QColor(255,255,0));
+	glWindow->drawPolygon(plfd,prfd,prfu);
+	glWindow->drawPolygon(plfd,prfu,plfu);
+	
+	glWindow->setDrawColor(QColor(0,255,0));
+	glWindow->drawPolygon(plfd,plbd,plbu);
+	glWindow->drawPolygon(plfd,plbu,plfu);
+	glWindow->setDrawColor(QColor(255,0,255));
+	glWindow->drawPolygon(prfd,prbd,prbu);
+	glWindow->drawPolygon(prfd,prbu,prfu);
+	
+	glWindow->setDrawColor(QColor(0,0,255));
+	glWindow->drawPolygon(plfd,prfd,prbd);
+	glWindow->drawPolygon(plfd,prbd,plbd);
+	glWindow->setDrawColor(QColor(0,255,255));
+	glWindow->drawPolygon(plfu,prfu,prbu);
+	glWindow->drawPolygon(plfu,prbu,plbu);
+	glWindow->endList();
+	glWindow->enableList(num);
+	
+*/	
 
 	if(maximized)
 	{
@@ -171,8 +213,8 @@ void ScriptIOWidget::resizeEvent(QResizeEvent*)
 		killButton->setGeometry(110,height-45,90,35);
 		runButton->setGeometry(210,height-45,90,35);
 		if(inputMode==IMDEFAULT)
-			scrollBar->setGeometry(width-50,50,20,height-100);
-		ioFieldWidth=width-50;
+			scrollBar->setGeometry(width-40,50,20,height-100);
+		ioFieldWidth=width-40;
 		ioFieldHeight=height-100;
 	}
 	else {
@@ -185,6 +227,18 @@ void ScriptIOWidget::resizeEvent(QResizeEvent*)
 			scrollBar->setGeometry(width-40,50,20,height-290);
 		ioFieldWidth=width-40;
 		ioFieldHeight=height-290;
+	}
+	if(!textMode)
+	{
+		int glWidth=ioFieldWidth,glHeight=ioFieldHeight;
+		if(autosize)
+		{
+			if(glWidth>glHeight)
+				glWidth=glHeight;
+			else glHeight=glWidth;
+		}
+				
+		glWindow->setGeometry(10+(width-20-glWidth)/2,50,glWidth,glHeight);
 	}
 	if(inputMode==IMDEFAULT)
 		ioFieldWidth-=20;
@@ -406,7 +460,7 @@ void ScriptIOWidget::customEvent(QCustomEvent*ev)
 	threadData->eventCount--;
 	if(scriptExec && script!=NULL)
 	{
-//		perror("customEvent: "+QString::number(pthread_self()));
+//		perror("customEvent: "+QString::number(ev->type())+" "+QString::number(pthread_self()));
 		switch(ev->type())
 		{
 			case SIGPRINT:
@@ -423,6 +477,126 @@ void ScriptIOWidget::customEvent(QCustomEvent*ev)
 				free(ev->data());
 				break;
 			}
+			case SIGCALLLIST:
+			{
+				int listNum;
+				memcpy(&listNum,ev->data(),sizeof(int));
+				free(ev->data());
+				glWindow->scrCallList(listNum);
+				break;
+			}
+			case SIGSTARTLIST:
+			{
+				glWindow->scrStartList();
+				break;
+			}
+			case SIGENDLIST:
+			{
+				int index=glWindow->scrEndList();
+				int *listData=(int*)malloc(sizeof(int));
+				*listData=index;
+				threadData->data=listData;
+				break;
+			}
+			case SIGGRAPHSHOW:
+			{
+				glWindow->repaint();
+				break;
+			}
+			case SIGGRAPHCLEAR:
+			{
+				glWindow->scrClear();
+				break;
+			}
+			case SIGGRAPHEND:
+			{
+				glWindow->scrEnd();
+				break;
+			}
+			case SIGGRAPHBEGIN:
+			{
+
+				int num=*((int*)ev->data());
+				switch(num)
+				{
+					case 0:
+						glWindow->scrBegin(GL_POINTS);
+						break;
+					case 1:
+						glWindow->scrBegin(GL_LINES);
+						break;
+					case 2:
+						glWindow->scrBegin(GL_LINE_STRIP);
+						break;
+					case 3:
+						glWindow->scrBegin(GL_LINE_LOOP);
+						break;
+					case 4:
+						glWindow->scrBegin(GL_TRIANGLES);
+						break;
+					case 5:
+						glWindow->scrBegin(GL_TRIANGLE_STRIP);
+						break;
+					case 6:
+						glWindow->scrBegin(GL_TRIANGLE_FAN);
+						break;
+					case 7:
+						glWindow->scrBegin(GL_QUADS);
+						break;
+					case 8:
+						glWindow->scrBegin(GL_QUAD_STRIP);
+						break;
+					default:
+						glWindow->scrBegin(GL_POLYGON);
+						break;
+				}
+				
+				free(ev->data());
+				break;
+			}
+			case SIGGRAPHVERTEX:
+			{
+				glWindow->scrVertex(((double*)ev->data())[0],((double*)ev->data())[1],((double*)ev->data())[2]);
+				free(ev->data());
+				break;
+			}
+			case SIGGRAPHCOLOR:
+			{
+				glWindow->scrColor(((int*)ev->data())[0],((int*)ev->data())[1],((int*)ev->data())[2]);
+				free(ev->data());
+				break;
+			}
+			case SIGGRAPHROTATE:
+			{
+				glWindow->scrRotate(((double*)ev->data())[3],((double*)ev->data())[0],((double*)ev->data())[1],((double*)ev->data())[2]);
+				free(ev->data());
+				break;
+			}
+			case SIGIDENTITY:
+			{
+				glWindow->scrIdentity();
+				break;
+			}
+			case SIGGRAPHSCALE:
+			{
+				glWindow->scrScale(((double*)ev->data())[0],((double*)ev->data())[1],((double*)ev->data())[2]);
+				free(ev->data());
+				break;
+			}
+			case SIGGRAPHTRANSLATE:
+			{
+				glWindow->scrTranslate(((double*)ev->data())[0],((double*)ev->data())[1],((double*)ev->data())[2]);
+				free(ev->data());
+				break;
+			}
+			case SIGGRAPHTEXT:
+			{
+				int x=((int*)ev->data())[0],y=((int*)ev->data())[1];
+				glWindow->scrText(x,y,&((char*)ev->data())[2*sizeof(int)]);
+				free(ev->data());
+				break;
+			}
+					
 			case SIGCLEARTEXT:
 			{
 				
@@ -510,7 +684,6 @@ void ScriptIOWidget::customEvent(QCustomEvent*ev)
 				if(pos!=-1)
 					path=path.right(path.length()-pos-1);
 				path=pref.scriptPath+"/"+pref.dataDirName+"/"+path;
-				
 
 				char*fileData;
 				struct stat fileStat;
@@ -599,6 +772,7 @@ void ScriptIOWidget::customEvent(QCustomEvent*ev)
 			}
 			case SIGFINISHED:		//script stopped
 			{
+				setTextMode(true);
 				gettimeofday(&currentTime,NULL);
 				int secs=currentTime.tv_sec-startTime.tv_sec;
 				int usecs=currentTime.tv_usec-startTime.tv_usec;
@@ -879,6 +1053,7 @@ void ScriptIOWidget::runScript(QString*code)
 	searchScripts(code);
 	countDifference=0;
 	initDebugging(code);
+	glModeRequest=false;
 	int ret=preferencesPreprocessor(code,&runningPref);
 
 	if(ret!=0)
@@ -902,6 +1077,8 @@ void ScriptIOWidget::runScript(QString*code)
 				return;
 		}
 	}
+	if(glModeRequest)
+		glWindow->setPref(runningPref);
 
 
 	char*cleanString=checkString(*code,&runningPref);
@@ -955,7 +1132,10 @@ void ScriptIOWidget::runSlot()
 
 	killButton->setEnabled(true);
 	scrollBar->hide();
+	if(glModeRequest)
+		setTextMode(false);
 	resizeEvent(NULL);
+
 	gettimeofday(&drawTime,NULL);
 //	t->start(timerInterval);
 	gettimeofday(&startTime,NULL);
@@ -1194,6 +1374,24 @@ int ScriptIOWidget::preferencesPreprocessor(QString *code,Preferences*pref)
 						pref->outputLength=num;
 					else return PPINVALIDARGUMENT;
 				}
+				else if(configLine=="gl")
+					glModeRequest=true;
+				else if(configLine=="rasteron")
+					pref->raster=true;
+				else if(configLine=="rasteroff")
+					pref->raster=false;
+				else if(configLine=="labelson")
+					pref->label=true;
+				else if(configLine=="labelsoff")
+					pref->label=false;
+				else if(configLine=="axeson")
+					pref->axis=true;
+				else if(configLine=="axesoff")
+					pref->axis=false;
+				else if(configLine=="autoscaleon")
+					autosize=true;
+				else if(configLine=="autoscaleoff")
+					autosize=false;
 				else return PPINVALIDPREF;
 			}
 		}
@@ -1320,7 +1518,6 @@ void ScriptIOWidget::contextMenuSlot(int item)
 					repaint(20,50,ioFieldWidth,ioFieldHeight,false);
 				}
 			}
-				
 			break;
 		}
 		case EDITCUT:
@@ -1335,6 +1532,289 @@ void ScriptIOWidget::contextMenuSlot(int item)
 			break;
 	}
 }
+
+void ScriptIOWidget::setTextMode(bool on)
+{
+	if(on)
+	{
+		textMode=true;
+		glWindow->hide();
+		repaint(true);
+	}
+	else {
+		textMode=false;
+		glWindow->show();
+		glWindow->scrReset();
+		glWindow->resetRotation();
+		resizeEvent(NULL);
+		repaint(true);
+		
+	}
+}
+
+
+GLuint ScriptGL::draw3dAxes()
+{
+	
+	double xSize=pref.xmax-pref.xmin,ySize=pref.ymax-pref.ymin,zSize=pref.zmax-pref.zmin;
+	int xSteps=(int)(xSize/pref.rasterSizeX);
+	if(xSteps>200)
+		pref.rasterSizeX=xSize/200;
+	int ySteps=(int)(ySize/pref.rasterSizeY);
+	if(ySteps>200)
+		pref.rasterSizeY=ySize/200;
+	int zSteps=(int)(zSize/pref.rasterSizeZ);
+	if(zSteps>200)
+		pref.rasterSizeZ=zSize/200;
+	GLuint list;
+
+	list = glGenLists( 1 );
+	glEnable(GL_DEPTH_TEST);
+	glNewList( list, GL_COMPILE );
+	
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+		
+	glBegin(GL_LINES);
+	if(pref.raster)
+	{
+		qglColor( QColor(220,220,220) );
+		for(float c=pref.xmin-fmod(pref.xmin,pref.rasterSizeX)+pref.rasterSizeX; c<pref.xmax; c+=pref.rasterSizeX)		
+		{
+			glVertex3f(c,pref.ymin,pref.zmax);//back side
+			glVertex3f(c,pref.ymax,pref.zmax);
+			glVertex3f(c,pref.ymin,pref.zmin);// bottom side
+			glVertex3f(c,pref.ymin,pref.zmax);
+		}
+		for(float c=pref.ymin-fmod(pref.ymin,pref.rasterSizeY)+pref.rasterSizeY; c<pref.ymax; c+=pref.rasterSizeY)			
+		{
+			glVertex3f(pref.xmin,c,pref.zmax);//back side
+			glVertex3f(pref.xmax,c,pref.zmax);
+			glVertex3f(pref.xmin,c,pref.zmin);//left side
+			glVertex3f(pref.xmin,c,pref.zmax);
+		}
+
+		for(float c=pref.zmin-fmod(pref.zmin,pref.rasterSizeZ)+pref.rasterSizeZ; c<pref.zmax; c+=pref.rasterSizeZ)	
+		{
+			glVertex3f(pref.xmin,pref.ymin,c);// bottom side
+			glVertex3f(pref.xmax,pref.ymin,c);
+			glVertex3f(pref.xmin,pref.ymin,c);//left side
+			glVertex3f(pref.xmin,pref.ymax,c);
+		}
+	}
+	
+	
+	if(pref.axis)
+	{
+		double xAxes=0.0,yAxes=0.0,zAxes=0.0;
+		if(pref.xmin > 0.0)
+			xAxes=pref.xmin;
+		else if(pref.xmax < 0.0)
+			xAxes=pref.xmax;
+		if(pref.ymin > 0.0)
+			yAxes=pref.ymin;
+		else if(pref.ymax < 0.0)
+			yAxes=pref.ymax;
+		if(pref.zmin > 0.0)
+			zAxes=pref.zmin;
+		else if(pref.xmax < 0.0)
+			zAxes=pref.zmax;
+		
+		qglColor( QColor(150,150,150) );
+		glVertex3f(pref.xmin,yAxes,zAxes);
+		glVertex3f(pref.xmax,yAxes,zAxes);
+		
+		glVertex3f(xAxes,pref.ymin,zAxes);
+		glVertex3f(xAxes,pref.ymax,zAxes);
+		
+		glVertex3f(xAxes,yAxes,pref.zmin);
+		glVertex3f(xAxes,yAxes,pref.zmax);
+		
+		glVertex3f(pref.xmax-xSize*0.015,yAxes+ySize*0.015,zAxes);
+		glVertex3f(pref.xmax,yAxes,zAxes);
+		glVertex3f(pref.xmax-xSize*0.015,yAxes+ySize*-0.015,zAxes);
+		glVertex3f(pref.xmax,yAxes,zAxes);
+		
+		glVertex3f(xAxes+xSize*0.015,pref.ymax-ySize*0.015,zAxes);
+		glVertex3f(xAxes,pref.ymax,zAxes);
+		glVertex3f(xAxes+xSize*-0.015,pref.ymax-ySize*0.015,zAxes);
+		glVertex3f(xAxes,pref.ymax,zAxes);
+		
+		glVertex3f(xAxes+xSize*0.015,yAxes,pref.zmax-zSize*0.015);
+		glVertex3f(xAxes,yAxes,pref.zmax);
+		glVertex3f(xAxes+xSize*-0.015,yAxes,pref.zmax-zSize*0.015);
+		glVertex3f(xAxes,yAxes,pref.zmax);
+	}
+	glEnd();	
+	glEndList();
+
+	return list;
+}
+
+
+void ScriptGL::mouseMoveEvent(QMouseEvent*e)
+{
+
+	if(e->state() == Qt::RightButton)
+	{
+		if(unlock)
+		{
+			int moveX=e->x()-mouseX;
+			int moveY=e->y()-mouseY;
+			
+			xRotation+=moveX;
+			yRotation+=moveY;
+			if(xRotation>360)
+				xRotation-=360;
+			if(yRotation>360)
+				yRotation -=360;
+			if(xRotation<0)
+				xRotation+=360;
+			if(yRotation<0)
+				yRotation+=360;
+			repaint();
+		}
+		mouseX=e->x();
+		mouseY=e->y();
+	}
+}
+
+
+void ScriptGL::mousePressEvent(QMouseEvent*e)
+{
+	mouseX=e->x();
+	mouseY=e->y();
+    if(e->stateAfter()==Qt::RightButton)
+			unlock=true;
+}
+
+void ScriptGL::mouseReleaseEvent(QMouseEvent*)
+{
+		unlock=false;
+}
+
+void ScriptGL::wheelEvent(QWheelEvent*e)
+{
+
+		zMove+=e->delta()/120;
+		e->accept();
+		repaint();
+		if(zMove<-27)
+			zMove=-27;
+}
+
+void ScriptGL::initializeGL()
+{
+	if(paintActive)
+		glEnd();
+	if(drawListActive)
+		drawListControl();
+	if(staticListActive)
+	{
+		glEndList();
+		staticListActive=false;
+	}
+	glClearColor( 1.0,1.0,1.0,1.0 ); 
+	if(axes!=0xffffffff)
+		glDeleteLists(axes,1);
+
+	axes=draw3dAxes();
+	scrClear();
+	while(staticLists.GetLen()>0)
+	{
+		glDeleteLists(staticLists[0],1);
+		staticLists.DeleteItem(0);
+	}
+
+	glShadeModel( GL_SMOOTH);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_TEXTURE_2D);
+	glMatrixMode( GL_MODELVIEW );
+}
+
+
+void ScriptGL::resizeGL( int w, int h )
+{
+	glViewport( 0, 0, (GLint)w, (GLint)h );
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+	glFrustum( -10.0, 10.0, -10.0, 10.0, 5.0, 15.0 );
+	glMatrixMode( GL_MODELVIEW );
+}
+
+
+void ScriptGL::paintGL()
+{
+	if(paintActive)
+		return;
+	if(drawListActive)
+		drawListControl();
+
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	
+	glFrustum(-10.0,10.0,-10.0,10.0,1.0,100.0);
+	glScalef(1.0,1.0,-0.05);
+	glTranslatef(0.0,0.0,37.0+(float)zMove);
+	glRotatef(xRotation,0.0f,1.0f,0.0f);
+	glRotatef(yRotation,1.0f,0.0f,0.0f);	
+	glScalef(20.0/(pref.xmax-pref.xmin),20.0/(pref.ymax-pref.ymin),20.0/(pref.zmax-pref.zmin));
+	glTranslatef(((pref.xmax-pref.xmin)/2+pref.xmin)*-1,((pref.ymax-pref.ymin)/2+pref.ymin)*-1,((pref.zmax-pref.zmin)/2+pref.zmin)*-1);
+
+	glCallList(axes);
+
+	if(pref.label)
+	{
+		QFont stdFont("Helvetica");
+		stdFont.setPixelSize(8);
+		double xTrans=(pref.xmax-pref.xmin)/80;
+		double yTrans=(pref.ymax-pref.ymin)/80;
+		double staticX=xTrans,staticY=yTrans;
+		double zTrans=(pref.zmax-pref.zmin)/80;
+		double staticZ=zTrans;
+		if(pref.zmax < zTrans)
+			staticZ=pref.zmax-3*zTrans;
+		else if(pref.zmin > -zTrans)
+			staticZ=pref.zmin+zTrans;
+			
+		if(pref.xmax < xTrans)
+			staticX=pref.xmax-3*xTrans;
+		else if(pref.xmin > -xTrans)
+			staticX=pref.xmin+xTrans;
+		if(pref.ymax < yTrans)
+			staticY=pref.ymax-3*yTrans;
+		else if(pref.ymin > -yTrans)
+			staticY=pref.ymin+yTrans;
+		if(pref.graphType!=GRAPH3D)
+			staticZ=0.0;
+				
+		qglColor( QColor(220,220,220) );
+		for(float c=pref.xmin-fmod(pref.xmin,pref.rasterSizeX)+pref.rasterSizeX; c<pref.xmax; c+=pref.rasterSizeX)
+			renderText(c-xTrans,staticY,staticZ,QString::number(c,'g',3),stdFont);
+		for(float c=pref.ymin-fmod(pref.ymin,pref.rasterSizeY)+pref.rasterSizeY; c<pref.ymax; c+=pref.rasterSizeY)
+			renderText(staticX,c-yTrans,staticZ,QString::number(c,'g',3),stdFont);
+		if(pref.graphType == GRAPH3D)
+		{
+			staticZ=pref.zmin+zTrans;
+			for(float c=pref.zmin-fmod(pref.zmin,pref.rasterSizeZ)+pref.rasterSizeZ; c<pref.zmax; c+=pref.rasterSizeZ)
+				renderText(staticX,staticY,c-zTrans,QString::number(c,'g',3),stdFont);
+		}
+	}
+	glMatrixMode( GL_MODELVIEW );
+	glLoadIdentity();
+	qglColor(QColor(0,0,0));
+	for(int c=0; c<textList.GetLen(); c++)
+		renderText(textList[c].x,textList[c].y,textList[c].text);
+	
+	for(int c=0; c<drawLists.GetLen(); c++)
+		glCallList(drawLists[c]);
+	
+}
+
 
 
 

@@ -13,14 +13,17 @@ void TablePreferences::saveSlot()
 		pref.tableType=TABLEINEQUAITY;
 	else if(typeBox->currentText()==TABLEH_STR7)
 		pref.tableType=TABLE3D;
+	else if(typeBox->currentText()==TABLEH_STR9)
+		pref.tableType=TABLECOMPLEX;
 	else pref.tableType=TABLENORMAL;
 	
 	pref.tableXStart=runCalc(xStart->text(),&pref,vars);
 	pref.tableXEnd=runCalc(xEnd->text(),&pref,vars);
 	pref.tableZStart=runCalc(zStart->text(),&pref,vars);
 	pref.tableZEnd=runCalc(zEnd->text(),&pref,vars);
-	pref.tableXSteps=xStep->text().toInt();
-	pref.tableZSteps=zStep->text().toInt();
+	pref.tableAValue=runCalc(aValue->text(),&pref,vars);
+	pref.tableXSteps=xStep->value();
+	pref.tableZSteps=zStep->value();
 	
 	if(pref.tableXStart==NAN)
 		MessageBox(TABLEPREFC_STR1);
@@ -47,7 +50,6 @@ void TablePreferences::saveSlot()
 
 void TablePreferences::windowActivationChange(bool)
 {
-
 	if(!isActiveWindow())
 	{
 		setActiveWindow();

@@ -178,10 +178,17 @@ void setPref(Preferences newPref)
 	extButtons->setPref(pref);
 	solveWidget->setPref(pref);
 	functionTable->setPref(pref);
+
 	
 
 	resizeEvent(NULL);
 
+}
+
+
+QGLWidget*getShareContext()
+{
+	return (QGLWidget*)graph;
 }
 
 public slots:

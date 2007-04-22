@@ -24,10 +24,10 @@ using namespace std;
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #define VARSFILE ".extcalc/vars.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.7.4\n2007-04-06\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.7.9\n2007-04-22\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.7.4\n6.4.2007\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.7.9\n22.4.2007\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2007\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -216,6 +216,14 @@ using namespace std;
 #define SFWRITE				187
 #define SFAPPEND			188
 #define SFREMOVE			189
+#define SGRAPHLIST			190
+#define SGRAPHCONTROL		191
+#define SGRAPHPAINT			192
+#define SGRAPHVERTEX		193
+#define SGRAPHTEXT			194
+#define SGRAPHCOLOR			195
+#define SGRAPHTRANSFORM		196
+#define SGRAPHIDENTITY		197
 
 #define CALCYVAL			0
 #define CALCZEROS			1
@@ -288,14 +296,21 @@ using namespace std;
 #define SIGFILEWRITE		50008
 #define SIGFILEAPPEND		50009
 #define SIGFILEREMOVE		50010
-#define SIGDRAWPOINT		50011
-#define SIGDRAWLINE			50012
-#define SIGDRAWPOLYGON		50013
-#define SIGDRAWCLEAR		50014
-#define SIGDRAWSTARTLIST	50015
-#define SIGDRAWENDLIST		50016
-#define SIGDRAWCALLLIST		50017
-#define SIGFINISHED			50020
+#define SIGCALLLIST			50011
+#define SIGSTARTLIST		50012
+#define SIGENDLIST			50013
+#define SIGGRAPHSHOW		50014
+#define SIGGRAPHCLEAR		50015
+#define SIGGRAPHEND			50016
+#define SIGGRAPHBEGIN		50017
+#define SIGGRAPHVERTEX		50018
+#define SIGGRAPHTEXT		50019
+#define SIGGRAPHCOLOR		50020
+#define SIGGRAPHROTATE		50021
+#define SIGGRAPHSCALE		50022
+#define SIGGRAPHTRANSLATE	50023
+#define SIGIDENTITY			50024
+#define SIGFINISHED			50030
 
 #define ROOTSTRING			8730
 #define PISTRING			960
@@ -356,6 +371,7 @@ struct Preferences
 	double dynamicStart,dynamicEnd;
 	double nyquistStart,nyquistEnd;
 	double tableXStart,tableXEnd,tableZStart,tableZEnd;
+	double tableAValue;
 	int parameterSteps;
 	int dynamicSteps;
 	int dynamicDelay;
@@ -478,6 +494,8 @@ inline void convertToBool(Number*num);
 #define powl(va,vb) pow(va,vb)
 #define fmodl(va,vb) fmod(va,vb)
 #define strtold(va,vb) strtod(va,vb)
+#define curtl(var) curt(var)
+#define fabsl(var) fabs(var)
 
 #endif
 
