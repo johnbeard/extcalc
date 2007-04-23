@@ -120,3 +120,13 @@ dialogs
 - redesigend script editor
 - added example scripts for matrix and vector arithmetics
 - updated documentation
+
+0.8.0 user interface for matrices and vectors
+- added matrix/vector window
+- added modules for vector/matrix generation and analysis
+- added module for solving linears systems of equations
+- added module for calculation of inverse matrix
+- added script interpreter commands for file usage
+- integrated 3D-graphics window into script console
+- added script commands for OpenGL usage
+- updated table window

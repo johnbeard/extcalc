@@ -10,13 +10,11 @@ void MatrixWidget::resizeEvent(QResizeEvent*)
 	varTable->setGeometry(20,50,width/4-30,height-290);
 	outputTable->setGeometry(width/4+10,50,3*width/4-30,height-290);
 
-	operationBox->setGeometry(320,height-220,95,35);
-	sprodButton->setGeometry(425,height-220,30,35);
-	invertButton->setGeometry(465,height-220,30,35);
-	detButton->setGeometry(505,height-220,30,35);
-	braceOpenButton->setGeometry(545,height-220,30,35);
-	braceCloseButton->setGeometry(585,height-220,30,35);
-	
+	operationBox->setGeometry(320,height-220,145,35);
+	sprodButton->setGeometry(490,height-220,35,35);
+	invertButton->setGeometry(535,height-220,35,35);
+	detButton->setGeometry(580,height-220,35,35);
+
 	switch(state)
 	{
 		case MATCALC:
@@ -359,17 +357,6 @@ void MatrixWidget::detButtonSlot()
 	calcWidget->textInput("det");
 }
 
-void MatrixWidget::braceOpenButtonSlot()
-{
-	calcWidget->setBold(false);
-	calcWidget->textInput("[");
-}
-
-void MatrixWidget::braceCloseButtonSlot()
-{
-	calcWidget->setBold(false);
-	calcWidget->textInput("]");
-}
 
 void MatrixWidget::operationBoxSlot(int index)
 {

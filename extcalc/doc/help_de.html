@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - wissenschaftlicher Taschenrechner </h1>
-  Version 0.7.0
+  Version 0.8.0
   <br>
   <br>
   <h3>Inhalt</h3>
@@ -34,15 +34,15 @@
   <a name="introduction"><h2>1. Einleitung</h2></a>
   Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner. Extcalc kann zum berechen komplizierter mathematischer Ausdr&uuml;cke,
   zum Zeichnen von Funktionsgraphen, und zum Auswerten von Funktionen benutzt werden. Es enth&auml;lt auch eine C-&auml;hnliche Script-Sprache.<br>
-  Diese Hilfe wurde f&uuml;r die Version 0.7.0 von Extcalc geschrieben.
+  Diese Hilfe wurde f&uuml;r die Version 0.8.0 von Extcalc geschrieben.
   <br>
   <br>
   <br>
   <a name="install"><h2>2. Installation</h2></a>
   Dies ist die Beschreibung zur Installation von Extcalc aus dem Quellcode-Paket. Vorkompilierte Pakete m&uuml;ssen mit dem Paketmanager der jeweiligen
   Distribution installiert werden.<br><br>
-  - Paket auspacken (tar -xzf extcalc-0.7.0.tar.gz)<br>
-  - ins Verzeichnis wechseln (cd extcalc-0.7.0)<br>
+  - Paket auspacken (tar -xzf extcalc-0.8.0.tar.gz)<br>
+  - ins Verzeichnis wechseln (cd extcalc-0.8.0)<br>
   - konfigurieren (./configure --enable-language_de)<br>
   - kompilieren (make)<br>
   - root-rechte erlangen (su)<br>
@@ -53,7 +53,7 @@
    
   <a name="use"><h2>3. Bedienung</h2></a>
   Da dies noch eine Enticklungsversion von Extcalc ist, kann sich die Bedienoberfl&auml;che noch
-  stark &auml;ndern. Diese Informationen beziehen sich auf die Version 0.7.0. Mit dem Reiter unter der
+  stark &auml;ndern. Diese Informationen beziehen sich auf die Version 0.8.0. Mit dem Reiter unter der
   Men&uuml;leiste kann man zwischen den einzelnen Komponenten umschalten.Dies sind  ein Taschenrechner, ein Grafik-Fenster
   zum Zeichnen und analysieren verschiedner Typen von Graphen, ein Tabellen-Fenster, ein Script-Editor und eine Script-Konsole zum
   Ausf&uuml;hren von Scripten.
@@ -503,10 +503,10 @@
   m&ouml;glich, dass das Abbrechen-Signal nicht rechtzeitig vom Script empfangen wird. Man muss dann den Abbrechen-Knopf noch einmal dr&uuml;cken, um
   das Programm korrekt zu Beenden.<br>
   <a name="scriptsyntax"><h3>3.4.3 Die Script-Sprache</h3></a>
-  In Version 0.7.0 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. N&auml;here Informationen zu den geplaten
+  In Version 0.8.0 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. N&auml;here Informationen zu den geplaten
   Funktionen finden Sie im <a href="#else">Kapitel 4</a>.<br>
   <h5>Probleme:</h5>
-  In der folgenden Liste sind Probleme aufgef&uuml;hrt, die in der Version 0.6.5 des Script-Interpreters noch vorhanden sind.<br><br>
+  In der folgenden Liste sind Probleme aufgef&uuml;hrt, die im Script-Interpreter noch vorhanden sind.<br><br>
   1. Geschwindigkeit<br>
   Da die Programme von einem Interpreter abgearbeitet werden, laufen diese auch wesentlich langsamer, als kompilierte Programme.
   Der Interpreter wird aber in sp&auml;teren Versionen noch weiter optimiert.<br><br>
@@ -516,12 +516,7 @@
   In dieser Version ist nur ein Teil der geplanten Funktionalit&auml;ten bereits aktiviert. Deshalb ist es nicht m&ouml;glich, komplexe Probleme mit den
   Script-Programmen zu l&ouml;sen. Die Sprache wird in sp&auml;teren Versionen noch so weit wie m&ouml;glich ausgebaut. Sie ist aber trotzdem nur zum L&ouml;sen oder
   automatisieren kleinerer mathematischer Aufgaben da. Komplexe Programme sollten in einer kompletten Programmiersprache wie C geschrieben werden.
-  <br><br>
-  4. Stabilit&auml;t<br>
-  Die Script-Programmiersprache befindet sich wie das gesamte Programm noch in einem fr&uuml;hen Entwicklungsstadium. Deshalb kann hier nicht f&uuml;r die
-  Stabilit&auml;t des Script-Interpreters garantiert werden. Bei einem Script-Interprter ergeben sich durch die Programmierbarkeit leider besonders viele
-  Fehlerquellen. Fehler werden selbstverst&auml;ndlich so schnell wie m&ouml;glich behoben.<br>
-
+  <br>
   <h5>Syntax:</h5>
   Die Syntax der Extcalc Script-Sprache ist der C-Syntax &auml;hnlich.<br>
   Grundregeln:<br>
@@ -638,6 +633,14 @@
   <TR>
   <TD>Matrix*Konstante, Konstante*Matrix</TD>
   <TD>Jedes Element der Matrix wird mit einer Konstante multipliziert.
+  </TD>
+  <TR>
+  <TD>Matrix^-1</TD>
+  <TD>Inverse matrix berechnen
+  </TD>
+    <TR>
+  <TD>det Matrix</TD>
+  <TD>Determinante einer Matrix berechnen
   </TD>
   </TABLE>
   <br>
@@ -815,7 +818,285 @@
   D=(float)C;   //Text kann als Zahl interpretiert werden, D wird auf Zahlenwert gesetzt
   print(D+1);    //Gibt 235.45 aus
   </pre>
+
+
+
+  <LI>readfile<br>
+  Syntax: <br>
+  <pre>
+  readfile( Dateiname );
+  </pre>
+  Liest die Datei mit dem Namen Dateiname und gibt den Inhalt als String zurück.<br>
+  Die Dateien, die gelesen werden sollen, müssen sich im Script-Daten Verzeichnis befinden. Unterverzeichnisse werden
+  nicht untestützt.<br>
+  Dateiname muss vom Typ String sein. Ist dies nicht der Fall, oder existiert die Datei nicht, so wird ein leerer String
+  zurückgegeben.<br><br><br>
   
+  <LI>writefile<br>
+  Syntax: <br>
+  <pre>
+  writefile(Dateiname , Inhalt);
+  </pre>
+  Dieser Befehl schreibt den gegebenen Inhalt in eine Datei mit dem angegebenen Dateinamen.<br>
+  Die Datei wird erstellt, falls sie nicht existiert. Falls sie existiert, wird der Inhalt überschrieben.<br>
+  Der Dateiname muss ein String sein. Wie bei readfile, werden keine Unterverzeichnisse unterstützt.<br>
+  <br><br><br>
+  
+  
+  <LI>appendfile<br>
+  Syntax: <br>
+  <pre>
+  appendfile(Dateiname , Inhalt);
+  </pre>
+  Genauso wie writefile, nur dass der Inhalt der Datei angehängt wird, falls diese schon existiert.<br>
+  Beispiel:
+  <pre>
+  removefile("count.txt");             //Datei löschen, falls sie existiert
+  for(C=0; C&lt;100; C++)              //Schleife von 0 bis 99
+{
+    apendfile("count.txt",C);          //Nummern von 0 bis 99 in Datei schreiben
+    appendfile("count.txt","\n");       //Jede Zahl in einer neuen Zeile
+}
+  </pre>
+  <br><br><br>
+
+  <LI>removefile<br>
+  Syntax: <br>
+  <pre>
+  removefile(Dateiname);
+  </pre>
+  Löscht die Datei mit dem angegebenen Namen aus dem Script-Datenverzeichnis.<br><br><br>
+  
+  
+  <LI>glshow<br>
+  Syntax: <br>
+  <pre>
+  glshow;
+  </pre>
+  Dieser Befehl aktualisiert das GL-Anzeigefenster.<br><br><br>
+  
+  
+  <LI>glclear<br>
+  Syntax: <br>
+  <pre>
+  glclear;
+  </pre>
+  Dieser Befhel löscht das GL-Anzeigefenster<br><br><br>
+  
+  
+  <LI>glbegin<br>
+  Syntax: <br>
+  <pre>
+  glbegin( typ );
+  </pre>
+  Mit diesem Befehl werden Zeichenoperationen begonnen. Er muss auch beim Erstellen von Display-Lists benützt werden.<br>
+  Als Parameter wird die Art der Zeichenoperation angegeben.<br>
+  Die folgenden Typen können ausgewählt werden:<br>
+  points<br>
+  lines<br>
+  linestrip<br>
+  lineloop<br>
+  triangles<br>
+  trianglestrip<br>
+  trianglefan<br>
+  quads<br>
+  quadstrip<br>
+  polygon<br><br>
+
+<br><br><br>
+
+  <LI>glend<br>
+  Syntax: <br>
+  <pre>
+  glend;
+  </pre>
+  Dieser Befehl muss zum Beenden einer Zeichenoperation, die mit glbegin() begonnen wurde, aufgerufen werden.<br><br><br>
+  
+ 
+  <LI>glbeginlist<br>
+  Syntax: <br>
+  <pre>
+  glbeginlist;
+  </pre>
+  Mit diesem Befehl wird eine neue Display-List erstellt. Alle folgenden GL-Befehle werden in dieser Liste abgespeichert.
+  <br><br><br>
+  
+  
+  <LI>glendlist<br>
+  Syntax: <br>
+  <pre>
+  glendlist;
+  </pre>
+  Mit diesem Befehl wird die Aufnahme der Display-List beendet.<br>
+  Der Rückgabewert ist die Listen-ID als Integer.<br>
+  <br><br><br>
+  
+  
+  <LI>glcalllist<br>
+  Syntax: <br>
+  <pre>
+  glcalllist;
+  </pre>
+  Mit diesem Befehl wird eine Display-List aufgerufen und die Zeichenbefehle werden ausgeführt.<br>
+  Die Benutzung von Display-Lists ist wesentlich schneller, als das direkte Zeichnen.<br><br>
+  Example:<br>
+  <pre>
+  glbeginlist;          //Display-List starten
+  glbegin(lines)        //Linen zeichnen starten
+  glpoint(-5,-5,-5);    //Linien-Koordinaten eingeben
+  glpoint(5,5,5);
+  glend;                //Zeichnen beenden
+  glbegin(triangles);   //Dreiecke zeichnen starten
+  glpoint(-5,-5,0);     //Koordinaten setzen
+  glpoint(5,-5,0);
+  glpoint(0,5,0);
+  glend;                //Zeichnen beenden
+  L=glendlist;          //Liste abschließen und Listen-ID abspeichern
+
+  glclear;
+  glmove(0,0,1);        //Objekte verschieben
+  glcalllist(L);        //Liste aufrufen
+  glmove(0,0,-2);       //Objekte nochmal verschieben
+  glcalllist(L);        //Liste noch einmal aufrufen
+  glshow;               //Alles anzeigen
+  </pre>
+
+<br><br><br>
+  
+  <LI>glpoint<br>
+  Syntax: <br>
+  <pre>
+  glpoint(x,y,z);
+  </pre>
+  Mit diesem Befehl werden nach glbegin() die Zeichenkoordinaten angegeben.<br>
+  Die Parameter sind die Punktkoordinaten. Der Datentyp ist float.<br><br><br>
+  
+  
+  <LI>glcolor<br>
+  Syntax: <br>
+  <pre>
+  glcolor(r,g,b);
+  </pre>
+  Mit diesem Befehl wird die Zeichenfarbe gesetzt.<br>
+  Die Parameter sind Ganzzahlen und müssen zwischen 0 und 255 liegen.<br><br><br>
+  
+  
+  <LI>glmove<br>
+  Syntax: <br>
+  <pre>
+  glmove(x,y,z);
+  </pre>
+  Mit diesem Befehl kann ein GL-Objekt verschoben werden.<br>
+  Die Parameter sind die Verschiebekoordinaten als float.<br>
+  Alle GL-Transformationen werden zu einer Transformationsmatrix aufmultipliziert. Dies führt dazu, dass die 
+  letzte Transformation als erstes ausgefürt wird.<br><br><br>
+  
+  
+  <LI>glrotate<br>
+  Syntax: <br>
+  <pre>
+  glrotate(Winkel,x,y,z);
+  </pre>
+  Dies ist der GL-Drehbefehl. Die Parameter sind der Drehwinkel, und die Werte für einen Vektor, der als Drehachse dient.<br>
+  Alle GL-Transformationen werden zu einer Transformationsmatrix aufmultipliziert. Dies führt dazu, dass die 
+  letzte Transformation als erstes ausgefürt wird.<br><br><br>
+  
+  
+  <LI>glscale<br>
+  Syntax: <br>
+  <pre>
+  glscale(x,y,z);
+  </pre>
+  Mit diesem Befehl kann ein GL-Objekt vergrößert und verkleinert werden.<br>
+    Alle GL-Transformationen werden zu einer Transformationsmatrix aufmultipliziert. Dies führt dazu, dass die 
+  letzte Transformation als erstes ausgefürt wird.<br>
+  Beispiel:<br>
+  <pre>
+#config gl              //GL initialisierung
+#config axesoff
+#config rasteroff
+#config labelsoff
+
+glstartlist;            //Dislplay-Liste für einen Würfel erzeugen
+glbegin(quads);
+glpoint(-1,-1,-1);
+glpoint(1,-1,-1);
+glpoint(1,1,-1);
+glpoint(-1,1,-1);
+
+glpoint(-1,-1,1);
+glpoint(1,-1,1);
+glpoint(1,1,1);
+glpoint(-1,1,1);
+
+glpoint(-1,-1,-1);
+glpoint(-1,-1,1);
+glpoint(-1,1,1);
+glpoint(-1,1,-1);
+
+
+glpoint(1,-1,-1);
+glpoint(1,-1,1);
+glpoint(1,1,1);
+glpoint(1,1,-1);
+
+glpoint(-1,-1,-1);
+glpoint(-1,-1,1);
+glpoint(1,-1,1);
+glpoint(1,-1,-1);
+
+glpoint(-1,1,-1);
+glpoint(-1,1,1);
+glpoint(1,1,1);
+glpoint(1,1,-1);
+glend;
+L=glendlist;             //Liste beenden und ID abspeichern
+
+R=0;                     //Drehwinkel
+while(1)
+{
+  R=R+1;
+  glclear;              //Fenster löschen
+                        //In dieser Befehlsreihenfolge rotiert der Würfel um seine eigen Y-Achse, die Kantenlänge ist 4,
+                        //die Drehachse ist bei 12-0-0
+  glscale(4,4,4);       //vergrößern
+  glmove(3,0,0);        //verschieben
+  glrotate(R,0,1,0);    //drehen
+  glcolor(30,30,200);
+  glcalllist(L);
+  
+  glloadidentity;
+                        //In diser Reihenfolge dreht sich der Würfel um den Koordinatenursprung, hat die Kantenlänge 3 und
+                        //den Drehradius 9
+  glscale(3,3,3);       //vergrößern
+  glrotate(R,0,1,0);    //drehen
+  glmove(3,0,0);        //verschieben
+  glcolor(200,30,20);
+  glcalllist(L);
+  glshow;
+  sleep(30000);
+}
+</pre>
+<br><br><br>
+  
+  
+  <LI>glloadidentity<br>
+  Syntax: <br>
+  <pre>
+  glloadidentity;
+  </pre>
+  Mit diesem Befehl werden alle Transformationen zurückgesetzt.<br><br><br>
+  
+  
+  <LI>glstring<br>
+  Syntax: <br>
+  <pre>
+  glstring(x,y,Text);
+  </pre>
+  Dieser Befehl zeigt einen Text im GL-Fenster an den 2D-Koordinaten x,y an.
+  Die Koordinaten werden in Pixeln angegeben, wobei der Koordinatenursprung links oben im Fenster ist.
+  Text kann ein String oder eine Zahl sein (float oder int).
+  <br><br><br>
 
   10. Unterprogramme<br>
   Syntax: <br>
@@ -1062,15 +1343,93 @@
   
   
   <a name="matrixvector"><h2>3.5 Matrix-, Vektorrechnung</h2></a>
-  In Version 0.7.0 von Extcalc werden Matrizen und Vektoren intern bereits vollst&auml;ndig unterst&uuml;tzt.<br>
-  Ein eigenes Fenster f&uuml;r Matrix- und Vektor-Berechungen ist aber noch nicht vorhanden.<br>
-  Damit der Benutzer die neuen Funktionen dennoch benutzen kann, werden Script-Programme mitgeliefert, mit denen jeder Benutzer
-  die neuen Fuktionen benutzen kann. Diese Script-Programme werden beim ersten Start zu den Benutzerdateien kopiert und k&ouml;nnen dann
-  im Script-Editor ausgew&auml;hlt und ausgef&uuml;hrt werden.
+  <img src="matvec.jpg"></img><br><br>
+  Mit dem Matrix/Vektor-Fenster von Extcalc können verschiedenen Matrix- und Vektorberechnungen durchgeführt werden.
+  Das Fenster enthält immer eine Variablen-Liste, in der zu jeder Variable die Größe und der Typ verzeichnet ist.
+  Außerdem wird zur aktuell ausgewählten Variable in der Tabelle der Inhalt angezeigt.<br>
+  Der Speicher, der für die Variablen verwendet wird, ist der selbe wie der Speicher des normalen Rechners.
   <br>
-  Um ein solches Programm zu benutzen, muss es zuerst im Script-Editor ausgew&auml;hlt werden. Das Script wird dann angezeigt.
-  Um es zu laden, muss man im Script-Editor den Ausf&uuml;hren-Knopf dr&uuml;cken. Die Ansicht wechselt dann in die Script-Konsole.
-  Hier kann man das Programm mit dem Ausf&uuml;hren-Knopf starten. Um das Programm zu Beenden, muss man den Abbrechen-Knopf dr&uuml;cken.<br><br>
+  In der Variablen-List kann die Größe einer Variable geändert werden. Wenn man den Inhalt einer Varialbe ändern will,
+  dann kann man die Variable auswählen und in der angezeigten Tabelle den Inhalt eintragen.<br>
+  <br>
+  <h3>Module</h3>
+  Eine Liste der enthaltenen Rechenmodule<br>
+  <h4>Rechner</h4>
+  Dieses Modul hat die gleichen Funktionen wie der Standard-Rechner. Das Rechner-Fenster wird rechts unten eingeblendet.
+  Dort können alle Berechnungen durchgeführt werden, die auch im normalen Rechnerfenster möglich sind.
+  <h4>Lineares Gleichungssystem</h4>
+  Dieses Modul dient zum Lösen von linearen Gleichungssystemen.<br>
+  Es gibt zwei Möglichkeiten, die Parameter der linearen Gleichungen anzugeben.<br>
+  - Nur eine Matrix der Größe n x (n+1) auswählen:<br>
+  Beispiel:<br>
+  Das zu Lösende Gleichungssystem lautet:
+  <pre>
+  4x - 2y  =  9
+ -2x + 5y  = -2
+  </pre>
+  Die Matrix-Größe wäre dann 2 x 3<br>
+  Der Inhalt der Matrix wäre:
+  <pre>
+   4 -2  9
+  -2  5 -2
+  </pre>
+  - Eine Matrix der Größe n x n und einen Vektor der Größe n auswählen:<br>
+  Beispiel mit den selben Gleichungen wie oben:<br>
+  Der Inhalt der 2 x 2 Matrix wäre:
+  <pre>
+   4 -2
+  -2  5
+  </pre>
+  Der Inhalt des Vektors der Größe 2 wäre:
+  <pre>
+   9
+  -2
+  </pre>
+  Die Anzahl der Unbekannten kann in der "Unbekannte"-Box geändert werden. Die Größe von Vektor und Matrix wird beim Drücken des
+  Ok-Knopfes angepasst.<br>
+  Die Tabelle unten rechts zeigt nach dem Drücken des "Berechnen"-Knopfes das Ergebnis an.<br>
+  Im obigen Beispiel wäre die Lösung x=2.25 und y=0.75.<br>
+  Die Tabelle würde folgende Werte zeigen:
+  <pre>
+  2.25
+  0.75
+  </pre>
+  Wenn das Gleichungssystem keine Lösung oder unendlich viele Lösungen hat, dann wird der letzte Schritt des Gauß-Algorithmus,
+  der zur Berechnung verwendet wird, angezeigt.<br>
+  Diese Werte können dann für weitere Berechnungen verwendet werden.<br>
+  <h4>Erstellen</h4>
+  Mit diesem Modul können besondere Matrizen und Vektoren erstellt werden.<br>
+  Zuerst muss immer der Matrix- bzw. Vektor-Typ und die zu verwendende Variable ausgewählt werden.<br>
+  Die folgenden Inhalte können erzeugt werden:<br>
+    <TABLE BORDER>
+  <TR><TH>Typ</TH><TH>Erklärung</TH>
+  <TR>
+  <TD>Einheitsmatrix</TD>
+  <TD>Größen n x n; Hauptdiagonale gleich 1; Alle anderen Elemente gleich 0
+  </TD>
+    <TR>
+  <TD>Nullmatrix</TD>
+  <TD>Größe beliebig; Alle Elemente gleich 0
+  </TD>
+    <TR>
+  <TD>Nullvektor</TD>
+  <TD>Vektor beliebiger Größe; Alle Elemente gleich 0
+  </TD>
+    <TR>
+  <TD>- X-, Y-, Z-Drehmatrix</TD>
+  <TD>Größe 2x2 oder 3x3; Drehmatrix mit dem angegebenen Winkel
+  </TD>
+    <TR>
+  <TD>Skalierungsmatrix</TD>
+  <TD>Größe 2 x 2 oder 3 x 3. Erstellt Skalierungsmatrix mit den gegebenen Parametern
+  </TD>
+  </TABLE>
+
+  <h4>Analysieren</h4>
+  Dieses Modul zeigt einige Informationen über die ausgewählte Variable an.
+  <h4>Inverse Matrix</h4>
+  Die Funktion dieses Moduls entspricht der Rechneroperation X[][]^-1.<br>
+  Die inverse Matrix wird, sofern möglich, berechnet und in der Tabelle angezeigt.<br>
   
   
   
@@ -1135,7 +1494,7 @@
   <br>
   <a name="else"><h2>4. Sonstiges</h2></a>
   <h5> Version</h5>
-  Extcalc Version 0.7.0<br>
+  Extcalc Version 0.8.0<br>
   Dies ist eine Testversion! Deshalb konnen einige Funktionen inaktiv oder fehlerhaft sein.<br>    
   <h5>Rechengenauigkeit:</h5>
   Aufgrund des Aufbaus eines PC-Prozessors und der verwendeten Variablen vom Typ long double (80 Bit)
@@ -1208,11 +1567,12 @@
   Zeichnen im Graphikfenster<br>
   Komplexe Zahlen<br>  
   Matrix-Berechnungen<br>
+  Script-Funktionen f&uuml;r Graphik und Dateioperationen<br>
+  Fenster f&uuml;r Matrix- und Vektor-Operationen<br>
   Vektoren<br>
   
   <h5>noch zu Tun</h5>
-  Script-Funktionen f&uuml;r Graphik und Dateioperationen<br>
-  Fenster f&uuml;r Matrix- und Vektor-Operationen<br>
+
   Statistikfunktionen<br>
 
   </body>

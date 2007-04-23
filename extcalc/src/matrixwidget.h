@@ -26,7 +26,7 @@ class MatrixWidget :public QWidget
 	CalcTable*outputTable;
 	CalcTable*varTable;
 	CalcTable*resultTable;
-	QPushButton*sprodButton,*invertButton,*detButton,*braceOpenButton,*braceCloseButton;
+	QPushButton*sprodButton,*invertButton,*detButton;
 	QComboBox*operationBox;
 	QSpinBox *size1Box,*size2Box;
 	QComboBox *matrixBox,*vectorBox,*typeBox;
@@ -74,8 +74,6 @@ class MatrixWidget :public QWidget
 			
 			sprodButton=new QPushButton(getUnicode(DEGREESTRING),this);
 			invertButton=new QPushButton("^-1",this);
-			braceOpenButton=new QPushButton("[",this);
-			braceCloseButton=new QPushButton("]",this);
 			detButton=new QPushButton("det",this);
 			operationBox=new QComboBox(this);
 			operationBox->insertItem(MATRIXWIDGETH_STR4);
@@ -126,8 +124,6 @@ class MatrixWidget :public QWidget
 			QObject::connect(sprodButton,SIGNAL(clicked()),this,SLOT(sprodButtonSlot()));
 			QObject::connect(invertButton,SIGNAL(clicked()),this,SLOT(invertButtonSlot()));
 			QObject::connect(detButton,SIGNAL(clicked()),this,SLOT(detButtonSlot()));
-			QObject::connect(braceOpenButton,SIGNAL(clicked()),this,SLOT(braceOpenButtonSlot()));
-			QObject::connect(braceCloseButton,SIGNAL(clicked()),this,SLOT(braceCloseButtonSlot()));
 			QObject::connect(operationBox,SIGNAL(activated(int)),this,SLOT(operationBoxSlot(int)));
 			QObject::connect(calcWidget,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 			QObject::connect(standardButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
@@ -157,8 +153,6 @@ class MatrixWidget :public QWidget
 		void sprodButtonSlot();
 		void invertButtonSlot();
 		void detButtonSlot();
-		void braceOpenButtonSlot();
-		void braceCloseButtonSlot();
 		void operationBoxSlot(int);
 		void enterSlot();
 		void buttonInputSlot(QString);

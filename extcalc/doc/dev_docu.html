@@ -181,7 +181,7 @@
   Description:<br>
   This functions searches the string string for the expression searchString. But it searches only outside of brackets.
   It counts the following as brackets: <pre>( [ { "</pre> Only if all found open brackets were closed, it continues 
-  searching. It is possible to search for one of the bracket signs. You can also set the search start index.<br>
+  searching. It is possible to search for one of the brackets. You can also set the search start index.<br>
   
   <h4>Search Functions: bracketFindRev</h4>
   Prototype:<br>
@@ -228,23 +228,147 @@
   
   <h4>Math class</h4>
   This class contains some main parts, which are needed for both matematic classes.
-  These are the protected variables:
+  These are the declaration:
   <pre>
-	protected:
-	Variable*vars;						//A pointer to the variables vector mainly used by Calculate
-	Preferences*pref;					//The preferences struct
-	Math*parent;						//A pointer to the parent class
-	Math *vertObj,*horzObj;				//two pointers for following classes to build a tree structure
-	double number;						//temporary memory for calculations
-	int var;							//The index of a variable, if this operation is a variable
-	int operation;						//The operation code
+class Math
+{
+	protected:											//These are the variables, needed for Calculate and Script
+	Variable*vars;										//The variables array for Calc
+	Preferences*pref;									//The preferences for this calculation
+	Math*parent;										//A pointer to the parent object
+														//At the root object, this is set to NULL
+	Math *vertObj,*horzObj;								//Pointers to the following objects
+	double number;										//A variable as temporary memory for calculations and to store
+														//the value of constants
+	int var;											//if the object represents a variable, this contains the index (A is 0)
+	int operation;										//this variable stores the operation code
+														//the operation codes are defined in global.h
+	public:
+	Math(Math*par,Preferences*pr,Variable*va);			//constructor
+	virtual ~Math();									//destructor
+	
+	int getOperation();									//returns the operation code of the object
+	virtual double calc() {return 0.0;}					//the following virtual methods run the calculator
+	virtual double calcVertObj() {return 0.0;}			//they run recursive
+	virtual double calcHorzObj() {return 0.0;}			//calc is overloaded in Calculate
+	
+	virtual Number exec() {Number r;r.type=NNONE;return r;}			//exec ist used in the Script class
+	virtual Number execVertObj() {Number r;r.type=NNONE;return r;}
+	virtual Number execHorzObj() {Number r;r.type=NNONE;return r;}
+
+	virtual int split(char*){return 0;}					//this method is used to run the interpreter
+														//normally, this is done by the contructor, so you don't have to use it
+	virtual char* parse(char*){return 0;}				//for the Script parser, this second method is needed
+};														//it contains the parser itself, while split decides how to run it
    </pre>
-   It also contains one non-virtual method:
-   <pre>int getOperation()</pre>
-   This method returns the operation code of the class.<br>
    
   <h4>Calculate class</h4>
-  
+  This is a very fast calculator class. I can not process script commands, but it contains all calculator commands,
+  including integration and differentiation. It uses double variables for calculation, so the precision is limited to 15 decimal digits.<br>
+  This class is used for drawing graphs and analyse functions. 
+  <br>
+  This is the declaration:<br>
+  <pre>
+  class Calculate :public Math
+{
+	virtual int split(char* line);			//this private method contains the script parser
+											//the constructor runs it automatically
+	public:
+	Calculate(Math *par,char* line,Preferences*pr,Variable*va) :Math((Math*)par,pr,va);	//constructor
+	~Calculate();																		//destructor
+
+	virtual double calc();					//the following methods can be used to run the calculation after building the object tree
+	virtual double calcVertObj();
+	virtual double calcHorzObj();
+};
+</pre>
+  <h4>Script class</h4>
+  The script class provides lots of matematical operations, complex numbers, string operations, matrix- and vector-processing and
+  script commands. It uses a Number struct for calculations.<br>
+  This class is used for the calculator, to run scripts and to draw and analyze complex functions. 
+  <br>
+  This is the declaration:<br>
+  <pre>
+
+class Script :public Math
+{
+	Number value;							//Variable to store values and temporary memory for calculation
+	Math*nextObj,*vertObj2,*vertObj3;		//additional pointers to build the tree
+	ThreadSync*eventReciver;				//structure for synchronisation with the main application
+											//and for extra preferences
+											//it also contains the variables array
+	private:
+	inline bool resizeVar(int var,int newlen);	//method to manage the variables memory
+
+	public:
+
+	Script(Script*par,char*line,Preferences*pr,Variable*va,ThreadSync*evrec) :Math((Math*)par,pr,va);	//constructor
+	~Script();								//destructor
+	char*parse(char*line);					//the two methods to build the object tree
+	virtual int split(char* line);
+
+
+	virtual double calc();					//methods to run calculator
+	virtual double calcVertObj();
+	virtual double calcHorzObj();
+
+	virtual Number exec();
+	virtual Number execVertObj();
+	virtual Number execHorzObj();
+
+};
+</pre>
+  <a name="math3"><h3>3.3 Usage of the Matematical Classes</h3></a>
+  <h4>Variables and Preferences</h4>
+  The Script class and the Calculate class need a Preferences structure. This structure contains information
+  about the calculator mode, how to process angles and if complex numbers are enabled.<br>
+  The Preferences struct of Extcalc also includes the preferences for the Extcalc user interface.<br>
+  Here is the Preferences Struct of Calc. It does only contain preferences for the Math classes:<br>
+  <pre>
+struct Preferences
+{
+	int angle;					//angle type DEG,RAD,GRA
+	int outputType;				//how to format output (not important for Math classes)
+	int outputLength;			//number of output digits
+	int calcType;				//calculator mode BASE for logic operations, SCIENTIFIC for normal operation
+	int base;					//base for BASE-mode BIN,DEC,OCT,HEX
+	int precision;				//maximum possible precision on this system
+	bool complex;				//enable or disable complex numbers
+};
+  </pre>
+  This structure must be filled, and Script and Calculate will get a pointer to this structure.<br>
+  <br>
+  The Calculate class uses an array of double variables to store variables.<br>
+  Here is the definition of the data structure:<br>
+  <pre>
+  typedef double Variable;
+  </pre>
+  Calc and Extcalc need a pointer to an array of Variable-Elements.<br>
+  The array must have 27 elements for variables from A to Z and the answer memory<br>
+  No furter initialisation is needed, but you may want to set all elements to 0 or to a stored value.<br>
+  A short example code:<br>
+  <pre>
+  Variable *vars=(Variable*)malloc(sizeof(Variable)*27);
+  </pre>
+  <br><br>
+  Extcalc needs an additional struct 
+<h4>Calculate</h4>
+First, you need the string that contains the matematic operations to process.
+<pre>char operations[]="3+4*5sinx";</pre>
+This string must be processed by the preprocessor, which returns another string.
+<pre> char*cleanString=checkString(operations,&pref); //returns 3+4*5*sinX</pre>
+The returend string can be used to generate an object tree.<br>
+This object tree represents the matematical operations in the memory.<br>
+<pre>Calculate calc(NULL,cleanString,&pref,vars);</pre>
+Now, the calc object has been created, and it can be used to run the operations.<br
+<pre> double result=calc.calc();</pre>
+calc() can be used several times with different variable values<br>
+<pre>for(int c=0; c&lt;100; c++)
+{
+    vars[23]=(double)c;               //x is the 23rd element of the vars array
+    results[c]=calc.calc();
+}
+</pre>
   
   <h1>This help file is not complete and not up-to-date</h1>
   

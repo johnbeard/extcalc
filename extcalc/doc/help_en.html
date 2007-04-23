@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - Scientific Calculator </h1>
-  Version 0.7.0
+  Version 0.8.0
   <br>
   <br>
   <h3>Contents</h3>
@@ -34,7 +34,7 @@
   <a name="introduction"><h2>1. Introduction</h2></a>
   Extcalc is a scientific graphic calculator for Linux. Extcalc is able to process difficult
   mathematical functions, to draw graph and to work with them. It includes a C-like script language.<br>
-  This is the documentation for version 0.7.0. 
+  This is the documentation for version 0.8.0. 
   <br>
   <br>
   <br>
@@ -42,8 +42,8 @@
   This description is only for the installation of the source code package (.tar.gz). If you install a binary package, you have to use the
   packet manager of your distribution.<br><br>
   <UL>
-  <LI> extract packet (tar -xzf extcalc-0.7.0.tar.gz)<br>
-  <LI> switch to directory (cd extcalc-0.7.0)<br>
+  <LI> extract packet (tar -xzf extcalc-0.8.0.tar.gz)<br>
+  <LI> switch to directory (cd extcalc-0.8.0)<br>
   <LI> configure (./configure)<br>
   <LI> compile (make)<br>
   <LI> become root (su)<br>
@@ -574,12 +574,12 @@ Rubber: If you want to erase a part of the drawn things, you can use this tool. 
   The table window of Extcalc.<br><br>
   For the generation of this value tables, the same functions as for graphs will be used. You can generate tables
   from every types of functions.<br>
-  The tables are generated from this functions, which are activated in the function table. You can also calculate 
-  only tables from the type of functions, which is chosen for tables. You can choose the table function type directly
+  The tables are generated from the functions, which are activated in the function table. You can calculate 
+  only tables from the type of functions, which is chosen at the type box. You can choose the table function type directly
   with the box in the table window or by the table menu or by the table preferences dialog.<br>
   In the table preferences dialog, you can set the start and the end value for your table and you can choose the
   number of values to calculate.<br>
-  For functions with the variable x, on column per function is generated with the function values. For parameter
+  For functions with the variable x or the complex z, on column per function is generated with the function values. For parameter
   functions with the variable T, the same options as for the variable x are used. For every functions of this type, 
   one column with x-values and one column with y-values will be generated. If you generate a table with 3D-functions,
   for every z-value of every function, one column will be generated.
@@ -594,16 +594,16 @@ Rubber: If you want to erase a part of the drawn things, you can use this tool. 
   <a name="scriptcom"><h3>3.4.1 Introduction</h3></a>
   The syntax for Extcalc scripts is similar to C-language syntax, but the normal calculator commands and operations can also be used in
   this scripts.
-  You can't use all script command in the normal calculator. Loops and the command to run another script can only be used in script,
+  You can't use all script commands in the normal calculator. Loops and the command to run another script can only be used in script,
   not in the calculator.
   The scripts programs run in a separate console, and you may use the other extcalc functions while running a script.
   Scripts can be managed, edited and started from the integrated script editor.<br>
-  In this version 0.7.0 are not all planned features included.<br><br>
+  In this version 0.8.0 are not all planned features included.<br><br>
 
   <a name="scriptedit"><h3>3.4.2 The Script-Editor</h3></a>
   <img src="scriptedit.jpg"></img>
   <br><br>
-  The integrated script editor has all important editor functions and you can use it to write, modify and run your scripts.<br><br>
+  The integrated script editor includes all needed editor functions and you can use it to write, modify and run your scripts.<br><br>
   Before you can use this editor, you have to create the script directories. Normally, this is done at the first start of extcalc, but if you
   haven't done it there, you may need use the script preferences dialog from the preferences menu to create them.<br>
   There you have to create a script root directory and set the names for a code subdirectory and a data subdirectory.<br>
@@ -646,10 +646,10 @@ If is running while you change something, you can press the right mouse button a
   You can always stop a running script by pressing the "Kill"-Button at the script console window.<br>
   If the script does not stop before the timeout, an error message is displayed. You have to press the kill-button again to stop the script correctly.<br>
   <a name="scriptsyntax"><h3>3.4.3 Scripting Language</h3></a>
-  In version 0.7.0 of Extcalc, not all features are included. You can read more about the planned features 
+  In version 0.8.0 of Extcalc, not all features are included. You can read more about the planned features 
   at <a href="#else">Chapter 4</a>.<br>
   <h5>Problems:</h5>
-  This is a list of the current problems of the 0.7.0 version of the Extcalc Script Interpreter<br><br>
+  This is a list of the current problems of the 0.8.0 version of the Extcalc Script Interpreter<br><br>
   <OL>
   <LI>Speed<br>
   The extcalc scripts were ran by an Interpreter and so they run not as fast as compiled programms, but it will be optimized in later versions.<br><br>
@@ -659,8 +659,6 @@ If is running while you change something, you can press the right mouse button a
   Most of the planned features is available, now, but this is only a calculator script interpreter that can be used to solve simple mathematical problems.
   It will never have the flexibility and power of a complex programming language like C.
   <br><br>
-  <LI>Stability<br>
-  The Script interpreter is in an early development state and it may not always run without problems.<br>
   <h5>Syntax:</h5>
   The syntax of the Extcalc Script interpreter is similar to the C syntax.<br>
   Main Rules:<br>
@@ -786,6 +784,14 @@ If is running while you change something, you can press the right mouse button a
   <TR>
   <TD>matrix*constant, constant*matrix</TD>
   <TD>Every element of the matrix is multiplied with the constant.
+  </TD>
+      <TR>
+  <TD>matrix^-1</TD>
+  <TD>Calculate inverse matrix
+  </TD>
+    <TR>
+  <TD>det matrix</TD>
+  <TD>Calculate determinant of a matrix.
   </TD>
   </TABLE>
   <br>
@@ -945,6 +951,283 @@ If is running while you change something, you can press the right mouse button a
   otherwise the script console may not have enough cpu time to show to show its content on time.<br>
   An example can be found at the keystate command.<br><br><br>
 
+  <LI>readfile<br>
+  Syntax: <br>
+  <pre>
+  readfile( filename );
+  </pre>
+  Reads the file with the name filename and returns its content as string.<br>
+  The files to read and write must be located in the script data directory. Subdirectories were not supported.<br>
+  filename must be a string. if filename is no string, or the file could not be read, an empty string is returned.<br><br><br>
+  
+  <LI>writefile<br>
+  Syntax: <br>
+  <pre>
+  writefile(filename , content);
+  </pre>
+  Writes the content ans string into a file named filename.<br>
+  If the file doesn't exsit, it will be created. If it exists, it will be cleared.<br>
+  The filename must be a string. As at readfile, subdirectories and absolute paths were not supported.<br>
+  <br><br><br>
+  
+  
+  <LI>appendfile<br>
+  Syntax: <br>
+  <pre>
+  appendfile(filename , content);
+  </pre>
+  The same as writefile, but if a file still exists, the content will be appended.<br>
+  Example:
+  <pre>
+  removefile("count.txt");             //remove file, if it exists
+  for(C=0; C&lt;100; C++)              //loop from 0 to 99
+  {
+    apendfile("count.txt",C);          //write numbers from 0 to 99 into a file
+    appendfile("count.txt","\n");       //seperated by a newline
+  }
+  </pre>
+  <br><br><br>
+
+  <LI>removefile<br>
+  Syntax: <br>
+  <pre>
+  removefile(filename);
+  </pre>
+  This command removes the file filename from the script data directory.<br><br><br>
+  
+  
+  <LI>glshow<br>
+  Syntax: <br>
+  <pre>
+  glshow;
+  </pre>
+  This command updates the GL window.<br><br><br>
+  
+  
+  <LI>glclear<br>
+  Syntax: <br>
+  <pre>
+  glclear;
+  </pre>
+  This command clears the GL window.<br><br><br>
+  
+  
+  <LI>glbegin<br>
+  Syntax: <br>
+  <pre>
+  glbegin( type );
+  </pre>
+  This commands must be called to start drawing. It must also be called to draw into a dislplay list.<br>
+  The draw type is also set by this command. The command is just written inside the brackets.<br>
+  The following types can be set:<br>
+  points<br>
+  lines<br>
+  linestrip<br>
+  lineloop<br>
+  triangles<br>
+  trianglestrip<br>
+  trianglefan<br>
+  quads<br>
+  quadstrip<br>
+  polygon<br><br>
+
+<br><br><br>
+  
+  
+  <LI>glend<br>
+  Syntax: <br>
+  <pre>
+  glend;
+  </pre>
+  This command must be called after glbegin(), when drawing is done.<br><br><br>
+  
+ 
+  <LI>glbeginlist<br>
+  Syntax: <br>
+  <pre>
+  glbeginlist;
+  </pre>
+  This command starts a display list. After this command, all gl commands expect text drawing were stored in the
+  display list.<br><br><br>
+  
+  
+  <LI>glendlist<br>
+  Syntax: <br>
+  <pre>
+  glendlist;
+  </pre>
+  This command ends the display list and returns the list ID.<br>
+  The returned ID is an integer and must be stored to call the list.<br>
+  <br><br><br>
+  
+  
+  <LI>glcalllist<br>
+  Syntax: <br>
+  <pre>
+  glcalllist;
+  </pre>
+  With this command, you can call a display list, so that it is drawn.<br>
+  Using display lists instead of calling GL commands directly is much faster.<br><br>
+  Example:<br>
+  <pre>
+  glbeginlist;          //start list
+  glbegin(lines)        //start drawing lines
+  glpoint(-5,-5,-5);    //set coordinates
+  glpoint(5,5,5);
+  glend;                //end drawing lines
+  glbegin(triangles);   //start drawing triangles
+  glpoint(-5,-5,0);     //set coordinates
+  glpoint(5,-5,0);
+  glpoint(0,5,0);
+  glend;                //end drawing triangles
+  L=glendlist;          //end list, store ID
+
+  glclear;
+  glmove(0,0,1);        //set transformation matrix
+  glcalllist(L);        //call list
+  glmove(0,0,-2);       //change transformation matrix settings
+  glcalllist(L);        //call list again
+  glshow;               //show scene
+  </pre>
+
+<br><br><br>
+  
+  <LI>glpoint<br>
+  Syntax: <br>
+  <pre>
+  glpoint(x,y,z);
+  </pre>
+  This command must be called to set object coodinates after calling glbegin().<br>
+  Parameters are three floating point values for x-, y-, and z-coordinate.<br><br><br>
+  
+  
+  <LI>glcolor<br>
+  Syntax: <br>
+  <pre>
+  glcolor(r,g,b);
+  </pre>
+  With this command, you can set the draw color.<br>
+  The parameters are integer values for red, green and blue. They must be in a range between 0 and 255.<br><br><br>
+  
+  
+  <LI>glmove<br>
+  Syntax: <br>
+  <pre>
+  glmove(x,y,z);
+  </pre>
+  This command moves a GL object.<br>
+  The paramters are float values for the coordinates.<br>
+  GL transformations were always multiplied to a single transformation matrix. This means, that the transformation command that has
+  been called first, will be done as last.<br><br><br>
+  
+  
+  <LI>glrotate<br>
+  Syntax: <br>
+  <pre>
+  glrotate(angle,x,y,z);
+  </pre>
+  GL objects can be rotated by this command. The rotation is described by the angle in degrees (angle)
+  and by a vector (x,y,z), which represents the rotation axes. All parameters are of type float.<br>
+  GL transformations were always multiplied to a single transformation matrix. This means, that the transformation command that has
+  been called first, will be done as last.<br><br><br>
+  
+  
+  <LI>glscale<br>
+  Syntax: <br>
+  <pre>
+  glscale(x,y,z);
+  </pre>
+  With this command, a GL object can be scaled. All parameters are of type float.<br>
+  GL transformations were always multiplied to a single transformation matrix. This means, that the transformation command that has
+  been called first, will be done as last.<br>
+  Example:<br>
+  <pre>
+#config gl              //gl initialisation
+#config axesoff
+#config rasteroff
+#config labelsoff
+
+glstartlist;            //generate gl list for a cube
+glbegin(quads);
+glpoint(-1,-1,-1);
+glpoint(1,-1,-1);
+glpoint(1,1,-1);
+glpoint(-1,1,-1);
+
+glpoint(-1,-1,1);
+glpoint(1,-1,1);
+glpoint(1,1,1);
+glpoint(-1,1,1);
+
+glpoint(-1,-1,-1);
+glpoint(-1,-1,1);
+glpoint(-1,1,1);
+glpoint(-1,1,-1);
+
+
+glpoint(1,-1,-1);
+glpoint(1,-1,1);
+glpoint(1,1,1);
+glpoint(1,1,-1);
+
+glpoint(-1,-1,-1);
+glpoint(-1,-1,1);
+glpoint(1,-1,1);
+glpoint(1,-1,-1);
+
+glpoint(-1,1,-1);
+glpoint(-1,1,1);
+glpoint(1,1,1);
+glpoint(1,1,-1);
+glend;
+L=glendlist;             //end list and store list
+
+R=0;                     //rotation angle
+while(1)
+{
+  R=R+1;
+  glclear;              //draw scene
+                        //int this order, the cube rotates around its y-axes, has a size of 4x4x4, and
+                        //its rotatione axes is located at 12,0,0
+  glscale(4,4,4);       //resize
+  glmove(3,0,0);        //move
+  glrotate(R,0,1,0);    //rotate
+  glcolor(30,30,200);
+  glcalllist(L);
+  
+  glloadidentity;
+                        //int this order, the cube rotates around the coordinate systems y-axes, has a size of 3x3x3, and
+                        //rotatis with radius of 9
+  glscale(3,3,3);       //resize
+  glrotate(R,0,1,0);    //rotate
+  glmove(3,0,0);        //move
+  glcolor(200,30,20);
+  glcalllist(L);
+  glshow;
+  sleep(30000);
+}
+</pre>
+<br><br><br>
+  
+  
+  <LI>glloadidentity<br>
+  Syntax: <br>
+  <pre>
+  glloadidentity;
+  </pre>
+  This command resets all transformations.<br><br><br>
+  
+  
+  <LI>glstring<br>
+  Syntax: <br>
+  <pre>
+  glstring(x,y,text);
+  </pre>
+  This command shows a text at the 2D-position x,y. The start point is the upper left edge.
+  The coordinates are in pixels. x and y are integer values. Text can be a string or a number (float or int).
+  <br><br><br>
+  
+
   <LI>type converting<br>
   Syntax: <br>
   <pre>
@@ -1056,6 +1339,18 @@ If is running while you change something, you can press the right mouse button a
                               //the number is written directly behind outputlength without space
 
 #config clearmemory           //always clear array memory before starting
+
+#config gl                    //switch to 3D-GL window
+                              //this MUST be set to use 3D-graphics
+
+#config axeson                //enalbe or disable 3D-coodinate system axis
+#config axesoff
+
+#config rasteron              //enalbe or disable 3D-coodinate system raser
+#config rasteroff
+
+#config labelson              //enalbe or disable 3D-coodinate system labels
+#config labelsoff
 </pre>
 
 
@@ -1202,15 +1497,93 @@ If is running while you change something, you can press the right mouse button a
   print("\n\n");
   </pre>
   <a name="matrixvector"><h2>3.5 Matrix/Vector Arithmetics</h2></a>
-  In version 0.7.0 of Extcalc, there is still no seperate window for matrix and vecor operations.
-  But this version already includes full matrix and vector support within the script parser.<br>
-  To make the vector and matrix support usable in this version, it includes some script programs.<br>
-  This script programs can be started from the script editor. They can be used for some matrix and vector calculations<br>
+  <img src="matvec.jpg"></img><br><br>
+  The Matrix/Vector window of Extcalc consists of several modules for matrix and vector calculations.
+  The top half of the window always shows the variable list with the 26 calculator variables and the answer memory and
+  the content of the current variable.<br>
+  The variable memory used for matrix and vector calculation is the same as the memory used for the standard calculator.
   <br>
-  To start them, you have to choose the script program which you want to start. Then press the run button to translate the script.
-  Extcalc will switch to the script console. There, you can press the run button to start the script. To stop the script at any time,
-  just press the kill button.<br><br>
+  The variables list shows size and type of every variable. The size can be changed within this list.
+  The table that shows the content of a variable and can be edited.<br>
+  <br>
+  <h3>Modules</h3>
+  Here is a short description of the different matrix/vector calculation modules.<br>
+  <h4>Calculator</h4>
+  This module has the same functions as the standard calculator. It is just smaller and located at the bottom right side of
+  the window. In this calculator, all matrix and vector functions can be used. The results are shown directly at the calculator
+  window, but they are also copied to the answer memory, which is part of the variables list.
+  <h4>Linear System of Equations</h4>
+  This modules can be used to solve linear systems of equations.<br>
+  There are two possibilities to insert the parameters of the equations.<br>
+  - coose a matrix of size n x (n+1) and insert all parameters into the matrix.<br>
+  Example:<br>
+  The equations to solve are:
+  <pre>
+  4x - 2y  =  9
+ -2x + 5y  = -2
+  </pre>
+  The matrix size would be 2 x 3<br>
+  The matrix content would be:
+  <pre>
+   4 -2  9
+  -2  5 -2
+  </pre>
+  - choose a matrix of size n x n and a vector of size n<br>
+  With the same example as above:<br>
+  The matrix of size 2x2 would be:
+  <pre>
+   4 -2
+  -2  5
+  </pre>
+  The vector of size 2 would be:
+  <pre>
+   9
+  -2
+  </pre>
+  You can set the number of unknowns with the unknowns box. The chosen matrix and vector will be resized by pressing the set button.<br>
+  The table at the bottom right side will show the result vector.<br>
+  In this example, the result would be x=2.25 and y=0.75<br>
+  The table would show:
+  <pre>
+  2.25
+  0.75
+  </pre>
+  If the linear system of equations could not be solved, because it has no valid results or infinitely mutch results, the last step
+  of the gauss algorithm will be shown at the table.<br>
+  This can be used for further calculations.<br>
+  <h4>Generate Matrix</h4>
+  With this module, you can create matrices and vectors with a predefined content.<br>
+  You always have to choose the type of matrix or vector to create, and the variable that should be used.<br>
+  The following things can be created:<br>
+    <TABLE BORDER>
+  <TR><TH>Type</TH><TH>Description</TH>
+  <TR>
+  <TD>Identity Matrix</TD>
+  <TD>Size n x n, the diagonal values are 1, the rest is set to 0. Identity of matrix multiplication.
+  </TD>
+    <TR>
+  <TD>Zero Matrix</TD>
+  <TD>Size n x m, all values 0.
+  </TD>
+    <TR>
+  <TD>Zero Vector</TD>
+  <TD>Vector Size n, all values 0.
+  </TD>
+    <TR>
+  <TD>- X-, Y-, Z-rotation matrix</TD>
+  <TD>Size can be 2 x 2 or 3 x 3. Generates a rotation matrix with the given angle.
+  </TD>
+    <TR>
+  <TD>Scaling Matrix</TD>
+  <TD>Size can be 2 x 2 or 3 x 3. Generates a scaling matrix with the given scale values.
+  </TD>
+  </TABLE>
 
+  <h4>Analyse Matrix/Vector</h4>
+  This module shows some information about the chosen variable.
+  <h4>Inverse Matrix</h4>
+  This module does the same as the calculator operation X[][]^-1.<br>
+  It calculates the inverse matrix of the chosen variable, if possible, and shows it at the table.<br>
   <a name="pref"><h2>3.6 Preferences</h2></a>
   Preferences can be changed directly by using the menu item "Calculator" for calculator preferences
   and the item "Graphic" for the preferences of the graphics window or
@@ -1293,11 +1666,11 @@ If is running while you change something, you can press the right mouse button a
   drawing into graphics window<br>
   complex numbers<br>
   matrix calculation<br> 
-  vector calculation<br> 
-
-  <h5>To-do-list</h5>
+  vector calculation<br>
   scripting functions for graph drawing and file usage<br> 
   sperate window for matrix and vector operations<br>
+
+  <h5>To-do-list</h5>
   statistic functions<br>
  
          
