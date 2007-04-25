@@ -1753,6 +1753,7 @@ int Script::split(char*line)
 	char*rest;
 	if(parent==NULL)
 	{
+		value.type=NNONE;
 		operation=SINIT;
 		rest=line;
 		init=true;
@@ -6622,7 +6623,8 @@ Number Script::exec()
 		case SINIT:
 		{
 
-			value=nextObj->exec();
+			if(nextObj!=NULL)
+				value=nextObj->exec();
 #ifndef CONSOLE
 			QCustomEvent*killEvent=new QCustomEvent(SIGFINISHED);
 			QApplication::postEvent(eventReciver->eventReciver,killEvent);

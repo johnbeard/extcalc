@@ -24,10 +24,10 @@ using namespace std;
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #define VARSFILE ".extcalc/vars.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.7.9\n2007-04-23\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.0\n2007-04-23\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.7.9\n23.4.2007\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.0\n23.4.2007\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2007\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -494,7 +494,7 @@ inline void convertToBool(Number*num);
 #define powl(va,vb) pow(va,vb)
 #define fmodl(va,vb) fmod(va,vb)
 #define strtold(va,vb) strtod(va,vb)
-#define curtl(var) curt(var)
+#define cbrtl(var) cbrt(var)
 #define fabsl(var) fabs(var)
 
 #endif

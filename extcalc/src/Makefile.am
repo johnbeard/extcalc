@@ -20,6 +20,7 @@ extcalc_SOURCES = extcalc.h \
 				  scriptedit.h \
 				  scriptpref.h \
 				  scriptio.h \
+				  matrixwidget.h \
 				  extcalc.cpp \
 				  buttons.cpp \
 				  calctable.cpp \
@@ -38,6 +39,7 @@ extcalc_SOURCES = extcalc.h \
 				  scriptedit.cpp \
 				  scriptpref.cpp \
 				  scriptio.cpp \
+				  matrixwidget.cpp \
 				  moc_extcalc.cpp \
 				  moc_buttons.cpp \
 				  moc_calctable.cpp \
@@ -53,4 +55,5 @@ extcalc_SOURCES = extcalc.h \
 				  moc_tablepref.cpp \
 				  moc_scriptedit.cpp \
 				  moc_scriptpref.cpp \
-				  moc_scriptio.cpp
+				  moc_scriptio.cpp \
+				  moc_matrixwidget.cpp

@@ -29,4 +29,5 @@ documentation_DATA = help_de.html \
 					 table.jpg \
 					 scriptedit.jpg \
 					 scriptrun.jpg \
-					 screenshot.jpg
+					 screenshot.jpg \
+					 matvec.jpg
