@@ -41,3 +41,7 @@ alpha:
 - added option to switch complex numbers on and off
 - added preferences preprocessor
 - fixed bug in installer
+
+0.8.0
+- updated to Extcalc algorithms v0.7.0
+- script interpreter supports file usage

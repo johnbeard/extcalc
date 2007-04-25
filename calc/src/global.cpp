@@ -610,7 +610,7 @@ char* checkString(char* str,Preferences*pref)
 		if(
 				 (calcString[c]=='\\' ||
 				 ((pref->calcType==SCIENTIFIC && calcString[c] >= 'A' || calcString[c]>='G') && calcString[c]<='Z') ||
-				 (calcString[c] >= 'a' && calcString[c]<='z' && calcString[c]!='x'))
+				 (calcString[c] >= 'a' && calcString[c]<='z' && calcString[c]!='e' && calcString[c]!='x'))
 				 && 
 				 (//calcString[c-1] == '!' ||
 				 calcString[c-1] == '.' ||
@@ -1099,16 +1099,7 @@ int Calculate::split(char* line)
 		var=((int)line[0])-65;
 		
 		if(len>1)
-		{
-			if(line[1]=='[' && line[len-1]==']')
-			{
-				operation=ARRAY;
-				char*recString1=new char[len-2];
-				strcopy(recString1,&line[2],len-3);
-				horzObj=new Calculate(this,recString1,pref,vars);
-			}
-			else var=-1;
-		}
+			var=-1;
 		else 
 		{
 			operation=NONE;
@@ -1149,7 +1140,7 @@ double Calculate::calc()
 			}
 			else if(var!=-1)
 			{
-				return vars[var][0];
+				return vars[var];
 			}
 			else if(number!=NAN)
 			{
@@ -1192,14 +1183,6 @@ double Calculate::calc()
 			return vertObj->calc()*horzObj->calc();
 		case DIVIDE:
 			return vertObj->calc()/horzObj->calc();
-		case ARRAY:
-		{
-			double dIndex=horzObj->calc();
-			int index=(int)dIndex;
-			if(index>=0 && index<vars[var].GetLen())
-				return vars[var][index];
-			else return NAN;
-		}
 		case POW:
 			return pow(vertObj->calc(),horzObj->calc());
 		case SQRT:
@@ -1238,7 +1221,7 @@ double Calculate::calc()
 			return atanh(vertObj->calc());
 		case DIFF:
 		{
-			double savedX=vars[23][0];
+			double savedX=vars[23];
 			double point;
 			if(vertObj!= NULL)
 				point=vertObj->calc();
@@ -1248,28 +1231,18 @@ double Calculate::calc()
 			double step=(point*1e-6);
 			if(step<1e-6)
 				step=1e-6;
-			vars[23][0]=point-step;
+			vars[23]=point-step;
 			double w1=horzObj->calc();
-			vars[23][0]=point+step;
+			vars[23]=point+step;
 			double w2=horzObj->calc();
-			vars[23][0]=savedX;
+			vars[23]=savedX;
 			return((w2-w1)/(2*step));
 		}
 		case MODULO:
 			return fmod(vertObj->calc(),horzObj->calc());
 		case INTEGRAL:
 		{
-			double savedX=vars[23][0];
-//     Verzweigung:
-			//
-//         end
-//          |
-//         NONE - start
-//           |
-//        INTEGRAL - function
-			//
-//        integral(function,start,end);
-
+			double savedX=vars[23];
 			double complete=(double)0.0;
 			if(vertObj == NULL || horzObj == NULL)
 				return NAN;
@@ -1288,9 +1261,9 @@ double Calculate::calc()
 			double * line1=new double;
 			double *line2=new double[3];
 			double y,oldy;
-			vars[23][0]=start;
+			vars[23]=start;
 			oldy=horzObj->calc();
-			vars[23][0]=end;
+			vars[23]=end;
 			y=horzObj->calc();
 			line1[0]=(y+oldy)*(end-start)/2.0;
 			double fail=1e+308,oldfail=0.0;
@@ -1306,7 +1279,7 @@ double Calculate::calc()
 				steps=(int)pow(2.0,(double)(num-1));
 				for(int c=1; c<=steps; c++)
 				{
-					vars[23][0]=start+((2*c-1)*(end-start))/pow(2.0,(double)num);
+					vars[23]=start+((2*c-1)*(end-start))/pow(2.0,(double)num);
 					line1[0]+=horzObj->calc();
 				}
 				line1[0]=0.5*(line1[0]*(end-start)/pow(2.0,(double)(num-1))+line2[0]);
@@ -1336,7 +1309,7 @@ double Calculate::calc()
 			}
 			complete=line1[num-1];
 
-			vars[23][0]=savedX;
+			vars[23]=savedX;
 			if(inverse)
 				return -complete;
 			else return complete;
@@ -2159,7 +2132,502 @@ char* Script::parse(char* line)
 		delete[]recString1;
 		return NULL;
 	}
+	else if((pos1=bracketFind(line,"readfile(")) == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SFREAD;
+		int pos2=bracketFind(line,")");
+		if(pos2<10)
+		{
+			printError("Closing bracket for readfile not found",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char*recString1=new char[pos2-8];
+		strcopy(recString1,&line[9],pos2-9);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		delete[]recString1;
 
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"writefile(")) == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SFWRITE;
+		var=-1;
+		int pos1=bracketFind(line,",",10);
+		if(pos1<11 || pos1>len-2)
+		{
+			printError("Invalid use of writefile",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char* filename=new char[pos1-9];
+		char* input=new char[len-pos1-1];
+		strcopy(filename,&line[10],pos1-10);
+		strcopy(input,&line[pos1+1],len-pos1-2);
+
+
+		vertObj=new Script(this,filename,pref,vars,eventReciver);
+		vertObj2=new Script(this,input,pref,vars,eventReciver);
+		delete[]input;
+		delete[]filename;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"removefile(")) == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SFREMOVE;
+		int pos2=bracketFind(line,")");
+		if(pos2<12)
+		{
+			printError("Closing bracket for removefile not found",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char*recString1=new char[pos2-10];
+		strcopy(recString1,&line[11],pos2-11);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		delete[]recString1;
+
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"appendfile(")) == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SFAPPEND;
+		var=-1;
+		int pos1=bracketFind(line,",",11);
+		if(pos1<12 || pos1>len-2)
+		{
+			printError("Invalid use of appendfile",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char* filename=new char[pos1-10];
+		char* input=new char[len-pos1-1];
+		strcopy(filename,&line[11],pos1-11);
+		strcopy(input,&line[pos1+1],len-pos1-2);
+
+		vertObj=new Script(this,filename,pref,vars,eventReciver);
+		vertObj2=new Script(this,input,pref,vars,eventReciver);
+		delete[]input;
+		delete[]filename;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"glbegin(")) == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SGRAPHPAINT;
+		int pos2=bracketFind(line,")");
+		if(pos2<9)
+		{
+			printError("Closing bracket for glbegin not found",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char*recString1=new char[pos2-7];
+		strcopy(recString1,&line[8],pos2-8);
+		if(strcmp(recString1,"points")==0)
+			value.ival=0;
+		else if(strcmp(recString1,"lines")==0)
+			value.ival=1;
+		else if(strcmp(recString1,"linestrip")==0)
+			value.ival=2;
+		else if(strcmp(recString1,"lineloop")==0)
+			value.ival=3;
+		else if(strcmp(recString1,"triangles")==0)
+			value.ival=4;
+		else if(strcmp(recString1,"trianglestrip")==0)
+			value.ival=5;
+		else if(strcmp(recString1,"trianglefan")==0)
+			value.ival=6;
+		else if(strcmp(recString1,"quads")==0)
+			value.ival=7;
+		else if(strcmp(recString1,"quadstrip")==0)
+			value.ival=8;
+		else if(strcmp(recString1,"polygon")==0)
+			value.ival=9;
+		else{
+			printError("Invalid argument in glbegin",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		delete[]recString1;
+		
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"glendlist")) == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SGRAPHLIST;
+		var=2;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"glend")) == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SGRAPHCONTROL;
+		var=2;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"glshow")) == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SGRAPHCONTROL;
+		var=0;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"glclear")) == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SGRAPHCONTROL;
+		var=1;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"glloadidentity")) == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SGRAPHCONTROL;
+		var=3;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"glstartlist")) == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SGRAPHLIST;
+		var=1;
+		return NULL;
+	}
+
+	else if((pos1=bracketFind(line,"glcalllist(")) == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SGRAPHLIST;
+		var=0;
+		int pos2=bracketFind(line,")");
+		if(pos2<12)
+		{
+			printError("Closing bracket for glcalllist not found",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char*recString1=new char[pos2-10];
+		strcopy(recString1,&line[11],pos2-11);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		delete[]recString1;
+
+		return NULL;
+	}
+	else if(bracketFind(line,"glpoint(") == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SGRAPHVERTEX;
+		int pos1=bracketFind(line,",",8);
+
+		int pos2=bracketFind(line,",",pos1+1);
+		if(pos1==-1 || pos2==-1)
+		{
+			printError("Invalid use of glpoint",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+
+		char *xval=new char[pos1-7];
+		char *yval=new char[pos2-pos1];
+		char *zval=new char[len-pos2-1];
+
+		strcopy(xval,&line[8],pos1-8);
+		strcopy(yval,&line[pos1+1],pos2-pos1-1);
+		strcopy(zval,&line[pos2+1],len-pos2-2);
+		vertObj=new Script(this,xval,pref,vars,eventReciver);
+		vertObj2=new Script(this,yval,pref,vars,eventReciver);
+		vertObj3=new Script(this,zval,pref,vars,eventReciver);
+		delete[]xval;
+		delete[]yval;
+		delete[]zval;
+		return NULL;
+	}
+	else if(bracketFind(line,"glscale(") == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SGRAPHTRANSFORM;
+		var=0;
+		int pos1=bracketFind(line,",",8);
+
+		int pos2=bracketFind(line,",",pos1+1);
+		if(pos1==-1 || pos2==-1)
+		{
+			printError("Invalid use of glscale",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+
+		char *xval=new char[pos1-7];
+		char *yval=new char[pos2-pos1];
+		char *zval=new char[len-pos2-1];
+
+		strcopy(xval,&line[8],pos1-8);
+		strcopy(yval,&line[pos1+1],pos2-pos1-1);
+		strcopy(zval,&line[pos2+1],len-pos2-2);
+		vertObj=new Script(this,xval,pref,vars,eventReciver);
+		vertObj2=new Script(this,yval,pref,vars,eventReciver);
+		vertObj3=new Script(this,zval,pref,vars,eventReciver);
+		delete[]xval;
+		delete[]yval;
+		delete[]zval;
+		return NULL;
+	}
+	else if(bracketFind(line,"glmove(") == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SGRAPHTRANSFORM;
+		var=1;
+		int pos1=bracketFind(line,",",7);
+
+		int pos2=bracketFind(line,",",pos1+1);
+		if(pos1==-1 || pos2==-1)
+		{
+			printError("Invalid use of glmove",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+
+		char *xval=new char[pos1-6];
+		char *yval=new char[pos2-pos1];
+		char *zval=new char[len-pos2-1];
+
+		strcopy(xval,&line[7],pos1-7);
+		strcopy(yval,&line[pos1+1],pos2-pos1-1);
+		strcopy(zval,&line[pos2+1],len-pos2-2);
+		vertObj=new Script(this,xval,pref,vars,eventReciver);
+		vertObj2=new Script(this,yval,pref,vars,eventReciver);
+		vertObj3=new Script(this,zval,pref,vars,eventReciver);
+		delete[]xval;
+		delete[]yval;
+		delete[]zval;
+		return NULL;
+	}
+	else if(bracketFind(line,"glrotate(") == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SGRAPHTRANSFORM;
+		var=2;
+		int pos1=bracketFind(line,",",9);
+
+		int pos2=bracketFind(line,",",pos1+1);
+		int pos3=bracketFind(line,",",pos2+1);
+		if(pos1==-1 || pos2==-1 || pos3==-1)
+		{
+			printError("Invalid use if glrotate",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char *angle=new char[pos1-8];
+		char *xval=new char[pos2-pos1];
+		char *yval=new char[pos3-pos2];
+		char *zval=new char[len-pos3-1];
+		
+		strcopy(angle,&line[9],pos1-9);
+		strcopy(xval,&line[pos1+1],pos2-pos1-1);
+		strcopy(yval,&line[pos2+1],pos3-pos2-1);
+		strcopy(zval,&line[pos3+1],len-pos3-2);
+		
+		horzObj=new Script(this,angle,pref,vars,eventReciver);
+		vertObj=new Script(this,xval,pref,vars,eventReciver);
+		vertObj2=new Script(this,yval,pref,vars,eventReciver);
+		vertObj3=new Script(this,zval,pref,vars,eventReciver);
+		delete[]angle;
+		delete[]xval;
+		delete[]yval;
+		delete[]zval;
+		return NULL;
+	}
+	else if(bracketFind(line,"glcolor(") == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SGRAPHCOLOR;
+		int pos1=bracketFind(line,",",8);
+
+		int pos2=bracketFind(line,",",pos1+1);
+		if(pos1==-1 || pos2==-1)
+		{
+			printError("Invalid use of glcolor",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+
+		char *xval=new char[pos1-7];
+		char *yval=new char[pos2-pos1];
+		char *zval=new char[len-pos2-1];
+
+		strcopy(xval,&line[8],pos1-8);
+		strcopy(yval,&line[pos1+1],pos2-pos1-1);
+		strcopy(zval,&line[pos2+1],len-pos2-2);
+		vertObj=new Script(this,xval,pref,vars,eventReciver);
+		vertObj2=new Script(this,yval,pref,vars,eventReciver);
+		vertObj3=new Script(this,zval,pref,vars,eventReciver);
+		delete[]xval;
+		delete[]yval;
+		delete[]zval;
+		return NULL;
+	}
+	else if(bracketFind(line,"glstring(") == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SGRAPHTEXT;
+		var=2;
+		int pos1=bracketFind(line,",",9);
+
+		int pos2=bracketFind(line,",",pos1+1);
+		if(pos1==-1 || pos2==-1)
+		{
+			printError("Invalid use of glstring",semicolonCount,eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char *xval=new char[pos1-8];
+		char *yval=new char[pos2-pos1];
+		char *text=new char[len-pos2-1];
+		
+		strcopy(xval,&line[9],pos1-9);
+		strcopy(yval,&line[pos1+1],pos2-pos1-1);
+		strcopy(text,&line[pos2+1],len-pos2-2);
+		
+		horzObj=new Script(this,text,pref,vars,eventReciver);
+		vertObj=new Script(this,xval,pref,vars,eventReciver);
+		vertObj2=new Script(this,yval,pref,vars,eventReciver);
+		delete[]text;
+		delete[]xval;
+		delete[]yval;
+		return NULL;
+	}
 	else if((pos1=bracketFind(line,"run(")) == 0)
 	{
 		if(eventReciver->calcMode)
@@ -2473,6 +2941,11 @@ char* Script::parse(char* line)
 			operation=SCONJ;
 			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
 		}
+		else if(strncmp(line,"det",3) == 0)
+		{
+			operation=DETERMINANT;
+			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+		}
 		else if(strncmp(line,"i",1) == 0  && pref->complex)
 		{
 			operation=SVALUE;
@@ -2522,7 +2995,12 @@ char* Script::parse(char* line)
 		strcopy(recString1,line,pos1);
 		strcopy(recString2,&line[pos1+1],len-pos1-1);
 		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+		if(strcmp(recString2,"-1")!=0)
+			vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+		else {
+			operation=INVERT;
+			vertObj2=NULL;
+		}
 			
 		delete[]recString1;
 		delete[]recString2;
@@ -2824,6 +3302,13 @@ Number Script::exec()
 			eventReciver->status=0;
 			pthread_exit(0);
 		}
+#ifndef CONSOLE
+		if(eventReciver->eventCount>200)
+		{
+//			perror("events: "+QString::number(eventReciver->eventCount));
+			usleep(1000);
+		}
+#endif
 		if(eventReciver->usleep)
 		{
 			eventReciver->usleep=false;
@@ -2944,6 +3429,7 @@ Number Script::exec()
 				eventReciver->dimension[27][0]=eventReciver->dimension[27][1]=eventReciver->numlen[27]=1;
 				n=vertObj2->exec();
 				
+				free(eventReciver->vars[28]);
 				eventReciver->vars[28]=tmpMem;
 				eventReciver->numlen[28]=tmpMemLen;
 				eventReciver->dimension[28][0]=tmpDimension1;
@@ -3117,6 +3603,7 @@ Number Script::exec()
 				eventReciver->dimension[27][0]=eventReciver->dimension[27][1]=eventReciver->numlen[27]=1;
 				n=vertObj2->exec();
 				
+				free(eventReciver->vars[28]);
 				eventReciver->vars[28]=tmpMem;
 				eventReciver->numlen[28]=tmpMemLen;
 				eventReciver->dimension[28][0]=tmpDimension1;
@@ -3409,7 +3896,6 @@ Number Script::exec()
 						
 						oldEffIndex=c1+c*oldDimension1;
 						newEffIndex=c1+c*eventReciver->dimension[var][0];
-//						perror("\nresize: c "+QString::number(c)+ " c1: " + QString::number(c1));
 						memcpy(&eventReciver->vars[var][newEffIndex],&eventReciver->vars[var][oldEffIndex],sizeof(Number));
 						memcpy(&eventReciver->vars[var][oldEffIndex],&nullNum,sizeof(Number));
 					}
@@ -3718,6 +4204,7 @@ Number Script::exec()
 				eventReciver->dimension[27][0]=eventReciver->dimension[27][1]=eventReciver->numlen[27]=1;
 				n=vertObj2->exec();
 				
+				free(eventReciver->vars[28]);
 				eventReciver->vars[28]=tmpMem;
 				eventReciver->numlen[28]=tmpMemLen;
 				eventReciver->dimension[28][0]=tmpDimension1;
@@ -3771,16 +4258,23 @@ Number Script::exec()
 			}
 			else if(value.type==NVECTOR && n.type==NVECTOR)					//cross product
 			{
-				if(eventReciver->dimension[n.ival][0]>=3 && eventReciver->dimension[value.ival][0]>=3)
+				if(eventReciver->dimension[n.ival][0]==3 && eventReciver->dimension[value.ival][0]==3)
 				{
 					int index1=value.ival;
 					int index2=n.ival;
 //					perror(QString::number(index1)+" "+QString::number(index2));
 
 					eventReciver->vars[27]=(Number*)realloc(eventReciver->vars[27],sizeof(Number)*3);
+					
+					if(eventReciver->numlen[n.ival]<3)
+						resizeVar(n.ival,3);
+					if(eventReciver->numlen[value.ival]<3)
+						resizeVar(value.ival,3);
+					
 					for(int c=0; c<3;c++)
 					{
 						eventReciver->vars[27][c].type=NFLOAT;
+						eventReciver->vars[27][c].cval=NULL;
 						convertToFloat(&eventReciver->vars[index1][c]);
 						convertToFloat(&eventReciver->vars[index2][c]);
 					}
@@ -3803,13 +4297,18 @@ Number Script::exec()
 			}
 			else if((value.type==NMATRIX || value.type==NVECTOR) && (n.type==NMATRIX || n.type==NVECTOR))					//matrix product
 			{
+			//	perror("Dimension value: "+QString::number(eventReciver->dimension[value.ival][0])+" "+QString::number(eventReciver->dimension[value.ival][1])+
+			//			" Dimension n: "+QString::number(eventReciver->dimension[n.ival][0])+" "+QString::number(eventReciver->dimension[n.ival][1]));
 				int min1=eventReciver->dimension[value.ival][0];
 				int min2=eventReciver->dimension[n.ival][1];
 				int minstep=eventReciver->dimension[value.ival][1];
 				int effIndex1=0,effIndex2=0,effIndexD=0;
 				
-				if(eventReciver->dimension[n.ival][0]<minstep)
-					minstep=eventReciver->dimension[n.ival][0];
+				if(eventReciver->dimension[n.ival][0]!=minstep)
+				{
+					value.type=NNONE;
+					return value;
+				}
 
 				resizeVar(27,min1*min2);
 				for(int c=0; c<min1; c++)								//row
@@ -4056,6 +4555,9 @@ Number Script::exec()
 			QCustomEvent *ev=new QCustomEvent(SIGPRINT);
 			ev->setData(eventContent);
 			QApplication::postEvent(eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
 #else 
 			fprintf(stderr,"%s",eventContent);
 			free(eventContent);
@@ -4065,6 +4567,208 @@ Number Script::exec()
 				return value;
 			else return nextObj->exec();
 		}
+#ifndef CONSOLE
+		case SGRAPHLIST:
+		{
+			if(var==0)
+			{
+				QCustomEvent *ev=new QCustomEvent(SIGCALLLIST);
+				value=vertObj->exec();
+				convertToInt(&value);
+				int num=value.ival;
+				int*eventContent=(int*)malloc(sizeof(int));
+				memcpy(eventContent,&num,sizeof(int));
+				ev->setData(eventContent);
+				QApplication::postEvent(eventReciver,ev);
+				eventReciver->eventCount++;
+				if(eventReciver->eventCount>200)
+					eventReciver->status=1;
+			}
+			else if(var==1)
+			{
+				QCustomEvent *ev=new QCustomEvent(SIGSTARTLIST);
+				QApplication::postEvent(eventReciver,ev);
+				eventReciver->eventCount++;
+				if(eventReciver->eventCount>200)
+					eventReciver->status=1;
+			}
+			else if(var==2)
+			{
+				eventReciver->data=NULL;
+				QCustomEvent*ev=new QCustomEvent(SIGENDLIST);
+				qApp->lock();
+				QApplication::postEvent(eventReciver,ev);
+				eventReciver->eventCount++;
+				if(eventReciver->eventCount>200)
+					eventReciver->status=1;
+				qApp->unlock();
+				while(eventReciver->data==NULL)
+				{
+					if(eventReciver->status)
+						if(eventReciver->exit)
+					{
+						eventReciver->exit=false;
+						pthread_exit(0);
+					}
+					usleep(500);
+				}
+				int retval;
+				memcpy(&retval,eventReciver->data,sizeof(int));
+				value.ival=retval;
+				value.type=NINT;
+				free(eventReciver->data);
+			}
+
+			return value;
+		}
+		case SGRAPHCONTROL:
+		{
+			QCustomEvent *ev;
+			if(var==0)
+				ev=new QCustomEvent(SIGGRAPHSHOW);
+			else if(var==1)
+				ev=new QCustomEvent(SIGGRAPHCLEAR);
+			else if(var==2)
+				ev=new QCustomEvent(SIGGRAPHEND);
+			else ev=new QCustomEvent(SIGIDENTITY);
+			
+			QApplication::postEvent(eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+			
+			return value;
+		}
+		case SGRAPHPAINT:
+		{
+			QCustomEvent *ev=new QCustomEvent(SIGGRAPHBEGIN);
+			int*eventContent=(int*)malloc(sizeof(int));
+			*eventContent=(int)value.ival;
+			ev->setData(eventContent);
+			QApplication::postEvent(eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+
+			return value;
+		}
+		case SGRAPHVERTEX:
+		{
+			QCustomEvent *ev=new QCustomEvent(SIGGRAPHVERTEX);
+			double*eventContent=(double*)malloc(sizeof(double)*3);
+			value=vertObj->exec();
+			convertToFloat(&value);
+			eventContent[0]=(double)value.fval.real();
+			value=vertObj2->exec();
+			convertToFloat(&value);
+			eventContent[1]=(double)value.fval.real();
+			value=vertObj3->exec();
+			convertToFloat(&value);
+			eventContent[2]=(double)value.fval.real();
+
+			ev->setData(eventContent);
+			QApplication::postEvent(eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+			return value;
+		}
+		case SGRAPHTRANSFORM:
+		{
+			QCustomEvent *ev;
+			double*eventContent=(double*)malloc(sizeof(double)*4);
+			value=vertObj->exec();
+			convertToFloat(&value);
+			eventContent[0]=(double)value.fval.real();
+			value=vertObj2->exec();
+			convertToFloat(&value);
+			eventContent[1]=(double)value.fval.real();
+			value=vertObj3->exec();
+			convertToFloat(&value);
+			eventContent[2]=(double)value.fval.real();
+			if(var==2)
+			{
+				value=horzObj->exec();
+				convertToFloat(&value);
+				eventContent[3]=(double)value.fval.real();
+				ev=new QCustomEvent(SIGGRAPHROTATE);
+			}
+			else if(var==1)
+				ev=new QCustomEvent(SIGGRAPHTRANSLATE);
+			else ev=new QCustomEvent(SIGGRAPHSCALE);
+
+			ev->setData(eventContent);
+			QApplication::postEvent(eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+			return value;
+		}
+		case SGRAPHCOLOR:
+		{
+			QCustomEvent *ev=new QCustomEvent(SIGGRAPHCOLOR);
+			int*eventContent=(int*)malloc(sizeof(int)*3);
+			value=vertObj->exec();
+			convertToInt(&value);
+			if(value.ival<0)
+				value.ival=0;
+			if(value.ival>255)
+				value.ival=255;
+			eventContent[0]=(int)value.ival;
+			value=vertObj2->exec();
+			convertToInt(&value);
+			if(value.ival<0)
+				value.ival=0;
+			if(value.ival>255)
+				value.ival=255;
+			eventContent[1]=(int)value.ival;
+			value=vertObj3->exec();
+			convertToInt(&value);
+			if(value.ival<0)
+				value.ival=0;
+			if(value.ival>255)
+				value.ival=255;
+			eventContent[2]=(int)value.ival;
+
+			ev->setData(eventContent);
+			QApplication::postEvent(eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+			return value;
+		}
+		case SGRAPHTEXT:
+		{
+			QCustomEvent *ev=new QCustomEvent(SIGGRAPHTEXT);
+			char*eventContent;
+			
+			value=horzObj->exec();
+			if(value.type!=NCHAR)
+			{
+				convertToFloat(&value);
+				eventContent=(char*)malloc(100+2*sizeof(int));
+				sprintf(&eventContent[2*sizeof(int)],"%.*Lg",pref->outputLength,value.fval.real());
+			}
+			else {
+				eventContent=(char*)malloc(strlen(value.cval)+2*sizeof(int)+1);
+				strcpy(&eventContent[2*sizeof(int)],value.cval);
+			}
+			value=vertObj->exec();
+			convertToInt(&value);
+			((int*)eventContent)[0]=(int)value.ival;
+			value=vertObj2->exec();
+			convertToInt(&value);
+			((int*)eventContent)[1]=(int)value.ival;
+			
+			ev->setData(eventContent);
+			QApplication::postEvent(eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+			
+			return value;
+		}
+#endif
 		case SLESS:
 		{
 			value.type=NBOOL;
@@ -4306,6 +5010,90 @@ Number Script::exec()
 				value.fval=Complex(powl(value.fval.real(),n.fval.real()));
 			else value.fval=pow(value.fval,n.fval);
 			return value;
+		}
+		case INVERT:
+		{
+			value=vertObj->exec();
+			switch(value.type)
+			{
+				case NFLOAT:
+					value.fval=Complex(1.0)/value.fval;
+					return value;
+				case NMATRIX:
+					
+					long double*matrix;
+					long double mainDet;
+					int size,effIndex;
+					if(eventReciver->dimension[value.ival][0]==eventReciver->dimension[value.ival][1])
+						size=eventReciver->dimension[value.ival][1];
+					else{
+						value.type=NNONE;
+						return value;
+					}
+					
+					matrix=(long double*)malloc(size*size*sizeof(long double));
+					for(int c1=0; c1<size; c1++)
+						for(int c2=0; c2<size; c2++)
+					{
+						effIndex=c1+c2*eventReciver->dimension[value.ival][0];
+						if(effIndex<eventReciver->numlen[value.ival])
+						{
+							convertToFloat(&eventReciver->vars[value.ival][effIndex]);
+							matrix[c1+size*c2]=eventReciver->vars[value.ival][effIndex].fval.real();
+						}
+					}
+					mainDet=gauss(size,size,matrix);
+					mainDet=1.0/mainDet;
+					
+					resizeVar(27,size*size);
+					eventReciver->dimension[27][0]=eventReciver->dimension[27][1]=size;
+					
+					int pos1,pos2,effSrcIndex,effDestIndex,vz;
+					for(int c3=0; c3<size; c3++)
+					{
+						for(int c4=0; c4<size; c4++)
+						{
+							effIndex=c3+c4*eventReciver->dimension[value.ival][0];
+							pos1=0;
+							for(int c1=0; c1<size; c1++)
+							{
+								if(c1!=c3)
+								{
+									pos2=0;
+									for(int c2=0; c2<size; c2++)
+									{
+										effDestIndex=pos1+(size-1)*pos2;
+										effSrcIndex=c1+c2*eventReciver->dimension[value.ival][0];
+										if(c2!=c4)
+										{
+											if(effSrcIndex<eventReciver->numlen[value.ival])
+												matrix[effDestIndex]=eventReciver->vars[value.ival][effSrcIndex].fval.real();
+											else matrix[effDestIndex]=NAN;
+											pos2++;
+										}
+									}
+									pos1++;
+								}
+							}
+							vz=(c3+c4)%2;
+							if(vz==0)
+								vz=1;
+							else vz=-1;
+							effDestIndex=c4+c3*size;
+							long double subDet=gauss(size-1,size-1,matrix);
+							eventReciver->vars[27][effDestIndex].fval=Complex(mainDet*(long double)vz*subDet);
+							
+							eventReciver->vars[27][effDestIndex].type=NFLOAT;
+						}
+					}
+					free(matrix);
+					value.ival=27;
+					return value;
+				default:
+					convertToFloat(&value);
+					value.fval=Complex(1.0)/value.fval;
+					return value;
+			}
 		}
 		case SQRT:
 		{
@@ -4852,9 +5640,9 @@ Number Script::exec()
 			double * line1=new double;						//	Romberg's Method
 			double *line2=new double[3];
 			double y,oldy;
-			vars[23][0]=start;
+			vars[23]=start;
 			oldy=horzObj->calc();
-			vars[23][0]=end;
+			vars[23]=end;
 			y=horzObj->calc();
 			line1[0]=(y+oldy)*(end-start)/2.0;
 			double fail=HUGE_VAL,oldfail=0.0;
@@ -4873,7 +5661,7 @@ Number Script::exec()
 			
 				for(int c=1; c<=steps; c++)
 				{
-					vars[23][0]=start+((2*c-1)*(end-start))/pow(2.0,(double)num);
+					vars[23]=start+((2*c-1)*(end-start))/pow(2.0,(double)num);
 					line1[0]+=horzObj->calc();
 				}
 				line1[0]=0.5*(line1[0]*(end-start)/pow(2.0,(double)(num-1))+line2[0]);
@@ -4905,6 +5693,41 @@ Number Script::exec()
 			if(inv)
 				value.fval*=Complex(-1.0);
 		
+			return value;
+		}
+		case DETERMINANT:
+		{
+			value=vertObj->exec();
+			if(value.type!=NMATRIX)
+			{
+				convertToFloat(&value);
+				return value;
+			}
+			long double*matrix;
+			int size,effIndex;
+			if(eventReciver->dimension[value.ival][0]==eventReciver->dimension[value.ival][1])
+				size=eventReciver->dimension[value.ival][1];
+			else
+			{
+				value.type=NNONE;
+				return value;
+			}
+			
+			matrix=(long double*)malloc(size*size*sizeof(long double));
+			
+			for(int c1=0; c1<size; c1++)
+				for(int c2=0; c2<size; c2++)
+			{
+				effIndex=c1+c2*eventReciver->dimension[value.ival][0];
+				if(effIndex<eventReciver->numlen[value.ival])
+				{
+					convertToFloat(&eventReciver->vars[value.ival][effIndex]);
+					matrix[c1+size*c2]=eventReciver->vars[value.ival][effIndex].fval.real();
+				}
+			}
+			value.type=NFLOAT;
+			value.fval=Complex(gauss(size,size,matrix));
+			free(matrix);
 			return value;
 		}
 		case SRUN:
@@ -4970,6 +5793,7 @@ Number Script::exec()
 				eventReciver->dimension[27][0]=eventReciver->dimension[27][1]=eventReciver->numlen[27]=1;
 				n=vertObj2->exec();
 				
+				free(eventReciver->vars[28]);
 				eventReciver->vars[28]=tmpMem;
 				eventReciver->numlen[28]=tmpMemLen;
 				eventReciver->dimension[28][0]=tmpDimension1;
@@ -4999,6 +5823,195 @@ Number Script::exec()
 			
 			return value;
 		}
+		case SFREAD:
+		{
+			value=vertObj->exec();
+			if(value.type!=NCHAR || value.cval==NULL || value.cval[0]==(char)0)
+			{
+				value.type=NNONE;
+				return value;
+			}
+			int pathlen=strlen(value.cval);
+#ifndef CONSOLE
+			char*eventContent=(char*)malloc(pathlen+1);
+			memcpy(eventContent,value.cval,pathlen);
+			eventReciver->data=NULL;
+			QCustomEvent*fileEvent=new QCustomEvent(SIGFILEREAD);
+			fileEvent->setData(eventContent);
+
+			QApplication::postEvent(eventReciver,fileEvent);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+
+			while(eventReciver->data==NULL)
+			{
+				if(eventReciver->status)
+					if(eventReciver->exit)
+				{
+					eventReciver->exit=false;
+					pthread_exit(0);
+				}
+				usleep(5000);
+			}
+			int dataLen=strlen((char*)eventReciver->data);
+			value.cval=(char*)malloc(dataLen+1);
+			memcpy(value.cval,eventReciver->data,dataLen+1);
+			free(eventReciver->data);
+#else
+
+			char*fileData;
+			struct stat fileStat;
+			FILE*f;
+			if(strlen(value.cval)>0 && lstat(value.cval,&fileStat)==0)
+			{
+				f=fopen(value.cval,"r");
+				if(f!=NULL && fileStat.st_size>0 && S_ISREG(fileStat.st_mode))
+				{
+					fileData=new char[fileStat.st_size+1];
+					fileData[fileStat.st_size]=(char)0;
+					fread(fileData,fileStat.st_size,1,f);
+					fclose(f);
+				}
+				else fileData=NULL;
+			}
+			else fileData=NULL;
+				
+			if(fileData==NULL)
+				value.cval[0]=(char)0;
+			else {
+				free(value.cval);
+				value.cval=fileData;
+			}
+#endif
+			
+			
+			return value;
+		}
+		case SFAPPEND:
+		{
+			value=vertObj->exec();
+			if(value.type!=NCHAR || value.cval==NULL)
+			{
+				value.type=NNONE;
+				return value;
+			}
+			Number n=vertObj2->exec();
+			char*eventContent;
+			int pathlen=strlen(value.cval);
+			if(n.type!=NCHAR)
+			{
+				convertToFloat(&n);
+				eventContent=(char*)malloc(100+pathlen);
+				strcpy(eventContent,value.cval);
+				sprintf(&eventContent[pathlen+1],"%.*Lg",pref->outputLength,n.fval.real());
+			}
+			else {
+				eventContent=(char*)malloc(strlen(n.cval)+pathlen+2);
+				strcpy(eventContent,value.cval);
+				strcpy(&eventContent[pathlen+1],n.cval);
+			}
+#ifndef CONSOLE
+			QCustomEvent *ev=new QCustomEvent(SIGFILEAPPEND);
+			ev->setData(eventContent);
+			QApplication::postEvent(eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+#else
+
+				
+			FILE*f;
+			if(strlen(value.cval)>0)
+			{
+				f=fopen(value.cval,"a");
+				if(f!=NULL)
+				{
+					int dataLen=strlen(&((char*)eventContent)[pathlen+1]);
+					fwrite(&((char*)eventContent)[pathlen+1],dataLen,1,f);
+					fclose(f);
+				}
+			}
+			free(eventContent);
+#endif
+			
+			return value;
+		}
+		case SFWRITE:
+		{
+			value=vertObj->exec();
+			if(value.type!=NCHAR)
+			{
+				value.type=NNONE;
+				return value;
+			}
+			Number n=vertObj2->exec();
+			char*eventContent;
+			int pathlen=strlen(value.cval);
+			if(n.type!=NCHAR)
+			{
+				convertToFloat(&n);
+				eventContent=(char*)malloc(100+pathlen);
+				strcpy(eventContent,value.cval);
+				sprintf(&eventContent[pathlen+1],"%.*Lg",pref->outputLength,n.fval.real());
+			}
+			else {
+				eventContent=(char*)malloc(strlen(n.cval)+pathlen+2);
+				strcpy(eventContent,value.cval);
+				strcpy(&eventContent[pathlen+1],n.cval);
+			}
+			
+#ifndef CONSOLE
+			QCustomEvent *ev=new QCustomEvent(SIGFILEWRITE);
+			ev->setData(eventContent);
+			QApplication::postEvent(eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+#else
+
+				
+			FILE*f;
+			if(strlen(value.cval)>0)
+			{
+				f=fopen(value.cval,"w");
+				if(f!=NULL)
+				{
+					int dataLen=strlen(&((char*)eventContent)[pathlen+1]);
+					fwrite(&((char*)eventContent)[pathlen+1],dataLen,1,f);
+					fclose(f);
+				}
+			}
+			free(eventContent);
+#endif
+			
+			
+			return value;
+		}
+		case SFREMOVE:
+		{
+			value=vertObj->exec();
+			if(value.type!=NCHAR || value.cval==NULL)
+			{
+				value.type=NNONE;
+				return value;
+			}
+#ifndef CONSOLE
+			char*eventContent=(char*)malloc(strlen(value.cval)+1);
+			strcpy(eventContent,value.cval);
+			QCustomEvent *ev=new QCustomEvent(SIGFILEREMOVE);
+			ev->setData(eventContent);
+			QApplication::postEvent(eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+#else
+			remove(value.cval);
+#endif
+			
+			return value;
+		}
+				
 		case SSLEEP:
 		{
 			value=vertObj->exec();
@@ -5031,6 +6044,9 @@ Number Script::exec()
 			QCustomEvent *ev=new QCustomEvent(SIGSETTEXTPOS);
 			ev->setData(coords);
 			QApplication::postEvent(eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
 #else 
 			fprintf(stderr,"\033[%i;%iH",coords[1]+1,coords[0]+1);
 #endif
@@ -5044,6 +6060,9 @@ Number Script::exec()
 #ifndef CONSOLE
 			QCustomEvent*clearEvent=new QCustomEvent(SIGCLEARTEXT);
 			QApplication::postEvent(eventReciver,clearEvent);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
 #else 
 			fprintf(stderr,"\033[2J");
 			fprintf(stderr,"\033[1;1H");
@@ -5058,10 +6077,12 @@ Number Script::exec()
 #ifndef CONSOLE
 			eventReciver->data=NULL;
 			QCustomEvent*clearEvent=new QCustomEvent(SIGGETKEY);
-			qApp->lock();
+
 			QApplication::postEvent(eventReciver,clearEvent);
-			QApplication::sendPostedEvents();
-			qApp->unlock();
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+
 			while(eventReciver->data==NULL)
 			{
 				if(eventReciver->status)
@@ -5087,10 +6108,12 @@ Number Script::exec()
 #ifndef CONSOLE
 			eventReciver->data=NULL;
 			QCustomEvent*clearEvent=new QCustomEvent(SIGKEYSTATE);
-			qApp->lock();
+
 			QApplication::postEvent(eventReciver,clearEvent);
-			QApplication::sendPostedEvents();
-			qApp->unlock();
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+
 			while(eventReciver->data==NULL)
 			{
 				if(eventReciver->status)
@@ -5139,10 +6162,12 @@ Number Script::exec()
 #ifndef CONSOLE
 			eventReciver->data=NULL;
 			QCustomEvent*clearEvent=new QCustomEvent(SIGGETLINE);
-			qApp->lock();
+
 			QApplication::postEvent(eventReciver,clearEvent);
-			QApplication::sendPostedEvents();
-			qApp->unlock();
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+
 			while(eventReciver->data==NULL)
 			{
 				if(eventReciver->status)
@@ -5178,7 +6203,8 @@ Number Script::exec()
 			memcpy(value.cval,input,strlen(input)-1);
 			value.cval[strlen(input)-1]=(char)0;
 
-			free(input);
+			free(input);			
+			
 #endif
 			if(nextObj==NULL)
 				return value;
@@ -5220,7 +6246,7 @@ Number Script::execHorzObj()
 
 bool Script::resizeVar(int var,int newlen)
 {
-	eventReciver->vars[var]=(Number*)realloc((void*)eventReciver->vars[var],sizeof(Number)*(newlen));
+	eventReciver->vars[var]=(Number*)realloc(eventReciver->vars[var],sizeof(Number)*(newlen));
 	for(int c=eventReciver->numlen[var]; c<newlen; c++)
 	{
 		eventReciver->vars[var][c].type=NNONE;
@@ -5230,3 +6256,84 @@ bool Script::resizeVar(int var,int newlen)
 	eventReciver->numlen[var]=newlen;
 	return true;
 }
+
+long double determinant(int size,long double*matrix)
+{
+	if(size>2)
+	{
+		long double ret=0.0;
+		long double*nextMatrix=(long double*)malloc(sizeof(long double)*(size-1)*(size-1));
+		int pos=0;
+		for(int c=0; c<size; c++)
+		{
+			pos=0;
+			for(int c2=1; c2<size; c2++)
+				for(int c1=0; c1<size; c1++)
+			{
+				if(c!=c1)
+				{
+					nextMatrix[pos]=matrix[c1+size*c2];
+					pos++;
+				}
+			}
+			if(c%2==0)
+				ret+=matrix[c]*determinant(size-1,nextMatrix);
+			else ret-=matrix[c]*determinant(size-1,nextMatrix);
+		}
+		free(nextMatrix);
+		return ret;
+	}
+	else if(size==2)
+		return matrix[0]*matrix[3]-matrix[1]*matrix[2];
+	else return matrix[0];
+}
+
+long double gauss(int sizex,int sizey,long double*matrix)
+{
+	long double fakt,ret=1.0;
+	int offset=0;
+	int size=sizex;
+	if(size>sizey)
+		size=sizey;
+	
+	for(int c1=0; c1<size; c1++)
+	{
+		if(matrix[c1*sizey+c1]==0.0)
+		{
+			int swapIndex=0;
+			for(int c2=c1+1; c2<sizey; c2++)
+				if(matrix[c1*sizey+c2]!=0.0)
+			{
+				swapIndex=c2;
+				break;
+			}
+			if(swapIndex==0)
+			{
+				offset++;
+				continue;
+			}
+			else
+			{
+				long double tmp;
+				for(int c2=0; c2<sizex; c2++)
+				{
+					tmp=matrix[swapIndex+c2*sizey];
+					matrix[swapIndex+c2*sizey]=matrix[c1+c2*sizey];
+					matrix[c1+c2*sizey]=tmp;
+				}
+				ret=-ret;
+			}
+		}
+		for(int c2=c1+1-offset; c2<sizey; c2++)
+		{
+			fakt=matrix[c1*sizey+c2]/matrix[c1*sizey+c1-offset];
+			for(int c3=c1; c3<sizex; c3++)
+				matrix[c3*sizey+c2]-=matrix[c3*sizey+c1-offset]*fakt;
+		}
+
+	}
+	for(int c=0; c<size; c++)
+		ret*=matrix[c*size+c];
+	return ret;
+}
+

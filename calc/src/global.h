@@ -17,7 +17,7 @@
 using namespace std;
 
 
-#define VERSIONSTRING "Version: 0.7.0 2007-03-09\nCalculator algorithm: extcalc v0.7.0 2007-03-09"
+#define VERSIONSTRING "Version: 0.8.0 2007-04-24\nCalculator algorithm: extcalc v0.8.0 2007-04-23"
 #define AUTHORSTRING "Author:\nRainer Strobel\nhttp://extcalc-linux.sourceforge.net\n2007\n"
 
 
@@ -67,6 +67,19 @@ using namespace std;
 #define SIMAG				151
 #define SARG				152
 #define SVECTOR				169
+#define SFREAD				186
+#define SFWRITE				187
+#define SFAPPEND			188
+#define SFREMOVE			189
+#define SGRAPHLIST			190
+#define SGRAPHCONTROL		191
+#define SGRAPHPAINT			192
+#define SGRAPHVERTEX		193
+#define SGRAPHTEXT			194
+#define SGRAPHCOLOR			195
+#define SGRAPHTRANSFORM		196
+#define SGRAPHIDENTITY		197
+
 
 
 #define NNONE				0x1
@@ -122,6 +135,8 @@ using namespace std;
 #define CSQRT				167
 #define CURT				168
 #define SCALARPROD			170
+#define DETERMINANT			182
+#define INVERT				183
 
 #define PPINVALIDCOMMAND	176
 #define PPINVALIDARGUMENT	177
@@ -163,7 +178,7 @@ using namespace std;
 
 #define CONSOLE
 
-typedef List<long double> Variable;
+typedef long double Variable;
 typedef complex <long double> Complex;
 
 
@@ -228,7 +243,8 @@ void printError(const char*,int,ThreadSync*);
 void convertToFloat(Number*num);
 inline void convertToInt(Number*num);
 inline void convertToBool(Number*num);
-
+long double determinant(int,long double*);
+long double gauss(int sizex,int sizey,long double*matrix);
 
 
 // for compatibility with systems without math functions for long double
@@ -255,6 +271,8 @@ inline void convertToBool(Number*num);
 #define powl(va,vb) pow(va,vb)
 #define fmodl(va,vb) fmod(va,vb)
 #define strtold(va,vb) strtod(va,vb)
+#define cbrtl(var) cbrt(var)
+#define fabsl(var) fabs(var)
 
 #endif
 

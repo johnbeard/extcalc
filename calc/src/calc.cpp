@@ -48,7 +48,7 @@ int main(int argc,char**argv)
 	Number value;
 
 	for(int c=0; c<VARNUM;c++)
-		vars[c].NewItem(0.0);
+		vars[c]=0.0;
 	Preferences *pref=new Preferences;
 	pref->angle=RAD;
 	pref->calcType=SCIENTIFIC;
@@ -121,18 +121,18 @@ int main(int argc,char**argv)
 					if(real)
 					{
 #ifndef NO_LONG_DOUBLE
-					vars[varCount][0]=strtold(var,NULL);
+					vars[varCount]=strtold(var,NULL);
 #else 
-					vars[varCount][0]=strtod(var,NULL);
+					vars[varCount]=strtod(var,NULL);
 #endif
 					real=false;
 					}
 					else 
 					{
 #ifndef NO_LONG_DOUBLE
-					scriptData.vars[varCount][0].fval=Complex(vars[varCount][0],strtold(var,NULL));
+					scriptData.vars[varCount][0].fval=Complex(vars[varCount],strtold(var,NULL));
 #else 
-					scriptData.vars[varCount][0].fval=Complex(vars[varCount][0],strtod(var,NULL));
+					scriptData.vars[varCount][0].fval=Complex(vars[varCount],strtod(var,NULL));
 #endif
 						varCount++;
 						real=true;
