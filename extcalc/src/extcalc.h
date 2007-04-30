@@ -149,6 +149,8 @@
 //	- array memory can't be deleted														ok	//
 //	- script load balancing doesn't work on fast (dual-core) CPUs						ok	//
 //	- inserting text into a running script doesn't work									ok	//
+//	- gl script programming does not work on every system									//
+//	- import script dialog path check is wrong												//
 
 
 //////////////////////////used variables//////////////////////////

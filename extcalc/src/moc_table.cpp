@@ -1,7 +1,7 @@
 /****************************************************************************
 ** TableWidget meta object code from reading C++ file 'table.h'
 **
-** Created: Sun Apr 22 05:50:19 2007
+** Created: Tue Apr 24 17:57:02 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!

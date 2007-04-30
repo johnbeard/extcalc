@@ -1662,6 +1662,12 @@ void ImportDialog::saveSlot()
 {
 	QString savePath=savePathLine->text(),openPath=openPathLine->text();
 	
+	if(savePath.find("/") <0 && importFile)
+		savePath=pref.scriptPath+"/"+pref.scriptDirName+"/"+savePath;
+	
+	if(openPath.find("/") <0 && !importFile)
+		openPath=pref.scriptPath+"/"+pref.scriptDirName+"/"+openPath;
+	
 	if((savePath.find(pref.scriptPath+"/"+pref.scriptDirName) !=0 && importFile) || 
 		  (openPath.find(pref.scriptPath+"/"+pref.scriptDirName) !=0 && !importFile))
 	{

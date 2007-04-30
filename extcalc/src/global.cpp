@@ -3708,7 +3708,7 @@ Number Script::exec()
 //	perror("exec: "+QString::number(operation));
 	if(eventReciver->status)
 	{
-		
+#ifndef CONSOLE
 		if(eventReciver->exit)
 		{
 			eventReciver->exit=false;
@@ -3720,6 +3720,7 @@ Number Script::exec()
 //			perror("events: "+QString::number(eventReciver->eventCount));
 			usleep(1000);
 		}
+#endif
 		if(eventReciver->usleep)
 		{
 			eventReciver->usleep=false;
