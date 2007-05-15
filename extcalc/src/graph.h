@@ -141,6 +141,7 @@ Q_OBJECT
 		QObject::connect(graph,SIGNAL(screenshotSignal(QPixmap*)),solveWidget,SLOT(screenshotSlot(QPixmap*)));
 		QObject::connect(solveWidget,SIGNAL(getScreenshotSignal(int,int)),graph,SLOT(screenshotSlot(int,int)));
 		QObject::connect(solveWidget,SIGNAL(drawSignal(int,QColor,int)),graph,SLOT(drawSlot(int,QColor,int)));
+		QObject::connect(this,SIGNAL(drawPointsSignal(long double*,int,bool)),graph,SLOT(drawPoints(long double*,int,bool)));
 
 	}
 	
@@ -216,6 +217,7 @@ protected:
 signals:
 	void prefChange(Preferences);
 	void solveTypeSignal(int);
+	void drawPointsSignal(long double*,int,bool);
 	
 };
 

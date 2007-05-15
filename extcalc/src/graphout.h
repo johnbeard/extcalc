@@ -164,6 +164,7 @@ public slots:
 	void drawVerticalLine(double x);
 	void drawCircle(double radius);
 	void drawPolarLine(double angle);
+	void drawPoints(long double *coordinates,int num,bool con);
 	void draw3dXLine(double y,double z);
 	void draw3dYLine(double x,double z);
 	void draw3dZLine(double x,double y);

@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GraphOutput meta object code from reading C++ file 'graphout.h'
 **
-** Created: Tue Apr 24 17:57:02 2007
+** Created: Tue May 15 15:22:07 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -69,58 +69,65 @@ QMetaObject* GraphOutput::staticMetaObject()
     };
     static const QUMethod slot_3 = {"drawPolarLine", 1, param_slot_3 };
     static const QUParameter param_slot_4[] = {
+	{ "coordinates", &static_QUType_ptr, "long double", QUParameter::In },
+	{ "num", &static_QUType_int, 0, QUParameter::In },
+	{ "con", &static_QUType_bool, 0, QUParameter::In }
+    };
+    static const QUMethod slot_4 = {"drawPoints", 3, param_slot_4 };
+    static const QUParameter param_slot_5[] = {
 	{ "y", &static_QUType_double, 0, QUParameter::In },
 	{ "z", &static_QUType_double, 0, QUParameter::In }
     };
-    static const QUMethod slot_4 = {"draw3dXLine", 2, param_slot_4 };
-    static const QUParameter param_slot_5[] = {
+    static const QUMethod slot_5 = {"draw3dXLine", 2, param_slot_5 };
+    static const QUParameter param_slot_6[] = {
 	{ "x", &static_QUType_double, 0, QUParameter::In },
 	{ "z", &static_QUType_double, 0, QUParameter::In }
     };
-    static const QUMethod slot_5 = {"draw3dYLine", 2, param_slot_5 };
-    static const QUParameter param_slot_6[] = {
+    static const QUMethod slot_6 = {"draw3dYLine", 2, param_slot_6 };
+    static const QUParameter param_slot_7[] = {
 	{ "x", &static_QUType_double, 0, QUParameter::In },
 	{ "y", &static_QUType_double, 0, QUParameter::In }
     };
-    static const QUMethod slot_6 = {"draw3dZLine", 2, param_slot_6 };
-    static const QUMethod slot_7 = {"removeLines", 0, 0 };
-    static const QUMethod slot_8 = {"resetRotation", 0, 0 };
-    static const QUMethod slot_9 = {"timerSlot", 0, 0 };
-    static const QUParameter param_slot_10[] = {
+    static const QUMethod slot_7 = {"draw3dZLine", 2, param_slot_7 };
+    static const QUMethod slot_8 = {"removeLines", 0, 0 };
+    static const QUMethod slot_9 = {"resetRotation", 0, 0 };
+    static const QUMethod slot_10 = {"timerSlot", 0, 0 };
+    static const QUParameter param_slot_11[] = {
 	{ "i1", &static_QUType_int, 0, QUParameter::In },
 	{ "i2", &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_10 = {"inequaityIntersectionSlot", 2, param_slot_10 };
-    static const QUParameter param_slot_11[] = {
+    static const QUMethod slot_11 = {"inequaityIntersectionSlot", 2, param_slot_11 };
+    static const QUParameter param_slot_12[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In },
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_11 = {"screenshotSlot", 2, param_slot_11 };
-    static const QUParameter param_slot_12[] = {
+    static const QUMethod slot_12 = {"screenshotSlot", 2, param_slot_12 };
+    static const QUParameter param_slot_13[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In },
 	{ 0, &static_QUType_varptr, "\x0a", QUParameter::In },
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_12 = {"drawSlot", 3, param_slot_12 };
-    static const QUParameter param_slot_13[] = {
+    static const QUMethod slot_13 = {"drawSlot", 3, param_slot_13 };
+    static const QUParameter param_slot_14[] = {
 	{ 0, &static_QUType_bool, 0, QUParameter::In }
     };
-    static const QUMethod slot_13 = {"timerStartSlot", 1, param_slot_13 };
+    static const QUMethod slot_14 = {"timerStartSlot", 1, param_slot_14 };
     static const QMetaData slot_tbl[] = {
 	{ "drawHorizontalLine(double)", &slot_0, QMetaData::Public },
 	{ "drawVerticalLine(double)", &slot_1, QMetaData::Public },
 	{ "drawCircle(double)", &slot_2, QMetaData::Public },
 	{ "drawPolarLine(double)", &slot_3, QMetaData::Public },
-	{ "draw3dXLine(double,double)", &slot_4, QMetaData::Public },
-	{ "draw3dYLine(double,double)", &slot_5, QMetaData::Public },
-	{ "draw3dZLine(double,double)", &slot_6, QMetaData::Public },
-	{ "removeLines()", &slot_7, QMetaData::Public },
-	{ "resetRotation()", &slot_8, QMetaData::Public },
-	{ "timerSlot()", &slot_9, QMetaData::Public },
-	{ "inequaityIntersectionSlot(int,int)", &slot_10, QMetaData::Public },
-	{ "screenshotSlot(int,int)", &slot_11, QMetaData::Public },
-	{ "drawSlot(int,QColor,int)", &slot_12, QMetaData::Public },
-	{ "timerStartSlot(bool)", &slot_13, QMetaData::Public }
+	{ "drawPoints(long double*,int,bool)", &slot_4, QMetaData::Public },
+	{ "draw3dXLine(double,double)", &slot_5, QMetaData::Public },
+	{ "draw3dYLine(double,double)", &slot_6, QMetaData::Public },
+	{ "draw3dZLine(double,double)", &slot_7, QMetaData::Public },
+	{ "removeLines()", &slot_8, QMetaData::Public },
+	{ "resetRotation()", &slot_9, QMetaData::Public },
+	{ "timerSlot()", &slot_10, QMetaData::Public },
+	{ "inequaityIntersectionSlot(int,int)", &slot_11, QMetaData::Public },
+	{ "screenshotSlot(int,int)", &slot_12, QMetaData::Public },
+	{ "drawSlot(int,QColor,int)", &slot_13, QMetaData::Public },
+	{ "timerStartSlot(bool)", &slot_14, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -144,7 +151,7 @@ QMetaObject* GraphOutput::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"GraphOutput", parentObject,
-	slot_tbl, 14,
+	slot_tbl, 15,
 	signal_tbl, 4,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -218,16 +225,17 @@ bool GraphOutput::qt_invoke( int _id, QUObject* _o )
     case 1: drawVerticalLine((double)static_QUType_double.get(_o+1)); break;
     case 2: drawCircle((double)static_QUType_double.get(_o+1)); break;
     case 3: drawPolarLine((double)static_QUType_double.get(_o+1)); break;
-    case 4: draw3dXLine((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
-    case 5: draw3dYLine((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
-    case 6: draw3dZLine((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
-    case 7: removeLines(); break;
-    case 8: resetRotation(); break;
-    case 9: timerSlot(); break;
-    case 10: inequaityIntersectionSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
-    case 11: screenshotSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
-    case 12: drawSlot((int)static_QUType_int.get(_o+1),(QColor)(*((QColor*)static_QUType_ptr.get(_o+2))),(int)static_QUType_int.get(_o+3)); break;
-    case 13: timerStartSlot((bool)static_QUType_bool.get(_o+1)); break;
+    case 4: drawPoints((long double*)static_QUType_ptr.get(_o+1),(int)static_QUType_int.get(_o+2),(bool)static_QUType_bool.get(_o+3)); break;
+    case 5: draw3dXLine((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
+    case 6: draw3dYLine((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
+    case 7: draw3dZLine((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
+    case 8: removeLines(); break;
+    case 9: resetRotation(); break;
+    case 10: timerSlot(); break;
+    case 11: inequaityIntersectionSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
+    case 12: screenshotSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
+    case 13: drawSlot((int)static_QUType_int.get(_o+1),(QColor)(*((QColor*)static_QUType_ptr.get(_o+2))),(int)static_QUType_int.get(_o+3)); break;
+    case 14: timerStartSlot((bool)static_QUType_bool.get(_o+1)); break;
     default:
 	return QGLWidget::qt_invoke( _id, _o );
     }

@@ -1212,7 +1212,7 @@ void MainObject::writeVarFile()
 
 void MainObject::tabChangeSlot(QWidget*activeWidget)
 {
-	if(activeWidget==(QWidget*)calculator || activeWidget==(QWidget*)calculator2)
+	if(activeWidget==(QWidget*)calculator || activeWidget==(QWidget*)calculator2 || activeWidget==(QWidget*)statistics)
 	{
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,false);
@@ -1587,8 +1587,7 @@ void MainObject::viewMenuSlot(int item)
 			}
 			break;
 		case VIEWSTATISTICS:
-			//pref.showWindows[5]=!pref.showWindows[5];
-			pref.showWindows[5]=false;
+			pref.showWindows[5]=!pref.showWindows[5];
 			getPref(pref);
 			if(pref.showWindows[5])
 				showPage(statistics);
@@ -1646,6 +1645,53 @@ void MainObject::runScriptSlot(QString*)
 	if(indexOf(scriptIO) == -1)
 		viewMenuSlot(VIEWSCRIPTIO);
 	else showPage(scriptIO);
+}
+
+void MainObject::changeTabSlot(int num)
+{
+	switch(num)
+	{
+		case 0:
+			if(!pref.showWindows[0])
+				viewMenuSlot(VIEWCALC1);
+			else showPage(calculator);
+			break;
+		case 1:
+			if(!pref.showWindows[1])
+				viewMenuSlot(VIEWCALC2);
+			else showPage(calculator2);
+			break;
+		case 2:
+			if(!pref.showWindows[2])
+				viewMenuSlot(VIEWGRAPH);
+			else showPage(graph);
+			break;
+		case 3:
+			if(!pref.showWindows[3])
+				viewMenuSlot(VIEWTABLE);
+			else showPage(table);
+			break;
+		case 4:
+			if(!pref.showWindows[4])
+				viewMenuSlot(VIEWMATRIX);
+			else showPage(matrix);
+			break;
+		case 5:
+			if(!pref.showWindows[5])
+				viewMenuSlot(VIEWSTATISTICS);
+			else showPage(statistics);
+			break;
+		case 6:
+			if(!pref.showWindows[6])
+				viewMenuSlot(VIEWSCRIPTING);
+			else showPage(scripting);
+			break;
+		case 7:
+			if(!pref.showWindows[7])
+				viewMenuSlot(VIEWSCRIPTIO);
+			else showPage(scriptIO);
+			break;
+	}
 }
 
 

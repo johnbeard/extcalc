@@ -17,11 +17,11 @@ void ScriptWidget::resizeEvent(QResizeEvent*)
 	}
 	else {
 		splitter->setGeometry(20,50,width-40,height-290);
-		
+
 		runButton->setGeometry(width/2+15,height-220,90,35);
 		maximizeButton->setGeometry(width/2+115,height-220,90,35);
 		saveButton->setGeometry(width/2+215,height-220,90,35);
-		
+
 		standardButtons->setGeometry(20,height-220,280,200);
 		extButtons->setGeometry(width/2+10,height-180,300,160);
 

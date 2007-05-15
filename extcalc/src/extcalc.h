@@ -12,6 +12,7 @@
 #include "scriptedit.h"
 #include "scriptio.h"
 #include "matrixwidget.h"
+#include "statistics.h"
 #include "global.h"
 #include <qtabwidget.h>
 #include <qtabbar.h>
@@ -238,7 +239,7 @@ class MainObject :public QTabWidget
 	ScriptWidget*scripting;
 	ScriptIOWidget*scriptIO;
 	MatrixWidget*matrix;
-	QWidget*statistics;
+	StatisticsWidget*statistics;
 	Preferences pref;
 	QProcess*helpProcess;
 	QTabDialog*infoDialog;
@@ -567,7 +568,7 @@ MainObject() :QTabWidget()
 	scripting=new ScriptWidget(this,pref,vars,tabbarSize.bottom());
 	scriptIO=new ScriptIOWidget(this,pref,vars,graph->getShareContext());
 	matrix=new MatrixWidget(this,pref,vars,threadData);
-	statistics=new QWidget(this);
+	statistics=new StatisticsWidget(this,pref,vars,threadData);
 //	addTab(calculator,EXTCALCH_STR6);
 //	addTab(calculator2,EXTCALCH_STR7);
 //	addTab(graph,EXTCALCH_STR8);
@@ -591,6 +592,7 @@ MainObject() :QTabWidget()
 	QObject::connect(scripting,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 	QObject::connect(scriptIO,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 	QObject::connect(matrix,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+	QObject::connect(statistics,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 //	QObject::connect(statistics,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 	QObject::connect(this,SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChangeSlot(QWidget*)));
 	QObject::connect(this,SIGNAL(editSignal(int)),calculator,SLOT(editSlot(int)));
@@ -607,6 +609,11 @@ MainObject() :QTabWidget()
 	QObject::connect(this,SIGNAL(runScript(QString*)),scriptIO,SLOT(runScript(QString*)));
 	QObject::connect(this,SIGNAL(matrixEnterSignal()),matrix,SLOT(enterSlot()));
 	QObject::connect(tableMenu,SIGNAL(activated(int)),table,SLOT(tableMenuSlot(int)));
+	QObject::connect(statistics,SIGNAL(printSignal()),graph,SLOT(drawSlot()));
+	QObject::connect(statistics,SIGNAL(changeTabSignal(int)),this,SLOT(changeTabSlot(int)));
+	QObject::connect(statistics,SIGNAL(drawPointsSignal(long double*,int,bool)),graph,SIGNAL(drawPointsSignal(long double*,int,bool)));
+
+
 	
 	pref.scriptPath=getenv("HOME")+QString("/.extcalc/script");
 	pref.scriptDirName="code";
@@ -684,6 +691,7 @@ void tableMenuSlot(int item);
 void scriptMenuSlot(int item);
 void tableTypeMenuSlot(int item);
 void runScriptSlot(QString*);
+void changeTabSlot(int);
 void getPref(Preferences newPref)
 {
 	static bool running=false;
@@ -814,6 +822,7 @@ void getPref(Preferences newPref)
 	graph->setPref(pref);
 	table->setPref(pref);
 	matrix->setPref(pref);
+	statistics->setPref(pref);
 	scripting->setPref(pref);
 	scriptIO->setPref(pref);
 //	savePref(&pref);

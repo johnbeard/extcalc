@@ -1,7 +1,7 @@
 /****************************************************************************
 ** MainObject meta object code from reading C++ file 'extcalc.h'
 **
-** Created: Mon Apr 30 17:16:07 2007
+** Created: Tue May 15 15:22:07 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -121,9 +121,13 @@ QMetaObject* MainObject::staticMetaObject()
     };
     static const QUMethod slot_16 = {"runScriptSlot", 1, param_slot_16 };
     static const QUParameter param_slot_17[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_17 = {"changeTabSlot", 1, param_slot_17 };
+    static const QUParameter param_slot_18[] = {
 	{ "newPref", &static_QUType_ptr, "Preferences", QUParameter::In }
     };
-    static const QUMethod slot_17 = {"getPref", 1, param_slot_17 };
+    static const QUMethod slot_18 = {"getPref", 1, param_slot_18 };
     static const QMetaData slot_tbl[] = {
 	{ "fileMenuSlot(int)", &slot_0, QMetaData::Public },
 	{ "editMenuSlot(int)", &slot_1, QMetaData::Public },
@@ -142,7 +146,8 @@ QMetaObject* MainObject::staticMetaObject()
 	{ "scriptMenuSlot(int)", &slot_14, QMetaData::Public },
 	{ "tableTypeMenuSlot(int)", &slot_15, QMetaData::Public },
 	{ "runScriptSlot(QString*)", &slot_16, QMetaData::Public },
-	{ "getPref(Preferences)", &slot_17, QMetaData::Public }
+	{ "changeTabSlot(int)", &slot_17, QMetaData::Public },
+	{ "getPref(Preferences)", &slot_18, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In }
@@ -160,7 +165,7 @@ QMetaObject* MainObject::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"MainObject", parentObject,
-	slot_tbl, 18,
+	slot_tbl, 19,
 	signal_tbl, 3,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -226,7 +231,8 @@ bool MainObject::qt_invoke( int _id, QUObject* _o )
     case 14: scriptMenuSlot((int)static_QUType_int.get(_o+1)); break;
     case 15: tableTypeMenuSlot((int)static_QUType_int.get(_o+1)); break;
     case 16: runScriptSlot((QString*)static_QUType_varptr.get(_o+1)); break;
-    case 17: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
+    case 17: changeTabSlot((int)static_QUType_int.get(_o+1)); break;
+    case 18: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
     default:
 	return QTabWidget::qt_invoke( _id, _o );
     }

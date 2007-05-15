@@ -71,6 +71,8 @@ class ScriptGL :public QGLWidget
 		ScriptGL(QWidget*parent,Preferences p,QGLWidget*shareWidget=NULL) :QGLWidget(parent,0,shareWidget)
 		{
 			pref=p;
+			pref.xmin=pref.ymin=pref.zmin=-10.0;
+			pref.xmax=pref.ymax=pref.zmax=10.0;
 			axes=0xffffffff;
 			unlock=false;
 			drawListActive=staticListActive=paintActive=false;
@@ -82,7 +84,11 @@ class ScriptGL :public QGLWidget
 		void resetRotation()
 		{xRotation=yRotation=0;zMove=0;}
 		void setPref(Preferences p)
-		{pref=p;}
+		{
+			pref=p;
+			pref.xmin=pref.ymin=pref.zmin=-10.0;
+			pref.xmax=pref.ymax=pref.zmax=10.0;
+		}
 		
 //inline gl things
 		void drawListControl()

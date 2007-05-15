@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GraphWidget meta object code from reading C++ file 'graph.h'
 **
-** Created: Tue Apr 24 17:57:02 2007
+** Created: Tue May 15 15:27:19 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -114,14 +114,21 @@ QMetaObject* GraphWidget::staticMetaObject()
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
     static const QUMethod signal_1 = {"solveTypeSignal", 1, param_signal_1 };
+    static const QUParameter param_signal_2[] = {
+	{ 0, &static_QUType_ptr, "long double", QUParameter::In },
+	{ 0, &static_QUType_int, 0, QUParameter::In },
+	{ 0, &static_QUType_bool, 0, QUParameter::In }
+    };
+    static const QUMethod signal_2 = {"drawPointsSignal", 3, param_signal_2 };
     static const QMetaData signal_tbl[] = {
 	{ "prefChange(Preferences)", &signal_0, QMetaData::Protected },
-	{ "solveTypeSignal(int)", &signal_1, QMetaData::Protected }
+	{ "solveTypeSignal(int)", &signal_1, QMetaData::Protected },
+	{ "drawPointsSignal(long double*,int,bool)", &signal_2, QMetaData::Protected }
     };
     metaObj = QMetaObject::new_metaobject(
 	"GraphWidget", parentObject,
 	slot_tbl, 12,
-	signal_tbl, 2,
+	signal_tbl, 3,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
 	0, 0,
@@ -160,6 +167,21 @@ void GraphWidget::solveTypeSignal( int t0 )
     activate_signal( staticMetaObject()->signalOffset() + 1, t0 );
 }
 
+// SIGNAL drawPointsSignal
+void GraphWidget::drawPointsSignal( long double* t0, int t1, bool t2 )
+{
+    if ( signalsBlocked() )
+	return;
+    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 2 );
+    if ( !clist )
+	return;
+    QUObject o[4];
+    static_QUType_ptr.set(o+1,t0);
+    static_QUType_int.set(o+2,t1);
+    static_QUType_bool.set(o+3,t2);
+    activate_signal( clist, o );
+}
+
 bool GraphWidget::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
@@ -186,6 +208,7 @@ bool GraphWidget::qt_emit( int _id, QUObject* _o )
     switch ( _id - staticMetaObject()->signalOffset() ) {
     case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
     case 1: solveTypeSignal((int)static_QUType_int.get(_o+1)); break;
+    case 2: drawPointsSignal((long double*)static_QUType_ptr.get(_o+1),(int)static_QUType_int.get(_o+2),(bool)static_QUType_bool.get(_o+3)); break;
     default:
 	return QWidget::qt_emit(_id,_o);
     }

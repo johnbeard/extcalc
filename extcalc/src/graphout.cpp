@@ -2391,6 +2391,36 @@ void GraphOutput::draw3dZLine(double x,double y)
 	glEndList();
 	additionalObjects.NewItem(list);
 	repaint();
+}
+
+void GraphOutput::drawPoints(long double *coordinates,int num,bool con)
+{
+	MessageBox("here");
+	GLuint list;
+	list=glGenLists(1);
+	double step=PI/10;
+	double radiusX=(pref.xmax-pref.xmin)/200,radiusY=(pref.ymax-pref.ymin)/200;
+	
+	glNewList(list, GL_COMPILE);
+	qglColor(QColor(0,0,0));
+	for(int c1=0; c1<num; c1++)
+	{
+		glBegin(GL_LINE_STRIP);
+		for(int c=0; c<=20; c++)
+			glVertex3f(cos((double)c*step)*radiusX+coordinates[2*c1],sin((double)c*step)*radiusY+coordinates[2*c1+1],0.0f);
+		glEnd();
+	}
+	if(con)
+	{
+		qglColor(QColor(100,0,0));
+		glBegin(GL_LINE_STRIP);
+		for(int c=0; c<num; c++)
+				glVertex3f(coordinates[2*c],coordinates[2*c+1],0.0f);
+		glEnd();
+	}
+	glEndList();
+	additionalObjects.NewItem(list);
+	repaint();
 	
 }
 
