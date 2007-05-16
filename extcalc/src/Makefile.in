@@ -53,7 +53,7 @@ am_extcalc_OBJECTS = extcalc.$(OBJEXT) buttons.$(OBJEXT) \
 	graphout.$(OBJEXT) graphpref.$(OBJEXT) graphsolve.$(OBJEXT) \
 	calcpref.$(OBJEXT) functiontable.$(OBJEXT) table.$(OBJEXT) \
 	tablepref.$(OBJEXT) scriptedit.$(OBJEXT) scriptpref.$(OBJEXT) \
-	scriptio.$(OBJEXT) matrixwidget.$(OBJEXT) \
+	scriptio.$(OBJEXT) matrixwidget.$(OBJEXT) statistics.$(OBJEXT) \
 	moc_extcalc.$(OBJEXT) moc_buttons.$(OBJEXT) \
 	moc_calctable.$(OBJEXT) moc_calcwidget.$(OBJEXT) \
 	moc_calcinput.$(OBJEXT) moc_graph.$(OBJEXT) \
@@ -62,7 +62,7 @@ am_extcalc_OBJECTS = extcalc.$(OBJEXT) buttons.$(OBJEXT) \
 	moc_table.$(OBJEXT) moc_functiontable.$(OBJEXT) \
 	moc_tablepref.$(OBJEXT) moc_scriptedit.$(OBJEXT) \
 	moc_scriptpref.$(OBJEXT) moc_scriptio.$(OBJEXT) \
-	moc_matrixwidget.$(OBJEXT)
+	moc_matrixwidget.$(OBJEXT) moc_statistics.$(OBJEXT)
 extcalc_OBJECTS = $(am_extcalc_OBJECTS)
 extcalc_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -189,6 +189,7 @@ extcalc_SOURCES = extcalc.h \
 				  scriptpref.h \
 				  scriptio.h \
 				  matrixwidget.h \
+				  statistics.h \
 				  extcalc.cpp \
 				  buttons.cpp \
 				  calctable.cpp \
@@ -208,6 +209,7 @@ extcalc_SOURCES = extcalc.h \
 				  scriptpref.cpp \
 				  scriptio.cpp \
 				  matrixwidget.cpp \
+				  statistics.cpp \
 				  moc_extcalc.cpp \
 				  moc_buttons.cpp \
 				  moc_calctable.cpp \
@@ -224,7 +226,8 @@ extcalc_SOURCES = extcalc.h \
 				  moc_scriptedit.cpp \
 				  moc_scriptpref.cpp \
 				  moc_scriptio.cpp \
-				  moc_matrixwidget.cpp
+				  moc_matrixwidget.cpp \
+				  moc_statistics.cpp
 
 all: all-am
 
@@ -321,11 +324,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_scriptedit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_scriptio.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_scriptpref.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_statistics.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_table.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_tablepref.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scriptedit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scriptio.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scriptpref.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/statistics.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/table.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tablepref.Po@am__quote@
 
