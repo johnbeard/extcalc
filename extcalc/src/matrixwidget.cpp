@@ -754,7 +754,7 @@ void MatrixWidget::calcButtonSlot()
 					results[c]=matrix[size*size+c];
 					for(int c1=c; c1<size; c1++)
 					{
-						if(c!=c)
+						if(c1!=c)
 							results[c]-=results[c1]*matrix[c+c1*size];
 					}
 					results[c]/=matrix[c+c*size];
