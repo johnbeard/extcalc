@@ -142,6 +142,7 @@ Q_OBJECT
 		QObject::connect(solveWidget,SIGNAL(getScreenshotSignal(int,int)),graph,SLOT(screenshotSlot(int,int)));
 		QObject::connect(solveWidget,SIGNAL(drawSignal(int,QColor,int)),graph,SLOT(drawSlot(int,QColor,int)));
 		QObject::connect(this,SIGNAL(drawPointsSignal(long double*,int,bool)),graph,SLOT(drawPoints(long double*,int,bool)));
+		QObject::connect(this,SIGNAL(removeLinesSignal()),graph,SLOT(removeLines()));
 
 	}
 	
@@ -218,6 +219,7 @@ signals:
 	void prefChange(Preferences);
 	void solveTypeSignal(int);
 	void drawPointsSignal(long double*,int,bool);
+	void removeLinesSignal();
 	
 };
 

@@ -2395,7 +2395,6 @@ void GraphOutput::draw3dZLine(double x,double y)
 
 void GraphOutput::drawPoints(long double *coordinates,int num,bool con)
 {
-	MessageBox("here");
 	GLuint list;
 	list=glGenLists(1);
 	double step=PI/10;

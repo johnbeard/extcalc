@@ -263,6 +263,9 @@ using namespace std;
 
 #define STATAPPROX			198
 #define STATINTERPOL		199
+#define STATNORMAL			200
+#define STATBARGRAPH		201
+#define STATLINEGRAPH		202
 
 #define DRAWNONE			130
 #define DRAWFREE			131

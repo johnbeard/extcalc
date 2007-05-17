@@ -612,7 +612,7 @@ MainObject() :QTabWidget()
 	QObject::connect(statistics,SIGNAL(printSignal()),graph,SLOT(drawSlot()));
 	QObject::connect(statistics,SIGNAL(changeTabSignal(int)),this,SLOT(changeTabSlot(int)));
 	QObject::connect(statistics,SIGNAL(drawPointsSignal(long double*,int,bool)),graph,SIGNAL(drawPointsSignal(long double*,int,bool)));
-
+	QObject::connect(statistics,SIGNAL(removeLinesSignal()),graph,SIGNAL(removeLinesSignal()));
 
 	
 	pref.scriptPath=getenv("HOME")+QString("/.extcalc/script");

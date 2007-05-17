@@ -1,7 +1,7 @@
 /****************************************************************************
 ** StatisticsWidget meta object code from reading C++ file 'statistics.h'
 **
-** Created: Tue May 15 15:22:07 2007
+** Created: Thu May 17 11:03:01 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -69,6 +69,10 @@ QMetaObject* StatisticsWidget::staticMetaObject()
     static const QUMethod slot_4 = {"itemChangedSlot", 2, param_slot_4 };
     static const QUMethod slot_5 = {"copyButtonSlot", 0, 0 };
     static const QUMethod slot_6 = {"printButtonSlot", 0, 0 };
+    static const QUParameter param_slot_7[] = {
+	{ 0, &static_QUType_QString, 0, QUParameter::In }
+    };
+    static const QUMethod slot_7 = {"buttonInputSlot", 1, param_slot_7 };
     static const QMetaData slot_tbl[] = {
 	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
 	{ "maximizeButtonSlot()", &slot_1, QMetaData::Public },
@@ -76,7 +80,8 @@ QMetaObject* StatisticsWidget::staticMetaObject()
 	{ "calculateButtonSlot()", &slot_3, QMetaData::Public },
 	{ "itemChangedSlot(int,int)", &slot_4, QMetaData::Public },
 	{ "copyButtonSlot()", &slot_5, QMetaData::Public },
-	{ "printButtonSlot()", &slot_6, QMetaData::Public }
+	{ "printButtonSlot()", &slot_6, QMetaData::Public },
+	{ "buttonInputSlot(QString)", &slot_7, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -93,16 +98,18 @@ QMetaObject* StatisticsWidget::staticMetaObject()
 	{ 0, &static_QUType_bool, 0, QUParameter::In }
     };
     static const QUMethod signal_3 = {"drawPointsSignal", 3, param_signal_3 };
+    static const QUMethod signal_4 = {"removeLinesSignal", 0, 0 };
     static const QMetaData signal_tbl[] = {
 	{ "prefChange(Preferences)", &signal_0, QMetaData::Protected },
 	{ "printSignal()", &signal_1, QMetaData::Protected },
 	{ "changeTabSignal(int)", &signal_2, QMetaData::Protected },
-	{ "drawPointsSignal(long double*,int,bool)", &signal_3, QMetaData::Protected }
+	{ "drawPointsSignal(long double*,int,bool)", &signal_3, QMetaData::Protected },
+	{ "removeLinesSignal()", &signal_4, QMetaData::Protected }
     };
     metaObj = QMetaObject::new_metaobject(
 	"StatisticsWidget", parentObject,
-	slot_tbl, 7,
-	signal_tbl, 4,
+	slot_tbl, 8,
+	signal_tbl, 5,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
 	0, 0,
@@ -162,6 +169,12 @@ void StatisticsWidget::drawPointsSignal( long double* t0, int t1, bool t2 )
     activate_signal( clist, o );
 }
 
+// SIGNAL removeLinesSignal
+void StatisticsWidget::removeLinesSignal()
+{
+    activate_signal( staticMetaObject()->signalOffset() + 4 );
+}
+
 bool StatisticsWidget::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
@@ -172,6 +185,7 @@ bool StatisticsWidget::qt_invoke( int _id, QUObject* _o )
     case 4: itemChangedSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
     case 5: copyButtonSlot(); break;
     case 6: printButtonSlot(); break;
+    case 7: buttonInputSlot((QString)static_QUType_QString.get(_o+1)); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }
@@ -185,6 +199,7 @@ bool StatisticsWidget::qt_emit( int _id, QUObject* _o )
     case 1: printSignal(); break;
     case 2: changeTabSignal((int)static_QUType_int.get(_o+1)); break;
     case 3: drawPointsSignal((long double*)static_QUType_ptr.get(_o+1),(int)static_QUType_int.get(_o+2),(bool)static_QUType_bool.get(_o+3)); break;
+    case 4: removeLinesSignal(); break;
     default:
 	return QWidget::qt_emit(_id,_o);
     }

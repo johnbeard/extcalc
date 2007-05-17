@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GraphWidget meta object code from reading C++ file 'graph.h'
 **
-** Created: Tue May 15 15:27:19 2007
+** Created: Thu May 17 08:05:35 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -120,15 +120,17 @@ QMetaObject* GraphWidget::staticMetaObject()
 	{ 0, &static_QUType_bool, 0, QUParameter::In }
     };
     static const QUMethod signal_2 = {"drawPointsSignal", 3, param_signal_2 };
+    static const QUMethod signal_3 = {"removeLinesSignal", 0, 0 };
     static const QMetaData signal_tbl[] = {
 	{ "prefChange(Preferences)", &signal_0, QMetaData::Protected },
 	{ "solveTypeSignal(int)", &signal_1, QMetaData::Protected },
-	{ "drawPointsSignal(long double*,int,bool)", &signal_2, QMetaData::Protected }
+	{ "drawPointsSignal(long double*,int,bool)", &signal_2, QMetaData::Protected },
+	{ "removeLinesSignal()", &signal_3, QMetaData::Protected }
     };
     metaObj = QMetaObject::new_metaobject(
 	"GraphWidget", parentObject,
 	slot_tbl, 12,
-	signal_tbl, 3,
+	signal_tbl, 4,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
 	0, 0,
@@ -182,6 +184,12 @@ void GraphWidget::drawPointsSignal( long double* t0, int t1, bool t2 )
     activate_signal( clist, o );
 }
 
+// SIGNAL removeLinesSignal
+void GraphWidget::removeLinesSignal()
+{
+    activate_signal( staticMetaObject()->signalOffset() + 3 );
+}
+
 bool GraphWidget::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
@@ -209,6 +217,7 @@ bool GraphWidget::qt_emit( int _id, QUObject* _o )
     case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
     case 1: solveTypeSignal((int)static_QUType_int.get(_o+1)); break;
     case 2: drawPointsSignal((long double*)static_QUType_ptr.get(_o+1),(int)static_QUType_int.get(_o+2),(bool)static_QUType_bool.get(_o+3)); break;
+    case 3: removeLinesSignal(); break;
     default:
 	return QWidget::qt_emit(_id,_o);
     }
