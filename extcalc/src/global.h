@@ -23,11 +23,12 @@ using namespace std;
 
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #define VARSFILE ".extcalc/vars.conf"
+#define LISTSFILE ".extcalc/lists.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.8.1\n2007-04-14\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.2\n2007-05-20\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.8.1\n14.5.2007\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.2\n20.5.2007\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2007\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 

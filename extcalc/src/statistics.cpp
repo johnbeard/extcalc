@@ -246,21 +246,21 @@ void StatisticsWidget::calculateButtonSlot()
 			break;
 		case STATNORMAL:
 		{
-			long double my=0.0,sigma=0.0;
+			long double my=0.0,sigma=0.0,coeff1,coeff2;
 			for(int c=0; c<lineNum; c++)
 				my+=coordinatesList[c];
 			my/=lineNum;
 			for(int c=0; c<lineNum; c++)
 				sigma+=(coordinatesList[c]-my)*(coordinatesList[c]-my);
-			perror(QString::number(lineNum)+" "+QString::number((double)sigma));
-
 			sigma/=(lineNum-1);
-			perror(QString::number(lineNum)+" "+QString::number((double)sigma));
-
 			sigma=sqrtl(sigma);
-			perror(QString::number(lineNum)+" "+QString::number((double)sigma));
-			QString resultString="1/(sqrt(2*pi)*"+QString::number(sigma,'g',pref.precision)+")*eu^-((X-"+
-					QString::number(my,'g',pref.precision)+")^2/(2*"+QString::number(sigma,'g',pref.precision)+"^2))";
+			
+			coeff1=1.0/(sqrtl(2.0*PI)*sigma);
+			coeff2=1.0/(2.0*sigma*sigma);
+
+			QString resultString=QString::number(coeff1,'g',pref.precision);
+			resultString+="*eu^(-"+QString::number(coeff2,'g',pref.precision);
+			resultString+="*(X-"+QString::number(my,'g',pref.precision)+")^2)";
 			
 			result->setText(resultString);
 			if(print)
@@ -271,14 +271,53 @@ void StatisticsWidget::calculateButtonSlot()
 			break;
 		}
 		case STATBARGRAPH:
+		{
+			long double *graphData=new long double[20],start,end,step;
+
 			
+			start=end=coordinatesList[0];
+			for(int c=1; c<lineNum; c++)
+			{
+				if(coordinatesList[c]>end)
+					end=coordinatesList[c];
+				if(coordinatesList[c]<start)
+					start=coordinatesList[c];
+			}
+			step=0.1*(end-start);
+			
+			for(int c=0; c<10; c++)
+			{
+				graphData[c*2+1]=0.0;
+				graphData[c*2]=start+step*c+step*0.5;
+			}
+			
+			perror("lineNum: "+QString::number(lineNum));
+			
+			for(int c1=0; c1<lineNum; c1++)
+			{
+				perror("coordinatesList: "+QString::number((double)coordinatesList[c1]));
+				for(int c2=1; c2<=10; c2++)
+				{
+					
+					if(coordinatesList[c1]<start+c2*step)
+					{
+						graphData[2*c2-1]+=1.0;
+						perror("sort: "+QString::number((double)graphData[2*c2-1]));
+						break;
+					}
+				}
+			}
 			
 			if(print)
 			{
 				emit removeLinesSignal();
-				emit drawPointsSignal(coordinatesList,lineNum,true);
+				emit drawPointsSignal(graphData,10,true);
 			}
+			
+			delete[] graphData;
+			
 			break;
+		}
 	}
 	free(coordinatesList);
 }
@@ -339,7 +378,6 @@ void StatisticsWidget::typeBoxSlot(int index)
 			copyFunctionLabel->show();
 			copyFunction->show();
 			calculateButton->show();
-
 			break;
 		case 4:
 			type=STATBARGRAPH;
@@ -422,6 +460,90 @@ void StatisticsWidget::itemChangedSlot(int row,int col)
 	
 	if(row>=lists->numRows()-1)
 		lists->setNumRows(row+2);
+}
+
+
+void StatisticsWidget::writeListsFile()
+{
+	FILE*configFile;
+
+	chdir(getenv("HOME"));
+	configFile = fopen(LISTSFILE,"w");
+	if(configFile == NULL)
+	{
+		ErrorBox("Unable to write lists file: "+QString(LISTSFILE));
+		return;
+	}
+	QString vars="";
+	char*buffer=(char*)malloc(100);
+    vars+=QString::number(lists->numRows()-1);
+	vars+="\n";
+	
+	for(int c=0; c<LISTCOUNT*2;c++)
+	{
+		for(int c1=0; c1<lists->numRows()-1; c1++)
+		{
+			if(lists->text(c1,c).length()>0)
+				vars+=lists->text(c1,c);
+			else vars+="X";
+			vars+=" ";
+		}
+	}
+	free(buffer);
+	
+	fwrite(vars,vars.length(),1,configFile);
+	fclose(configFile);
+}
+
+void StatisticsWidget::readListsFile()
+{
+	chdir(getenv("HOME"));
+
+	int fileLen;
+	struct stat fileStat;
+
+	if(lstat(LISTSFILE,&fileStat) != 0)
+		return;
+	else fileLen=fileStat.st_size;
+
+	
+	FILE*varFile = fopen(LISTSFILE,"r");
+	if(varFile == NULL)
+	{
+		MessageBox("Unable to read lists file: "+QString(LISTSFILE));
+		return;
+	}
+	char* cConfFile = new char[fileLen+1];
+	fread((void*)cConfFile,fileLen,1,varFile);
+	cConfFile[fileLen]=(char)0;
+	QString configFile(cConfFile);
+	delete[]cConfFile;
+	fclose(varFile);
+	
+	int pos1=0,pos2=0;
+	QString num;
+	int rowNum;
+	pos2=configFile.find("\n");
+	num=configFile.mid(pos1,pos2-pos1);
+	rowNum=num.toInt();
+	if(rowNum<1)
+		return;
+	pos1=pos2+1;
+	lists->setNumRows(rowNum+1);
+	
+	for(int c=0; c<2*LISTCOUNT;c++)
+	{
+		for(int c1=0; c1<rowNum; c1++)
+		{
+			pos2=configFile.find(" ",pos1);
+			num=configFile.mid(pos1,pos2-pos1);
+			pos1=pos2+1;
+			if(pos2==-1)
+				return;
+			if(num!="X")
+				lists->setText(c1,c,num);
+		}
+	}
 }
 
 void StatisticsWidget::buttonInputSlot(QString)

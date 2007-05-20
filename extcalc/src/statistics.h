@@ -115,6 +115,7 @@ class StatisticsWidget :public QWidget
 			calculateButton=new QPushButton("Calculate",this);
 			maximizeButton=new QPushButton("Maximize",this);
 			drawButton=new QPushButton("Print",this);
+			readListsFile();
 
 			typeBoxSlot(0);
 			QObject::connect(functionTable,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
@@ -129,6 +130,8 @@ class StatisticsWidget :public QWidget
 		}
 
 		void setPref(Preferences);
+		void writeListsFile();
+		void readListsFile();
 
 	public slots:
 		void getPref(Preferences);

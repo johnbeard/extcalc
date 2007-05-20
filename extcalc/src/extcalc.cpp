@@ -44,6 +44,7 @@ void MainObject::closeEvent(QCloseEvent*e)
 {
 	writeConfigFile();
 	writeVarFile();
+	statistics->writeListsFile();
 	if(scripting->quitProgram())
 	{
 		e->accept();
@@ -1076,7 +1077,7 @@ void MainObject::readVarFile()
 	FILE*varFile = fopen(VARSFILE,"r");
 	if(varFile == NULL)
 	{
-		MessageBox("Unable to read variables file: "+QString(CONFIGFILE));
+		MessageBox("Unable to read variables file: "+QString(VARSFILE));
 		return;
 	}
 	char* cConfFile = new char[fileLen+1];
