@@ -44,7 +44,6 @@ void StatisticsWidget::resizeEvent(QResizeEvent*)
 		}
 		if(type==STATINTERPOL)
 		{
-
 			listNumberLabel->setGeometry(width/2+15,height-180,190,20);
 			listNumber->setGeometry(width/2+205,height-180,100,20);
 			
@@ -62,9 +61,20 @@ void StatisticsWidget::resizeEvent(QResizeEvent*)
 
 			listNumberLabel->setGeometry(width/2+15,height-180,190,20);
 			listNumber->setGeometry(width/2+205,height-180,100,20);
-
+			
+			stepsLabel->setGeometry(width/2+15,height-150,220,20);
+			stepsBox->setGeometry(width/2+235,height-150,70,20);
 		}
-		if(type==STATBARGRAPH || type==STATNORMAL)
+		if(type==STATBARGRAPH)
+		{
+			listNumberLabel->setGeometry(width/2+15,height-180,190,20);
+			listNumberBox->setGeometry(width/2+205,height-180,100,20);
+			
+			stepsLabel->setGeometry(width/2+15,height-150,220,20);
+			stepsBox->setGeometry(width/2+235,height-150,70,20);			
+			
+		}
+		if(type==STATNORMAL)
 		{
 
 			listNumberLabel->setGeometry(width/2+15,height-180,190,20);
@@ -104,7 +114,7 @@ void StatisticsWidget::maximizeButtonSlot()
 
 	if(fullscreen)
 	{
-		maximizeButton->setText("Minimize");
+		maximizeButton->setText(STATISTICSC_STR1);
 		standardButtons->hide();
 		typeBoxSlot(-1);
 	}
@@ -197,8 +207,10 @@ void StatisticsWidget::calculateButtonSlot()
 			}
 			if(print)
 			{
-				emit removeLinesSignal();
-				emit drawPointsSignal(coordinatesList,lineNum,false);
+				if(pref.statAutoClear)
+					emit removeLinesSignal();
+				if(pref.showStatPoints || pref.showStatLines)
+				emit drawPointsSignal(coordinatesList,lineNum,pref.showStatLines);
 			}
 			break;
 		}
@@ -232,47 +244,26 @@ void StatisticsWidget::calculateButtonSlot()
 			free(coef);
 			if(print)
 			{
-				emit removeLinesSignal();
-				emit drawPointsSignal(coordinatesList,lineNum,false);
+				if(pref.statAutoClear)
+					emit removeLinesSignal();
+				if(pref.showStatPoints || pref.showStatLines)
+					emit drawPointsSignal(coordinatesList,lineNum,pref.showStatLines);
 			}
 			break;
 		}
 		case STATLINEGRAPH:
 			if(print)
 			{
-				emit removeLinesSignal();
+				if(pref.statAutoClear)
+					emit removeLinesSignal();
 				emit drawPointsSignal(coordinatesList,lineNum,true);
 			}
 			break;
+		case STATBARGRAPH:
 		case STATNORMAL:
 		{
-			long double my=0.0,sigma=0.0,coeff1,coeff2;
-			for(int c=0; c<lineNum; c++)
-				my+=coordinatesList[c];
-			my/=lineNum;
-			for(int c=0; c<lineNum; c++)
-				sigma+=(coordinatesList[c]-my)*(coordinatesList[c]-my);
-			sigma/=(lineNum-1);
-			sigma=sqrtl(sigma);
-			
-			coeff1=1.0/(sqrtl(2.0*PI)*sigma);
-			coeff2=1.0/(2.0*sigma*sigma);
-
-			QString resultString=QString::number(coeff1,'g',pref.precision);
-			resultString+="*eu^(-"+QString::number(coeff2,'g',pref.precision);
-			resultString+="*(X-"+QString::number(my,'g',pref.precision)+")^2)";
-			
-			result->setText(resultString);
-			if(print)
-			{
-				emit removeLinesSignal();
-				emit drawPointsSignal(coordinatesList,lineNum,true);
-			}
-			break;
-		}
-		case STATBARGRAPH:
-		{
-			long double *graphData=new long double[20],start,end,step;
+			int stepCount=stepsBox->value();
+			long double *graphData=new long double[2*stepCount],start,end,step;
 
 			
 			start=end=coordinatesList[0];
@@ -283,39 +274,75 @@ void StatisticsWidget::calculateButtonSlot()
 				if(coordinatesList[c]<start)
 					start=coordinatesList[c];
 			}
-			step=0.1*(end-start);
+			step=(end-start)/(stepCount-1);
 			
-			for(int c=0; c<10; c++)
+			for(int c=0; c<stepCount; c++)
 			{
 				graphData[c*2+1]=0.0;
-				graphData[c*2]=start+step*c+step*0.5;
+				graphData[c*2]=start+step*c;
 			}
 			
-			perror("lineNum: "+QString::number(lineNum));
 			
 			for(int c1=0; c1<lineNum; c1++)
 			{
-				perror("coordinatesList: "+QString::number((double)coordinatesList[c1]));
 				for(int c2=1; c2<=10; c2++)
 				{
 					
-					if(coordinatesList[c1]<start+c2*step)
+					if(coordinatesList[c1]<start+c2*step-step/2)
 					{
 						graphData[2*c2-1]+=1.0;
-						perror("sort: "+QString::number((double)graphData[2*c2-1]));
 						break;
 					}
 				}
 			}
+			if(type==STATNORMAL)
+			{
+				long double sum=0.0;
+				for(int c=0; c<stepCount; c++)
+					sum+=graphData[2*c+1];
+				for(int c=0; c<stepCount; c++)
+					graphData[2*c+1]=graphData[2*c+1]/sum;
+			}
 			
 			if(print)
 			{
-				emit removeLinesSignal();
-				emit drawPointsSignal(graphData,10,true);
+				if(pref.statAutoClear)
+					emit removeLinesSignal();
+				if(type==STATBARGRAPH || pref.showStatLines)
+					emit drawPointsSignal(graphData,stepCount,true);
+				else if(type==STATNORMAL && pref.showStatPoints)
+					emit drawPointsSignal(graphData,stepCount,false);
 			}
 			
 			delete[] graphData;
 			
+			if(type==STATNORMAL)
+			{
+	
+				long double my=0.0,sigma=0.0,coeff1,coeff2;
+				for(int c=0; c<lineNum; c++)
+					my+=coordinatesList[c];
+				my/=lineNum;
+				for(int c=0; c<lineNum; c++)
+					sigma+=(coordinatesList[c]-my)*(coordinatesList[c]-my);
+				sigma/=(lineNum-1);
+				sigma=sqrtl(sigma);
+				
+				coeff1=1.0/(sqrtl(2.0*PI)*sigma);
+				coeff2=1.0/(2.0*sigma*sigma);
+	
+				QString resultString=QString::number(coeff1,'g',pref.precision);
+				resultString+="*eu^(-"+QString::number(coeff2,'g',pref.precision);
+				resultString+="*(X-"+QString::number(my,'g',pref.precision)+")^2)";
+				
+				result->setText(resultString);
+			/*	if(print)
+				{
+					if(pref.statAutoClear)
+						emit removeLinesSignal();
+					emit drawPointsSignal(coordinatesList,lineNum,true);
+				}*/
+			}
 			break;
 		}
 	}
@@ -336,6 +363,8 @@ void StatisticsWidget::typeBoxSlot(int index)
 	result->hide();
 	listNumberLabel->hide();
 	copyButton->hide();
+	stepsBox->hide();
+	stepsLabel->hide();
 	
 	switch(index)
 	{
@@ -383,6 +412,8 @@ void StatisticsWidget::typeBoxSlot(int index)
 			type=STATBARGRAPH;
 			listNumberBox->show();
 			listNumberLabel->show();
+			stepsBox->show();
+			stepsLabel->show();
 			break;
 	}
 	resizeEvent(NULL);
@@ -395,7 +426,7 @@ void StatisticsWidget::copyButtonSlot()
 		return;
 	if(pref.functions[index].length()>0)
 	{
-		int ret=YesNoCancelBox("Really overwrite function f"+QString::number(index+1)+" ?");
+		int ret=YesNoCancelBox(STATISTICSC_STR2+QString::number(index+1)+STATISTICSC_STR3);
 		if(ret!=0)
 			return;
 	}
@@ -414,7 +445,7 @@ void StatisticsWidget::printButtonSlot()
 	QString tmpF1=pref.functions[0];
 	memcpy(tmpActiveFunctions,pref.activeFunctions,20*sizeof(bool));
 	pref.functions[0]=result->text();
-	if(type==STATINTERPOL || type==STATAPPROX)
+	if(type==STATINTERPOL || type==STATAPPROX || type==STATNORMAL)
 		pref.activeFunctions[0]=true;
 	else pref.activeFunctions[0]=false;
 	for(int c=1; c<20;c++)
@@ -471,7 +502,7 @@ void StatisticsWidget::writeListsFile()
 	configFile = fopen(LISTSFILE,"w");
 	if(configFile == NULL)
 	{
-		ErrorBox("Unable to write lists file: "+QString(LISTSFILE));
+		ErrorBox(STATISTICSC_STR4+QString(LISTSFILE));
 		return;
 	}
 	QString vars="";
@@ -510,7 +541,7 @@ void StatisticsWidget::readListsFile()
 	FILE*varFile = fopen(LISTSFILE,"r");
 	if(varFile == NULL)
 	{
-		MessageBox("Unable to read lists file: "+QString(LISTSFILE));
+		MessageBox(STATISTICSC_STR5+QString(LISTSFILE));
 		return;
 	}
 	char* cConfFile = new char[fileLen+1];
@@ -544,6 +575,12 @@ void StatisticsWidget::readListsFile()
 				lists->setText(c1,c,num);
 		}
 	}
+}
+void StatisticsWidget::redrawGraphSlot()
+{
+	print=true;
+	calculateButtonSlot();
+	print=false;
 }
 
 void StatisticsWidget::buttonInputSlot(QString)

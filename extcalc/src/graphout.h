@@ -102,6 +102,7 @@ class GraphOutput :public QGLWidget
 	int current3dSteps;
 	int current2dSteps;
 	int currentSolvePrec;
+	bool hasSolveObjects,hasStatisticsObjects;
 
 	
 	
@@ -120,6 +121,7 @@ public:
 		for(int c=0; c<BACKSTEPS; c++)
 			backMap[c]=NULL;
 
+		hasSolveObjects=hasStatisticsObjects=false;
 		draw=new QPainter();
 		texture=0xffffffff;
 		current2dSteps=200;
@@ -190,6 +192,8 @@ signals:
 	void leftMButtonPressed(double,double);
 	void redrawSignal();
 	void screenshotSignal(QPixmap*);
+	void solveRedrawSignal();
+	void statisticsRedrawSignal();
 };
 
 

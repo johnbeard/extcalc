@@ -1,7 +1,7 @@
 /****************************************************************************
 ** StatisticsWidget meta object code from reading C++ file 'statistics.h'
 **
-** Created: Sun May 20 16:47:24 2007
+** Created: Sat Jun 2 15:13:22 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -73,6 +73,7 @@ QMetaObject* StatisticsWidget::staticMetaObject()
 	{ 0, &static_QUType_QString, 0, QUParameter::In }
     };
     static const QUMethod slot_7 = {"buttonInputSlot", 1, param_slot_7 };
+    static const QUMethod slot_8 = {"redrawGraphSlot", 0, 0 };
     static const QMetaData slot_tbl[] = {
 	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
 	{ "maximizeButtonSlot()", &slot_1, QMetaData::Public },
@@ -81,7 +82,8 @@ QMetaObject* StatisticsWidget::staticMetaObject()
 	{ "itemChangedSlot(int,int)", &slot_4, QMetaData::Public },
 	{ "copyButtonSlot()", &slot_5, QMetaData::Public },
 	{ "printButtonSlot()", &slot_6, QMetaData::Public },
-	{ "buttonInputSlot(QString)", &slot_7, QMetaData::Public }
+	{ "buttonInputSlot(QString)", &slot_7, QMetaData::Public },
+	{ "redrawGraphSlot()", &slot_8, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -108,7 +110,7 @@ QMetaObject* StatisticsWidget::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"StatisticsWidget", parentObject,
-	slot_tbl, 8,
+	slot_tbl, 9,
 	signal_tbl, 5,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -186,6 +188,7 @@ bool StatisticsWidget::qt_invoke( int _id, QUObject* _o )
     case 5: copyButtonSlot(); break;
     case 6: printButtonSlot(); break;
     case 7: buttonInputSlot((QString)static_QUType_QString.get(_o+1)); break;
+    case 8: redrawGraphSlot(); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }

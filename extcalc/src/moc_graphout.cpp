@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GraphOutput meta object code from reading C++ file 'graphout.h'
 **
-** Created: Sat May 19 19:40:48 2007
+** Created: Sat Jun 2 09:02:23 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -143,16 +143,20 @@ QMetaObject* GraphOutput::staticMetaObject()
 	{ 0, &static_QUType_varptr, "\x06", QUParameter::In }
     };
     static const QUMethod signal_3 = {"screenshotSignal", 1, param_signal_3 };
+    static const QUMethod signal_4 = {"solveRedrawSignal", 0, 0 };
+    static const QUMethod signal_5 = {"statisticsRedrawSignal", 0, 0 };
     static const QMetaData signal_tbl[] = {
 	{ "prefChange(Preferences)", &signal_0, QMetaData::Protected },
 	{ "leftMButtonPressed(double,double)", &signal_1, QMetaData::Protected },
 	{ "redrawSignal()", &signal_2, QMetaData::Protected },
-	{ "screenshotSignal(QPixmap*)", &signal_3, QMetaData::Protected }
+	{ "screenshotSignal(QPixmap*)", &signal_3, QMetaData::Protected },
+	{ "solveRedrawSignal()", &signal_4, QMetaData::Protected },
+	{ "statisticsRedrawSignal()", &signal_5, QMetaData::Protected }
     };
     metaObj = QMetaObject::new_metaobject(
 	"GraphOutput", parentObject,
 	slot_tbl, 15,
-	signal_tbl, 4,
+	signal_tbl, 6,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
 	0, 0,
@@ -218,6 +222,18 @@ void GraphOutput::screenshotSignal( QPixmap* t0 )
     activate_signal( clist, o );
 }
 
+// SIGNAL solveRedrawSignal
+void GraphOutput::solveRedrawSignal()
+{
+    activate_signal( staticMetaObject()->signalOffset() + 4 );
+}
+
+// SIGNAL statisticsRedrawSignal
+void GraphOutput::statisticsRedrawSignal()
+{
+    activate_signal( staticMetaObject()->signalOffset() + 5 );
+}
+
 bool GraphOutput::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
@@ -249,6 +265,8 @@ bool GraphOutput::qt_emit( int _id, QUObject* _o )
     case 1: leftMButtonPressed((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
     case 2: redrawSignal(); break;
     case 3: screenshotSignal((QPixmap*)static_QUType_varptr.get(_o+1)); break;
+    case 4: solveRedrawSignal(); break;
+    case 5: statisticsRedrawSignal(); break;
     default:
 	return QGLWidget::qt_emit(_id,_o);
     }

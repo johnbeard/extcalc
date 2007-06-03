@@ -99,7 +99,7 @@ Q_OBJECT
 		functionType->insertItem(TABLEH_STR5);
 		functionType->insertItem(TABLEH_STR6);
 		functionType->insertItem(TABLEH_STR7);
-		functionType->insertItem("Nyquist Plots");
+		functionType->insertItem(GRAPHH_STR30);
 		modeBox->insertItem(GRAPHH_STR27);
 		modeBox->insertItem(GRAPHH_STR28);
 		modeBox->insertItem(GRAPHH_STR29);
@@ -143,6 +143,7 @@ Q_OBJECT
 		QObject::connect(solveWidget,SIGNAL(drawSignal(int,QColor,int)),graph,SLOT(drawSlot(int,QColor,int)));
 		QObject::connect(this,SIGNAL(drawPointsSignal(long double*,int,bool)),graph,SLOT(drawPoints(long double*,int,bool)));
 		QObject::connect(this,SIGNAL(removeLinesSignal()),graph,SLOT(removeLines()));
+		QObject::connect(graph,SIGNAL(statisticsRedrawSignal()),this,SIGNAL(statisticsRedrawSignal()));
 
 	}
 	
@@ -220,6 +221,7 @@ signals:
 	void solveTypeSignal(int);
 	void drawPointsSignal(long double*,int,bool);
 	void removeLinesSignal();
+	void statisticsRedrawSignal();
 	
 };
 

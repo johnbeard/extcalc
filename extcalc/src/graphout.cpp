@@ -36,6 +36,11 @@ void GraphOutput::initializeGL()
 	glDisable(GL_TEXTURE_2D);
 	if(drawScreenshot)
 	{
+		if(hasStatisticsObjects)
+			emit statisticsRedrawSignal();
+		if(hasSolveObjects)
+			emit solveRedrawSignal();
+		
 		clearGL();
 		for(int c=0; c<20; c++)
 		{
@@ -2290,6 +2295,7 @@ void GraphOutput::drawHorizontalLine(double y)
 	glEndList();
 	additionalObjects.NewItem(list);
 	repaint();
+	hasSolveObjects=true;
 }
 
 
@@ -2306,6 +2312,7 @@ void GraphOutput::drawVerticalLine(double x)
 	glEndList();
 	additionalObjects.NewItem(list);
 	repaint();
+	hasSolveObjects=true;
 }
 
 void GraphOutput::drawCircle(double radius)
@@ -2323,6 +2330,7 @@ void GraphOutput::drawCircle(double radius)
 	glEndList();
 	additionalObjects.NewItem(list);
 	repaint();
+	hasSolveObjects=true;
 }
 void GraphOutput::drawPolarLine(double angle)
 {
@@ -2340,6 +2348,7 @@ void GraphOutput::drawPolarLine(double angle)
 	glEndList();
 	additionalObjects.NewItem(list);
 	repaint();
+	hasSolveObjects=true;
 }
 void GraphOutput::draw3dXLine(double y,double z)
 {
@@ -2356,6 +2365,7 @@ void GraphOutput::draw3dXLine(double y,double z)
 	glEndList();
 	additionalObjects.NewItem(list);
 	repaint();
+	hasSolveObjects=true;
 }
 
 void GraphOutput::draw3dYLine(double x,double z)
@@ -2373,8 +2383,7 @@ void GraphOutput::draw3dYLine(double x,double z)
 	glEndList();
 	additionalObjects.NewItem(list);
 	repaint();	
-	
-	
+	hasSolveObjects=true;
 }
 void GraphOutput::draw3dZLine(double x,double y)
 {
@@ -2391,6 +2400,7 @@ void GraphOutput::draw3dZLine(double x,double y)
 	glEndList();
 	additionalObjects.NewItem(list);
 	repaint();
+	hasSolveObjects=true;
 }
 
 void GraphOutput::drawPoints(long double *coordinates,int num,bool con)
@@ -2420,6 +2430,7 @@ void GraphOutput::drawPoints(long double *coordinates,int num,bool con)
 	glEndList();
 	additionalObjects.NewItem(list);
 	repaint();
+	hasStatisticsObjects=true;
 	
 }
 
@@ -2431,6 +2442,7 @@ void GraphOutput::removeLines()
 		glDeleteLists(additionalObjects[0],1);
 		additionalObjects.DeleteItem(0);
 	}
+	hasSolveObjects=hasStatisticsObjects=false;
 	ineq1=ineq2=-1;
 	repaint();
 }
@@ -2542,6 +2554,7 @@ void GraphOutput::screenshotSlot(int x, int y)
 	
 	scr=renderPixmap(x,y,false);
 	emit screenshotSignal(&scr);
+	initializeGL();
 	drawScreenshot=false;
 }
 

@@ -225,7 +225,7 @@ class MainObject :public QTabWidget
 	QMenuBar*mainMenu;
 	QPopupMenu *calcMenu,*angleMenu,*helpMenu,*outputMenu,*floatPointMenu,*prefMenu,*graphMenu;
 	QPopupMenu *coordinateMenu,*graphTypeMenu,*calcTypeMenu,*baseMenu,*tableMenu,*tableTypeMenu;
-	QPopupMenu *editMenu,*viewMenu,*fileMenu,*scriptMenu;
+	QPopupMenu *editMenu,*viewMenu,*fileMenu,*scriptMenu,*statisticsMenu;
 	QTabBar*tabBar;
 	CalcWidget *calculator,*calculator2;
 	GraphWidget * graph;
@@ -394,6 +394,9 @@ MainObject() :QTabWidget()
 	pref.tableAValue=0.0;
 	pref.tableXSteps=pref.tableZSteps=10;
 	pref.tableType=TABLENORMAL;
+	pref.statAutoClear=true;
+	pref.showStatLines=false;
+	pref.showStatPoints=true;
 	pref.showWindows[0]=pref.showWindows[2]=pref.showWindows[3]=pref.showWindows[4]=pref.showWindows[6]=true;
 	pref.showWindows[1]=pref.showWindows[5]=pref.showWindows[7]=false;
 
@@ -490,12 +493,12 @@ MainObject() :QTabWidget()
 	tableTypeMenu->insertItem(EXTCALCH_MENU40,TABLEPARAMETER);
 	tableTypeMenu->insertItem(EXTCALCH_MENU41,TABLEINEQUAITY);
 	tableTypeMenu->insertItem(EXTCALCH_MENU42,TABLE3D);
-	tableTypeMenu->insertItem("Complex",TABLECOMPLEX);
+	tableTypeMenu->insertItem(EXTCALCH_MENU78,TABLECOMPLEX);
 	QObject::connect(tableTypeMenu,SIGNAL(activated(int)),this,SLOT(tableTypeMenuSlot(int)));
 	
 	tableMenu=new QPopupMenu;
 	tableMenu->insertItem(EXTCALCH_MENU43,STANDARDTABLE);
-	tableMenu->insertItem("Reset Input Values",RESETTABLE);
+	tableMenu->insertItem(EXTCALCH_MENU68,RESETTABLE);
 	tableMenu->insertItem(EXTCALCH_MENU44,tableTypeMenu,TABLETYPE);
 	QObject::connect(tableMenu,SIGNAL(activated(int)),this,SLOT(tableMenuSlot(int)));
 
@@ -507,6 +510,14 @@ MainObject() :QTabWidget()
 	scriptMenu->insertItem(EXTCALCH_MENU64,CLEARMEMALWAYS);
 	scriptMenu->insertItem(EXTCALCH_MENU65,CLEARMEMNOW);
 	QObject::connect(scriptMenu,SIGNAL(activated(int)),this,SLOT(scriptMenuSlot(int)));
+	
+	statisticsMenu=new QPopupMenu;
+	statisticsMenu->insertItem(EXTCALCH_MENU69,STATCLEAR);
+	statisticsMenu->insertItem(EXTCALCH_MENU70,STATAUTOCLEAR);
+	statisticsMenu->insertSeparator();
+	statisticsMenu->insertItem(EXTCALCH_MENU71,STATPOINTS);
+	statisticsMenu->insertItem(EXTCALCH_MENU72,STATLINES);
+	QObject::connect(statisticsMenu,SIGNAL(activated(int)),this,SLOT(statisticsMenuSlot(int)));
 	
 	prefMenu=new QPopupMenu;
 	prefMenu->insertItem(EXTCALCH_MENU10,CPREF);
@@ -531,8 +542,8 @@ MainObject() :QTabWidget()
 	viewMenu->insertItem(EXTCALCH_MENU53,VIEWCALC2);
 	viewMenu->insertItem(EXTCALCH_MENU54,VIEWGRAPH);
 	viewMenu->insertItem(EXTCALCH_MENU55,VIEWTABLE);
-	viewMenu->insertItem("Matrix/Vector",VIEWMATRIX);
-	viewMenu->insertItem("Statistics",VIEWSTATISTICS);
+	viewMenu->insertItem(EXTCALCH_MENU73,VIEWMATRIX);
+	viewMenu->insertItem(EXTCALCH_MENU74,VIEWSTATISTICS);
 	viewMenu->insertItem(EXTCALCH_MENU56,VIEWSCRIPTING);
 	viewMenu->insertItem(EXTCALCH_MENU61,VIEWSCRIPTIO);
 	QObject::connect(viewMenu,SIGNAL(activated(int)),this,SLOT(viewMenuSlot(int)));
@@ -551,6 +562,7 @@ MainObject() :QTabWidget()
 	mainMenu->insertItem(EXTCALCH_MENU17,graphMenu,GRAPH);
 	mainMenu->insertItem(EXTCALCH_MENU46,tableMenu,TABLE);
 	mainMenu->insertItem(EXTCALCH_MENU66,scriptMenu,SCRIPTM);
+	mainMenu->insertItem(EXTCALCH_MENU74,statisticsMenu,STATISTICSM);
 	mainMenu->insertItem(EXTCALCH_MENU18,helpMenu,HELP);
 	
 	
@@ -613,6 +625,7 @@ MainObject() :QTabWidget()
 	QObject::connect(statistics,SIGNAL(changeTabSignal(int)),this,SLOT(changeTabSlot(int)));
 	QObject::connect(statistics,SIGNAL(drawPointsSignal(long double*,int,bool)),graph,SIGNAL(drawPointsSignal(long double*,int,bool)));
 	QObject::connect(statistics,SIGNAL(removeLinesSignal()),graph,SIGNAL(removeLinesSignal()));
+	QObject::connect(graph,SIGNAL(statisticsRedrawSignal()),statistics,SLOT(redrawGraphSlot()));
 
 	
 	pref.scriptPath=getenv("HOME")+QString("/.extcalc/script");
@@ -626,11 +639,11 @@ MainObject() :QTabWidget()
 		if(ret == -1)
 		{
 			//first start
-			ret=YesNoBox("Welcome to Extcalc!\n\nThis seems to be the first time, you start this program.\nFor this reason, Extcalc must create directories to store scripts and data.\nSay yes, if you want to change the script configuration!");
+			ret=YesNoBox(EXTCALCH_MENU75);
 		}
 		else if(ret==1)
 		{
-			ret=YesNoBox("Welcome To Extcalc 0.7.0!\n\nThis seems to be the first time, you start the new version of Extcalc.\nThe new version ships some script programs for matrix and vector arithmetics.\nThe script directories must exist to use them.\nSay yes, if you want to change the script configuration!");
+			ret=YesNoBox(EXTCALCH_MENU76);
 		}
 	
 		if(ret==0)
@@ -649,7 +662,7 @@ MainObject() :QTabWidget()
 			scriptPref=new ScriptPreferences(pref,(QWidget*)this);
 			QObject::connect(scriptPref,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 			scriptPref->saveSlot();
-			MessageBox("Default directories created.");
+			MessageBox(EXTCALCH_MENU77);
 		}
 	}
 	readVarFile();
@@ -689,6 +702,7 @@ void helpMenuSlot(int item);
 void prefMenuSlot(int item);
 void tableMenuSlot(int item);
 void scriptMenuSlot(int item);
+void statisticsMenuSlot(int item);
 void tableTypeMenuSlot(int item);
 void runScriptSlot(QString*);
 void changeTabSlot(int);
@@ -764,9 +778,9 @@ void getPref(Preferences newPref)
 		if(pref.showWindows[3])
 			addTab(table,EXTCALCH_STR9);
 		if(pref.showWindows[4])
-			addTab(matrix,"Matrix/Vector");
+			addTab(matrix,EXTCALCH_MENU73);
 		if(pref.showWindows[5])
-			addTab(statistics,"Statistics");
+			addTab(statistics,EXTCALCH_MENU74);
 		if(pref.showWindows[6])
 			addTab(scripting,EXTCALCH_STR12);
 		if(pref.showWindows[7])
@@ -837,6 +851,9 @@ void getPref(Preferences newPref)
 	graphTypeMenu->setItemChecked(pref.graphType,true);
 	tableTypeMenu->setItemChecked(pref.tableType,true);
 	scriptMenu->setItemChecked(CLEARMEMALWAYS,pref.clearScriptMemory);
+	statisticsMenu->setItemChecked(STATAUTOCLEAR,pref.statAutoClear);
+	statisticsMenu->setItemChecked(STATPOINTS,pref.showStatPoints);
+	statisticsMenu->setItemChecked(STATLINES,pref.showStatLines);
 	coordinateMenu->setItemChecked(SHOWAXES,pref.axis);
 	coordinateMenu->setItemChecked(SHOWLABELS,pref.label);
 	coordinateMenu->setItemChecked(SHOWRASTER,pref.raster);

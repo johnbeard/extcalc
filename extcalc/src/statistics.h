@@ -44,9 +44,9 @@ class StatisticsWidget :public QWidget
 	QTable *lists;
 	QSplitter *splitter;
 	QComboBox *typeBox, *functionTypeBox,*copyFunction,*listNumberBox;
-	QSpinBox *listNumber;
+	QSpinBox *listNumber,*stepsBox;
 	QPushButton *calculateButton,*maximizeButton,*drawButton,*copyButton;
-	QLabel *listNumberLabel,*resultLabel,*copyFunctionLabel,*functionTypeLabel;
+	QLabel *listNumberLabel,*resultLabel,*copyFunctionLabel,*functionTypeLabel,*stepsLabel;
 	QLineEdit * result;
 	
 	bool print;
@@ -72,11 +72,11 @@ class StatisticsWidget :public QWidget
 			lists->setNumRows(1);
 			lists->setNumCols(2*LISTCOUNT);
 			typeBox=new QComboBox(this);
-			functionTypeLabel=new QLabel("Function Type",this);
+			functionTypeLabel=new QLabel(STATISTICSH_STR1,this);
 			functionTypeBox=new QComboBox(this);
 			listNumber=new QSpinBox(1,LISTCOUNT,1,this);
-			listNumberLabel=new QLabel("Input List Number",this);
-			resultLabel=new QLabel("Result Function",this);
+			listNumberLabel=new QLabel(STATISTICSH_STR2,this);
+			resultLabel=new QLabel(STATISTICSH_STR3,this);
 			result=new QLineEdit(this);
 			for(int c=0; c<5; c++)
 			{
@@ -84,9 +84,9 @@ class StatisticsWidget :public QWidget
 				lists->horizontalHeader()->setLabel(2*c+1,"Y"+QString::number(c+1));
 			}
 
-			copyFunctionLabel=new QLabel("Copy to",this);
+			copyFunctionLabel=new QLabel(STATISTICSH_STR4,this);
 			copyFunction=new QComboBox(this);
-			copyButton=new QPushButton("Copy",this);
+			copyButton=new QPushButton(STATISTICSH_STR5,this);
 			for(int c=0; c<20; c++)
 				copyFunction->insertItem("f"+QString::number(c+1)+"(x)");
 			
@@ -105,16 +105,20 @@ class StatisticsWidget :public QWidget
 			functionTypeBox->insertItem("x^5");
 			functionTypeBox->insertItem("x^6");
 
-			typeBox->insertItem("Approximate");
-			typeBox->insertItem("Interpolate");
-			typeBox->insertItem("Show Line-Graph");
-			typeBox->insertItem("Normal Distribution");
-			typeBox->insertItem("Distribution Graph");
+			typeBox->insertItem(STATISTICSH_STR6);
+			typeBox->insertItem(STATISTICSH_STR7);
+			typeBox->insertItem(STATISTICSH_STR8);
+			typeBox->insertItem(STATISTICSH_STR9);
+			typeBox->insertItem(STATISTICSH_STR10);
+			
+			stepsBox=new QSpinBox(1,100,1,this);
+			stepsBox->setValue(10);
+			stepsLabel=new QLabel(STATISTICSH_STR11,this);
 
 
-			calculateButton=new QPushButton("Calculate",this);
-			maximizeButton=new QPushButton("Maximize",this);
-			drawButton=new QPushButton("Print",this);
+			calculateButton=new QPushButton(STATISTICSH_STR12,this);
+			maximizeButton=new QPushButton(STATISTICSH_STR13,this);
+			drawButton=new QPushButton(STATISTICSH_STR14,this);
 			readListsFile();
 
 			typeBoxSlot(0);
@@ -142,6 +146,7 @@ class StatisticsWidget :public QWidget
 		void copyButtonSlot();
 		void printButtonSlot();
 		void buttonInputSlot(QString);
+		void redrawGraphSlot();
 
 	protected:
 		void resizeEvent(QResizeEvent*);

@@ -202,6 +202,9 @@ int MainObject::readConfigFile()
 			fwrite("COMPLEX=false\n",14,1,configFile);
 			fwrite("TABLETYPE=normal\n",17,1,configFile);
 			fwrite("BASE=dec\n",9,1,configFile);
+			fwrite("STATSHOWLINES=false\n",20,1,configFile);
+			fwrite("STATSHOWPOINTS=true\n",20,1,configFile);
+			fwrite("STATAUTOCLEAR=true\n",19,1,configFile);
 			fwrite("SHOWWIN1=true\n",14,1,configFile);
 			fwrite("SHOWWIN2=false\n",15,1,configFile);
 			fwrite("SHOWWIN3=true\n",14,1,configFile);
@@ -569,11 +572,7 @@ int MainObject::readConfigFile()
 			tableZSteps=50;
 		pref.prec3dSteps=tableZSteps;
 	}
-	
-	
-	
-	
-	
+
 	QString rasterStr=getConfigString(&confFile,"RASTER");
 	if(rasterStr.length()>0)
 	{
@@ -648,6 +647,28 @@ int MainObject::readConfigFile()
 			pref.logNyquistSteps=false;
 		else pref.logNyquistSteps=true;
 	}	
+	
+	logStr=getConfigString(&confFile,"STATSHOWLINES");
+	if(logStr.length()>0)
+	{
+		if(logStr.lower() == "false")
+			pref.showStatLines=false;
+		else pref.showStatLines=true;
+	}
+	logStr=getConfigString(&confFile,"STATSHOWPOINTS");
+	if(logStr.length()>0)
+	{
+		if(logStr.lower() == "false")
+			pref.showStatPoints=false;
+		else pref.showStatPoints=true;
+	}
+	logStr=getConfigString(&confFile,"STATAUTOCLEAR");
+	if(logStr.length()>0)
+	{
+		if(logStr.lower() == "false")
+			pref.statAutoClear=false;
+		else pref.statAutoClear=true;
+	}
 	
 	QString graphType=getConfigString(&confFile,"GRAPHTYPE");
 	if(graphType.length()>0)
@@ -952,6 +973,18 @@ void MainObject::writeConfigFile()
 	if(pref.clearScriptMemory == true)
 		configuration+="true";
 	else configuration+="false";
+	configuration+="\nSTATSHOWLINES=";
+	if(pref.showStatLines == true)
+		configuration+="true";
+	else configuration+="false";
+	configuration+="\nSTATSHOWPOINTS=";
+	if(pref.showStatPoints == true)
+		configuration+="true";
+	else configuration+="false";
+	configuration+="\nSTATAUTOCLEAR=";
+	if(pref.statAutoClear == true)
+		configuration+="true";
+	else configuration+="false";
 	configuration+="\nTABLETYPE=";
 	if(pref.tableType==TABLENORMAL)
 		configuration+="normal";
@@ -975,7 +1008,7 @@ void MainObject::writeConfigFile()
 	else if(pref.base == DEC)
 		configuration+="dec";
 	configuration+="\n";
-	
+
 	for(int c=0; c<8;c++)
 	{
 		configuration+="SHOWWIN";
@@ -985,7 +1018,7 @@ void MainObject::writeConfigFile()
 			configuration+="true\n";
 		else configuration+="false\n";
 	}
-	
+
 	for(int c=0; c<20;c++)
 	{
 		configuration+=cleanConfigString("F"+QString::number(c+1),pref.functions[c]);
@@ -1213,29 +1246,37 @@ void MainObject::writeVarFile()
 
 void MainObject::tabChangeSlot(QWidget*activeWidget)
 {
-	if(activeWidget==(QWidget*)calculator || activeWidget==(QWidget*)calculator2 || activeWidget==(QWidget*)statistics)
+	if(activeWidget==(QWidget*)calculator || activeWidget==(QWidget*)calculator2)
 	{
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,false);
 		mainMenu->setItemVisible(SCRIPTM,false);
+		mainMenu->setItemVisible(STATISTICSM,false);
+
 	}
 	else if(activeWidget==(QWidget*)graph)
 	{
 		mainMenu->setItemVisible(GRAPH,true);
 		mainMenu->setItemVisible(TABLE,false);
 		mainMenu->setItemVisible(SCRIPTM,false);
+		mainMenu->setItemVisible(STATISTICSM,false);
+
 	}
 	else if(activeWidget==(QWidget*)table)
 	{
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,true);
 		mainMenu->setItemVisible(SCRIPTM,false);
+		mainMenu->setItemVisible(STATISTICSM,false);
+
 	}
 	else if(activeWidget==(QWidget*)matrix)
 	{
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,false);
 		mainMenu->setItemVisible(SCRIPTM,false);
+		mainMenu->setItemVisible(STATISTICSM,false);
+
 		emit matrixEnterSignal();
 	}
 	else if(activeWidget==(QWidget*)scripting || activeWidget==(QWidget*)scriptIO)
@@ -1243,6 +1284,15 @@ void MainObject::tabChangeSlot(QWidget*activeWidget)
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,false);
 		mainMenu->setItemVisible(SCRIPTM,true);
+		mainMenu->setItemVisible(STATISTICSM,false);
+	}
+	else if(activeWidget==(QWidget*)statistics)
+	{
+		mainMenu->setItemVisible(GRAPH,false);
+		mainMenu->setItemVisible(TABLE,false);
+		mainMenu->setItemVisible(SCRIPTM,false);
+		mainMenu->setItemVisible(STATISTICSM,true);
+
 	}
 	
 	if(activeWidget!=(QWidget*)calculator && activeWidget!=(QWidget*)calculator2)
@@ -1468,6 +1518,30 @@ void MainObject::scriptMenuSlot(int item)
 			break;
 	}
 }
+
+void MainObject::statisticsMenuSlot(int item)
+{
+	switch(item)
+	{
+		case STATCLEAR:
+			graph->drawSlot();
+			break;
+		case STATAUTOCLEAR:
+			pref.statAutoClear=!pref.statAutoClear;
+			getPref(pref);
+			break;
+		case STATPOINTS:
+			pref.showStatPoints=!pref.showStatPoints;
+			getPref(pref);
+			break;
+		case STATLINES:
+			pref.showStatLines=!pref.showStatLines;
+			getPref(pref);
+			break;
+	}
+	
+}
+
 
 void MainObject::tableTypeMenuSlot(int item)
 {

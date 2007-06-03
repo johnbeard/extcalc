@@ -25,10 +25,10 @@ using namespace std;
 #define VARSFILE ".extcalc/vars.conf"
 #define LISTSFILE ".extcalc/lists.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.8.2\n2007-05-20\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.3\n2007-06-03\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.8.2\n20.5.2007\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.3\n3.6.2007\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2007\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -108,6 +108,7 @@ using namespace std;
 #define CLEARMEMALWAYS		173
 #define CLEARMEMNOW			174
 #define SCRIPTM				175
+#define STATISTICSM			207
 
 #define MODE				39
 #define SCIENTIFIC			32
@@ -262,6 +263,11 @@ using namespace std;
 #define TABLE3D				54
 #define TABLECOMPLEX		185
 
+#define STATCLEAR			203
+#define STATAUTOCLEAR		204
+#define STATPOINTS			205
+#define STATLINES			206
+
 #define STATAPPROX			198
 #define STATINTERPOL		199
 #define STATNORMAL			200
@@ -396,6 +402,9 @@ struct Preferences
 	bool logNyquistSteps;
 	bool complex;
 	bool clearScriptMemory;
+	bool showStatLines;
+	bool showStatPoints;
+	bool statAutoClear;
 	int graphType;
 	int calcType;
 	int tableType;

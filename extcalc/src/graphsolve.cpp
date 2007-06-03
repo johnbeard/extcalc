@@ -1597,6 +1597,7 @@ void GraphSolveWidget::solveButtonSlot()
 		case GETSCREENSHOT:
 		{
 			emit getScreenshotSignal(spinBox->value(),spinBox2->value());
+			break;
 		}
 	}
 }

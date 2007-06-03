@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GraphWidget meta object code from reading C++ file 'graph.h'
 **
-** Created: Sat May 19 19:40:48 2007
+** Created: Sun Jun 3 05:33:03 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -121,16 +121,18 @@ QMetaObject* GraphWidget::staticMetaObject()
     };
     static const QUMethod signal_2 = {"drawPointsSignal", 3, param_signal_2 };
     static const QUMethod signal_3 = {"removeLinesSignal", 0, 0 };
+    static const QUMethod signal_4 = {"statisticsRedrawSignal", 0, 0 };
     static const QMetaData signal_tbl[] = {
 	{ "prefChange(Preferences)", &signal_0, QMetaData::Protected },
 	{ "solveTypeSignal(int)", &signal_1, QMetaData::Protected },
 	{ "drawPointsSignal(long double*,int,bool)", &signal_2, QMetaData::Protected },
-	{ "removeLinesSignal()", &signal_3, QMetaData::Protected }
+	{ "removeLinesSignal()", &signal_3, QMetaData::Protected },
+	{ "statisticsRedrawSignal()", &signal_4, QMetaData::Protected }
     };
     metaObj = QMetaObject::new_metaobject(
 	"GraphWidget", parentObject,
 	slot_tbl, 12,
-	signal_tbl, 4,
+	signal_tbl, 5,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
 	0, 0,
@@ -190,6 +192,12 @@ void GraphWidget::removeLinesSignal()
     activate_signal( staticMetaObject()->signalOffset() + 3 );
 }
 
+// SIGNAL statisticsRedrawSignal
+void GraphWidget::statisticsRedrawSignal()
+{
+    activate_signal( staticMetaObject()->signalOffset() + 4 );
+}
+
 bool GraphWidget::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
@@ -218,6 +226,7 @@ bool GraphWidget::qt_emit( int _id, QUObject* _o )
     case 1: solveTypeSignal((int)static_QUType_int.get(_o+1)); break;
     case 2: drawPointsSignal((long double*)static_QUType_ptr.get(_o+1),(int)static_QUType_int.get(_o+2),(bool)static_QUType_bool.get(_o+3)); break;
     case 3: removeLinesSignal(); break;
+    case 4: statisticsRedrawSignal(); break;
     default:
 	return QWidget::qt_emit(_id,_o);
     }
