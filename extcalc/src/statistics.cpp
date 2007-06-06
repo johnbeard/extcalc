@@ -175,17 +175,28 @@ void StatisticsWidget::calculateButtonSlot()
 	{
 		case STATAPPROX:
 		{
+			result->setText("");
 			int functionType=functionTypeBox->currentItem();
 			if(functionType==0)
 			{
+				if(lineNum<1)
+					MessageBox(STATISTICSC_STR6);
 				long double sum=0.0;
 				for(int c=0; c<lineNum; c++)
 					sum+=coordinatesList[c*2+1];
 				sum/=(long double)lineNum;
 				result->setText(QString::number(sum,'g',pref.precision));
 			}
-			else if(functionType==1)
+			
+			else if(functionType==1 || functionType==3 ||functionType==4)
 			{
+				if(lineNum<2)
+					MessageBox(STATISTICSC_STR7);
+				if(functionType==3 || functionType==4)
+				{
+					for(int c=0; c<lineNum; c++)
+						coordinatesList[c*2+1]=logl(coordinatesList[c*2+1]);
+				}
 				long double xSum=0.0,ySum=0.0,xySum=0.0,x2Sum=0.0,a0,a1;
 				QString resultText;
 				for(int c=0; c<lineNum; c++)
@@ -197,14 +208,99 @@ void StatisticsWidget::calculateButtonSlot()
 				}
 				a0=(ySum*x2Sum-xSum*xySum)/(lineNum*x2Sum-xSum*xSum);
 				a1=(lineNum*xySum-xSum*ySum)/(lineNum*x2Sum-xSum*xSum);
-				if(a1!=0.0)
-					resultText=QString::number(a1,'g',pref.precision)+"*X";
-				if(a0>=0.0)
-					resultText+="+";
-				if(a0!=0.0)
-				resultText+=QString::number(a0,'g',pref.precision);
+				if(functionType==1)
+				{
+					if(a1!=0.0)
+						resultText=QString::number(a1,'g',pref.precision)+"*X";
+					if(a0>0.0)
+						resultText+="+";
+					if(a0!=0.0)
+					resultText+=QString::number(a0,'g',pref.precision);
+				}
+				else if(functionType==3 || functionType==4)
+				{
+					for(int c=0; c<lineNum; c++)
+						coordinatesList[c*2+1]=expl(coordinatesList[c*2+1]);
+					a0=expl(a0);
+					if(functionType==4)
+					{
+						a1=expl(a1);
+						resultText=QString::number(a0,'g',pref.precision)+"*"+QString::number(a1,'g',pref.precision)+"^X";
+					}
+					else 
+					{
+						resultText=QString::number(a0,'g',pref.precision)+"*eu^("+QString::number(a1,'g',pref.precision)+"*X)";
+					}
+				}
 				result->setText(resultText);
 			}
+			else if(functionType==2)
+			{
+				if(lineNum<3)
+					MessageBox(STATISTICSC_STR8);
+				
+				long double*sum1=new long double[3];
+				long double*sum2=new long double[5];
+				long double*mat=new long double[9];
+				long double*coeff=new long double[3];
+				QString resultText="";
+				
+				for(int c=0; c<3; c++)
+				{
+					sum1[c]=0.0;
+					for(int c1=0; c1<lineNum; c1++)
+					{
+						if(c==0)
+							sum1[c]+=coordinatesList[c1*2+1];
+						else sum1[c]+=coordinatesList[c1*2+1]*powl(coordinatesList[c1*2],c);
+					}
+					perror("sum1: "+QString::number(c)+": "+QString::number((double)sum1[c]));
+
+				}
+				
+				for(int c=0; c<5; c++)
+				{
+					sum2[c]=0.0;
+					for(int c1=0; c1<lineNum; c1++)
+						sum2[c]+=powl(coordinatesList[c1*2],c);
+					perror("sum2: "+QString::number(c)+": "+QString::number((double)sum2[c]));
+				}
+				for(int c=0; c<3; c++) 
+				{
+					for(int c1=0; c1<3; c1++)
+					{
+						mat[c1*3+c]=sum2[c+c1];
+					}
+				}
+				
+				invertMatrix(3,mat);
+				
+				for(int c=0; c<3; c++)
+				{
+					coeff[c]=0.0;
+					for(int c1=0; c1<3; c1++)
+						coeff[c]+=mat[c1*3+c]*sum1[c1];
+				}
+				
+				if(coeff[2]!=0.0)
+					resultText+=QString::number(coeff[2],'g',pref.precision)+"*X^2";
+				if(coeff[1]>0.0)
+					resultText+="+";
+				if(coeff[1]!=0.0)
+					resultText+=QString::number(coeff[1],'g',pref.precision)+"*X";
+				if(coeff[0]>0.0)
+					resultText+="+";
+				if(coeff[0]!=0.0)
+					resultText+=QString::number(coeff[0],'g',pref.precision);
+
+				delete[]sum1;
+				delete[]sum2;
+				delete[]mat;
+				delete[]coeff;
+				
+				result->setText(resultText);
+			}
+
 			if(print)
 			{
 				if(pref.statAutoClear)
@@ -336,12 +432,6 @@ void StatisticsWidget::calculateButtonSlot()
 				resultString+="*(X-"+QString::number(my,'g',pref.precision)+")^2)";
 				
 				result->setText(resultString);
-			/*	if(print)
-				{
-					if(pref.statAutoClear)
-						emit removeLinesSignal();
-					emit drawPointsSignal(coordinatesList,lineNum,true);
-				}*/
 			}
 			break;
 		}

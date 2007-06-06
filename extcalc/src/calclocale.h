@@ -456,8 +456,8 @@
 #define MATRIXWIDGETH_STR3 "Spalten"
 #define MATRIXWIDGETH_STR4 "Rechner"
 #define MATRIXWIDGETH_STR5 "Lineares Gleichungssystem"
-#define MATRIXWIDGETH_STR6 "erstellen"
-#define MATRIXWIDGETH_STR7 "analysieren"
+#define MATRIXWIDGETH_STR6 "Erstellen"
+#define MATRIXWIDGETH_STR7 "Analysieren"
 #define MATRIXWIDGETH_STR8 "Inverse Matrix"
 #define MATRIXWIDGETH_STR9 "Berechnen"
 #define MATRIXWIDGETH_STR10 "Ok"
@@ -506,7 +506,7 @@
 #define STATISTICSH_STR2 "Listennummer"
 #define STATISTICSH_STR3 "Ergebnisfunktion"
 #define STATISTICSH_STR4 "Kopieren nach"
-#define STATISTICSH_STR5 "Kopieren"
+#define STATISTICSH_STR5 "OK"
 #define STATISTICSH_STR6 "Approximation"
 #define STATISTICSH_STR7 "Interpolation"
 #define STATISTICSH_STR8 "Liniendiagramm anzeigen"
@@ -521,6 +521,9 @@
 #define STATISTICSC_STR3 " wirklich überschreiben ?"
 #define STATISTICSC_STR4 "Datei konnte nicht geschrieben werden: "
 #define STATISTICSC_STR5 "Datei konnte nicht gelesen werden: "
+#define STATISTICSC_STR6 "Für diese Operation wird mindestens ein Punkt benötigt"
+#define STATISTICSC_STR7 "Für diese Operation werden mindestens zwei Punkte benötigt"
+#define STATISTICSC_STR8 "Für diese Operation werden mindestens drei Punkte benötigt"
 #endif
 
 
@@ -1042,5 +1045,8 @@
 #define STATISTICSC_STR3 " ?"
 #define STATISTICSC_STR4 "Unable to write lists file: "
 #define STATISTICSC_STR5 "Unable to read lists file: "
+#define STATISTICSC_STR6 "For this approximation, at least one point is needed"
+#define STATISTICSC_STR7 "For this approximation, at least two points were needed"
+#define STATISTICSC_STR8 "For this approximation, at least three points were needed"
 #endif
 

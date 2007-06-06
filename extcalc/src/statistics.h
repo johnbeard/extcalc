@@ -98,12 +98,11 @@ class StatisticsWidget :public QWidget
 			}
 
 			functionTypeBox->insertItem("const");
-			functionTypeBox->insertItem("x");
-			functionTypeBox->insertItem("x^2");
-			functionTypeBox->insertItem("x^3");
-			functionTypeBox->insertItem("x^4");
-			functionTypeBox->insertItem("x^5");
-			functionTypeBox->insertItem("x^6");
+			functionTypeBox->insertItem("a*x+b");
+			functionTypeBox->insertItem("a*x^2+b*x+c");
+			functionTypeBox->insertItem("a*e^(b*x)");
+			functionTypeBox->insertItem("a*b^x");
+
 
 			typeBox->insertItem(STATISTICSH_STR6);
 			typeBox->insertItem(STATISTICSH_STR7);

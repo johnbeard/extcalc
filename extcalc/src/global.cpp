@@ -6749,6 +6749,64 @@ long double gauss(int sizex,int sizey,long double*matrix)
 	return ret;
 }
 
+bool invertMatrix(int size,long double*matrix)
+{
+	long double mainDet;
+	long double *result=(long double*)malloc(size*size*sizeof(long double));
+	long double *subMatrix=(long double*)malloc((size-1)*(size-1)*sizeof(long double));
+
+	memcpy(result,matrix,size*size*sizeof(long double));
+
+	mainDet=gauss(size,size,result);
+	if(mainDet==0.0)
+		return false;
+	mainDet=1.0/mainDet;
+			
+			
+	int pos1,pos2,effSrcIndex,effDestIndex,vz,effIndex;
+	for(int c3=0; c3<size; c3++)
+	{
+		for(int c4=0; c4<size; c4++)
+		{
+			effIndex=c3+c4*size;
+			pos1=0;
+			for(int c1=0; c1<size; c1++)
+			{
+				if(c1!=c3)
+				{
+					pos2=0;
+					for(int c2=0; c2<size; c2++)
+					{
+						effDestIndex=pos1+(size-1)*pos2;
+						effSrcIndex=c1+c2*size;
+						if(c2!=c4)
+						{
+
+								subMatrix[effDestIndex]=matrix[effSrcIndex];
+
+							pos2++;
+						}
+					}
+					pos1++;
+				}
+			}
+			vz=(c3+c4)%2;
+			if(vz==0)
+				vz=1;
+			else vz=-1;
+			effDestIndex=c4+c3*size;
+			long double subDet=gauss(size-1,size-1,subMatrix);
+			result[effDestIndex]=mainDet*(long double)vz*subDet;
+			fprintf(stderr,QString::number((double)result[effDestIndex])+" ");
+		}
+		fprintf(stderr,"\n");
+	}
+	memcpy(matrix,result,size*size*sizeof(long double));
+	free(result);
+	free(subMatrix);
+	
+	return true;
+}
 
 
 void printError(const char*text,int num,QObject*eventReciver)

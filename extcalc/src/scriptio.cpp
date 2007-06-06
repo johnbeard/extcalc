@@ -1,5 +1,11 @@
 #include "scriptio.h"
 
+/*
+script interface						thread interface					draw interface	
+line point circle rect					2d draw event, type, coordinates	command list
+clear screen							2d control event, type
+set brush: thin line, thick line, fill
+*/
 
 void ScriptIOWidget::getPref(Preferences newPref)
 {
