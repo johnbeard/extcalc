@@ -25,10 +25,10 @@ using namespace std;
 #define VARSFILE ".extcalc/vars.conf"
 #define LISTSFILE ".extcalc/lists.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.8.4\n2007-06-06\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.5\n2007-06-07\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.8.4\n6.6.2007\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.5\n7.6.2007\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2007\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 

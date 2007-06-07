@@ -625,6 +625,7 @@ MainObject() :QTabWidget()
 	QObject::connect(statistics,SIGNAL(drawPointsSignal(long double*,int,bool)),graph,SIGNAL(drawPointsSignal(long double*,int,bool)));
 	QObject::connect(statistics,SIGNAL(removeLinesSignal()),graph,SIGNAL(removeLinesSignal()));
 	QObject::connect(graph,SIGNAL(statisticsRedrawSignal()),statistics,SLOT(redrawGraphSlot()));
+	QObject::connect(this,SIGNAL(removeGraphicsLinesSignal()),graph,SIGNAL(removeLinesSignal()));
 
 	
 	pref.scriptPath=getenv("HOME")+QString("/.extcalc/script");
@@ -871,6 +872,7 @@ signals:
 	void editSignal(int);
 	void runScript(QString*);
 	void matrixEnterSignal();
+	void removeGraphicsLinesSignal();
 
 };
 

@@ -1524,6 +1524,7 @@ void MainObject::statisticsMenuSlot(int item)
 	switch(item)
 	{
 		case STATCLEAR:
+			emit removeGraphicsLinesSignal();
 			graph->drawSlot();
 			break;
 		case STATAUTOCLEAR:

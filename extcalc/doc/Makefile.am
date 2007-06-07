@@ -30,4 +30,6 @@ documentation_DATA = help_de.html \
 					 scriptedit.jpg \
 					 scriptrun.jpg \
 					 screenshot.jpg \
-					 matvec.jpg
+					 matvec.jpg \
+					 stat1.jpg \
+					 stat2.jpg

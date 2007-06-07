@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - Scientific Calculator </h1>
-  Version 0.8.0
+  Version 0.8.5
   <br>
   <br>
   <h3>Contents</h3>
@@ -26,7 +26,8 @@
   <a href="#scriptedit"><h5>3.4.2 Script Editor</h5></a>
   <a href="#scriptsyntax"><h5>3.4.3 Scripting Language</h5></a>
   <a href="#matrixvector"><h4>3.5 Vector/Matrix Arithmetics</h4></a>
-  <a href="#pref"><h4>3.6 Preferences</h4></a>
+  <a href="#stat"><h4>3.6 Statistics</h4></a>
+  <a href="#pref"><h4>3.7 Preferences</h4></a>
   <a href="#else"><h3>4. Other</h3></a>
   <br>
   <br>
@@ -34,7 +35,7 @@
   <a name="introduction"><h2>1. Introduction</h2></a>
   Extcalc is a scientific graphic calculator for Linux. Extcalc is able to process difficult
   mathematical functions, to draw graph and to work with them. It includes a C-like script language.<br>
-  This is the documentation for version 0.8.0. 
+  This is the documentation for version 0.8.5. 
   <br>
   <br>
   <br>
@@ -42,8 +43,8 @@
   This description is only for the installation of the source code package (.tar.gz). If you install a binary package, you have to use the
   packet manager of your distribution.<br><br>
   <UL>
-  <LI> extract packet (tar -xzf extcalc-0.8.0.tar.gz)<br>
-  <LI> switch to directory (cd extcalc-0.8.0)<br>
+  <LI> extract packet (tar -xzf extcalc-0.8.5.tar.gz)<br>
+  <LI> switch to directory (cd extcalc-0.8.5)<br>
   <LI> configure (./configure)<br>
   <LI> compile (make)<br>
   <LI> become root (su)<br>
@@ -598,7 +599,7 @@ Rubber: If you want to erase a part of the drawn things, you can use this tool. 
   not in the calculator.
   The scripts programs run in a separate console, and you may use the other extcalc functions while running a script.
   Scripts can be managed, edited and started from the integrated script editor.<br>
-  In this version 0.8.0 are not all planned features included.<br><br>
+  In this version 0.8.5 are not all planned features included.<br><br>
 
   <a name="scriptedit"><h3>3.4.2 The Script-Editor</h3></a>
   <img src="scriptedit.jpg"></img>
@@ -646,10 +647,10 @@ If is running while you change something, you can press the right mouse button a
   You can always stop a running script by pressing the "Kill"-Button at the script console window.<br>
   If the script does not stop before the timeout, an error message is displayed. You have to press the kill-button again to stop the script correctly.<br>
   <a name="scriptsyntax"><h3>3.4.3 Scripting Language</h3></a>
-  In version 0.8.0 of Extcalc, not all features are included. You can read more about the planned features 
+  In version 0.8.5 of Extcalc, not all features are included. You can read more about the planned features 
   at <a href="#else">Chapter 4</a>.<br>
   <h5>Problems:</h5>
-  This is a list of the current problems of the 0.8.0 version of the Extcalc Script Interpreter<br><br>
+  This is a list of the current problems of the 0.8.5 version of the Extcalc Script Interpreter<br><br>
   <OL>
   <LI>Speed<br>
   The extcalc scripts were ran by an Interpreter and so they run not as fast as compiled programms, but it will be optimized in later versions.<br><br>
@@ -1584,7 +1585,59 @@ while(1)
   <h4>Inverse Matrix</h4>
   This module does the same as the calculator operation X[][]^-1.<br>
   It calculates the inverse matrix of the chosen variable, if possible, and shows it at the table.<br>
-  <a name="pref"><h2>3.6 Preferences</h2></a>
+
+  <a name="stat"><h2>3.6 Statistics</h2></a>
+  <img src="stat2.jpg"></img><img src="stat1.jpg"></img><br><br>
+  The statistics window of Extcalc serves modules for statistical analyzation of tables of values or point coordinates.
+  At all modules, the result can be shown graphically by pressing the print-button.<br>
+  <h4>Approximate</h4>
+  This module lets you calculate approximated functions from a list of points. To calculate the function, a function type and the list 
+  (1 to 5) that contains the points data must be chosen. The result function can be shown by pressing the calculate button. To copy the
+  function into the global function list, choose a function list entery and press the copy button.<br>
+  The following functions can be used for approximation:<br>
+      <TABLE BORDER>
+   <TR><TH>function</TH><TH>Description</TH>
+  <TR>
+  <TD>const</TD>
+  <TD>Constant value. This calculates the mean of the given y-values.
+  </TD>
+    <TR>
+  <TD>a*x+b</TD>
+  <TD>Straight line. The line is approximated by least square regression.
+  </TD>
+    <TR>
+  <TD>a*x^2+b*x+c</TD>
+  <TD>Quadratic equation. The points data is approximated by a quadratic function using least square regression.
+  </TD>
+    <TR>
+  <TD>a*e^(b*x)</TD>
+  <TD>e-function. Approximates the given points by a e-function using least square regression.
+  </TD>
+    <TR>
+  <TD>a*b^x</TD>
+  <TD>Exponential function. Approximates the given points by a exponential function using least square regression.
+  </TD>
+  </TABLE>
+  
+  <h4>Interpolate</h4>
+  This module calculates the interpolation graph for a given list of points. The interpolation graph is a polynomial that includes
+  every given point. The result function will become very large, if more interpolation points were given.
+
+  <h4>Show Line-Graph</h4>
+  This module shows a graph of all given points connected by lines. You just have to choose the input list and press the print button.
+
+  <h4>Normal Distribution Graph</h4>
+  With this module, a gaussian normal distribution graph can be calculated. As input data, it needs a list of values (no points!).
+  To calculate the normal distribution function, just choose an input data column with the input box and press the calculate button.
+  The graph can also be shown by pressing the print button.
+
+
+  <h4>Distribution Graph</h4>
+  This module prints a graph of the distribution of a list of values (no points). The number of steps can also be set.
+  Press the print button to see the graph.
+  
+  
+  <a name="pref"><h2>3.7 Preferences</h2></a>
   Preferences can be changed directly by using the menu item "Calculator" for calculator preferences
   and the item "Graphic" for the preferences of the graphics window or
   by the preferences dialogs. You find them at the "Preferences"
@@ -1669,9 +1722,11 @@ while(1)
   vector calculation<br>
   scripting functions for graph drawing and file usage<br> 
   sperate window for matrix and vector operations<br>
+  statistic functions<br>
 
   <h5>To-do-list</h5>
-  statistic functions<br>
+  beta testing<br>
+
  
          
   <h5>Tested Distributions:</h5>
@@ -1688,8 +1743,8 @@ while(1)
   <tr><td>Slackware 10:</td><td>OK</td></tr>
   <tr><td>Fedora Core 3 (64Bit):</td><td>OK</td></tr>
   <tr><td>Fedora Core 4:</td><td>Update needed</td></tr>
-  <tr><td>Fedora Core 5:</td><td>OK</td></tr>
-  <tr><td>OpenBSD 3.9:</td><td>several problems</td></tr>
+  <tr><td>Fedora Core 6:</td><td>OK</td></tr>
+  <tr><td>FreeBSD 6.2:</td><td>read comment</td></tr>
   </table>
   <h5>Debian 3.1 Sarge</h5>
   The installer works and the program can be started, but the graphics window doesn't work.<br>
@@ -1702,18 +1757,10 @@ while(1)
   This bug can be fixed by an update for gcc and g++. The program will work if you install this
   updates before installation.<br>
 
-  <h5>OpenBSD 3.9</h5>
-  In general, the Extcalc code runs on an OpenBSD 3.9 if QT is installed.<br>
-  But during the tests on this system, several problems occurred.<br>
-  <OL>
-  <LI>At the installation of QT on OpenBSD, no link for libqt-mt is set. So the linker-run fails if you don't set this link.<br>
-  <LI>The environment variables for QT were not properly set. You have to do this as the QT-Help describes it.<br>
-  <LI>The pkg-config data for the qt- and gl-libraries is not included in OpenBSD, so you can't use the configure script to install.
-  </OL>
-  You have to install Extcalc manually. To compile the code, you have to switch to the src directory and run qmake -o Makefile extcalc.pro
-  there. This will generate a Makefile, so you can run make to generate a running binary file.<br>
-  Because of all this problems, it is better to wait until a binary package of Extcalc is available.<br>
-
+  <h5>FreeBSD 6.2</h5>
+  The source can be built under FreeBSD, when the development packages of QT and OpenGL were installed.
+  You may need to set the QTDIR environment variable to installation path of the QT development package.
+  <br>
   <h5>Needed software:</h5>
   Linux<br> 
   GCC 3 or GCC 4 (doesn't work on GCC 2.xx)<br> 

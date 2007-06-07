@@ -130,3 +130,12 @@ dialogs
 - integrated 3D-graphics window into script console
 - added script commands for OpenGL usage
 - updated table window
+
+0.8.5 statistic functions
+- added statistics window
+- added function approximation and interpolation modules
+- added module for drawing line graphs
+- added statistics modules for gaussian normal distribution and distribution
+graphs
+- fixed bug in matrix module
+

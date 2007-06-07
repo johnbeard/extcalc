@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - wissenschaftlicher Taschenrechner </h1>
-  Version 0.8.0
+  Version 0.8.5
   <br>
   <br>
   <h3>Inhalt</h3>
@@ -25,8 +25,9 @@
   <a href="#scriptcom"><h5>3.4.1 Allgemeines</h5></a>
   <a href="#scriptedit"><h5>3.4.2 Der Script-Editor</h5></a>
   <a href="#scriptsyntax"><h5>3.4.3 Die Script-Sprache</h5></a>
-  <a href="#matrixvector"><h4>3.5 Matrix-, Vektorrechnung</h4></a>  
-  <a href="#pref"><h4>3.6 Einstellungen</h4></a>
+  <a href="#matrixvector"><h4>3.5 Matrix-, Vektorrechnung</h4></a>
+  <a href="#stat"><h4>3.6 Statistik</h4></a>
+  <a href="#pref"><h4>3.7 Einstellungen</h4></a>
   <a href="#else"><h3>4. Sonstiges</h3></a>
   <br>
   <br>
@@ -34,15 +35,15 @@
   <a name="introduction"><h2>1. Einleitung</h2></a>
   Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner. Extcalc kann zum berechen komplizierter mathematischer Ausdr&uuml;cke,
   zum Zeichnen von Funktionsgraphen, und zum Auswerten von Funktionen benutzt werden. Es enth&auml;lt auch eine C-&auml;hnliche Script-Sprache.<br>
-  Diese Hilfe wurde f&uuml;r die Version 0.8.0 von Extcalc geschrieben.
+  Diese Hilfe wurde f&uuml;r die Version 0.8.5 von Extcalc geschrieben.
   <br>
   <br>
   <br>
   <a name="install"><h2>2. Installation</h2></a>
   Dies ist die Beschreibung zur Installation von Extcalc aus dem Quellcode-Paket. Vorkompilierte Pakete m&uuml;ssen mit dem Paketmanager der jeweiligen
   Distribution installiert werden.<br><br>
-  - Paket auspacken (tar -xzf extcalc-0.8.0.tar.gz)<br>
-  - ins Verzeichnis wechseln (cd extcalc-0.8.0)<br>
+  - Paket auspacken (tar -xzf extcalc-0.8.5.tar.gz)<br>
+  - ins Verzeichnis wechseln (cd extcalc-0.8.5)<br>
   - konfigurieren (./configure --enable-language_de)<br>
   - kompilieren (make)<br>
   - root-rechte erlangen (su)<br>
@@ -53,7 +54,7 @@
    
   <a name="use"><h2>3. Bedienung</h2></a>
   Da dies noch eine Enticklungsversion von Extcalc ist, kann sich die Bedienoberfl&auml;che noch
-  stark &auml;ndern. Diese Informationen beziehen sich auf die Version 0.8.0. Mit dem Reiter unter der
+  stark &auml;ndern. Diese Informationen beziehen sich auf die Version 0.8.5. Mit dem Reiter unter der
   Men&uuml;leiste kann man zwischen den einzelnen Komponenten umschalten.Dies sind  ein Taschenrechner, ein Grafik-Fenster
   zum Zeichnen und analysieren verschiedner Typen von Graphen, ein Tabellen-Fenster, ein Script-Editor und eine Script-Konsole zum
   Ausf&uuml;hren von Scripten.
@@ -503,7 +504,7 @@
   m&ouml;glich, dass das Abbrechen-Signal nicht rechtzeitig vom Script empfangen wird. Man muss dann den Abbrechen-Knopf noch einmal dr&uuml;cken, um
   das Programm korrekt zu Beenden.<br>
   <a name="scriptsyntax"><h3>3.4.3 Die Script-Sprache</h3></a>
-  In Version 0.8.0 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. N&auml;here Informationen zu den geplaten
+  In Version 0.8.5 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. N&auml;here Informationen zu den geplaten
   Funktionen finden Sie im <a href="#else">Kapitel 4</a>.<br>
   <h5>Probleme:</h5>
   In der folgenden Liste sind Probleme aufgef&uuml;hrt, die im Script-Interpreter noch vorhanden sind.<br><br>
@@ -1432,8 +1433,66 @@ while(1)
   Die inverse Matrix wird, sofern möglich, berechnet und in der Tabelle angezeigt.<br>
   
   
+  <a name="stat"><h2>3.6 Statistik</h2></a>
+  <img src="stat2.jpg"></img><img src="stat1.jpg"></img><br><br>
+  Im Statistik-Fenster können Näherungsrechnungen und statistische Auswertungen von Wertetabellen durchgeführt werden.
+  Dazu werden verschiedene Module bereitgestellt. Alle Module bieten die Möglichkeit, das jeweilige Ergebnis grafisch darzustellen,
+  indem man den Zeichnen-Knopf drückt. Meistens können zusätzlich zur stetigen Funktion noch die Stützpunkte angezeigt werden.
   
-  <a name="pref"><h2>3.5 Einstellungen</h2></a>
+  <h4>Approximation</h4>
+  Mit diesem Modul können aus einer Menge von Stützpunkten mathematische Funktionen angenähert werden.
+  Dazu stehen mehrere Funktions-Grundtypen zur Verfügung, die in einer Box ausgewählt werden können.
+  Außerdem muss noch ausgewählt werden, welche Koordinatenliste zur Berechnung verwendet werden soll.
+  Die Funktion wird in der Ergebnis-Zeile angezeigt, wenn man den Berechnen-Knopf drückt. Die Funktion kann von dort in die allgemeine
+  Funktions-Liste übernommen werden. Über den Zeichnen-Knopf kann die Funktion direkt angezeigt werden. Zusätzlich können auch die
+  Stützpunkte für die Näherung eingeblendet werden.
+  Folgende Funktionen stehen zur Verfügung:
+  <TABLE BORDER>
+  <TR><TH>Funktion</TH><TH>Erklärung</TH>
+  <TR>
+  <TD>konst</TD>
+  <TD>Konstante. Es wird der arithmetische Mittelwert der Y-Koordinaten berechnet.
+  </TD>
+    <TR>
+  <TD>a*x+b</TD>
+  <TD>Geradennäherung. Eine genäherte Gerade nach dem Prinzip der kleinsten Quadrate.
+  </TD>
+    <TR>
+  <TD>a*x^2+b*x+c</TD>
+  <TD>Quadratische Näherung. Eine Parabel als Näherungsfunktion. Ebenfalls nach dem Prinzip der kleinsten Quadrate berechnet.
+  </TD>
+    <TR>
+  <TD> a*e^(bx)</TD>
+  <TD>e-Funktion. Nach dem Prinzip der kleinsten Quadrate errechnete e-Funktion.
+  </TD>
+    <TR>
+  <TD>a*b^x</TD>
+  <TD>Exponentialfunktion. Auch diese Funktion wird nach dem Prinzip der kleinsten Quadrate errechnet.
+  </TD>
+  </TABLE>
+  <h4>Interpolation</h4>
+  Dieses Modul dient zum Berechnen einer Interpolations-Funktion. Es wird eine Polynom-Funktion berechnet, die durch alle gegebenen
+  Punkte führt. Da der Grad des Polynoms der Anzahl der Punkte entspricht, kann die Funktion unter Umständen sehr lang werden.
+  Wie bei der Approximation, kann die Ergebnis-Funktion mit dem Zeichnen-Knopf direkt angezeigt werden, oder mit dem Berechen-Knopf
+  berechnet werden und anschließend an eine beliebige Stelle in die Funktionsliste kopiert werden.
+
+  <h4>Linien-Graph anzeigen</h4>
+  Dieses Modul dient zur Veranschaulichung der eingegebenen Daten. Es zeigt alle eingegebenen Punkte, verbunden mit Linien, an.
+  Der Graph wird angezeigt, wenn man den Zeichnen-Knopf drückt.
+
+  <h4>Normalverteilungskurve berechnen</h4>
+  Hier wird aus Liste von Werten (keine Punkte!) die passende, Gauß'sche Normalverteilungskurve berechnet. Die Ergebnis-Funktion kann wie
+  bei Iterpolation und Approximation weiterverarbeitet werden. Zur weiteren Auswertung können die Analyse-Möglichkeiten im Grafik-Fenster 
+  benutzt werden, wenn die Funktion in die Funktionsliste übertragen wurde.
+  
+  <h4>Verteilungs-Graph anzeigen</h4>
+  Mit diesem Modul kann die Verteilung von Werten (keine Punkte!) angezeigt werden. Die Anzahl der Stützpunkte kann eingestellt werden.
+  Das Ergebnis wird angezeigt, wenn man den Zeichnen-Knopf drückt.
+
+
+  
+  
+  <a name="pref"><h2>3.7 Einstellungen</h2></a>
   Die Einstellungen k&ouml;nnen entweder direkt &uuml;ber das Men&uuml; vorgenommen werden oder in den 
   ausf&uuml;hrlichen Einstellungs-Fenstern. Um die Einstellungen direkt zu &auml;ndern, gibt es im
   Men&uuml; die Punkte "Rechner" und "Grafik". Dort k&ouml;nnen einige Einstellungen direkt ge&auml;ndert
@@ -1494,7 +1553,7 @@ while(1)
   <br>
   <a name="else"><h2>4. Sonstiges</h2></a>
   <h5> Version</h5>
-  Extcalc Version 0.8.0<br>
+  Extcalc Version 0.8.5<br>
   Dies ist eine Testversion! Deshalb konnen einige Funktionen inaktiv oder fehlerhaft sein.<br>    
   <h5>Rechengenauigkeit:</h5>
   Aufgrund des Aufbaus eines PC-Prozessors und der verwendeten Variablen vom Typ long double (80 Bit)
@@ -1570,10 +1629,12 @@ while(1)
   Script-Funktionen f&uuml;r Graphik und Dateioperationen<br>
   Fenster f&uuml;r Matrix- und Vektor-Operationen<br>
   Vektoren<br>
+  Statistikfunktionen<br>
   
   <h5>noch zu Tun</h5>
+  Beta-Tests<br>
 
-  Statistikfunktionen<br>
+
 
   </body>
 </html>

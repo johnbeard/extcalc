@@ -1,7 +1,7 @@
 /****************************************************************************
 ** MainObject meta object code from reading C++ file 'extcalc.h'
 **
-** Created: Wed Jun 6 12:46:45 2007
+** Created: Thu Jun 7 05:10:12 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -163,15 +163,17 @@ QMetaObject* MainObject::staticMetaObject()
     };
     static const QUMethod signal_1 = {"runScript", 1, param_signal_1 };
     static const QUMethod signal_2 = {"matrixEnterSignal", 0, 0 };
+    static const QUMethod signal_3 = {"removeGraphicsLinesSignal", 0, 0 };
     static const QMetaData signal_tbl[] = {
 	{ "editSignal(int)", &signal_0, QMetaData::Public },
 	{ "runScript(QString*)", &signal_1, QMetaData::Public },
-	{ "matrixEnterSignal()", &signal_2, QMetaData::Public }
+	{ "matrixEnterSignal()", &signal_2, QMetaData::Public },
+	{ "removeGraphicsLinesSignal()", &signal_3, QMetaData::Public }
     };
     metaObj = QMetaObject::new_metaobject(
 	"MainObject", parentObject,
 	slot_tbl, 20,
-	signal_tbl, 3,
+	signal_tbl, 4,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
 	0, 0,
@@ -216,6 +218,12 @@ void MainObject::matrixEnterSignal()
     activate_signal( staticMetaObject()->signalOffset() + 2 );
 }
 
+// SIGNAL removeGraphicsLinesSignal
+void MainObject::removeGraphicsLinesSignal()
+{
+    activate_signal( staticMetaObject()->signalOffset() + 3 );
+}
+
 bool MainObject::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
@@ -251,6 +259,7 @@ bool MainObject::qt_emit( int _id, QUObject* _o )
     case 0: editSignal((int)static_QUType_int.get(_o+1)); break;
     case 1: runScript((QString*)static_QUType_varptr.get(_o+1)); break;
     case 2: matrixEnterSignal(); break;
+    case 3: removeGraphicsLinesSignal(); break;
     default:
 	return QTabWidget::qt_emit(_id,_o);
     }
