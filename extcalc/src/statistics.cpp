@@ -132,9 +132,11 @@ void StatisticsWidget::calculateButtonSlot()
 	long double *coordinatesList=NULL;
 	int listNum,c=0,lineNum=0,c1=0;
 	long double x,y;
+
 	
 	if(type==STATAPPROX || type==STATINTERPOL || type==STATLINEGRAPH)
 	{
+		xmin=xmax=ymin=ymax=0.0;
 		listNum=listNumber->value()-1;
 		while(c<lists->numRows())
 		{
@@ -153,11 +155,21 @@ void StatisticsWidget::calculateButtonSlot()
 				}
 				coordinatesList[c1*2+2]=x;
 				coordinatesList[c1*2+3]=y;
+				if(x>xmax)
+					xmax=x;
+				else if(x<xmin)
+					xmin=x;
+				if(y>ymax)
+					ymax=y;
+				else if(y<ymin)
+					ymin=y;
 			}
 			c++;
 		}
 	}
 	else {
+		xmin=xmax=ymin=0.0;
+		ymax=1.0;
 		listNum=listNumberBox->currentItem();
 		while(c<lists->numRows())
 		{
@@ -166,6 +178,8 @@ void StatisticsWidget::calculateButtonSlot()
 				lineNum++;
 				coordinatesList=(long double*)realloc(coordinatesList,sizeof(long double)*lineNum);
 				coordinatesList[lineNum-1]=strtold(lists->text(c,listNum),NULL);
+				if(coordinatesList[lineNum-1]>xmax)
+					xmax=coordinatesList[lineNum-1];
 			}
 			c++;
 		}
@@ -381,12 +395,14 @@ void StatisticsWidget::calculateButtonSlot()
 			
 			for(int c1=0; c1<lineNum; c1++)
 			{
-				for(int c2=1; c2<=10; c2++)
+				for(int c2=1; c2<=stepCount; c2++)
 				{
 					
 					if(coordinatesList[c1]<start+c2*step-step/2)
 					{
 						graphData[2*c2-1]+=1.0;
+						if(graphData[2*c2-1]>ymax)
+							ymax=graphData[2*c2-1];
 						break;
 					}
 				}
@@ -398,6 +414,7 @@ void StatisticsWidget::calculateButtonSlot()
 					sum+=graphData[2*c+1];
 				for(int c=0; c<stepCount; c++)
 					graphData[2*c+1]=graphData[2*c+1]/sum;
+				ymax=ymax/sum;
 			}
 			
 			if(print)
@@ -522,6 +539,7 @@ void StatisticsWidget::copyButtonSlot()
 	}
 	
 	pref.functions[index]=result->text();
+	pref.functionTypes[index]=GRAPHSTD;
 	emit prefChange(pref);
 }
 
@@ -533,6 +551,15 @@ void StatisticsWidget::printButtonSlot()
 	print=false;
 	bool *tmpActiveFunctions=new bool[20];
 	QString tmpF1=pref.functions[0];
+	int tmpFunctionType=pref.functionTypes[0];
+	double xSize=pref.xmax-pref.xmin,ySize=pref.ymax-pref.ymin;
+	xSize*=0.1;
+	ySize*=0.1;
+	pref.xmin=xmin-xSize;
+	pref.xmax=xmax+xSize*2.0;
+	pref.ymin=ymin-ySize;
+	pref.ymax=ymax+ySize;
+	
 	memcpy(tmpActiveFunctions,pref.activeFunctions,20*sizeof(bool));
 	pref.functions[0]=result->text();
 	if(type==STATINTERPOL || type==STATAPPROX || type==STATNORMAL)
@@ -540,6 +567,8 @@ void StatisticsWidget::printButtonSlot()
 	else pref.activeFunctions[0]=false;
 	for(int c=1; c<20;c++)
 		pref.activeFunctions[c]=false;
+	pref.graphType=GRAPHSTD;
+	pref.functionTypes[0]=GRAPHSTD;
 	
 	emit prefChange(pref);
 	emit printSignal();
@@ -547,6 +576,7 @@ void StatisticsWidget::printButtonSlot()
 
 	pref.functions[0]=tmpF1;
 	memcpy(pref.activeFunctions,tmpActiveFunctions,20*sizeof(bool));
+	pref.functionTypes[0]=tmpFunctionType;
 	emit prefChange(pref);
 	delete[] tmpActiveFunctions;
 }

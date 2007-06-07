@@ -49,8 +49,8 @@ class StatisticsWidget :public QWidget
 	QLabel *listNumberLabel,*resultLabel,*copyFunctionLabel,*functionTypeLabel,*stepsLabel;
 	QLineEdit * result;
 	
+	double xmin,xmax,ymin,ymax;
 	bool print;
-
 	bool fullscreen;
 	int type;
 
