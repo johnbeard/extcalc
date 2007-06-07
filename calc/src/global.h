@@ -17,7 +17,7 @@
 using namespace std;
 
 
-#define VERSIONSTRING "Version: 0.8.0 2007-04-24\nCalculator algorithm: extcalc v0.8.0 2007-04-23"
+#define VERSIONSTRING "Version: 0.8.5 2007-06-07\nCalculator algorithms: extcalc v0.8.5 2007-06-07"
 #define AUTHORSTRING "Author:\nRainer Strobel\nhttp://extcalc-linux.sourceforge.net\n2007\n"
 
 

@@ -401,7 +401,7 @@ int main(int argc,char**argv)
 			delete[]vars;
 			delete pref;
 			if(tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo)!=0)
-				perror("tcsetattr fehler");
+				perror("tcsetattr error");
 			return 0;
 		}
 		s=new Script((Script*)NULL,res,pref,vars,&scriptData);
@@ -415,7 +415,7 @@ int main(int argc,char**argv)
 			delete pref;
 			delete s;
 			if(tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo)!=0)
-				perror("tcsetattr fehler");
+				perror("tcsetattr error");
 			return 0;
 		}
 		value=s->exec();
@@ -556,7 +556,7 @@ int main(int argc,char**argv)
 	}
 
 	if(tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo)!=0)
-		perror("tcsetattr fehler");
+		perror("tcsetattr error");
 	
 	delete[]input;
 	delete[]res;

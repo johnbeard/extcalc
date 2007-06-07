@@ -15,7 +15,7 @@ Calc is a scientific calculator for the text console.
 It is simple to use and it can process many mathematical functions.
 Calc is as subproject of Extcalc. It uses the calculation algorithms of 
 the graphical Extcalc calculator.
-This is version 0.8.0 of Calc. The parser algorithms should work
+This is version 0.8.5 of Calc. The parser algorithms should work
 correctly now and all needed command line options are active.
 Variables and the answer memory can be used. The script interpreter is
 nearly completed.

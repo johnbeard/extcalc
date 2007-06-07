@@ -3295,14 +3295,14 @@ Number Script::exec()
 //	perror("exec: "+QString::number(operation));
 	if(eventReciver->status)
 	{
-		
+#ifndef CONSOLE
 		if(eventReciver->exit)
 		{
 			eventReciver->exit=false;
 			eventReciver->status=0;
 			pthread_exit(0);
 		}
-#ifndef CONSOLE
+
 		if(eventReciver->eventCount>200)
 		{
 //			perror("events: "+QString::number(eventReciver->eventCount));
@@ -6203,7 +6203,7 @@ Number Script::exec()
 			memcpy(value.cval,input,strlen(input)-1);
 			value.cval[strlen(input)-1]=(char)0;
 
-			free(input);			
+			free(input);
 			
 #endif
 			if(nextObj==NULL)
