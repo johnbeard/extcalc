@@ -135,6 +135,7 @@ class StatisticsWidget :public QWidget
 		void setPref(Preferences);
 		void writeListsFile();
 		void readListsFile();
+		void setCoordinateSystem();
 
 	public slots:
 		void getPref(Preferences);

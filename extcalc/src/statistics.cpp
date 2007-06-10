@@ -317,6 +317,7 @@ void StatisticsWidget::calculateButtonSlot()
 
 			if(print)
 			{
+				setCoordinateSystem();
 				if(pref.statAutoClear)
 					emit removeLinesSignal();
 				if(pref.showStatPoints || pref.showStatLines)
@@ -354,6 +355,7 @@ void StatisticsWidget::calculateButtonSlot()
 			free(coef);
 			if(print)
 			{
+				setCoordinateSystem();
 				if(pref.statAutoClear)
 					emit removeLinesSignal();
 				if(pref.showStatPoints || pref.showStatLines)
@@ -364,6 +366,7 @@ void StatisticsWidget::calculateButtonSlot()
 		case STATLINEGRAPH:
 			if(print)
 			{
+				setCoordinateSystem();
 				if(pref.statAutoClear)
 					emit removeLinesSignal();
 				emit drawPointsSignal(coordinatesList,lineNum,true);
@@ -419,6 +422,7 @@ void StatisticsWidget::calculateButtonSlot()
 			
 			if(print)
 			{
+				setCoordinateSystem();
 				if(pref.statAutoClear)
 					emit removeLinesSignal();
 				if(type==STATBARGRAPH || pref.showStatLines)
@@ -552,13 +556,6 @@ void StatisticsWidget::printButtonSlot()
 	bool *tmpActiveFunctions=new bool[20];
 	QString tmpF1=pref.functions[0];
 	int tmpFunctionType=pref.functionTypes[0];
-	double xSize=pref.xmax-pref.xmin,ySize=pref.ymax-pref.ymin;
-	xSize*=0.1;
-	ySize*=0.1;
-	pref.xmin=xmin-xSize;
-	pref.xmax=xmax+xSize*2.0;
-	pref.ymin=ymin-ySize;
-	pref.ymax=ymax+ySize;
 	
 	memcpy(tmpActiveFunctions,pref.activeFunctions,20*sizeof(bool));
 	pref.functions[0]=result->text();
@@ -696,6 +693,25 @@ void StatisticsWidget::readListsFile()
 		}
 	}
 }
+
+void StatisticsWidget::setCoordinateSystem()
+{
+	double xSize=xmax-xmin,ySize=ymax-ymin;
+	xSize*=0.1;
+	ySize*=0.1;
+	pref.xmin=xmin-xSize;
+	pref.xmax=xmax+xSize*2.0;
+	pref.ymin=ymin-ySize;
+	pref.ymax=ymax+ySize;
+	if(pref.xmax-pref.xmin<0.1 || pref.ymax-pref.ymin<0.1)
+	{
+		pref.xmax=pref.ymax=10.0;
+		pref.xmin=pref.ymin=-10.0;
+	}
+	
+	emit prefChange(pref);
+}
+
 void StatisticsWidget::redrawGraphSlot()
 {
 	print=true;
