@@ -63,7 +63,7 @@
 #define EXTCALCH_MENU29 "Dezimal (DEC)"
 #define EXTCALCH_MENU30 "Hexadezimal (HEX)"
 #define EXTCALCH_MENU31 "Wissenschaftlicher Modus"
-#define EXTCALCH_MENU32 "Lokigmodus"
+#define EXTCALCH_MENU32 "Logikmodus"
 #define EXTCALCH_MENU33 "Zahlensystem"
 #define EXTCALCH_MENU34 "Rechenmodus"
 #define EXTCALCH_MENU35 "Standard"

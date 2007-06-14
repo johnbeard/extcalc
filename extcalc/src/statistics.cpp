@@ -120,7 +120,7 @@ void StatisticsWidget::maximizeButtonSlot()
 	}
 	else 
 	{
-		maximizeButton->setText("Maximize");
+		maximizeButton->setText(STATISTICSH_STR13);
 		typeBoxSlot(typeBox->currentItem());
 		standardButtons->show();
 	}
@@ -268,7 +268,6 @@ void StatisticsWidget::calculateButtonSlot()
 							sum1[c]+=coordinatesList[c1*2+1];
 						else sum1[c]+=coordinatesList[c1*2+1]*powl(coordinatesList[c1*2],c);
 					}
-					perror("sum1: "+QString::number(c)+": "+QString::number((double)sum1[c]));
 
 				}
 				
@@ -277,7 +276,6 @@ void StatisticsWidget::calculateButtonSlot()
 					sum2[c]=0.0;
 					for(int c1=0; c1<lineNum; c1++)
 						sum2[c]+=powl(coordinatesList[c1*2],c);
-					perror("sum2: "+QString::number(c)+": "+QString::number((double)sum2[c]));
 				}
 				for(int c=0; c<3; c++) 
 				{
