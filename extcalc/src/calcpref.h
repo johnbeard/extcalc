@@ -1,3 +1,20 @@
+/*/////////////////////////////////////////Extcalc////////////////////////////////////////////
+/////////////////////////////////Scientific Graphic Calculator////////////////////////////////
+
+File:         calcpref.h
+Author:       Rainer Strobel
+Email:        rainer1223@users.sourceforge.net
+Homepage:     http://extcalc-linux.sourceforge.net
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+Calculator preferences dialog class
+
+////////////////////////////////////////////////////////////////////////////////////////////*/
+
 #include <qwidget.h>
 #include <qpushbutton.h>
 #include <qlineedit.h>

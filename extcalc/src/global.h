@@ -1,3 +1,23 @@
+/*/////////////////////////////////////////Extcalc////////////////////////////////////////////
+/////////////////////////////////Scientific Graphic Calculator////////////////////////////////
+
+File:         global.h
+Author:       Rainer Strobel
+Email:        rainer1223@users.sourceforge.net
+Homepage:     http://extcalc-linux.sourceforge.net
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+This file contains the two classes needed to process calculations.
+The Calculate class for function graphs and the Script class for the normal calculator
+and the script interpreter.
+The help functions for string processing and mathematic help functions are also defined in this
+file.
+
+////////////////////////////////////////////////////////////////////////////////////////////*/
 #ifndef GLOBALH
 #define GLOBALH
 
@@ -25,10 +45,10 @@ using namespace std;
 #define VARSFILE ".extcalc/vars.conf"
 #define LISTSFILE ".extcalc/lists.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.8.5\n2007-06-07\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.6\n2007-07-29\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.8.5\n7.6.2007\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.6\n29.7.2007\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2007\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -226,6 +246,7 @@ using namespace std;
 #define SGRAPHCOLOR			195
 #define SGRAPHTRANSFORM		196
 #define SGRAPHIDENTITY		197
+#define SDRAW				211
 
 #define CALCYVAL			0
 #define CALCZEROS			1
@@ -274,6 +295,10 @@ using namespace std;
 #define STATBARGRAPH		201
 #define STATLINEGRAPH		202
 
+#define SCRIPTTEXT			208
+#define SCRIPT2D			209
+#define SCRIPT3D			210
+
 #define DRAWNONE			130
 #define DRAWFREE			131
 #define DRAWLINE			132
@@ -284,10 +309,12 @@ using namespace std;
 #define DRAWCLEAR			137
 #define DRAWTEXT			138
 
-#define PPINVALIDCOMMAND	176
+#define PINVALIDCOMMAND		176
 #define PPINVALIDARGUMENT	177
 #define PPINVALIDPREF		178
 #define PPEMPTY				179
+#define MPEMPTY				212
+
 
 #define NNONE				0x1
 #define NFLOAT				0x2
@@ -323,6 +350,7 @@ using namespace std;
 #define SIGGRAPHSCALE		50022
 #define SIGGRAPHTRANSLATE	50023
 #define SIGIDENTITY			50024
+#define SIGDRAW				50025
 #define SIGFINISHED			50030
 
 #define ROOTSTRING			8730

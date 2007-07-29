@@ -1,3 +1,20 @@
+/*/////////////////////////////////////////Extcalc////////////////////////////////////////////
+/////////////////////////////////Scientific Graphic Calculator////////////////////////////////
+
+File:         scriptio.h
+Author:       Rainer Strobel
+Email:        rainer1223@users.sourceforge.net
+Homepage:     http://extcalc-linux.sourceforge.net
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+The ScriptIO class runs the scripts and provides a direct interface to the running script.
+The ScriptGL class provides the 3D-graphics window for scripts with GL commands.
+
+////////////////////////////////////////////////////////////////////////////////////////////*/
 #ifndef SCRIPTIOH
 #define SCRIPTIOH
 
@@ -301,6 +318,7 @@ class ScriptIOWidget :public QWidget
 	int ioFieldWidth,ioFieldHeight;
 	QPixmap*buffer;
 	QFont*drawFont;
+	QPen*drawPen;
 	int charWidth,charHeight;
 	int lineNum,charNum;
 	
@@ -327,8 +345,8 @@ class ScriptIOWidget :public QWidget
 	int timerInterval,redrawTime;
 	struct timeval drawTime,currentTime,startTime;
 	int selectStartLine,selectStartRow,selectEndLine,selectEndRow;
-	bool textMode;
-	bool glModeRequest;
+	int displayType;
+	int modeRequest;
 	bool autosize;
 
 	Q_OBJECT
@@ -348,8 +366,8 @@ class ScriptIOWidget :public QWidget
 			inputBuffer=(char*)calloc(1,1);
 			bufferCursor=0;
 			scriptObject=NULL;
-			textMode=true;
-			glModeRequest=false;
+			displayType=SCRIPTTEXT;
+			modeRequest=SCRIPTTEXT;
 			autosize=true;
 			
 			mutex=new QMutex();
@@ -404,6 +422,7 @@ class ScriptIOWidget :public QWidget
 			drawFont=new QFont("Courier");
 			drawFont->setPixelSize(16);
 			drawFont->setFixedPitch(true);
+			drawPen=new QPen(QColor(0,0,0));
 			
 			scrollBar=new QScrollBar(Qt::Vertical,this);
 			ioFieldWidth-=20;
@@ -465,8 +484,9 @@ class ScriptIOWidget :public QWidget
 		void loadSubScripts();
 		void initDebugging(QString *code);
 		int preferencesPreprocessor(QString *code,Preferences*pref);
+		int macroPreprocessor(QString*code);
 		void selectText(int startx,int starty,int endx,int endy);
-		void setTextMode(bool);
+		void setDisplayMode(int);
 
 	protected:
 		virtual void resizeEvent(QResizeEvent*);

@@ -1,3 +1,23 @@
+/*/////////////////////////////////////////Extcalc////////////////////////////////////////////
+/////////////////////////////////Scientific Graphic Calculator////////////////////////////////
+
+File:         calclocale.h
+Author:       Rainer Strobel
+Email:        rainer1223@users.sourceforge.net
+Homepage:     http://extcalc-linux.sourceforge.net
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+Localization file for the complete Extcalc calculator.
+This file contains preprocessor definitions for all text strings in Extcalc that have to
+be translated.
+English and German is currently supported.
+The installation language is set by the configure script. Default is english.
+
+////////////////////////////////////////////////////////////////////////////////////////////*/
 
 //This macros will be defined by the configure-script at a normal installation
 #ifndef LANGUAGE_EN

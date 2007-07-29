@@ -1,11 +1,21 @@
+/*/////////////////////////////////////////Extcalc////////////////////////////////////////////
+/////////////////////////////////Scientific Graphic Calculator////////////////////////////////
+
+File:         scriptio.cpp
+Author:       Rainer Strobel
+Email:        rainer1223@users.sourceforge.net
+Homepage:     http://extcalc-linux.sourceforge.net
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+
+////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "scriptio.h"
 
-/*
-script interface						thread interface					draw interface	
-line point circle rect					2d draw event, type, coordinates	command list
-clear screen							2d control event, type
-set brush: thin line, thick line, fill
-*/
+
 
 void ScriptIOWidget::getPref(Preferences newPref)
 {
@@ -60,7 +70,7 @@ void ScriptIOWidget::killSlot()
 			if(pref.clearScriptMemory)
 				clearMemSlot();
 		}
-		setTextMode(true);
+		setDisplayMode(SCRIPTTEXT);
 	}
 }
 
@@ -76,7 +86,7 @@ void ScriptIOWidget::clearMemSlot()
 
 void ScriptIOWidget::paintEvent(QPaintEvent*)
 {
-	if(textMode)
+	if(displayType==SCRIPTTEXT)
 	{
 		buffer->fill();
 		QPainter p;
@@ -165,10 +175,17 @@ void ScriptIOWidget::paintEvent(QPaintEvent*)
 		p.drawPixmap(20,50,*buffer);
 		p.end();
 	}
-	else {
-		
-
+	else if(displayType==SCRIPT3D)
 		glWindow->repaint(true);
+	else {
+		QPainter p;
+/*		buffer->fill();
+		p.begin(buffer);
+		p.drawText(100,100,"Hallo");
+		p.end();
+*/		p.begin(this);
+		p.drawPixmap(20,50,*buffer);
+		p.end();
 	}
 
 }
@@ -234,7 +251,7 @@ void ScriptIOWidget::resizeEvent(QResizeEvent*)
 		ioFieldWidth=width-40;
 		ioFieldHeight=height-290;
 	}
-	if(!textMode)
+	if(displayType==SCRIPT3D)
 	{
 		int glWidth=ioFieldWidth,glHeight=ioFieldHeight;
 		if(autosize)
@@ -273,6 +290,7 @@ void ScriptIOWidget::resizeEvent(QResizeEvent*)
 	
 
 	buffer->resize(ioFieldWidth,ioFieldHeight);
+//	buffer->fill();
 	if(cursorX>charNum)
 		cursorX=charNum;
 	if(cursorY<scrollBar->value())
@@ -602,7 +620,73 @@ void ScriptIOWidget::customEvent(QCustomEvent*ev)
 				free(ev->data());
 				break;
 			}
-					
+			case SIGDRAW:
+			{
+				if(displayType==SCRIPT2D)
+				{
+					char*data=(char*)ev->data();
+					char command=data[0];
+					QPainter p;
+					p.begin(buffer);
+					p.setPen(*drawPen);
+					int r,g,b,x,y,xs,ys,xe,ye;
+					switch(command)
+					{
+						case 0:
+							buffer->fill();
+							break;
+						case 1:
+							memcpy(&x,&data[1],4);
+							memcpy(&y,&data[5],4);
+							p.drawPoint(x,y);
+							break;
+						case 2:
+							memcpy(&r,&data[1],4);
+							memcpy(&g,&data[5],4);
+							memcpy(&b,&data[9],4);
+							drawPen->setColor(QColor(r,g,b));
+							break;
+						case 3:
+							memcpy(&x,&data[1],4);
+							memcpy(&y,&data[5],4);
+							p.setFont(*drawFont);
+							p.setBackgroundMode(Qt::OpaqueMode);
+							p.drawText(x,y,&data[9]);
+							break;
+						case 4:
+							memcpy(&xs,&data[1],4);
+							memcpy(&ys,&data[5],4);
+							memcpy(&xe,&data[9],4);
+							memcpy(&ye,&data[13],4);
+							p.drawLine(xs,ys,xe,ye);
+							break;
+						case 5:
+							memcpy(&xs,&data[1],4);
+							memcpy(&ys,&data[5],4);
+							memcpy(&xe,&data[9],4);
+							memcpy(&ye,&data[13],4);
+							p.drawRect(xs,ys,xe,ye);
+							break;
+						case 6:
+							memcpy(&xs,&data[1],4);
+							memcpy(&ys,&data[5],4);
+							memcpy(&xe,&data[9],4);
+							memcpy(&ye,&data[13],4);
+							p.drawEllipse(xs,ys,xe,ye);
+							break;
+					}
+					p.end();
+					gettimeofday(&currentTime,NULL);
+					if(currentTime.tv_sec > drawTime.tv_sec || currentTime.tv_usec-drawTime.tv_usec > 20000)
+					{
+						gettimeofday(&drawTime,NULL);
+						if(!t->isActive())
+							t->start(30,true);
+					}
+				}
+				free(ev->data());
+				break;
+			}
 			case SIGCLEARTEXT:
 			{
 				
@@ -778,7 +862,7 @@ void ScriptIOWidget::customEvent(QCustomEvent*ev)
 			}
 			case SIGFINISHED:		//script stopped
 			{
-				setTextMode(true);
+				setDisplayMode(SCRIPTTEXT);
 				gettimeofday(&currentTime,NULL);
 				int secs=currentTime.tv_sec-startTime.tv_sec;
 				int usecs=currentTime.tv_usec-startTime.tv_usec;
@@ -1059,16 +1143,13 @@ void ScriptIOWidget::runScript(QString*code)
 	searchScripts(code);
 	countDifference=0;
 	initDebugging(code);
-	glModeRequest=false;
+	modeRequest=SCRIPTTEXT;
 	int ret=preferencesPreprocessor(code,&runningPref);
 
 	if(ret!=0)
 	{
 		switch(ret)
 		{
-			case PPINVALIDCOMMAND:
-				insert("\nPreference Preprocessor: Invalid preprocessor command\n");
-				return;
 			case PPINVALIDARGUMENT:
 				insert("\nPreference Preprocessor: Invalid preference argument\n");
 				return;
@@ -1083,7 +1164,14 @@ void ScriptIOWidget::runScript(QString*code)
 				return;
 		}
 	}
-	if(glModeRequest)
+	/*ret=macroPreprocessor(code);
+	if(ret!=0)
+	{
+		insert("\nPreprocessor Error\n");
+		return;
+}*/
+	
+	if(modeRequest==SCRIPT3D)
 		glWindow->setPref(runningPref);
 
 
@@ -1138,8 +1226,10 @@ void ScriptIOWidget::runSlot()
 
 	killButton->setEnabled(true);
 	scrollBar->hide();
-	if(glModeRequest)
-		setTextMode(false);
+	if(modeRequest==SCRIPT3D)
+		setDisplayMode(SCRIPT3D);
+	else if(modeRequest==SCRIPT2D)
+		setDisplayMode(SCRIPT2D);
 	resizeEvent(NULL);
 
 	gettimeofday(&drawTime,NULL);
@@ -1344,7 +1434,7 @@ int ScriptIOWidget::preferencesPreprocessor(QString *code,Preferences*pref)
 				configLine=configLine.stripWhiteSpace();
 				if(configLine.find("#config")==0)
 					configLine=configLine.right(configLine.length()-7);
-				else return PPINVALIDCOMMAND;
+				else continue;
 				if((commentPos=configLine.find("//"))!=-1)
 					configLine=configLine.left(commentPos);
 				
@@ -1381,7 +1471,9 @@ int ScriptIOWidget::preferencesPreprocessor(QString *code,Preferences*pref)
 					else return PPINVALIDARGUMENT;
 				}
 				else if(configLine=="gl")
-					glModeRequest=true;
+					modeRequest=SCRIPT3D;
+				else if(configLine=="graphics")
+					modeRequest=SCRIPT2D;
 				else if(configLine=="rasteron")
 					pref->raster=true;
 				else if(configLine=="rasteroff")
@@ -1405,6 +1497,68 @@ int ScriptIOWidget::preferencesPreprocessor(QString *code,Preferences*pref)
 	}
 	if(code->length()<=0)
 		return PPEMPTY;
+	else return 0;
+}
+int ScriptIOWidget::macroPreprocessor(QString *code)
+{
+	int pos=0,newlinePos=-1,end,commentPos=0,seperatorPos;
+	QString macroLine,macro,replacement;
+	bool quote=false;
+	
+	while(pos<(signed)code->length())
+	{
+		if(quote)
+		{
+			if((*code)[pos]=='"')
+				quote=false;
+		}
+		else {
+			if((*code)[pos]=='"')
+				quote=true;
+			else if((*code)[pos]=='/' && (*code)[pos+1]=='/')
+			{
+				pos=code->find('\n',pos);
+				if(pos==-1)
+					pos=code->length();
+				else newlinePos=pos;
+			}
+			else if((*code)[pos]=='\n')
+				newlinePos=pos;
+			else if((*code)[pos]=='#')
+			{
+				end=code->find('\n',pos);
+				if(end<0)
+					end=code->length();
+				
+				macroLine=code->mid(newlinePos+1,end-newlinePos-1);
+				
+				pos=newlinePos;
+				macroLine=macroLine.stripWhiteSpace();
+				if(macroLine.find("#define")==0)
+					macroLine=macroLine.right(macroLine.length()-7);
+				else return PINVALIDCOMMAND;
+				if((commentPos=macroLine.find("//"))!=-1)
+					macroLine=macroLine.left(commentPos);
+				
+				code->remove(newlinePos+1,end-newlinePos-1);
+				macroLine=macroLine.stripWhiteSpace();
+				
+				seperatorPos=macroLine.find(" ");
+				if(seperatorPos==-1)
+					seperatorPos=macroLine.find("\t");
+				if(seperatorPos>0)
+				{
+					macro=macroLine.left(seperatorPos);
+					replacement=macroLine.right(macroLine.length()-seperatorPos-1);
+					replacement=replacement.stripWhiteSpace();
+					code->replace(macro,replacement);
+				}
+			}
+		}
+		pos++;
+	}
+	if(code->length()<=0)
+		return MPEMPTY;
 	else return 0;
 }
 
@@ -1539,16 +1693,12 @@ void ScriptIOWidget::contextMenuSlot(int item)
 	}
 }
 
-void ScriptIOWidget::setTextMode(bool on)
+void ScriptIOWidget::setDisplayMode(int mode)
 {
-	if(on)
+	displayType=mode;
+
+	if(mode==SCRIPT3D)
 	{
-		textMode=true;
-		glWindow->hide();
-		repaint(true);
-	}
-	else {
-		textMode=false;
 		glWindow->show();
 		glWindow->scrReset();
 		glWindow->resetRotation();
@@ -1556,6 +1706,16 @@ void ScriptIOWidget::setTextMode(bool on)
 		repaint(true);
 		
 	}
+	else {
+		if(mode==SCRIPT2D)
+		{
+			drawPen->setColor(QColor(0,0,0));
+			buffer->fill();
+		}
+		glWindow->hide();
+		repaint(true);
+	}
+	
 }
 
 

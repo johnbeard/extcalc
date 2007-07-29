@@ -1,3 +1,21 @@
+/*/////////////////////////////////////////Extcalc////////////////////////////////////////////
+/////////////////////////////////Scientific Graphic Calculator////////////////////////////////
+
+File:         extcalc.h
+Author:       Rainer Strobel
+Email:        rainer1223@users.sourceforge.net
+Homepage:     http://extcalc-linux.sourceforge.net
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+This file contains the main window class of extcalc and a class for the script import/export
+dialog, the todo list and the bug list.
+
+////////////////////////////////////////////////////////////////////////////////////////////*/
+
 #ifndef EXTCALCH
 #define EXTCALCH
 
@@ -93,7 +111,7 @@
 //      - type converting (int) (float) ...                                             ok  //
 //      - Arrays                                                                        ok  //
 //      - run other scripts: run                                                        ok  //
-//      - 2D-graph output functions: point, line, circle, ... (in a later version)          //
+//      - 2D-graph output functions: point, line, circle, ... (in a later version)      ok  //
 //      - OpenGL 3D-Graphics (in a later version)                                       ok  //
 //      - usage of files (in a later version)                                           ok  //
 //      - change preferences (in a later version)                                       ok  //
@@ -151,6 +169,9 @@
 //	- inserting text into a running script doesn't work									ok	//
 //	- gl script programming does not work on every system									//
 //	- import script dialog path check is wrong											ok	//
+//	- bug in script console at selection													//
+//	- file dialog in script preferences window is always in background						//
+
 
 
 //////////////////////////used variables//////////////////////////

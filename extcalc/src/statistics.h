@@ -1,3 +1,22 @@
+/*/////////////////////////////////////////Extcalc////////////////////////////////////////////
+/////////////////////////////////Scientific Graphic Calculator////////////////////////////////
+
+File:         statistics.h
+Author:       Rainer Strobel
+Email:        rainer1223@users.sourceforge.net
+Homepage:     http://extcalc-linux.sourceforge.net
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+Statistics window class of Extcalc.
+The data table for statistical calculations is controlled by this class.
+Graphical results were shown by the graphics window class.
+
+
+////////////////////////////////////////////////////////////////////////////////////////////*/
 #ifndef STATISTICS_H
 #define STATISTICS_H
 

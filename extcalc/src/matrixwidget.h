@@ -1,3 +1,20 @@
+/*/////////////////////////////////////////Extcalc////////////////////////////////////////////
+/////////////////////////////////Scientific Graphic Calculator////////////////////////////////
+
+File:         matrixwidget.h
+Author:       Rainer Strobel
+Email:        rainer1223@users.sourceforge.net
+Homepage:     http://extcalc-linux.sourceforge.net
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+The class of the matrix/vector tab window.
+Includes the matrix/vector window GUI and all needed math. functions.
+
+////////////////////////////////////////////////////////////////////////////////////////////*/
 #ifndef MATRIXWIDGET_H
 #define MATRIXWIDGET_H
 

@@ -1,3 +1,18 @@
+/*/////////////////////////////////////////Extcalc////////////////////////////////////////////
+/////////////////////////////////Scientific Graphic Calculator////////////////////////////////
+
+File:         global.cpp
+Author:       Rainer Strobel
+Email:        rainer1223@users.sourceforge.net
+Homepage:     http://extcalc-linux.sourceforge.net
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+
+////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "global.h"
 
 
@@ -1781,7 +1796,7 @@ char* Script::parse(char* line)
 		return NULL;
 	}
 	
-//	perror(line);
+	perror(line);
 	int pos1;
 	int len=strlen(line);
 
@@ -2761,6 +2776,7 @@ char* Script::parse(char* line)
 		var=1;
 		return NULL;
 	}
+
 	else if((pos1=bracketFind(line,"glloadidentity")) == 0)
 	{
 		if(eventReciver->calcMode)
@@ -3039,6 +3055,251 @@ char* Script::parse(char* line)
 		delete[]text;
 		delete[]xval;
 		delete[]yval;
+		return NULL;
+	}
+	else if((pos1=bracketFind(line,"drawclear")) == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SDRAW;
+		var=0;
+		return NULL;
+	}
+	else if(bracketFind(line,"drawpoint(") != -1)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SDRAW;
+		var=1;
+		int pos1=bracketFind(line,",",10);
+		if(pos1<0 || pos1>len-2)
+		{
+			printError("Invalid use of drawpoint",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char* x=new char[pos1-9];
+		char* y=new char[len-pos1-1];
+		strcopy(x,&line[10],pos1-10);
+		strcopy(y,&line[pos1+1],len-pos1-2);
+
+
+		vertObj=new Script(this,x,pref,vars,eventReciver);
+		vertObj2=new Script(this,y,pref,vars,eventReciver);
+		delete[]x;
+		delete[]y;
+		return NULL;
+	}
+	else if(bracketFind(line,"drawcolor(") == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SDRAW;
+		var=2;
+		int pos1=bracketFind(line,",",10);
+
+		int pos2=bracketFind(line,",",pos1+1);
+		if(pos1==-1 || pos2==-1)
+		{
+			printError("Invalid use of drawcolor",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+
+		char *xval=new char[pos1-9];
+		char *yval=new char[pos2-pos1];
+		char *zval=new char[len-pos2-1];
+
+		strcopy(xval,&line[10],pos1-10);
+		strcopy(yval,&line[pos1+1],pos2-pos1-1);
+		strcopy(zval,&line[pos2+1],len-pos2-2);
+		vertObj=new Script(this,xval,pref,vars,eventReciver);
+		vertObj2=new Script(this,yval,pref,vars,eventReciver);
+		vertObj3=new Script(this,zval,pref,vars,eventReciver);
+		delete[]xval;
+		delete[]yval;
+		delete[]zval;
+		return NULL;
+	}
+	else if(bracketFind(line,"drawstring(") == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SDRAW;
+		var=3;
+		int pos1=bracketFind(line,",",11);
+
+		int pos2=bracketFind(line,",",pos1+1);
+		if(pos1==-1 || pos2==-1)
+		{
+			printError("Invalid use of drawstring",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+
+		char *xval=new char[pos1-10];
+		char *yval=new char[pos2-pos1];
+		char *zval=new char[len-pos2-1];
+
+		strcopy(xval,&line[11],pos1-11);
+		strcopy(yval,&line[pos1+1],pos2-pos1-1);
+		strcopy(zval,&line[pos2+1],len-pos2-2);
+		vertObj=new Script(this,xval,pref,vars,eventReciver);
+		vertObj2=new Script(this,yval,pref,vars,eventReciver);
+		vertObj3=new Script(this,zval,pref,vars,eventReciver);
+		delete[]xval;
+		delete[]yval;
+		delete[]zval;
+		return NULL;
+	}
+	else if(bracketFind(line,"drawline(") == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SDRAW;
+		var=4;
+		int pos1=bracketFind(line,",",9);
+
+		int pos2=bracketFind(line,",",pos1+1);
+		int pos3=bracketFind(line,",",pos2+1);
+		if(pos1==-1 || pos2==-1 || pos3==-1)
+		{
+			printError("Invalid use of drawline",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char *angle=new char[pos1-8];
+		char *xval=new char[pos2-pos1];
+		char *yval=new char[pos3-pos2];
+		char *zval=new char[len-pos3-1];
+		
+		strcopy(angle,&line[9],pos1-9);
+		strcopy(xval,&line[pos1+1],pos2-pos1-1);
+		strcopy(yval,&line[pos2+1],pos3-pos2-1);
+		strcopy(zval,&line[pos3+1],len-pos3-2);
+		
+		horzObj=new Script(this,angle,pref,vars,eventReciver);
+		vertObj=new Script(this,xval,pref,vars,eventReciver);
+		vertObj2=new Script(this,yval,pref,vars,eventReciver);
+		vertObj3=new Script(this,zval,pref,vars,eventReciver);
+		delete[]angle;
+		delete[]xval;
+		delete[]yval;
+		delete[]zval;
+		return NULL;
+	}
+	else if(bracketFind(line,"drawrect(") == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SDRAW;
+		var=5;
+		int pos1=bracketFind(line,",",9);
+
+		int pos2=bracketFind(line,",",pos1+1);
+		int pos3=bracketFind(line,",",pos2+1);
+		if(pos1==-1 || pos2==-1 || pos3==-1)
+		{
+			printError("Invalid use of drawrect",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char *angle=new char[pos1-8];
+		char *xval=new char[pos2-pos1];
+		char *yval=new char[pos3-pos2];
+		char *zval=new char[len-pos3-1];
+		
+		strcopy(angle,&line[9],pos1-9);
+		strcopy(xval,&line[pos1+1],pos2-pos1-1);
+		strcopy(yval,&line[pos2+1],pos3-pos2-1);
+		strcopy(zval,&line[pos3+1],len-pos3-2);
+		
+		horzObj=new Script(this,angle,pref,vars,eventReciver);
+		vertObj=new Script(this,xval,pref,vars,eventReciver);
+		vertObj2=new Script(this,yval,pref,vars,eventReciver);
+		vertObj3=new Script(this,zval,pref,vars,eventReciver);
+		delete[]angle;
+		delete[]xval;
+		delete[]yval;
+		delete[]zval;
+		return NULL;
+	}
+	else if(bracketFind(line,"drawcircle(") == 0)
+	{
+		if(eventReciver->calcMode)
+		{
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			horzObj=vertObj=NULL;
+			number=NAN;
+			return NULL;
+		}
+		operation=SDRAW;
+		var=6;
+		int pos1=bracketFind(line,",",11);
+
+		int pos2=bracketFind(line,",",pos1+1);
+		int pos3=bracketFind(line,",",pos2+1);
+		if(pos1==-1 || pos2==-1 || pos3==-1)
+		{
+			printError("Invalid use of drawline",semicolonCount,eventReciver->eventReciver);
+			operation=SFAIL;
+			return NULL;
+		}
+		char *angle=new char[pos1-10];
+		char *xval=new char[pos2-pos1];
+		char *yval=new char[pos3-pos2];
+		char *zval=new char[len-pos3-1];
+		
+		strcopy(angle,&line[11],pos1-11);
+		strcopy(xval,&line[pos1+1],pos2-pos1-1);
+		strcopy(yval,&line[pos2+1],pos3-pos2-1);
+		strcopy(zval,&line[pos3+1],len-pos3-2);
+		
+		horzObj=new Script(this,angle,pref,vars,eventReciver);
+		vertObj=new Script(this,xval,pref,vars,eventReciver);
+		vertObj2=new Script(this,yval,pref,vars,eventReciver);
+		vertObj3=new Script(this,zval,pref,vars,eventReciver);
+		delete[]angle;
+		delete[]xval;
+		delete[]yval;
+		delete[]zval;
 		return NULL;
 	}
 	else if((pos1=bracketFind(line,"run(")) == 0)
@@ -3719,6 +3980,8 @@ Number Script::exec()
 		{
 //			perror("events: "+QString::number(eventReciver->eventCount));
 			usleep(1000);
+			if(eventReciver->eventCount>210)
+				usleep(10000);
 		}
 #endif
 		if(eventReciver->usleep)
@@ -4980,6 +5243,99 @@ Number Script::exec()
 			else return nextObj->exec();
 		}
 #ifndef CONSOLE
+		case SDRAW:
+		{
+			QCustomEvent *ev=new QCustomEvent(SIGDRAW);
+			char*eventContent;
+			int arg;
+			switch(var)
+			{
+				case 0:
+					eventContent=(char*)malloc(1);
+					eventContent[0]=var;
+					break;
+				case 1:
+					eventContent=(char*)malloc(9);
+					eventContent[0]=var;
+					value=vertObj->exec();
+					convertToInt(&value);
+					arg=(int)value.ival;
+					memcpy(&eventContent[1],&arg,4);
+					value=vertObj2->exec();
+					convertToInt(&value);
+					arg=(int)value.ival;
+					memcpy(&eventContent[5],&arg,4);
+					break;
+				case 2:
+					eventContent=(char*)malloc(13);
+					eventContent[0]=var;
+					value=vertObj->exec();
+					convertToInt(&value);
+					arg=(int)value.ival;
+					memcpy(&eventContent[1],&arg,4);
+					value=vertObj2->exec();
+					convertToInt(&value);
+					arg=(int)value.ival;
+					memcpy(&eventContent[5],&arg,4);
+					value=vertObj3->exec();
+					convertToInt(&value);
+					arg=(int)value.ival;
+					memcpy(&eventContent[9],&arg,4);
+					break;
+				case 3:
+					//value=vertObj3->exec();
+					value=vertObj3->exec();
+					if(value.type!=NCHAR)
+					{
+						convertToFloat(&value);
+						eventContent=(char*)malloc(101+2*sizeof(int));
+						sprintf(&eventContent[2*sizeof(int)+1],"%.*Lg",pref->outputLength,value.fval.real());
+					}
+					else {
+						eventContent=(char*)malloc(strlen(value.cval)+2*sizeof(int)+2);
+						strcpy(&eventContent[2*sizeof(int)+1],value.cval);
+					}
+					eventContent[0]=var;
+					value=vertObj->exec();
+					convertToInt(&value);
+					arg=(int)value.ival;
+					memcpy(&eventContent[1],&arg,4);
+					value=vertObj2->exec();
+					convertToInt(&value);
+					arg=(int)value.ival;
+					memcpy(&eventContent[5],&arg,4);
+					break;
+				case 4:
+				case 5:
+				case 6:
+					eventContent=(char*)malloc(17);
+					eventContent[0]=var;
+					value=horzObj->exec();
+					convertToInt(&value);
+					arg=(int)value.ival;
+					memcpy(&eventContent[1],&arg,4);
+					value=vertObj->exec();
+					convertToInt(&value);
+					arg=(int)value.ival;
+					memcpy(&eventContent[5],&arg,4);
+					value=vertObj2->exec();
+					convertToInt(&value);
+					arg=(int)value.ival;
+					memcpy(&eventContent[9],&arg,4);
+					value=vertObj3->exec();
+					convertToInt(&value);
+					arg=(int)value.ival;
+					memcpy(&eventContent[13],&arg,4);
+					break;
+					
+			}
+			ev->setData(eventContent);
+			QApplication::postEvent(eventReciver->eventReciver,ev);
+			eventReciver->eventCount++;
+			if(eventReciver->eventCount>200)
+				eventReciver->status=1;
+			return value;
+		}
 		case SGRAPHLIST:
 		{
 			if(var==0)

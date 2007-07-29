@@ -1,3 +1,21 @@
+/*/////////////////////////////////////////Extcalc////////////////////////////////////////////
+/////////////////////////////////Scientific Graphic Calculator////////////////////////////////
+
+File:         buttons.h
+Author:       Rainer Strobel
+Email:        rainer1223@users.sourceforge.net
+Homepage:     http://extcalc-linux.sourceforge.net
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+This file includes the classes for the two button fields of the calculator.
+StandardButtons class for numbers and basic functions
+ExtButtons for scientific functions
+
+////////////////////////////////////////////////////////////////////////////////////////////*/
 
 #ifndef BUTTONSH
 #define BUTTONSH
