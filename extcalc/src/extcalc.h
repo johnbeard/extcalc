@@ -115,7 +115,7 @@ dialog, the todo list and the bug list.
 //      - OpenGL 3D-Graphics (in a later version)                                       ok  //
 //      - usage of files (in a later version)                                           ok  //
 //      - change preferences (in a later version)                                       ok  //
-//      - macros (in a later version)                                                       //
+//      - macros (in a later version)                                                   ok  //
 //      - script debugging tool                                                         ok  //
 //  - load and save scripts                                     (v0.5)                  ok  //
 //  - script editor window                                      (v0.5)                  ok  //
@@ -126,7 +126,7 @@ dialog, the todo list and the bug list.
 //  - include matrix- vector- ...-functions to standard-parser  (v0.7)                  ok  //
 //  - window for vector calculations                            (v0.8)                  ok  //
 //  - window for matrix calculations                            (v0.8)                  ok  //
-//  - statistic functions                                       (v0.9 beta)                 //
+//  - statistic functions                                       (v0.9 beta)             ok  //
 //  - beta-tests, bugfixing, optimizing                         (v1.0 stable)               //
 /////////////////////////////////////////////TODO/////////////////////////////////////////////
 

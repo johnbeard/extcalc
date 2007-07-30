@@ -1144,8 +1144,9 @@ void ScriptIOWidget::runScript(QString*code)
 	countDifference=0;
 	initDebugging(code);
 	modeRequest=SCRIPTTEXT;
+	perror("before");
 	int ret=preferencesPreprocessor(code,&runningPref);
-
+	perror("after");
 	if(ret!=0)
 	{
 		switch(ret)
@@ -1164,12 +1165,15 @@ void ScriptIOWidget::runScript(QString*code)
 				return;
 		}
 	}
-	/*ret=macroPreprocessor(code);
+	ret=macroPreprocessor(code);
 	if(ret!=0)
 	{
-		insert("\nPreprocessor Error\n");
+		if(ret==PINVALIDCOMMAND)
+			insert("\nMacro Preprocessor: Invalid Preprocessor Command\n");
+		else if(ret==MPINVALIDMACRO)
+			insert("\nMacro Preprocessor: Invalid Macro\n");
 		return;
-}*/
+	}
 	
 	if(modeRequest==SCRIPT3D)
 		glWindow->setPref(runningPref);
@@ -1429,12 +1433,17 @@ int ScriptIOWidget::preferencesPreprocessor(QString *code,Preferences*pref)
 					end=code->length();
 				
 				configLine=code->mid(newlinePos+1,end-newlinePos-1);
-				code->remove(newlinePos+1,end-newlinePos-1);
+				
 				pos=newlinePos;
 				configLine=configLine.stripWhiteSpace();
 				if(configLine.find("#config")==0)
 					configLine=configLine.right(configLine.length()-7);
-				else continue;
+				else
+				{
+					pos=newlinePos+2;
+					continue;
+				}
+				code->remove(newlinePos+1,end-newlinePos-1);
 				if((commentPos=configLine.find("//"))!=-1)
 					configLine=configLine.left(commentPos);
 				
@@ -1501,12 +1510,14 @@ int ScriptIOWidget::preferencesPreprocessor(QString *code,Preferences*pref)
 }
 int ScriptIOWidget::macroPreprocessor(QString *code)
 {
-	int pos=0,newlinePos=-1,end,commentPos=0,seperatorPos;
+	perror("macroPreprocessor: "+(*code));
+	int pos=0,newlinePos=-1,end,commentPos=0,seperatorPos,macroPos;
 	QString macroLine,macro,replacement;
 	bool quote=false;
 	
 	while(pos<(signed)code->length())
 	{
+		perror("outer loop");
 		if(quote)
 		{
 			if((*code)[pos]=='"')
@@ -1542,6 +1553,7 @@ int ScriptIOWidget::macroPreprocessor(QString *code)
 				
 				code->remove(newlinePos+1,end-newlinePos-1);
 				macroLine=macroLine.stripWhiteSpace();
+
 				
 				seperatorPos=macroLine.find(" ");
 				if(seperatorPos==-1)
@@ -1551,7 +1563,37 @@ int ScriptIOWidget::macroPreprocessor(QString *code)
 					macro=macroLine.left(seperatorPos);
 					replacement=macroLine.right(macroLine.length()-seperatorPos-1);
 					replacement=replacement.stripWhiteSpace();
-					code->replace(macro,replacement);
+					
+					if(!(macro[0]>='a' && macro[0]<='z' ||
+					    macro[0]>='A' && macro[0]<='A' ||
+						macro[0]=='_'))
+						return MPINVALIDMACRO;
+					for(unsigned int c=1; c<macro.length(); c++)
+					{
+						if(!(macro[c]>='a' && macro[c]<='z' ||
+						     macro[c]>='A' && macro[c]<='A' ||
+						     macro[c]>='0' && macro[c]<='9' ||
+							 macro[c]=='_'))
+							return MPINVALIDMACRO;
+					}
+
+					macroPos=0;
+					while((macroPos=code->find(macro,macroPos+1))!=-1)
+					{
+						if(!(macroPos>0 && ((*code)[macroPos-1] >= 'a' && (*code)[macroPos-1]<='z' ||
+											   (*code)[macroPos-1] >= 'A' && (*code)[macroPos-1]<='Z'
+											   || (*code)[macroPos-1] == '_') ||
+											   code->length()>macroPos+macro.length() &&
+											   ((*code)[macroPos+macro.length()] >= 'a' && (*code)[macroPos+macro.length()]<='z' ||
+											   (*code)[macroPos+macro.length()] >= 'A' && (*code)[macroPos+macro.length()]<='Z' ||
+											   (*code)[macroPos+macro.length()] >= '0' && (*code)[macroPos+macro.length()]<='9'
+											   || (*code)[macroPos+macro.length()] == '_')
+							))
+						{
+							code->replace(macroPos,macro.length(),replacement);
+						}
+					}
+
 				}
 			}
 		}

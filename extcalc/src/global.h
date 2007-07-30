@@ -314,6 +314,7 @@ using namespace std;
 #define PPINVALIDPREF		178
 #define PPEMPTY				179
 #define MPEMPTY				212
+#define MPINVALIDMACRO		213
 
 
 #define NNONE				0x1
