@@ -1140,13 +1140,14 @@ void ScriptIOWidget::runScript(QString*code)
 	
 	runningPref=pref;
 	
+	//test
 	searchScripts(code);
 	countDifference=0;
 	initDebugging(code);
-	modeRequest=SCRIPTTEXT;
-	perror("before");
-	int ret=preferencesPreprocessor(code,&runningPref);
-	perror("after");
+	runningPref.scriptGraphicsMode=SCRIPTTEXT;
+	
+	char* cleanString=preprocessor(code,&runningPref,true);
+/*	perror("after");
 	if(ret!=0)
 	{
 		switch(ret)
@@ -1175,12 +1176,14 @@ void ScriptIOWidget::runScript(QString*code)
 		return;
 	}
 	
-	if(modeRequest==SCRIPT3D)
-		glWindow->setPref(runningPref);
+
 
 
 	char*cleanString=checkString(*code,&runningPref);
-
+*/
+	modeRequest=runningPref.scriptGraphicsMode;
+	if(modeRequest==SCRIPT3D)
+		glWindow->setPref(runningPref);
 	delete scriptObject;
 	insert(SCRIPTIO_STR8);
 	if(cleanString==NULL)
@@ -1190,7 +1193,7 @@ void ScriptIOWidget::runScript(QString*code)
 	}
 	scriptObject=new Script(NULL,cleanString,&runningPref,vars,threadData);
 	loadSubScripts();
-	delete[]cleanString;
+	free(cleanString);
 
 //	perror("main thread: "+QString::number(pthread_self()));
 }
@@ -1248,26 +1251,27 @@ void ScriptIOWidget::runSlot()
 
 void ScriptIOWidget::searchScripts(QString*code)
 {
-	char*cleanString=checkString(*code,&pref);
-	if(cleanString==NULL)
+	Preferences tmpPref=pref;
+	char*cleanStr=preprocessor(code,&tmpPref,true);
+	if(cleanStr==NULL)
 		return;
 	char*scriptName;
 	QString filePath;
-	int len=strlen(cleanString);
+	int len=strlen(cleanStr);
 	int pos=0,pos2;
 	FILE*subFile;
 	while(pos<len)
 	{
-		if(strncmp(&cleanString[pos],"run(\"",4) == 0) //run("")
+		if(strncmp(&cleanStr[pos],"run(\"",4) == 0) //run("")
 		{
-			pos2=bracketFind(cleanString,")",pos+4);
-			if(pos2-pos<7 || cleanString[pos2-1]!='\"')
+			pos2=bracketFind(cleanStr,")",pos+4);
+			if(pos2-pos<7 || cleanStr[pos2-1]!='\"')
 			{
 				pos++;
 				continue;
 			}
 			scriptName=new char[pos2-pos-5];
-			strcopy(scriptName,&cleanString[pos+5],pos2-pos-6);
+			strcopy(scriptName,&cleanStr[pos+5],pos2-pos-6);
 			bool newScript=true;
 			for(int c=0; c<threadData->subprogramPath.GetLen(); c++)
 				if(strcmp(threadData->subprogramPath[c],scriptName)==0)
@@ -1304,7 +1308,7 @@ void ScriptIOWidget::searchScripts(QString*code)
 		}
 		else pos++;
 	}
-	delete[] cleanString;
+	delete[] cleanStr;
 }
 
 
@@ -1316,6 +1320,7 @@ void ScriptIOWidget::loadSubScripts()
 	char*cleanSubFileContent;
 	QString qSubFileContent;
 	Script*subScript;
+	Preferences tmpPref=pref;
 	FILE*subFile;
 	for(int c=0; c<threadData->subprogramPath.GetLen(); c++)
 	{
@@ -1335,7 +1340,7 @@ void ScriptIOWidget::loadSubScripts()
 				qSubFileContent=QString(subFileContent);
 				countDifference+=semicolonLines.GetLen();
 				initDebugging(&qSubFileContent);
-				cleanSubFileContent=checkString(qSubFileContent,&pref);
+				cleanSubFileContent=preprocessor(&qSubFileContent,&tmpPref,true);
 				qApp->processEvents();
 				insert(SCRIPTIO_STR9);
 				insert(threadData->subprogramPath[c]);

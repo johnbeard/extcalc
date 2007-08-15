@@ -45,10 +45,10 @@ using namespace std;
 #define VARSFILE ".extcalc/vars.conf"
 #define LISTSFILE ".extcalc/lists.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.8.6\n2007-07-29\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.7\n2007-08-15\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.8.6\n29.7.2007\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.7\n15.8.2007\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2007\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -438,6 +438,7 @@ struct Preferences
 	int calcType;
 	int tableType;
 	int base;
+	int scriptGraphicsMode;
 	QString scriptPath;
 	QString scriptDirName;
 	QString dataDirName;
@@ -492,13 +493,22 @@ int bracketFindRev(char* string,char* searchString, int start=-1);
 char*strcut(char*src,int index,int len=1);
 char*strins(char*dest,const char*src,int index);
 int strcopy(char*dest,char*src,int len);
+char* strreplace(char*st,int index,int len,char*rep);
+char* strinsert(char*st,int index,char*ins);
 char* checkStringAnsi(char*calcString,Preferences*pref);		//same as checkString in Calc
 void MessageBox(QString text);
 int YesNoBox(QString text);
  int YesNoCancelBox(QString text);
  void WarningBox(QString text);
  void ErrorBox(QString text);
-char* checkString(QString calcString,Preferences*pref);		//Removes Unicode and runs checkStringAnsi
+//char* checkString(QString calcString,Preferences*pref);		//Removes Unicode and runs checkStringAnsi
+char* preprocessor(char*,Preferences*,bool);
+char* preprocessor(QString*,Preferences*,bool);
+char* preferencesPreprocessor(char*,Preferences*);
+char* macroPreprocessor(char*);
+char* cleanString(char*,Preferences*);
+char* removeUnicode(QString*);
+char* removeComments(char*);
 QString getConfigString(QString*,QString);
 QString cleanConfigString(QString,QString);
 QString getUnicode(int code);

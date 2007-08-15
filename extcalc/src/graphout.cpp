@@ -759,7 +759,7 @@ void GraphOutput::wheelEvent(QWheelEvent*e)
 void GraphOutput::processStdFunction(QString function)
 {
 	char*func;
-	func = checkString(function,&pref);
+	func = preprocessor(&function,&pref,false);
 
 	double xStart,xStep;
 	xStart=pref.xmin;
@@ -767,6 +767,7 @@ void GraphOutput::processStdFunction(QString function)
 
 	QString num,num2;
 	Calculate ca1(NULL,func,&pref,vars);
+	free(func);
 	struct timeval t1,t2;
 	
 	double* coordinates=new double[PRECISION2D*2+2];
@@ -801,7 +802,7 @@ void GraphOutput::processStdFunction(QString function)
 void GraphOutput::processPolarFunction(QString function)
 {
 	char*func;
-	func = checkString(function,&pref);
+	func = preprocessor(&function,&pref,false);
 
 	double xStart,xStep;
 	xStart=0;
@@ -844,7 +845,7 @@ void GraphOutput::processPolarFunction(QString function)
 		seconds--;
 		usecs=1000000+usecs;
 	}
-	delete[]func;
+	free(func);
 	objects.NewItem(generateGLList(index));
 }
 
@@ -862,8 +863,8 @@ void GraphOutput::processParameterFunction(QString function)
 		f1=function.left(sep);
 		f2=function.right(function.length()-1-sep);
 	}
-	func1 = checkString(f1,&pref);
-	func2 = checkString(f2,&pref);
+	func1 = preprocessor(&f1,&pref,false);
+	func2 = preprocessor(&f2,&pref,false);
 
 	double xStart,xStep;
 	xStart=pref.parameterStart;
@@ -897,8 +898,8 @@ void GraphOutput::processParameterFunction(QString function)
 		usecs=1000000+usecs;
 	}
 	
-	delete[]func1;
-	delete[]func2;
+	free(func1);
+	free(func2);
 	objects.NewItem(generateGLList(index));
 }
 
@@ -944,7 +945,7 @@ void GraphOutput::process3dFunction(QString function)
 
 
 	char*func;
-	func = checkString(function,&pref);
+	func = preprocessor(&function,&pref,false);
 
 
 	double xStart,xStep,zStart,zStep;
@@ -1043,7 +1044,7 @@ void GraphOutput::process3dFunction(QString function)
 	}
 //	MessageBox(  "Sekunden:      "+QString::number(seconds)+
 //			   "\nMicrosekunden: "+QString::number(usecs));
-	delete[]func;
+	free(func);
 	GLuint newList=generateGLList(index);
 	delete[]coordinates;
 	objectCoordinates[objectCoordinates.GetLen()-1]=NULL;
@@ -1061,8 +1062,8 @@ void GraphOutput::processInequaityFunction(QString function1,QString function2,i
 	
 //    GLuint list;
 	char*func,*func2;
-	func = checkString(function1,&pref);
-	func2= checkString(function2,&pref);
+	func = preprocessor(&function1,&pref,false);
+	func2= preprocessor(&function2,&pref,false);
 	
 //	list = glGenLists( 1 );
 //	glNewList( list, GL_COMPILE );
@@ -1137,14 +1138,15 @@ void GraphOutput::processInequaityFunction(QString function1,QString function2,i
 	}
 //	MessageBox(  "Sekunden:      "+QString::number(seconds)+
 //			   "\nMicrosekunden: "+QString::number(usecs));
-//	delete[]func;
+	free(func);
+	free(func2);
 	objects.NewItem(generateGLList(index));
 }
 
 void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
 {
 	char*func;
-	func = checkString(function,&pref);
+	func = preprocessor(&function,&pref,false);
 
 	double zStart,zStep;
 	double* coordinates;
@@ -1211,6 +1213,7 @@ void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
 		seconds--;
 		usecs=1000000+usecs;
 	}
+	free(func);
 
 	objects.NewItem(generateGLList(index));
 }

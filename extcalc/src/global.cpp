@@ -347,14 +347,14 @@ QString getColorName(QColor col)
 long double runCalc(QString line,Preferences*pref,Variable*vars)
 {
 
-	char*cleanString=checkString(line,pref);
+	char*cleanString=preprocessor(&line,pref,false);
 	if(cleanString==NULL)
 		return NAN;
 	else 
 	{
 		Calculate ca(NULL,cleanString,pref,vars);
 		double result= ca.calc();
-		delete[]cleanString;
+		free(cleanString);
 		return (long double)result;
 	}
 }
@@ -414,7 +414,7 @@ int YesNoBox(QString text)
 	mb.exec();
 
 }
-
+/*
 char*checkString(QString input,Preferences*pref)
 {
 
@@ -451,8 +451,522 @@ char*checkString(QString input,Preferences*pref)
 	delete[]output;
 	return ret;
 }
+*/
+char* preprocessor(char*input,Preferences*pref,bool script)
+{
+	char*ret=removeComments(input);
+	if(ret==NULL)
+		return NULL;
 
 
+	if(script)
+	{
+		ret=preferencesPreprocessor(ret,pref);
+		if(ret==NULL)
+			return NULL;
+
+		
+		ret=macroPreprocessor(ret);
+		if(ret==NULL)
+			return NULL;
+
+	}
+	perror("before clean string");
+	perror(ret);	
+	ret=cleanString(ret,pref);
+	if(ret==NULL)
+		return NULL;
+	perror("clean string");
+	perror(ret);
+		
+	return ret;	
+}
+char* preprocessor(QString *input,Preferences*pref,bool script)
+{
+	char*ret=removeUnicode(input);
+	if(ret==NULL)
+		return NULL;
+	ret=preprocessor(ret,pref,script);
+	return ret;
+}
+char* removeUnicode(QString*input)
+{
+	if(input->length()<=0)
+		return NULL;
+
+	QString qstr=*input;
+	qstr.replace("\xb2"+getUnicode(ROOTSTRING),"sqrt");
+	qstr.replace("2"+getUnicode(ROOTSTRING),"sqrt");
+	qstr.replace("\xb3"+getUnicode(ROOTSTRING),"curt");
+	qstr.replace("3"+getUnicode(ROOTSTRING),"curt");
+	qstr.replace(getUnicode(ROOTSTRING),"root");
+	qstr.replace(getUnicode(DEGREESTRING),"sprod");
+
+	qstr.replace(getUnicode(PISTRING),"pi");
+	qstr.replace(getUnicode(EULERSTRING),"eu");
+	qstr.replace(getUnicode(INTEGRALSTRING),"integ");
+	qstr.replace("\xb2","^(2)");
+	qstr.replace("\xb3","^(3)");
+
+	qstr.replace(getUnicode(MEGASTRING),"e6");
+	qstr.replace(getUnicode(GIGASTRING),"e9");
+	qstr.replace(getUnicode(TERASTRING),"e12");
+
+	const char*tmp=qstr.ascii();
+	char*output=(char*)malloc(strlen(tmp)+1);
+	memcpy(output,tmp,strlen(tmp)+1);
+
+	return output;
+}
+
+char* removeComments(char*input)
+{
+	unsigned int len=strlen(input);
+	int end=0;
+	bool str=false;
+	for(unsigned int c=0; c<len; c++)
+	{
+		if(input[c]=='/' &&!str)
+		{
+			end=-1;
+			if(input[c+1]=='/')
+			{
+				for(unsigned int c1=c+2; c1<len; c1++)
+				{
+					if(input[c1]=='\n')
+					{
+						end=c1-1;
+						break;
+					}
+				}
+			}
+			else if(input[c+1]=='*')
+			{
+				for(unsigned int c1=c+2; c1<len; c1++)
+				{
+					if(input[c1]=='*' && input[c1+1]=='/')
+					{
+						end=c1+1;
+						break;
+					}
+				}
+			}
+			else continue;
+			if(end==-1)
+				end=len-1;
+			memmove(&input[c],&input[end+1],len-end);
+			len=strlen(input);
+		}
+		else if(input[c]=='\"')
+			str=!str;
+	}
+	
+	
+	return input;
+}
+char* preferencesPreprocessor(char*code,Preferences*pref)
+{
+	int pos=0,startPos=0,endPos=0,len=strlen(code);
+	bool quote=false;
+	char*configString=NULL;
+	
+	
+	while(pos<len)
+	{
+		if(quote)
+		{
+			if(code[pos]=='\"')
+				quote=false;
+		}
+		else if(code[pos]=='\"')
+			quote=true;
+		else if(code[pos]=='#')
+		{
+			startPos=pos;
+			int configStartPos=startPos;
+			endPos=pos;
+			
+			if(strncmp(&code[startPos],"#config",7)==0)
+				configStartPos+=7;
+			else {
+				pos++;
+				continue;
+			}
+			
+			while(code[endPos]!='\n' && endPos<=len)
+				endPos++;
+			
+			while((code[configStartPos]==' ' || code[configStartPos]=='\t') && configStartPos<=len)
+				configStartPos++;
+			
+			configString=(char*)malloc(endPos-configStartPos+1);
+			strcopy(configString,&code[configStartPos],endPos-configStartPos);
+
+			if(strncmp(configString,"complexon",9)==0)
+				pref->complex=true;
+			else if(strncmp(configString,"complexoff",10)==0)
+				pref->complex=false;
+			else if(strncmp(configString,"angledeg",8)==0)
+				pref->angle=DEG;
+			else if(strncmp(configString,"anglerad",8)==0)
+				pref->angle=RAD;
+			else if(strncmp(configString,"anglegra",8)==0)
+				pref->angle=GRA;
+			else if(strncmp(configString,"modebase",8)==0)
+				pref->calcType=BASE;
+			else if(strncmp(configString,"modescientific",14)==0)
+				pref->calcType=SCIENTIFIC;
+			else if(strncmp(configString,"clearmemory",11)==0)
+				pref->clearScriptMemory=true;
+			else if(strncmp(configString,"outputlength",12)==0)
+			{
+				int num=atoi(configString+12);
+				if(num>=2 && num<=pref->precision)
+					pref->outputLength=num;
+				else return NULL;
+			}
+			else if(strncmp(configString,"gl",2)==0)
+				pref->scriptGraphicsMode=SCRIPT3D;
+			else if(strncmp(configString,"graphics",8)==0)
+				pref->scriptGraphicsMode=SCRIPT2D;
+			else if(strncmp(configString,"rasteron",8)==0)
+				pref->raster=true;
+			else if(strncmp(configString,"rasteroff",9)==0)
+				pref->raster=false;
+			else if(strncmp(configString,"labelson",8)==0)
+				pref->label=true;
+			else if(strncmp(configString,"labelsoff",9)==0)
+				pref->label=false;
+			else if(strncmp(configString,"axeson",6)==0)
+				pref->axis=true;
+			else if(strncmp(configString,"axesoff",7)==0)
+				pref->axis=false;
+			else if(strncmp(configString,"autoscaleon",11)==0)
+				pref->autosize=true;
+			else if(strncmp(configString,"autoscaleoff",12)==0)
+				pref->autosize=false;
+			else return NULL;
+			
+			memmove(&code[startPos],&code[endPos],len-endPos+1);
+			len=strlen(code);
+			free(configString);
+			pos=startPos;
+		}
+		pos++;
+	}
+	
+	if(strlen(code)<=0)
+		return NULL;
+	
+	return code;
+}
+
+char* macroPreprocessor(char*code)
+{
+	int pos=0,startPos=0,endPos=0,len=strlen(code),macroLen=0,replacementLen=0;
+	bool quote=false,mQuote=false;
+	char*configString=NULL,*macro,*replacement;
+	
+	
+	while(pos<len)
+	{
+		if(quote)
+		{
+			if(code[pos]=='\"')
+				quote=false;
+		}
+		else if(code[pos]=='\"')
+			quote=true;
+		else if(code[pos]=='#')
+		{
+			startPos=pos;
+			int configStartPos=startPos;
+			endPos=pos;
+			
+			if(strncmp(&code[startPos],"#define",7)==0)
+				configStartPos+=7;
+			else return NULL;
+			
+			while(code[endPos]!='\n' && endPos<=len)
+				endPos++;
+			
+			while((code[configStartPos]==' ' || code[configStartPos]=='\t') && configStartPos<=len)
+				configStartPos++;
+			
+			configString=(char*)malloc(endPos-configStartPos+1);
+			strcopy(configString,&code[configStartPos],endPos-configStartPos);
+
+			memmove(&code[startPos],&code[endPos],len-endPos+1);
+			len=strlen(code);
+			pos=startPos;
+			
+			startPos=endPos=0;
+			while(configString[endPos]!=' ' && configString[endPos]!='\t' && endPos<=(signed)strlen(configString))
+				endPos++;
+			
+			macro=(char*)malloc(endPos-startPos+1);
+			memcpy(macro,configString,endPos-startPos);
+			macro[endPos-startPos]=(char)0;
+			macroLen=strlen(macro);
+			
+			startPos=endPos;
+			while((configString[startPos]==' ' || configString[startPos]=='\t') && startPos<=(signed)strlen(configString))
+				startPos++;
+			endPos=strlen(configString);
+			
+			replacement=(char*)malloc(endPos-startPos+1);
+			memcpy(replacement,&configString[startPos],endPos-startPos);
+			replacement[endPos-startPos]=(char)0;
+			replacementLen=strlen(replacement);
+			
+			
+			if(!(macro[0]>='a' && macro[0]<='z' ||
+						  macro[0]>='A' && macro[0]<='A' ||
+						  macro[0]=='_'))
+				return NULL;
+			for(int c=1; c<macroLen; c++)
+			{
+				if(!(macro[c]>='a' && macro[c]<='z' ||
+								 macro[c]>='A' && macro[c]<='A' ||
+								 macro[c]>='0' && macro[c]<='9' ||
+								 macro[c]=='_'))
+					return NULL;
+			}
+			
+			if(strlen(macro)>0 && strlen(replacement)>0)
+			{
+				mQuote=false;
+				for(int c=0; c<len; c++)
+				{
+
+					if(code[c]=='\"')
+						mQuote=!mQuote;
+					
+					else if(!mQuote && strncmp(&code[c],macro,macroLen)==0)
+					{
+						if(c>0 && !(code[c-1]>='a' && code[c-1]<='z' ||
+						            code[c-1]>='A' && code[c-1]<='Z' ||
+									code[c-1]=='_')
+							   && !(code[c+macroLen]>='a' && code[c+macroLen]<='z' ||
+									code[c+macroLen]>='A' && code[c+macroLen]<='Z' ||
+									code[c+macroLen]>='0' && code[c+macroLen]<='9' ||
+									code[c+macroLen]=='_')
+						  )
+						{
+							//code=(char*)realloc(code,len+replacementLen-macroLen);
+							//memmove(&code[c+replacementLen],&code[c+macroLen],len-c-macroLen+1);
+							//memcpy(&code[c],replacement,replacementLen);
+							code=strreplace(code,c,macroLen,replacement);
+							len=strlen(code);
+						}
+					}
+				}
+			}
+			free(configString);
+		}
+		pos++;
+	}
+	
+	if(strlen(code)<=0)
+		return NULL;
+	
+	return code;
+	
+}
+
+char* cleanString(char*code,Preferences*pref)
+{
+	unsigned int len=strlen(code);
+	bool quote=false;
+
+	for(unsigned int c=0; c<len; c++)
+	{
+		if(len<=0)
+			return NULL;
+		
+		if(quote)
+		{
+			if(code[c]=='\"')
+				quote=false;
+			else
+			{
+				if(code[c]=='\\')
+				{
+					switch(code[c+1])
+					{
+						case 'n':
+							code[c]='\n';
+							break;
+						case 't':
+							code[c]='\t';
+							break;
+						case 'a':
+							code[c]='\a';
+							break;
+						case 'b':
+							code[c]='\b';
+							break;
+						case 'v':
+							code[c]='\v';
+							break;
+						case 'f':
+							code[c]='\f';
+							break;
+						case 'r':
+							code[c]='\r';
+							break;
+						case '\\':
+							code[c]='\\';
+							break;
+						default:
+							return NULL;
+					}
+					memmove(&code[c+1],&code[c+2],len-c-1);
+					c--;
+				}
+			}
+		}
+		else
+		{
+			if(code[c]=='\"')
+				quote=true;
+			else
+			{
+				if(code[c]==' ' || code[c]=='\t' || code[c]=='\n' || code[c]=='\a' ||
+				  code[c]=='\r' || code[c]=='\f' || code[c]=='\v' || code[c]=='\b')
+				{
+					memmove(&code[c],&code[c+1],len-c);
+					c--;
+				}
+				else if(code[c]=='\\')
+				{
+					if(code[c+1]=='\n')
+						memmove(&code[c],&code[c+2],len-c-1);
+					else return NULL;
+					c--;
+				}
+			}
+		}
+		len=strlen(code);
+	}
+	
+	quote=false;
+	for(unsigned int c=0; c<len; c++)
+	{
+		if(len <= 0)
+			return NULL;
+		if(code[c]=='\"')
+			quote=!quote;
+		if(quote)
+			continue;
+		if(strncmp(&code[c],"root",4) == 0)
+			code=strreplace(code,c,4,"$r");
+		else if(strncmp(&code[c],"sprod",5) == 0)
+			code=strreplace(code,c,5,"$s");
+		else if(strncmp(&code[c],"ans",3) == 0)
+			code=strreplace(code,c,3,"$A");
+		else if(strncmp(&code[c],"pi",2) == 0)
+		{
+			code=strreplace(code,c,2,"()");
+			code=strinsert(code,c+1,SPI);
+		}
+		else if(strncmp(&code[c],"eu",2) == 0)
+		{
+			code=strreplace(code,c,2,"()");
+			code=strinsert(code,c+1,SEULER);
+		}
+		else if(strncmp(&code[c],"exp",3) == 0)
+		{
+			code=strreplace(code,c,3,"^");
+			code=strinsert(code,c,SEULER);
+		}
+		else if(strncmp(&code[c],"d/dx",4) == 0)
+			code=strreplace(code,c,4,"\\d");
+		else if(strncmp(&code[c],"integ",5) == 0)
+			code=strreplace(code,c,5,"\\i");
+		else if(strncmp(&code[c],"bin",3) == 0)
+			code=strreplace(code,c,3,"\\b");
+		else if(strncmp(&code[c],"oct",3) == 0)
+			code=strreplace(code,c,3,"\\o");
+		else if(strncmp(&code[c],"dec",3) == 0)
+			code=strreplace(code,c,3,"\\c");
+		else if(strncmp(&code[c],"hex",3) == 0)
+			code=strreplace(code,c,3,"\\h");
+		else if(strncmp(&code[c],"--",2) == 0 || strncmp(&code[c],"++",2) == 0)
+		{
+			code=strreplace(code,c,2,"+");
+			c--;
+		}
+		else if(strncmp(&code[c],"+-",2) == 0 || strncmp(&code[c],"-+",2) == 0)
+		{
+			code=strreplace(code,c,2,"-");
+			c--;
+		}
+		else if(code[c] == 'x' && pref->calcType!=BASE)
+			code[c]='X';
+		else if(code[c] == 'z' && pref->calcType!=BASE)
+			code[c]='Z';
+
+		else if(code[c] == (char)0xb2 && c>0 && code[c-1] == (char)0xc2)	// second power
+			code=strreplace(code,c-1,2,"^2");
+		else if(code[c] == (char)0xb3 && c>0 && code[c-1] == (char)0xc2)	// second power
+			code=strreplace(code,c-1,2,"^3");
+
+		else if(!(code[c+1]>='a' && code[c+1]<='z') && c>0 && code[c-1]>='0' && code[c-1]<='9')
+		{
+			if(code[c] == 'f')
+				code=strreplace(code,c,1,"e-15");
+			else if(code[c] == 'n')
+				code=strreplace(code,c,1,"e-9");
+			else if(code[c] == 'p')
+				code=strreplace(code,c,1,"e-12");
+			else if(code[c] == (char)0xb5 && c>0 && code[c-1] == (char)0xc2)	//micro
+				code=strreplace(code,c-1,2,"e-6");
+			else if(code[c] == 'm')
+				code=strreplace(code,c,1,"e-3");
+			else if(code[c] == 'k')
+				code=strreplace(code,c,1,"e3");
+		}
+		len=strlen(code);
+	}
+	
+	quote=false;
+	for(unsigned int c=0; c<len-1; c++)
+	{
+		if(len<=0)
+			return NULL;
+		
+		if(quote)
+		{
+			if(code[c]=='\"')
+				quote=false;
+		}
+		else 
+		{
+			if(code[c]=='\"')
+				quote=true;
+			else if((code[c]>='A' && code[c]<='Z' || code[c]==']') && 
+					(code[c+1]>='0' && code[c+1] <='9' || code[c+1]=='.' || 
+					code[c+1]>='a' && code[c+1] <='z' || (code[c+1]=='$' && code[c+1]=='A') || code[c+1]=='\\' || 
+					code[c+1]=='(') || 
+					(code[c]>='0' && code[c]<='9' || code[c]=='.') && 
+					(code[c+1]>='A' && code[c+1] <='Z' || 
+					code[c+1]>='a' && code[c+1] <='z' && code[c+1]!='e' || (code[c+1]=='$' && code[c+1]=='A') || code[c+1]=='\\' || 
+					code[c+1]=='(')/* || 
+					code[c]==')' &&
+					(code[c+1]>='A' && code[c+1] <='Z' || 
+					code[c+1]>='a' && code[c+1] <='z' || 
+					code[c+1]>='0' && code[c+1] <='9' || code[c+1]=='.')*/)
+			{
+				code=strinsert(code,c+1,"*");
+			}
+		}
+		len=strlen(code);
+
+	}
+
+	return code;
+}
 
 int bracketFind(char* string,char* searchString, int start)
 {
@@ -617,6 +1131,43 @@ int strcopy(char*dest,char*src,int len)
 	memcpy(dest,src,len);
 	dest[len]=(char)0;
 	return 0;
+}
+
+char* strreplace(char*st,int index,int len,char*rep)
+{
+	
+	int replen=strlen(rep),stlen=strlen(st);
+
+	if(len<replen)
+	{
+		char*tmp=(char*)malloc(stlen-index-len+1);
+		memcpy(tmp,&st[index+len],stlen-index-len+1);
+		st=(char*)realloc(st,stlen+replen-len+1);
+		memcpy(&st[index+replen],tmp,stlen-index-len+1);
+		free(tmp);
+	}
+	else
+	{
+		memmove(&st[index+replen],&st[index+len],stlen-index-len+1);
+	}
+	
+	memcpy(&st[index],rep,replen);
+
+	return st;
+}
+char* strinsert(char*st,int index,char*ins)
+{
+	
+	perror(ins);
+	perror(st);
+	unsigned int inslen=strlen(ins),stlen=strlen(st);
+	char*tmp=(char*)malloc(stlen-index+1);
+	memcpy(tmp,&st[index],stlen-index+1);
+	st=(char*)realloc(st,stlen+inslen+1);
+	memcpy(&st[index+inslen],tmp,stlen-index+1);
+	memcpy(&st[index],ins,inslen);
+	free(tmp);
+	return st;
 }
 
 
@@ -3377,7 +3928,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,",",pos1+1);
 		if(pos1==-1 || pos2==-1)
 		{
-			printError("Invalid use if integ",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of integ",semicolonCount,eventReciver->eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}

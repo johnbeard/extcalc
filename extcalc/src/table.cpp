@@ -143,7 +143,7 @@ void TableWidget::calculateButtonSlot()
 			{
 				outputTable->setNumCols(outputTable->numCols()+1);
 				horzHeader->setLabel(outputTable->numCols()-1,"y"+QString::number(c+1)+"(x)");
-				char*cleanString=checkString(pref.functions[c],&pref);
+				char*cleanString=preprocessor(&pref.functions[c],&pref,false);
 				Calculate ca(NULL,cleanString,&pref,vars);
 				
 				for(int c=0; c<pref.tableXSteps;c++)
@@ -151,6 +151,8 @@ void TableWidget::calculateButtonSlot()
 					vars[23]=vertValues[c];
 					outputTable->setText(c,outputTable->numCols()-1,formatOutput(ca.calc(),&pref));
 				}
+				if(cleanString!=NULL)
+					free(cleanString);
 			}
 		}
 	}
@@ -163,13 +165,15 @@ void TableWidget::calculateButtonSlot()
 			{
 				outputTable->setNumCols(outputTable->numCols()+1);
 				outputTable->horizontalHeader()->setLabel(outputTable->numCols()-1,"r"+QString::number(c+1)+"(x)");
-				char*cleanString=checkString(pref.functions[c],&pref);
+				char*cleanString=preprocessor(&pref.functions[c],&pref,false);
 				Calculate ca(NULL,cleanString,&pref,vars);
 				for(int c=0; c<pref.tableXSteps;c++)
 				{
 					vars[23]=vertValues[c];
 					outputTable->setText(c,outputTable->numCols()-1,formatOutput(ca.calc(),&pref));
 				}
+				if(cleanString!=NULL)
+					free(cleanString);
 			}
 		}
 	}
@@ -183,8 +187,10 @@ void TableWidget::calculateButtonSlot()
 				outputTable->setNumCols(outputTable->numCols()+2);
 				outputTable->horizontalHeader()->setLabel(outputTable->numCols()-2,"X"+QString::number(c+1)+"(T)");
 				outputTable->horizontalHeader()->setLabel(outputTable->numCols()-1,"Y"+QString::number(c+1)+"(T)");
-				char*cleanStringX=checkString(pref.functions[c].left(pref.functions[c].find("\\")),&pref);
-				char*cleanStringY=checkString(pref.functions[c].right(pref.functions[c].length()-1-pref.functions[c].find("\\")),&pref);
+				QString input=pref.functions[c].left(pref.functions[c].find("\\"));
+				char*cleanStringX=preprocessor(&input,&pref,false);
+				input=pref.functions[c].right(pref.functions[c].length()-1-pref.functions[c].find("\\"));
+				char*cleanStringY=preprocessor(&input,&pref,false);
 				Calculate caX(NULL,cleanStringX,&pref,vars);
 				Calculate caY(NULL,cleanStringY,&pref,vars);
 				for(int c=0; c<pref.tableXSteps;c++)
@@ -193,6 +199,10 @@ void TableWidget::calculateButtonSlot()
 					outputTable->setText(c,outputTable->numCols()-2,formatOutput(caX.calc(),&pref));
 					outputTable->setText(c,outputTable->numCols()-1,formatOutput(caY.calc(),&pref));
 				}
+				if(cleanStringX!=NULL)
+					free(cleanStringX);
+				if(cleanStringY!=NULL)
+					free(cleanStringY);
 			}
 		}
 	}
@@ -208,13 +218,15 @@ void TableWidget::calculateButtonSlot()
 			{
 				outputTable->setNumCols(outputTable->numCols()+1);
 				outputTable->horizontalHeader()->setLabel(outputTable->numCols()-1,"y"+QString::number(c+1)+"(x)");
-				char*cleanString=checkString(pref.functions[c],&pref);
+				char*cleanString=preprocessor(&pref.functions[c],&pref,false);
 				Calculate ca(NULL,cleanString,&pref,vars);
 				for(int c=0; c<pref.tableXSteps;c++)
 				{
 					vars[23]=vertValues[c];
 					outputTable->setText(c,outputTable->numCols()-1,formatOutput(ca.calc(),&pref));
 				}
+				if(cleanString!=NULL)
+					free(cleanString);
 			}
 		}
 	}
@@ -228,7 +240,7 @@ void TableWidget::calculateButtonSlot()
 				outputTable->setNumCols(outputTable->numCols()+pref.tableZSteps);
 				for(int c1=0; c1<pref.tableZSteps;c1++)
 					outputTable->horizontalHeader()->setLabel(outputTable->numCols()-pref.tableZSteps+c1,"y"+QString::number(c+1)+"(x"+QString::number(horzValues[c1],'g',5)+")");
-				char*cleanString=checkString(pref.functions[c],&pref);
+				char*cleanString=preprocessor(&pref.functions[c],&pref,false);
 				Calculate ca(NULL,cleanString,&pref,vars);
 				for(int c2=0; c2<pref.tableXSteps;c2++)
 				{
@@ -239,6 +251,8 @@ void TableWidget::calculateButtonSlot()
 						outputTable->setText(c2,outputTable->numCols()-pref.tableZSteps+c1,formatOutput(ca.calc(),&pref));
 					}
 				}
+				if(cleanString!=NULL)
+					free(cleanString);
 			}
 		}
 	}
@@ -253,7 +267,7 @@ void TableWidget::calculateButtonSlot()
 			{
 				outputTable->setNumCols(outputTable->numCols()+1);
 				horzHeader->setLabel(outputTable->numCols()-1,"F"+QString::number(c+1)+"(z)");
-				char*cleanString=checkString(pref.functions[c],&pref);
+				char*cleanString=preprocessor(&pref.functions[c],&pref,false);
 				if(cleanString==NULL || strlen(cleanString)<=0)
 				{
 					for(int c=0; c<pref.tableXSteps; c++)
@@ -267,6 +281,8 @@ void TableWidget::calculateButtonSlot()
 					threadData->vars[25][0].fval=Complex(vertValues[c]);
 					outputTable->setText(c,outputTable->numCols()-1,formatOutput(ca.exec(),&pref));
 				}
+				if(cleanString!=NULL)
+					free(cleanString);
 			}
 		}
 		pref.complex=complexPref;

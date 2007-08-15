@@ -131,6 +131,15 @@ dialog, the todo list and the bug list.
 /////////////////////////////////////////////TODO/////////////////////////////////////////////
 
 
+////////////////////////////////////////beta releases/////////////////////////////////////////
+//                                                                                          //
+//  - reorganisation of the checkString and script preprocessor functions               ok  //
+//  - optimization of the split and parse methods                                           //
+//  - change structure of exec and calc methods                                             //
+//  - standardized user interface design for all tabs                                       //
+//                                                                                          //
+////////////////////////////////////////beta releases/////////////////////////////////////////
+
 
 /////////////////////////////////////////////bugs/////////////////////////////////////////////
 //																							//
@@ -173,7 +182,6 @@ dialog, the todo list and the bug list.
 //	- file dialog in script preferences window is always in background						//
 
 
-
 //////////////////////////used variables//////////////////////////
 //
 //      Type: double
@@ -192,6 +200,7 @@ dialog, the todo list and the bug list.
 //		17 digits in trigonometric functions
 //		ca. 9 digits at integrations
 //		ca. 8 digits at differentiations
+
 
 //////////////////////////////Operations/////////////////////////////
 //
@@ -220,6 +229,7 @@ dialog, the todo list and the bug list.
 // special operations
 // Variables A-Z
 // numbers 10 0.34 -34e-6 .456 34.e+43 hex4FA7C bin100010111 
+
 
 //////////////////////////////Parser:///////////////////////////////
 //                                                                //

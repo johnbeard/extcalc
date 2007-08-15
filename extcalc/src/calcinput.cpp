@@ -208,24 +208,29 @@ void CalcInput::calculateKey()
 		for(c=resultParagraphs.GetLen()-1; c>=1; c--)
 			if(resultParagraphs[c]-1 != resultParagraphs[c-1])
 			{
-				cleanString=checkString(text(resultParagraphs[c]-1),&pref);
+				QString input=text(resultParagraphs[c]-1);
+				cleanString=preprocessor(&input,&pref,false);
 				break;
 			}
 		if(c<=0)
-			cleanString=checkString(text(0),&pref);
+		{
+			QString input=text(0);
+			cleanString=preprocessor(&input,&pref,false);
+		}
 		Script s(NULL,cleanString,&pref,vars,threadData);
 		nResult=s.exec();
 		if(cleanString!=NULL)
-			delete[]cleanString;
+			free(cleanString);
 		setCursorPosition(paragraphs()-1,0);
 	}
 	else {
 		insert(QString("\n"));
-		char*cleanString=checkString(text(para),&pref);
+		QString input=text(para);
+		char*cleanString=preprocessor(&input,&pref,false);
 		Script s(NULL,cleanString,&pref,vars,threadData);
 		nResult=s.exec();
 		if(cleanString!=NULL)
-			delete[]cleanString;
+			free(cleanString);
 	}
 	
 
