@@ -23,6 +23,11 @@ This is the class for the calculator tab window.
 #include "calcinput.h"
 #include <qcombobox.h>
 
+#include <qtoolbar.h>
+#include <qdockarea.h>
+#include <qiconset.h>
+#include <qaction.h>
+
 
 
 class CalcWidget :public QWidget
@@ -31,12 +36,17 @@ class CalcWidget :public QWidget
 	StandardButtons*calcButtons;
 	ExtButtons*extButtons;
 	Preferences pref;
-	QPushButton*maximizeButton,*baseButton;
-	QComboBox*prefBox;
+	int menuBottom;
+
 	bool maximized;
 	Variable *vars;
 	ThreadSync*threadData;
 	
+	QToolBar*toolBar;
+	QDockArea*dockArea;
+	QComboBox *angleBox,*viewBox,*baseBox,*typeBox;
+	QPixmap *minimizeIcon,*angleIcon,*maximizeIcon,*scientificIcon,*baseIcon;
+
 	Q_OBJECT
 
 //	QLabel *text1,*text2,*text3;
@@ -46,32 +56,74 @@ class CalcWidget :public QWidget
 
 	
 	public:
-	CalcWidget(QWidget*parent,Preferences p,Variable *va,ThreadSync*td) :QWidget(parent)
+	CalcWidget(QWidget*parent,Preferences p,Variable *va,ThreadSync*td,int mB) :QWidget(parent)
 	{
 		vars=va;
 		threadData=td;
 		pref=p;
+		menuBottom=mB;
 		maximized=false;	
 		textEdit=new CalcInput(this,vars,threadData);
-//		graph=new GraphOutput(this);
 		calcButtons=new  StandardButtons(this);
 		extButtons=new ExtButtons(this);
-		maximizeButton=new QPushButton(CALCWIDGETH_STR1,this);
-		baseButton=new QPushButton(CALCWIDGETH_STR3,this);
-		prefBox=new QComboBox(this);
+
+		minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
+		maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
+		angleIcon=new QPixmap(INSTALLDIR+QString("/data/angle.png"));
+		scientificIcon=new QPixmap(INSTALLDIR+QString("/data/scientific.png"));
+		baseIcon=new QPixmap(INSTALLDIR+QString("/data/binary.png"));
 		
-		prefBox->insertItem("DEG");
-		prefBox->insertItem("RAD");
-		prefBox->insertItem("GRA");
-		if(pref.angle==DEG)
-			prefBox->setCurrentItem(0);
-		else if(pref.angle==RAD)
-			prefBox->setCurrentItem(1);
-		else prefBox->setCurrentItem(2);
+		dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
+		toolBar=new QToolBar();
+		dockArea->moveDockWindow(toolBar);
+				
+		
+		viewBox=new QComboBox(toolBar);
+		viewBox->insertItem(*minimizeIcon);
+		viewBox->insertItem(*maximizeIcon);
+		viewBox->setCurrentItem(0);
+
+		typeBox=new QComboBox(toolBar);
+		typeBox->insertItem(*scientificIcon,"scientific");
+		typeBox->insertItem(*baseIcon,"base");
+
+		angleBox=new QComboBox(toolBar);
+		angleBox->insertItem(*angleIcon,"DEG");
+		angleBox->insertItem(*angleIcon,"RAD");
+		angleBox->insertItem(*angleIcon,"GRA");
+		if(pref.angle==DEG)	angleBox->setCurrentItem(0);
+		else if(pref.angle==RAD) angleBox->setCurrentItem(1);
+		else angleBox->setCurrentItem(2);
+		
+		baseBox=new QComboBox(toolBar);
+		baseBox->insertItem("BIN");
+		baseBox->insertItem("OCT");
+		baseBox->insertItem("DEC");
+		baseBox->insertItem("HEX");
+		if(pref.base==BIN) baseBox->setCurrentItem(0);
+		else if(pref.base==OCT) baseBox->setCurrentItem(1);
+		else if(pref.base==HEX) baseBox->setCurrentItem(3);
+		else baseBox->setCurrentItem(2);
+		
+
+		
+
+
+		
+		if(pref.calcType==BASE)
+		{
+			typeBox->setCurrentItem(1);
+			angleBox->hide();
+		}
+		else
+		{
+			typeBox->setCurrentItem(0);
+			baseBox->hide();
+		}
+		
 			
 			
 		textEdit->setGeometry(20,50,600,310);
-	
 		calcButtons->setGeometry(20,380,280,200);
 		extButtons->setGeometry(320,420,300,160);
 		
@@ -80,55 +132,14 @@ class CalcWidget :public QWidget
 		QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(textEdit,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-		QObject::connect(maximizeButton,SIGNAL(clicked()),this,SLOT(maximizeSlot()));
-		QObject::connect(baseButton,SIGNAL(clicked()),this,SLOT(baseSlot()));
-		QObject::connect(prefBox,SIGNAL(activated(int)),this,SLOT(prefBoxSlot(int)));
-		
+		QObject::connect(viewBox,SIGNAL(activated(int)),this,SLOT(viewSlot(int)));
+		QObject::connect(baseBox,SIGNAL(activated(int)),this,SLOT(baseSlot(int)));
+		QObject::connect(angleBox,SIGNAL(activated(int)),this,SLOT(angleSlot(int)));
+		QObject::connect(typeBox,SIGNAL(activated(int)),this,SLOT(typeSlot(int)));
 	}
 	
-	void setPref(Preferences newPref)
-	{
-		pref=newPref;
-		if(pref.calcType==SCIENTIFIC)
-		{
-			if(baseButton->text()!=CALCWIDGETH_STR3)
-			{
-				baseButton->setText(CALCWIDGETH_STR3);
-				prefBox->clear();
-				prefBox->insertItem("DEG");
-				prefBox->insertItem("RAD");
-				prefBox->insertItem("GRA");
-			}
-			if(pref.angle==DEG)
-				prefBox->setCurrentItem(0);
-			else if(pref.angle==RAD)
-				prefBox->setCurrentItem(1);
-			else prefBox->setCurrentItem(2);
-			
-		}
-		else if(pref.calcType==BASE)
-		{
-			if(baseButton->text()!=CALCWIDGETH_STR2)
-			{
-				baseButton->setText(CALCWIDGETH_STR2);
-				prefBox->clear();
-				prefBox->insertItem("HEX");
-				prefBox->insertItem("DEC");
-				prefBox->insertItem("OCT");
-				prefBox->insertItem("BIN");
-			}
-			if(pref.base==HEX)
-				prefBox->setCurrentItem(0);
-			else if(pref.base==DEC)
-				prefBox->setCurrentItem(1);
-			else if(pref.base==OCT)
-				prefBox->setCurrentItem(2);
-			else prefBox->setCurrentItem(3);
-		}
-		calcButtons->setPref(pref);
-		extButtons->setPref(pref);
-		textEdit->setPref(pref);
-	}
+	void setPref(Preferences newPref);
+
 	
 
 protected:
@@ -139,9 +150,10 @@ protected:
 public slots:
 
 	void getPref(Preferences newPref);
-	void maximizeSlot();
-	void baseSlot();
-	void prefBoxSlot(int);
+	void viewSlot(int);
+	void baseSlot(int);
+	void angleSlot(int);
+	void typeSlot(int);
 	void editSlot(int);
 
 	

@@ -180,6 +180,7 @@ dialog, the todo list and the bug list.
 //	- import script dialog path check is wrong											ok	//
 //	- bug in script console at selection													//
 //	- file dialog in script preferences window is always in background						//
+//	- view error when maximizing statistics tab												//
 
 
 //////////////////////////used variables//////////////////////////
@@ -603,8 +604,8 @@ MainObject() :QTabWidget()
 
 	
 
-	calculator=new CalcWidget(this,pref,vars,threadData);
-	calculator2=new CalcWidget(this,pref,vars,threadData);
+	calculator=new CalcWidget(this,pref,vars,threadData,tabbarSize.bottom());
+	calculator2=new CalcWidget(this,pref,vars,threadData,tabbarSize.bottom());
 	graph = new GraphWidget(this,pref,vars,threadData);
 	table=new TableWidget(this,pref,vars,threadData);
 	scripting=new ScriptWidget(this,pref,vars,tabbarSize.bottom());

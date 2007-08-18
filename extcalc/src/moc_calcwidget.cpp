@@ -1,7 +1,7 @@
 /****************************************************************************
 ** CalcWidget meta object code from reading C++ file 'calcwidget.h'
 **
-** Created: Wed Aug 15 17:45:23 2007
+** Created: Sat Aug 18 22:09:26 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -56,27 +56,38 @@ QMetaObject* CalcWidget::staticMetaObject()
 	{ "newPref", &static_QUType_ptr, "Preferences", QUParameter::In }
     };
     static const QUMethod slot_0 = {"getPref", 1, param_slot_0 };
-    static const QUMethod slot_1 = {"maximizeSlot", 0, 0 };
-    static const QUMethod slot_2 = {"baseSlot", 0, 0 };
+    static const QUParameter param_slot_1[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_1 = {"viewSlot", 1, param_slot_1 };
+    static const QUParameter param_slot_2[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_2 = {"baseSlot", 1, param_slot_2 };
     static const QUParameter param_slot_3[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_3 = {"prefBoxSlot", 1, param_slot_3 };
+    static const QUMethod slot_3 = {"angleSlot", 1, param_slot_3 };
     static const QUParameter param_slot_4[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_4 = {"editSlot", 1, param_slot_4 };
+    static const QUMethod slot_4 = {"typeSlot", 1, param_slot_4 };
     static const QUParameter param_slot_5[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_5 = {"editSlot", 1, param_slot_5 };
+    static const QUParameter param_slot_6[] = {
 	{ "text", &static_QUType_QString, 0, QUParameter::In }
     };
-    static const QUMethod slot_5 = {"processText", 1, param_slot_5 };
+    static const QUMethod slot_6 = {"processText", 1, param_slot_6 };
     static const QMetaData slot_tbl[] = {
 	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
-	{ "maximizeSlot()", &slot_1, QMetaData::Public },
-	{ "baseSlot()", &slot_2, QMetaData::Public },
-	{ "prefBoxSlot(int)", &slot_3, QMetaData::Public },
-	{ "editSlot(int)", &slot_4, QMetaData::Public },
-	{ "processText(QString)", &slot_5, QMetaData::Public }
+	{ "viewSlot(int)", &slot_1, QMetaData::Public },
+	{ "baseSlot(int)", &slot_2, QMetaData::Public },
+	{ "angleSlot(int)", &slot_3, QMetaData::Public },
+	{ "typeSlot(int)", &slot_4, QMetaData::Public },
+	{ "editSlot(int)", &slot_5, QMetaData::Public },
+	{ "processText(QString)", &slot_6, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -92,7 +103,7 @@ QMetaObject* CalcWidget::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"CalcWidget", parentObject,
-	slot_tbl, 6,
+	slot_tbl, 7,
 	signal_tbl, 2,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -143,11 +154,12 @@ bool CalcWidget::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
     case 0: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 1: maximizeSlot(); break;
-    case 2: baseSlot(); break;
-    case 3: prefBoxSlot((int)static_QUType_int.get(_o+1)); break;
-    case 4: editSlot((int)static_QUType_int.get(_o+1)); break;
-    case 5: processText((QString)static_QUType_QString.get(_o+1)); break;
+    case 1: viewSlot((int)static_QUType_int.get(_o+1)); break;
+    case 2: baseSlot((int)static_QUType_int.get(_o+1)); break;
+    case 3: angleSlot((int)static_QUType_int.get(_o+1)); break;
+    case 4: typeSlot((int)static_QUType_int.get(_o+1)); break;
+    case 5: editSlot((int)static_QUType_int.get(_o+1)); break;
+    case 6: processText((QString)static_QUType_QString.get(_o+1)); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }
