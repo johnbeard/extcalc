@@ -45,10 +45,10 @@ using namespace std;
 #define VARSFILE ".extcalc/vars.conf"
 #define LISTSFILE ".extcalc/lists.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.8.7\n2007-08-18\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.7\n2007-08-20\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.8.7\n18.8.2007\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.7\n20.8.2007\n\n"+QString(DEVVERSION)
 #endif
 #define AUTHORSTRING "Autor:\nRainer Strobel  2007\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
@@ -315,6 +315,11 @@ using namespace std;
 #define PPEMPTY				179
 #define MPEMPTY				212
 #define MPINVALIDMACRO		213
+
+#define CATMATHSTD			0x1
+#define CATMATHCOMPLEX		0x2
+#define CATMATRIX			0x4
+#define CATSCRIPT			0x8
 
 
 #define NNONE				0x1

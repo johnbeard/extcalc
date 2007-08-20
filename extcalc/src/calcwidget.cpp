@@ -149,6 +149,11 @@ void CalcWidget::editSlot(int type)
 }
 
 
+void CalcWidget::catalogSlot()
+{
+	catalog->exec(toolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));
+}
+
 void CalcWidget::setPref(Preferences newPref)
 {
 	pref=newPref;

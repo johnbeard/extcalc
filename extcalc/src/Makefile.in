@@ -54,7 +54,7 @@ am_extcalc_OBJECTS = extcalc.$(OBJEXT) buttons.$(OBJEXT) \
 	calcpref.$(OBJEXT) functiontable.$(OBJEXT) table.$(OBJEXT) \
 	tablepref.$(OBJEXT) scriptedit.$(OBJEXT) scriptpref.$(OBJEXT) \
 	scriptio.$(OBJEXT) matrixwidget.$(OBJEXT) statistics.$(OBJEXT) \
-	moc_extcalc.$(OBJEXT) moc_buttons.$(OBJEXT) \
+	catalog.$(OBJEXT) moc_extcalc.$(OBJEXT) moc_buttons.$(OBJEXT) \
 	moc_calctable.$(OBJEXT) moc_calcwidget.$(OBJEXT) \
 	moc_calcinput.$(OBJEXT) moc_graph.$(OBJEXT) \
 	moc_graphout.$(OBJEXT) moc_graphpref.$(OBJEXT) \
@@ -62,7 +62,8 @@ am_extcalc_OBJECTS = extcalc.$(OBJEXT) buttons.$(OBJEXT) \
 	moc_table.$(OBJEXT) moc_functiontable.$(OBJEXT) \
 	moc_tablepref.$(OBJEXT) moc_scriptedit.$(OBJEXT) \
 	moc_scriptpref.$(OBJEXT) moc_scriptio.$(OBJEXT) \
-	moc_matrixwidget.$(OBJEXT) moc_statistics.$(OBJEXT)
+	moc_matrixwidget.$(OBJEXT) moc_statistics.$(OBJEXT) \
+	moc_catalog.$(OBJEXT)
 extcalc_OBJECTS = $(am_extcalc_OBJECTS)
 extcalc_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -190,6 +191,7 @@ extcalc_SOURCES = extcalc.h \
 				  scriptio.h \
 				  matrixwidget.h \
 				  statistics.h \
+				  catalog.h \
 				  extcalc.cpp \
 				  buttons.cpp \
 				  calctable.cpp \
@@ -210,6 +212,7 @@ extcalc_SOURCES = extcalc.h \
 				  scriptio.cpp \
 				  matrixwidget.cpp \
 				  statistics.cpp \
+				  catalog.cpp \
 				  moc_extcalc.cpp \
 				  moc_buttons.cpp \
 				  moc_calctable.cpp \
@@ -227,7 +230,8 @@ extcalc_SOURCES = extcalc.h \
 				  moc_scriptpref.cpp \
 				  moc_scriptio.cpp \
 				  moc_matrixwidget.cpp \
-				  moc_statistics.cpp
+				  moc_statistics.cpp \
+				  moc_catalog.cpp
 
 all: all-am
 
@@ -300,6 +304,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/calcpref.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/calctable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/calcwidget.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/catalog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/extcalc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/functiontable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/global.Po@am__quote@
@@ -314,6 +319,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_calcpref.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_calctable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_calcwidget.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_catalog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_extcalc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_functiontable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_graph.Po@am__quote@

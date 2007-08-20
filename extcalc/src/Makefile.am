@@ -22,6 +22,7 @@ extcalc_SOURCES = extcalc.h \
 				  scriptio.h \
 				  matrixwidget.h \
 				  statistics.h \
+				  catalog.h \
 				  extcalc.cpp \
 				  buttons.cpp \
 				  calctable.cpp \
@@ -42,6 +43,7 @@ extcalc_SOURCES = extcalc.h \
 				  scriptio.cpp \
 				  matrixwidget.cpp \
 				  statistics.cpp \
+				  catalog.cpp \
 				  moc_extcalc.cpp \
 				  moc_buttons.cpp \
 				  moc_calctable.cpp \
@@ -59,4 +61,5 @@ extcalc_SOURCES = extcalc.h \
 				  moc_scriptpref.cpp \
 				  moc_scriptio.cpp \
 				  moc_matrixwidget.cpp \
-				  moc_statistics.cpp
+				  moc_statistics.cpp \
+				  moc_catalog.cpp

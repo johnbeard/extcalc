@@ -21,12 +21,14 @@ This is the class for the calculator tab window.
 
 #include "buttons.h"
 #include "calcinput.h"
+#include "catalog.h"
 #include <qcombobox.h>
 
 #include <qtoolbar.h>
 #include <qdockarea.h>
 #include <qiconset.h>
 #include <qaction.h>
+#include <qpopupmenu.h>
 
 
 
@@ -46,6 +48,8 @@ class CalcWidget :public QWidget
 	QDockArea*dockArea;
 	QComboBox *angleBox,*viewBox,*baseBox,*typeBox;
 	QPixmap *minimizeIcon,*angleIcon,*maximizeIcon,*scientificIcon,*baseIcon;
+	Catalog *catalog;
+	QPushButton* catalogButton;
 
 	Q_OBJECT
 
@@ -105,6 +109,10 @@ class CalcWidget :public QWidget
 		else if(pref.base==HEX) baseBox->setCurrentItem(3);
 		else baseBox->setCurrentItem(2);
 		
+		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX | CATMATRIX,toolBar);
+
+		catalog->show();
+		catalogButton=new QPushButton("Catalog",toolBar);
 
 		
 
@@ -136,6 +144,9 @@ class CalcWidget :public QWidget
 		QObject::connect(baseBox,SIGNAL(activated(int)),this,SLOT(baseSlot(int)));
 		QObject::connect(angleBox,SIGNAL(activated(int)),this,SLOT(angleSlot(int)));
 		QObject::connect(typeBox,SIGNAL(activated(int)),this,SLOT(typeSlot(int)));
+		QObject::connect(catalogButton,SIGNAL(clicked()),this,SLOT(catalogSlot()));
+		QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(processText(QString)));
+		
 	}
 	
 	void setPref(Preferences newPref);
@@ -155,6 +166,7 @@ public slots:
 	void angleSlot(int);
 	void typeSlot(int);
 	void editSlot(int);
+	void catalogSlot();
 
 	
 	void processText(QString text)
