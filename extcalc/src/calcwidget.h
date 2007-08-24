@@ -109,7 +109,7 @@ class CalcWidget :public QWidget
 		else if(pref.base==HEX) baseBox->setCurrentItem(3);
 		else baseBox->setCurrentItem(2);
 		
-		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX | CATMATRIX,toolBar);
+		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX | CATMATRIX | CATMATHLOGIC | CATSCRIPT,toolBar);
 
 		catalog->show();
 		catalogButton=new QPushButton("Catalog",toolBar);

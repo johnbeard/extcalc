@@ -320,6 +320,7 @@ using namespace std;
 #define CATMATHCOMPLEX		0x2
 #define CATMATRIX			0x4
 #define CATSCRIPT			0x8
+#define CATMATHLOGIC		0x10
 
 
 #define NNONE				0x1

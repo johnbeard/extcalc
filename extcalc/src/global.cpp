@@ -5834,7 +5834,6 @@ Number Script::exec()
 					memcpy(&eventContent[9],&arg,4);
 					break;
 				case 3:
-					//value=vertObj3->exec();
 					value=vertObj3->exec();
 					if(value.type!=NCHAR)
 					{

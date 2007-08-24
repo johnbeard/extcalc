@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Catalog meta object code from reading C++ file 'catalog.h'
 **
-** Created: Mon Aug 20 21:50:14 2007
+** Created: Fri Aug 24 20:04:01 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -67,32 +67,42 @@ QMetaObject* Catalog::staticMetaObject()
     static const QUParameter param_slot_3[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_3 = {"matrixSlot", 1, param_slot_3 };
+    static const QUMethod slot_3 = {"mathLogicSlot", 1, param_slot_3 };
     static const QUParameter param_slot_4[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_4 = {"scriptStandardSlot", 1, param_slot_4 };
+    static const QUMethod slot_4 = {"matrixSlot", 1, param_slot_4 };
     static const QUParameter param_slot_5[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_5 = {"scriptTextSlot", 1, param_slot_5 };
+    static const QUMethod slot_5 = {"scriptStandardSlot", 1, param_slot_5 };
     static const QUParameter param_slot_6[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_6 = {"scriptGraphicsSlot", 1, param_slot_6 };
+    static const QUMethod slot_6 = {"scriptTextSlot", 1, param_slot_6 };
     static const QUParameter param_slot_7[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_7 = {"scriptGLSlot", 1, param_slot_7 };
+    static const QUMethod slot_7 = {"scriptGraphicsSlot", 1, param_slot_7 };
+    static const QUParameter param_slot_8[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_8 = {"scriptGLSlot", 1, param_slot_8 };
+    static const QUParameter param_slot_9[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_9 = {"scriptFileSlot", 1, param_slot_9 };
     static const QMetaData slot_tbl[] = {
 	{ "mathStandardSlot(int)", &slot_0, QMetaData::Public },
 	{ "mathTrigonometricSlot(int)", &slot_1, QMetaData::Public },
 	{ "mathExtendedSlot(int)", &slot_2, QMetaData::Public },
-	{ "matrixSlot(int)", &slot_3, QMetaData::Public },
-	{ "scriptStandardSlot(int)", &slot_4, QMetaData::Public },
-	{ "scriptTextSlot(int)", &slot_5, QMetaData::Public },
-	{ "scriptGraphicsSlot(int)", &slot_6, QMetaData::Public },
-	{ "scriptGLSlot(int)", &slot_7, QMetaData::Public }
+	{ "mathLogicSlot(int)", &slot_3, QMetaData::Public },
+	{ "matrixSlot(int)", &slot_4, QMetaData::Public },
+	{ "scriptStandardSlot(int)", &slot_5, QMetaData::Public },
+	{ "scriptTextSlot(int)", &slot_6, QMetaData::Public },
+	{ "scriptGraphicsSlot(int)", &slot_7, QMetaData::Public },
+	{ "scriptGLSlot(int)", &slot_8, QMetaData::Public },
+	{ "scriptFileSlot(int)", &slot_9, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_QString, 0, QUParameter::In }
@@ -103,7 +113,7 @@ QMetaObject* Catalog::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"Catalog", parentObject,
-	slot_tbl, 8,
+	slot_tbl, 10,
 	signal_tbl, 1,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -133,11 +143,13 @@ bool Catalog::qt_invoke( int _id, QUObject* _o )
     case 0: mathStandardSlot((int)static_QUType_int.get(_o+1)); break;
     case 1: mathTrigonometricSlot((int)static_QUType_int.get(_o+1)); break;
     case 2: mathExtendedSlot((int)static_QUType_int.get(_o+1)); break;
-    case 3: matrixSlot((int)static_QUType_int.get(_o+1)); break;
-    case 4: scriptStandardSlot((int)static_QUType_int.get(_o+1)); break;
-    case 5: scriptTextSlot((int)static_QUType_int.get(_o+1)); break;
-    case 6: scriptGraphicsSlot((int)static_QUType_int.get(_o+1)); break;
-    case 7: scriptGLSlot((int)static_QUType_int.get(_o+1)); break;
+    case 3: mathLogicSlot((int)static_QUType_int.get(_o+1)); break;
+    case 4: matrixSlot((int)static_QUType_int.get(_o+1)); break;
+    case 5: scriptStandardSlot((int)static_QUType_int.get(_o+1)); break;
+    case 6: scriptTextSlot((int)static_QUType_int.get(_o+1)); break;
+    case 7: scriptGraphicsSlot((int)static_QUType_int.get(_o+1)); break;
+    case 8: scriptGLSlot((int)static_QUType_int.get(_o+1)); break;
+    case 9: scriptFileSlot((int)static_QUType_int.get(_o+1)); break;
     default:
 	return QPopupMenu::qt_invoke( _id, _o );
     }
