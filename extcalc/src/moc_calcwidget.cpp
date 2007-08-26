@@ -1,7 +1,7 @@
 /****************************************************************************
 ** CalcWidget meta object code from reading C++ file 'calcwidget.h'
 **
-** Created: Wed Aug 22 21:29:03 2007
+** Created: Sat Aug 25 18:25:38 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -56,10 +56,7 @@ QMetaObject* CalcWidget::staticMetaObject()
 	{ "newPref", &static_QUType_ptr, "Preferences", QUParameter::In }
     };
     static const QUMethod slot_0 = {"getPref", 1, param_slot_0 };
-    static const QUParameter param_slot_1[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_1 = {"viewSlot", 1, param_slot_1 };
+    static const QUMethod slot_1 = {"viewSlot", 0, 0 };
     static const QUParameter param_slot_2[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
@@ -83,7 +80,7 @@ QMetaObject* CalcWidget::staticMetaObject()
     static const QUMethod slot_7 = {"processText", 1, param_slot_7 };
     static const QMetaData slot_tbl[] = {
 	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
-	{ "viewSlot(int)", &slot_1, QMetaData::Public },
+	{ "viewSlot()", &slot_1, QMetaData::Public },
 	{ "baseSlot(int)", &slot_2, QMetaData::Public },
 	{ "angleSlot(int)", &slot_3, QMetaData::Public },
 	{ "typeSlot(int)", &slot_4, QMetaData::Public },
@@ -156,7 +153,7 @@ bool CalcWidget::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
     case 0: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 1: viewSlot((int)static_QUType_int.get(_o+1)); break;
+    case 1: viewSlot(); break;
     case 2: baseSlot((int)static_QUType_int.get(_o+1)); break;
     case 3: angleSlot((int)static_QUType_int.get(_o+1)); break;
     case 4: typeSlot((int)static_QUType_int.get(_o+1)); break;

@@ -23,8 +23,14 @@ The tab window for function tables
 #include <qclipboard.h>
 #include <qapplication.h>
 #include <qinputdialog.h>
+#include <qtoolbar.h>
+#include <qdockarea.h>
+#include <qiconset.h>
+#include <qtooltip.h>
+#include <qsplitter.h>
 #include "functiontable.h"
 #include "buttons.h"
+#include "catalog.h"
 
 
 
@@ -39,38 +45,57 @@ class TableWidget :public QWidget
 	FunctionTable* functionTable;
 	QLineEdit*inputLine;
 	CalcTable*outputTable;
-	QPushButton*calculateButton,*maximizeButton;
+	QPushButton*calculateButton,*maximizeButton,*catalogButton;
+	QPixmap *minimizeIcon,*maximizeIcon,*catalogIcon;
 	QComboBox*typeBox;
+	QToolBar*toolBar;
+	QDockArea*dockArea;
+	Catalog *catalog;
+	QSplitter *horzSplit,*vertSplit;
 	Variable*vars;
 	bool fullscreen;
 	List <double>vertValues;
 	List <double>horzValues;
 	QHeader*horzHeader,*vertHeader;
 	ThreadSync*threadData;
+	int menuBottom;
 	
 	Q_OBJECT
 public:
-	TableWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td) :QWidget(parent)
+	TableWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td,int mB) :QWidget(parent)
 	{
 		pref=p;
 		vars=va;
 		threadData=td;
+		menuBottom=mB;
 		fullscreen=false;
 		extButtons=new ExtButtons(this);
 		standardButtons=new StandardButtons(this);
-		functionTable=new FunctionTable(this,pref);
-		inputLine=new QLineEdit(this);
-		outputTable=new CalcTable(this,0,true);
+		horzSplit=new QSplitter(Qt::Horizontal,this);
+		vertSplit=new QSplitter(Qt::Vertical,horzSplit);
+		functionTable=new FunctionTable(vertSplit,pref);
+		inputLine=new QLineEdit(vertSplit);
+		outputTable=new CalcTable(horzSplit,0,true);
 		outputTable->setNumRows(10);
 		outputTable->setNumCols(4);
 		horzHeader=outputTable->horizontalHeader();
 		vertHeader=outputTable->verticalHeader();
 		horzHeader->setClickEnabled(true);
 		vertHeader->setClickEnabled(true);
+		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX,this);
+		dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
+		toolBar=new QToolBar();
+		dockArea->moveDockWindow(toolBar);
 		
-		calculateButton=new QPushButton(TABLEH_STR1,this);
-		maximizeButton=new QPushButton(TABLEH_STR2,this);
-		typeBox=new QComboBox(this);
+		minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
+		maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
+		catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
+		
+		
+		calculateButton=new QPushButton(TABLEH_STR1,toolBar);
+		maximizeButton=new QPushButton(*maximizeIcon,"",toolBar);
+		typeBox=new QComboBox(toolBar);
+		catalogButton=new QPushButton(*catalogIcon,"",toolBar);
 		
 		typeBox->insertItem(TABLEH_STR3);
 		typeBox->insertItem(TABLEH_STR4);
@@ -78,6 +103,11 @@ public:
 		typeBox->insertItem(TABLEH_STR6);
 		typeBox->insertItem(TABLEH_STR7);
 		typeBox->insertItem(TABLEH_STR9);
+		
+		QValueList<int> s = horzSplit->sizes();
+		s[1]=300;
+		s[0]=300;
+		horzSplit->setSizes(s);
 		
 		QObject::connect(standardButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
@@ -93,6 +123,8 @@ public:
 		QObject::connect(typeBox,SIGNAL(activated(const QString&)),this,SLOT(typeBoxSlot(const QString&)));
 		QObject::connect(horzHeader,SIGNAL(clicked(int)),this,SLOT(horzHeaderSlot(int)));
 		QObject::connect(vertHeader,SIGNAL(clicked(int)),this,SLOT(vertHeaderSlot(int)));
+		QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(buttonInputSlot(QString)));
+		QObject::connect(catalogButton,SIGNAL(clicked()),this,SLOT(catalogSlot()));
 	}
 	
 	void setPref(Preferences);
@@ -110,6 +142,7 @@ public slots:
 	void horzHeaderSlot(int);
 	void vertHeaderSlot(int);
 	void tableMenuSlot(int);
+	void catalogSlot();
 	
 protected:
 	virtual void resizeEvent(QResizeEvent*);

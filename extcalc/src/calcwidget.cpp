@@ -32,7 +32,6 @@ void CalcWidget::resizeEvent(QResizeEvent*)
 	if(maximized)
 	{
 		textEdit->setGeometry(20,menuBottom+40,width-40,height-90);
-
 		dockArea->setGeometry(0,menuBottom,width,35);
 	}
 	else
@@ -40,24 +39,25 @@ void CalcWidget::resizeEvent(QResizeEvent*)
 		textEdit->setGeometry(20,50,width-40,height-290);
 		calcButtons->setGeometry(20,height-220,280,200);
 		extButtons->setGeometry(320,height-180,300,160);
-		
 		dockArea->setGeometry(325,height-220,290,30);
 	}
 
 } 
 
-void CalcWidget::viewSlot(int index)
+void CalcWidget::viewSlot()
 {
-	if(index==0 && maximized)				//standard view
+	if(maximized)
 	{
+		viewButton->setIconSet(*maximizeIcon);
 		calcButtons->show();
 		extButtons->show();
 		maximized=false;
 		resizeEvent(NULL);
 
 	}
-	else if(index==1 && !maximized)			//alternate view
+	else
 	{
+		viewButton->setIconSet(*minimizeIcon);
 		calcButtons->hide();
 		extButtons->hide();
 		maximized=true;

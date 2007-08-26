@@ -23,24 +23,29 @@ void TableWidget::resizeEvent(QResizeEvent*)
 
 	if(fullscreen)
 	{
-		outputTable->setGeometry(20,50,width-40,height-100);
+//		outputTable->setGeometry(20,50,width-40,height-100);
+		horzSplit->setGeometry(20,menuBottom+40,width-40,height-100);
+		dockArea->setGeometry(0,menuBottom,width,35);
 		
-		calculateButton->setGeometry(20,height-45,90,35);
-		typeBox->setGeometry(120,height-45,90,35);
-		maximizeButton->setGeometry(220,height-45,90,35);
+//		calculateButton->setGeometry(20,height-45,90,35);
+//		typeBox->setGeometry(120,height-45,90,35);
+//		maximizeButton->setGeometry(220,height-45,90,35);
 	}
 	else
 	{
-		functionTable->setGeometry(20,50,width/2-30,height-320);
-		outputTable->setGeometry(width/2+10,50,width/2-30,height-290);
-		inputLine->setGeometry(20,height-260,width/2-30,20);
+//		functionTable->setGeometry(20,50,width/2-30,height-320);
+//		outputTable->setGeometry(width/2+10,50,width/2-30,height-290);
+//		inputLine->setGeometry(20,height-260,width/2-30,20);
+		
+		horzSplit->setGeometry(20,50,width-40,height-290);
 	
 		standardButtons->setGeometry(20,height-220,280,200);
 		extButtons->setGeometry(width/2+10,height-180,300,160);
 		
-		calculateButton->setGeometry(width/2+15,height-220,90,35);
-		typeBox->setGeometry(width/2+115,height-220,90,35);
-		maximizeButton->setGeometry(width/2+215,height-220,90,35);
+//		calculateButton->setGeometry(width/2+15,height-220,90,35);
+//		typeBox->setGeometry(width/2+115,height-220,90,35);
+//		maximizeButton->setGeometry(width/2+215,height-220,90,35);
+		dockArea->setGeometry(width/2+15,height-220,width/2-35,35);
 	}
 }
 
@@ -294,19 +299,28 @@ void TableWidget::maximizeButtonSlot()
 {
 	if(fullscreen)
 	{
-		maximizeButton->setText(TABLEH_STR2);
+
+		maximizeButton->setIconSet(*maximizeIcon);
 		standardButtons->show();
 		extButtons->show();
-		functionTable->show();
-		inputLine->show();
+		QValueList<int> s = horzSplit->sizes();
+		s[1]=(s[0]+s[1])/2;
+		s[0]=s[1];
+		horzSplit->setSizes(s);
+//		functionTable->show();
+//		inputLine->show();
 	}
 	else 
 	{
-		maximizeButton->setText(TABLEH_STR8);
+		maximizeButton->setIconSet(*minimizeIcon);
 		standardButtons->hide();
 		extButtons->hide();
-		functionTable->hide();
-		inputLine->hide();
+		QValueList<int> s = horzSplit->sizes();
+		s[1]=s[0]+s[1];
+		s[0]=0;
+		horzSplit->setSizes(s);
+//		functionTable->hide();
+//		inputLine->hide();
 	}
 	fullscreen=!fullscreen;
 	resizeEvent(NULL);
@@ -460,6 +474,11 @@ void TableWidget::tableMenuSlot(int item)
 			horzValues[c]=pref.tableZStart+c*tableZStep;
 		calculateButtonSlot();
 	}
+}
+
+void TableWidget::catalogSlot()
+{
+	catalog->exec(toolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));
 }
 
 

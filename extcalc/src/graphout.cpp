@@ -767,7 +767,7 @@ void GraphOutput::processStdFunction(QString function)
 
 	QString num,num2;
 	Calculate ca1(NULL,func,&pref,vars);
-	free(func);
+
 	struct timeval t1,t2;
 	
 	double* coordinates=new double[PRECISION2D*2+2];
@@ -795,7 +795,6 @@ void GraphOutput::processStdFunction(QString function)
 	}
 
 	objects.NewItem(generateGLList(index));
-	
 }
 
 
@@ -1138,8 +1137,6 @@ void GraphOutput::processInequaityFunction(QString function1,QString function2,i
 	}
 //	MessageBox(  "Sekunden:      "+QString::number(seconds)+
 //			   "\nMicrosekunden: "+QString::number(usecs));
-	free(func);
-	free(func2);
 	objects.NewItem(generateGLList(index));
 }
 
@@ -1213,7 +1210,6 @@ void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
 		seconds--;
 		usecs=1000000+usecs;
 	}
-	free(func);
 
 	objects.NewItem(generateGLList(index));
 }
@@ -1591,7 +1587,7 @@ void GraphOutput::processFunction(int index)
 	if(index==ineq2)
 		return;
 	
-	if(pref.functionTypes[index]==GRAPH3D && pref.graphType!=GRAPH3D)
+	if((pref.functionTypes[index]==GRAPH3D || pref.functionTypes[index]==GRAPHCOMP3D) && pref.graphType!=GRAPH3D)
 		return;
 
 	if(!pref.dynamicFunctions[index])

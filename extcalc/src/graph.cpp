@@ -34,63 +34,27 @@ void GraphWidget::resizeEvent(QResizeEvent*)
 	int height=geometry().bottom() - geometry().top();
 	
 
-	if(pref.autosize)
-	{
-		int maxWidth,maxHeight;
-		if(maximized)
-		{
-			maxWidth=width-20;
-			maxHeight=height-100;
-		}
-		else {
-			maxWidth=width/2-30;
-			maxHeight=height-290;
-		}
-			
-		double graphWidth=pref.xmax-pref.xmin,graphHeight=pref.ymax-pref.ymin;
-		if(graphWidth/(double)maxWidth>graphHeight/(double)maxHeight)
-		{
-			double pixelPerLength=(double)maxWidth/graphWidth;
-			int pixelHeight=(int)(pixelPerLength*graphHeight);
-			if(pixelHeight<10)
-				pixelHeight=10;
-			if(maximized)
-				graph->setGeometry(10,40+(maxHeight-pixelHeight)/2,width-20,pixelHeight);
-			else graph->setGeometry(width/2+10,50+(maxHeight-pixelHeight)/2,width/2-30,pixelHeight);
-		}
-		else
-		{
-			double pixelPerLength=(double)maxHeight/graphHeight;
-			int pixelWidth=(int)(pixelPerLength*graphWidth);
-			if(pixelWidth<10)
-				pixelWidth=10;
-			if(maximized)
-				graph->setGeometry(10+(maxWidth-pixelWidth)/2,50,pixelWidth,height-100);
-			else graph->setGeometry(width/2+10+(maxWidth-pixelWidth)/2,50,pixelWidth,height-290);
-		}
-		
-	}
-	else{
-		if(maximized)
-			graph->setGeometry(10,40,width-20,height-100);
-		else graph->setGeometry(width/2+10,50,width/2-30,height-290);
-	}
-	functionTable->setGeometry(20,50,width/2-30,height-320);
-	inputLine->setGeometry(20,height-260,width/2-30,20);
-	if(solveMode && !maximized)
-	{
-		solveType->setGeometry(20,height-220,width/4-20,30);
-		functionType->setGeometry(width/4+10,height-220,width/4-20,30);
-		solveWidget->setGeometry(20,height-180,width-40,160);
-	}
-	standardButtons->setGeometry(20,height-220,280,200);
-	extButtons->setGeometry(width/2+10,height-180,300,160);
-	drawButton->setGeometry(width/2+15,height-220,90,35);
-	modeBox->setGeometry(width/2+115,height-220,90,35);
 	if(maximized)
-		maximizeButton->setGeometry(10,height-45,90,35);
-	else maximizeButton->setGeometry(width/2+215,height-220,90,35);
+	{
+//		graph->setGeometry(10,menuBottom+40,width-20,height-90);
+		horzSplit->setGeometry(20,menuBottom+40,width-40,height-90);
+		dockArea->setGeometry(0,menuBottom,width,35);
+	}
+	else
+	{
+		horzSplit->setGeometry(20,50,width-40,height-290);
 
+		if(solveMode)
+		{
+			solveType->setGeometry(20,height-220,width/4-20,30);
+			functionType->setGeometry(width/4+10,height-220,width/4-20,30);
+			solveWidget->setGeometry(20,height-180,width-40,160);
+		}
+		standardButtons->setGeometry(20,height-220,280,200);
+		extButtons->setGeometry(width/2+10,height-180,300,160);
+
+		dockArea->setGeometry(width/2+15,height-220,width/2-30,35);
+	}
 }
 
 
@@ -171,35 +135,39 @@ void GraphWidget::maximizeSlot()
 	if(maximized)
 	{
 		maximized=false;
-		functionTable->show();
-		drawButton->show();
 		modeBox->show();
-		inputLine->show();
-		maximizeButton->setText(GRAPHC_STR1);
+		maximizeButton->setIconSet(*maximizeIcon);
+		QValueList<int> s = horzSplit->sizes();
+		s[1]=(s[0]+s[1])/2;
+		s[0]=s[1];
+		horzSplit->setSizes(s);
 		if(solveMode)
 		{
 			solveMode=false;
 			modeSlot(0);
 		}
-		else {
+		else
+		{
 			standardButtons->show();
 			extButtons->show();
 		}
 		resizeEvent(NULL);
 	}
-	else {
+	else
+	{
 		maximized=true;
 
 		standardButtons->hide();
 		extButtons->hide();
-		functionTable->hide();
-		drawButton->hide();
+		QValueList<int> s = horzSplit->sizes();
+		s[1]=s[0]+s[1];
+		s[0]=0;
+		horzSplit->setSizes(s);
 		modeBox->hide();
-		inputLine->hide();
 		solveType->hide();
 		functionType->hide();
 		solveWidget->hide();
-		maximizeButton->setText(GRAPHC_STR2);
+		maximizeButton->setIconSet(*minimizeIcon);
 		resizeEvent(NULL);
 	 }
 }
@@ -448,6 +416,40 @@ void GraphWidget::editSlot(int type)
 				if(functionTable->currentColumn()==0)
 					(qApp->clipboard())->setText(functionTable->text(functionTable->currentRow(),0),QClipboard::Clipboard);
 	}
+}
+
+void GraphWidget::catalogSlot()
+{
+	catalog->exec(toolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));
+}
+
+void GraphWidget::graphSizeSlot()
+{
+	int width=graphArea->width(),height=graphArea->height();
+	int newWidth,newHeight;
+	float wtohWin,wtohCs;
+	if(pref.autosize)
+	{
+		wtohWin=(float)width/(float)height;
+		wtohCs=((pref.xmax-pref.xmin)/pref.rasterSizeX)/((pref.ymax-pref.ymin)/pref.rasterSizeY);
+		
+		if(wtohCs<wtohWin)
+		{
+			newHeight=height;
+			newWidth=height*wtohCs;
+		}
+		else 
+		{
+			newWidth=width;
+			newHeight=width/wtohCs;
+		}
+	}
+	else 
+	{
+		newWidth=width;
+		newHeight=height;
+	}
+	graph->setGeometry((width-newWidth)/2,(height-newHeight)/2,newWidth,newHeight);
 }
 
 

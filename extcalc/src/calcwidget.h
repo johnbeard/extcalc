@@ -27,8 +27,8 @@ This is the class for the calculator tab window.
 #include <qtoolbar.h>
 #include <qdockarea.h>
 #include <qiconset.h>
-#include <qaction.h>
 #include <qpopupmenu.h>
+#include <qtooltip.h>
 
 
 
@@ -46,10 +46,10 @@ class CalcWidget :public QWidget
 	
 	QToolBar*toolBar;
 	QDockArea*dockArea;
-	QComboBox *angleBox,*viewBox,*baseBox,*typeBox;
-	QPixmap *minimizeIcon,*angleIcon,*maximizeIcon,*scientificIcon,*baseIcon;
+	QComboBox *angleBox,*baseBox,*typeBox;
+	QPixmap *minimizeIcon,*angleIcon,*maximizeIcon,*scientificIcon,*baseIcon,*catalogIcon;
 	Catalog *catalog;
-	QPushButton* catalogButton;
+	QPushButton* catalogButton,*viewButton;
 
 	Q_OBJECT
 
@@ -76,16 +76,13 @@ class CalcWidget :public QWidget
 		angleIcon=new QPixmap(INSTALLDIR+QString("/data/angle.png"));
 		scientificIcon=new QPixmap(INSTALLDIR+QString("/data/scientific.png"));
 		baseIcon=new QPixmap(INSTALLDIR+QString("/data/binary.png"));
+		catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
 		
 		dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
 		toolBar=new QToolBar();
 		dockArea->moveDockWindow(toolBar);
-				
 		
-		viewBox=new QComboBox(toolBar);
-		viewBox->insertItem(*minimizeIcon);
-		viewBox->insertItem(*maximizeIcon);
-		viewBox->setCurrentItem(0);
+		viewButton=new QPushButton(*maximizeIcon,"",toolBar);
 
 		typeBox=new QComboBox(toolBar);
 		typeBox->insertItem(*scientificIcon,"scientific");
@@ -109,10 +106,18 @@ class CalcWidget :public QWidget
 		else if(pref.base==HEX) baseBox->setCurrentItem(3);
 		else baseBox->setCurrentItem(2);
 		
-		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX | CATMATRIX | CATMATHLOGIC | CATSCRIPT,toolBar);
+		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX | CATMATRIX | CATMATHLOGIC,toolBar);
 
 		catalog->show();
-		catalogButton=new QPushButton("Catalog",toolBar);
+		catalogButton=new QPushButton(*catalogIcon,"",toolBar);
+		
+		QToolTip::add(viewButton,"Change View");
+		QToolTip::add(typeBox,"Scientific/Base Mode");
+		QToolTip::add(baseBox,"Set Base");
+		QToolTip::add(angleBox,"Set Angle");
+		QToolTip::add(catalogButton,"Function Catalog");
+
+
 
 		
 
@@ -140,7 +145,7 @@ class CalcWidget :public QWidget
 		QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(textEdit,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-		QObject::connect(viewBox,SIGNAL(activated(int)),this,SLOT(viewSlot(int)));
+		QObject::connect(viewButton,SIGNAL(clicked()),this,SLOT(viewSlot()));
 		QObject::connect(baseBox,SIGNAL(activated(int)),this,SLOT(baseSlot(int)));
 		QObject::connect(angleBox,SIGNAL(activated(int)),this,SLOT(angleSlot(int)));
 		QObject::connect(typeBox,SIGNAL(activated(int)),this,SLOT(typeSlot(int)));
@@ -161,7 +166,7 @@ protected:
 public slots:
 
 	void getPref(Preferences newPref);
-	void viewSlot(int);
+	void viewSlot();
 	void baseSlot(int);
 	void angleSlot(int);
 	void typeSlot(int);

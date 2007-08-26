@@ -606,8 +606,8 @@ MainObject() :QTabWidget()
 
 	calculator=new CalcWidget(this,pref,vars,threadData,tabbarSize.bottom());
 	calculator2=new CalcWidget(this,pref,vars,threadData,tabbarSize.bottom());
-	graph = new GraphWidget(this,pref,vars,threadData);
-	table=new TableWidget(this,pref,vars,threadData);
+	graph = new GraphWidget(this,pref,vars,threadData,tabbarSize.bottom());
+	table=new TableWidget(this,pref,vars,threadData,tabbarSize.bottom());
 	scripting=new ScriptWidget(this,pref,vars,tabbarSize.bottom());
 	scriptIO=new ScriptIOWidget(this,pref,vars,graph->getShareContext());
 	matrix=new MatrixWidget(this,pref,vars,threadData);

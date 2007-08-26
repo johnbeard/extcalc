@@ -30,6 +30,12 @@ Class of the graphics tab window
 #include <qcombobox.h>
 #include <qclipboard.h>
 #include <qapplication.h>
+#include <qtoolbar.h>
+#include <qdockarea.h>
+#include <qiconset.h>
+#include <qpopupmenu.h>
+#include <qtooltip.h>
+#include <qsplitter.h>
 #include <math.h>
 #include "list.h"
 #include <sys/time.h>
@@ -41,7 +47,33 @@ Class of the graphics tab window
 #include "graphout.h"
 #include "buttons.h"
 #include "graphsolve.h"
+#include "catalog.h"
 
+
+class GraphArea :public QWidget
+{
+
+	Q_OBJECT
+	public:
+		
+	GraphArea(QWidget*parent) :QWidget(parent)
+	{
+	;
+	}
+	
+	protected:
+	virtual void resizeEvent(QResizeEvent*)
+	{
+		emit sizeChanged();
+	}
+	
+	
+	signals:
+		
+	void sizeChanged();	
+	
+	
+};
 
 
 
@@ -55,10 +87,20 @@ class GraphWidget :public QWidget
 	ExtButtons *extButtons;
 	StandardButtons *standardButtons;
 	FunctionTable* functionTable;
-	QPushButton *drawButton,*maximizeButton;
+	GraphArea*graphArea;
+
 	QLineEdit *inputLine;
-	QComboBox *solveType,*functionType,*modeBox;
+
 	GraphSolveWidget *solveWidget;
+	
+	QToolBar*toolBar;
+	QDockArea*dockArea;
+	QComboBox *solveType,*functionType,*modeBox;
+	QPixmap *minimizeIcon,*maximizeIcon,*printIcon,*catalogIcon;
+	Catalog *catalog;
+	QPushButton *drawButton,*maximizeButton,*catalogButton;
+	QSplitter *horzSplit,*vertSplit;
+	
 	bool maximized;
 	bool solveMode;
 	Variable*vars;
@@ -69,36 +111,61 @@ class GraphWidget :public QWidget
 	int changedRow;
 	bool functionChanged;
 	bool dynamicStart;
+	int menuBottom;
 	
 	
 Q_OBJECT
 	public:
-	GraphWidget(QWidget*parent,Preferences pr,Variable*va,ThreadSync*td) :QWidget(parent)
+	GraphWidget(QWidget*parent,Preferences pr,Variable*va,ThreadSync*td, int mB) :QWidget(parent)
 	{
 		pref=pr;
 		vars=va;
+		menuBottom=mB;
 		threadData=td;
 		maximized=false;
 		solveMode=false;
 		functionChanged=false;
 		changedRow=-1;
 		dynamicStart=false;
-
-
-		graph=new GraphOutput(this,vars,threadData);
+		
+		
+		horzSplit=new QSplitter(Qt::Horizontal,this);
+		vertSplit=new QSplitter(Qt::Vertical,horzSplit);
 		standardButtons=new StandardButtons(this);
 		extButtons=new ExtButtons(this);
-		functionTable=new FunctionTable((QWidget*)this,pref);
-		drawButton=new QPushButton(GRAPHH_STR1,this);
-		maximizeButton=new QPushButton(GRAPHH_STR2,this);
-		modeBox=new QComboBox(this);
+		functionTable=new FunctionTable((QWidget*)vertSplit,pref);
+		graphArea=new GraphArea(horzSplit);
+		graph=new GraphOutput(graphArea,vars,threadData);
+		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX,this);
+		
+		minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
+		maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
+		printIcon=new QPixmap(INSTALLDIR+QString("/data/print.png"));
+		catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
+		
+		dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
+		toolBar=new QToolBar();
+		dockArea->moveDockWindow(toolBar);
+		
+		drawButton=new QPushButton(*printIcon,GRAPHH_STR1,toolBar);
+		maximizeButton=new QPushButton(*maximizeIcon,"",toolBar);
+		modeBox=new QComboBox(toolBar);
+		catalogButton=new QPushButton(*catalogIcon,"",toolBar);
+		
+		drawButton->setFixedHeight(25);
+		
 		solveType=new QComboBox(this);
 		functionType=new QComboBox(this);
 		solveWidget=new GraphSolveWidget(this,pref,vars,threadData);
 		solveType->hide();
 		functionType->hide();
 		solveWidget->hide();
-		inputLine=new QLineEdit(this);
+		inputLine=new QLineEdit(vertSplit);
+		inputLine->setFixedHeight(25);
+		QValueList<int> s = horzSplit->sizes();
+		s[1]=300;
+		s[0]=300;
+		horzSplit->setSizes(s);
 
 		solveType->insertItem(GRAPHH_STR4,-2);
 		solveType->insertItem(GRAPHH_STR5,-3);
@@ -160,6 +227,9 @@ Q_OBJECT
 		QObject::connect(this,SIGNAL(drawPointsSignal(long double*,int,bool)),graph,SLOT(drawPoints(long double*,int,bool)));
 		QObject::connect(this,SIGNAL(removeLinesSignal()),graph,SLOT(removeLines()));
 		QObject::connect(graph,SIGNAL(statisticsRedrawSignal()),this,SIGNAL(statisticsRedrawSignal()));
+		QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(buttonInputSlot(QString)));
+		QObject::connect(catalogButton,SIGNAL(clicked()),this,SLOT(catalogSlot()));
+		QObject::connect(graphArea,SIGNAL(sizeChanged()),this,SLOT(graphSizeSlot()));
 
 	}
 	
@@ -197,10 +267,11 @@ void setPref(Preferences newPref)
 	extButtons->setPref(pref);
 	solveWidget->setPref(pref);
 	functionTable->setPref(pref);
+	
 
 	
 
-	resizeEvent(NULL);
+	graphSizeSlot();
 
 }
 
@@ -222,6 +293,8 @@ public slots:
 	void buttonInputSlot(QString);
 	void solveTypeSlot(int);
 	void editSlot(int);
+	void catalogSlot();
+	void graphSizeSlot();
 	void getPref(Preferences newPref)
 	{
 		emit prefChange(newPref);
