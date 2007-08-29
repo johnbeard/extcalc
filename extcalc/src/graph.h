@@ -52,10 +52,9 @@ Class of the graphics tab window
 
 class GraphArea :public QWidget
 {
-
 	Q_OBJECT
+			
 	public:
-		
 	GraphArea(QWidget*parent) :QWidget(parent)
 	{
 	;
@@ -67,12 +66,8 @@ class GraphArea :public QWidget
 		emit sizeChanged();
 	}
 	
-	
 	signals:
-		
 	void sizeChanged();	
-	
-	
 };
 
 

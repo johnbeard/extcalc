@@ -999,7 +999,7 @@ The installation language is set by the configure script. Default is english.
 #define MATRIXWIDGETH_STR2 "Rows"
 #define MATRIXWIDGETH_STR3 "Columns"
 #define MATRIXWIDGETH_STR4 "Calculator"
-#define MATRIXWIDGETH_STR5 "Linear System of Equations"
+#define MATRIXWIDGETH_STR5 "Solve Equations"
 #define MATRIXWIDGETH_STR6 "Generate Matrix"
 #define MATRIXWIDGETH_STR7 "Analyse Matrix"
 #define MATRIXWIDGETH_STR8 "Inverse Matrix"

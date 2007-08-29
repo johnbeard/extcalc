@@ -190,7 +190,7 @@ dialog, the todo list and the bug list.
 //      |+/-      |  +/-308     |          1.7*10^15             |
 //      63       62             52                               0
 //
-//      Type: long double (12 Byte at 32bit CPU; 10 Bytes are used)
+//      Type: long double (12 Byte at 32bit CPU; 10 Bytes were used)
 //      sign         exponent            mantisse
 //      |+/-      |  +/-4932     |        1.2*10^18               |
 //      79        78             63            5                   0
@@ -217,7 +217,7 @@ dialog, the todo list and the bug list.
 // asin acos atan
 // sinh cosh tanh
 // asinh acosh atanh
-// log ln
+// log ln exp
 // sqrt curt
 // not ~
 //

@@ -26,9 +26,16 @@ Includes the matrix/vector window GUI and all needed math. functions.
 #include <qapplication.h>
 #include <qspinbox.h>
 #include <qlabel.h>
+#include <qtoolbar.h>
+#include <qdockarea.h>
+#include <qiconset.h>
+#include <qpopupmenu.h>
+#include <qtooltip.h>
+#include <qsplitter.h>
 #include "buttons.h"
 #include "calcinput.h"
 #include "calctable.h"
+#include "catalog.h"
 
 
 
@@ -49,13 +56,19 @@ class MatrixWidget :public QWidget
 	QComboBox *matrixBox,*vectorBox,*typeBox;
 	QLabel *matrixLabel,*vectorLabel,*size1Label,*size2Label,*label1,*label2,*label3;
 	QLineEdit *input1,*input2,*input3;
-	QPushButton *calcButton,*sizeButton;
+	QPushButton *calcButton,*sizeButton,*catalogButton;
+
+	QToolBar*toolBar;
+	QDockArea*dockArea;
+	QPixmap *catalogIcon;
+	Catalog *catalog;
+	QSplitter *split;
 
 	CalcInput*calcWidget;
 	int currentVar;
 	int state;
 	bool fullscreen;
-	
+
 	Q_OBJECT
 	public:
 		MatrixWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td) :QWidget(parent)
@@ -66,12 +79,23 @@ class MatrixWidget :public QWidget
 			currentVar=0;
 			state=MATCALC;
 			
+			split=new QSplitter(Qt::Horizontal,this);
 			standardButtons=new StandardButtons(this);
-			outputTable=new CalcTable(this,0,true);
+			varTable=new CalcTable(split,0,true);
+			outputTable=new CalcTable(split,0,true);
 			outputTable->setNumRows(10);
 			outputTable->setNumCols(4);
 			
-			varTable=new CalcTable(this,0,true);
+			
+			catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX | CATMATRIX,this);
+	
+			catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
+			
+			dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
+			toolBar=new QToolBar();
+			dockArea->moveDockWindow(toolBar);
+			
+			
 			varTable->setNumRows(27);
 			varTable->setNumCols(3);
 			QString headLine("A");
@@ -89,10 +113,13 @@ class MatrixWidget :public QWidget
 			varTable->setColumnReadOnly(0,true);
 			setVarTable();
 			
-			sprodButton=new QPushButton(getUnicode(DEGREESTRING),this);
-			invertButton=new QPushButton("^-1",this);
-			detButton=new QPushButton("det",this);
-			operationBox=new QComboBox(this);
+			operationBox=new QComboBox(toolBar);
+			sprodButton=new QPushButton(getUnicode(DEGREESTRING),toolBar);
+			invertButton=new QPushButton(getUnicode(8315)+getUnicode(185),toolBar);
+			detButton=new QPushButton("det",toolBar);
+			catalogButton=new QPushButton(*catalogIcon,"",toolBar);
+			
+			
 			operationBox->insertItem(MATRIXWIDGETH_STR4);
 			operationBox->insertItem(MATRIXWIDGETH_STR5);
 			operationBox->insertItem(MATRIXWIDGETH_STR6);
@@ -117,6 +144,14 @@ class MatrixWidget :public QWidget
 			resultTable=new CalcTable(this,0,true);
 			matrixBox=new QComboBox(this);
 			vectorBox=new QComboBox(this);
+			
+			QValueList<int> s = split->sizes();
+			s[1]=150;
+			s[0]=450;
+			split->setSizes(s);
+			invertButton->setFixedWidth(30);
+			detButton->setFixedWidth(30);
+			sprodButton->setFixedWidth(30);
 			
 			vectorBox->insertItem(MATRIXWIDGETH_STR11);
 			for(int c=0; c<26; c++)
@@ -154,6 +189,8 @@ class MatrixWidget :public QWidget
 			QObject::connect(typeBox,SIGNAL(activated(int)),this,SLOT(typeBoxSlot(int)));
 			QObject::connect(size1Box,SIGNAL(valueChanged(int)),this,SLOT(size1BoxSlot(int)));
 			QObject::connect(sizeButton,SIGNAL(pressed()),this,SLOT(sizeButtonSlot()));
+			QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(buttonInputSlot(QString)));
+			QObject::connect(catalogButton,SIGNAL(clicked()),this,SLOT(catalogSlot()));
 			
 		}
 	
@@ -182,6 +219,7 @@ class MatrixWidget :public QWidget
 		void size1BoxSlot(int);
 		void sizeButtonSlot();
 		void typeBoxSlot(int);
+		void catalogSlot();
 	
 	protected:
 		virtual void resizeEvent(QResizeEvent*);
