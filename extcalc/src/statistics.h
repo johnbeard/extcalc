@@ -30,8 +30,14 @@ Graphical results were shown by the graphics window class.
 #include <qlabel.h>
 #include <qsplitter.h>
 #include <qpushbutton.h>
+#include <qtoolbar.h>
+#include <qdockarea.h>
+#include <qiconset.h>
+#include <qpopupmenu.h>
+#include <qtooltip.h>
 #include "functiontable.h"
 #include "buttons.h"
+#include "catalog.h"
 
 #define LISTCOUNT		5
 
@@ -61,42 +67,67 @@ class StatisticsWidget :public QWidget
 	FunctionTable *functionTable;
 	StandardButtons *standardButtons;
 	QTable *lists;
-	QSplitter *splitter;
+	QSplitter *horzSplit,*vertSplit;
+	QToolBar*toolBar;
+	QDockArea*dockArea;
+	QPixmap *minimizeIcon,*maximizeIcon,*printIcon,*catalogIcon;
+	Catalog *catalog;
 	QComboBox *typeBox, *functionTypeBox,*copyFunction,*listNumberBox;
 	QSpinBox *listNumber,*stepsBox;
-	QPushButton *calculateButton,*maximizeButton,*drawButton,*copyButton;
+	QPushButton *calculateButton,*maximizeButton,*drawButton,*copyButton,*catalogButton;
 	QLabel *listNumberLabel,*resultLabel,*copyFunctionLabel,*functionTypeLabel,*stepsLabel;
-	QLineEdit * result;
+	QLineEdit * result,*inputLine;
 	
 	double xmin,xmax,ymin,ymax;
-	bool print;
+	bool print,functionChanged;
 	bool fullscreen;
-	int type;
+	int type,changedRow;
+	int menuBottom;
 
 	Q_OBJECT
 	public:
-		StatisticsWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td) :QWidget(parent)
+		StatisticsWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td,int mB) :QWidget(parent)
 		{
 			pref=p;
 			threadData=td;
 			vars=va;
+			menuBottom=mB;
 			fullscreen=false;
+			functionChanged=false;
 			type=STATAPPROX;
 			print=false;
+			changedRow=-1;
 
-			splitter=new QSplitter(Qt::Horizontal,this);
-			functionTable=new FunctionTable(splitter,pref);
+			horzSplit=new QSplitter(Qt::Horizontal,this);
+			vertSplit=new QSplitter(Qt::Vertical,horzSplit);
+			functionTable=new FunctionTable(vertSplit,pref);
 			standardButtons=new StandardButtons(this);
-			lists=new QTable(splitter);
+			catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX,this);
+		
+			minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
+			maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
+			printIcon=new QPixmap(INSTALLDIR+QString("/data/print.png"));
+			catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
+		
+			dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
+			toolBar=new QToolBar();
+			dockArea->moveDockWindow(toolBar);
+			
+			drawButton=new QPushButton(*printIcon,STATISTICSH_STR14,toolBar);
+			drawButton->setFixedHeight(25);
+			maximizeButton=new QPushButton(*maximizeIcon,"",toolBar);
+			lists=new QTable(horzSplit);
 			lists->setNumRows(1);
 			lists->setNumCols(2*LISTCOUNT);
-			typeBox=new QComboBox(this);
+			typeBox=new QComboBox(toolBar);
 			functionTypeLabel=new QLabel(STATISTICSH_STR1,this);
 			functionTypeBox=new QComboBox(this);
 			listNumber=new QSpinBox(1,LISTCOUNT,1,this);
 			listNumberLabel=new QLabel(STATISTICSH_STR2,this);
 			resultLabel=new QLabel(STATISTICSH_STR3,this);
 			result=new QLineEdit(this);
+			inputLine=new QLineEdit(vertSplit);
+			inputLine->setFixedHeight(25);
 			for(int c=0; c<5; c++)
 			{
 				lists->horizontalHeader()->setLabel(2*c,"X"+QString::number(c+1));
@@ -108,7 +139,7 @@ class StatisticsWidget :public QWidget
 			copyButton=new QPushButton(STATISTICSH_STR5,this);
 			for(int c=0; c<20; c++)
 				copyFunction->insertItem("f"+QString::number(c+1)+"(x)");
-			
+
 			listNumberBox=new QComboBox(this);
 			for(int c=0; c<LISTCOUNT; c++)
 			{
@@ -122,21 +153,21 @@ class StatisticsWidget :public QWidget
 			functionTypeBox->insertItem("a*e^(b*x)");
 			functionTypeBox->insertItem("a*b^x");
 
-
 			typeBox->insertItem(STATISTICSH_STR6);
 			typeBox->insertItem(STATISTICSH_STR7);
 			typeBox->insertItem(STATISTICSH_STR8);
 			typeBox->insertItem(STATISTICSH_STR9);
 			typeBox->insertItem(STATISTICSH_STR10);
-			
+
 			stepsBox=new QSpinBox(1,100,1,this);
 			stepsBox->setValue(10);
 			stepsLabel=new QLabel(STATISTICSH_STR11,this);
 
 
 			calculateButton=new QPushButton(STATISTICSH_STR12,this);
-			maximizeButton=new QPushButton(STATISTICSH_STR13,this);
-			drawButton=new QPushButton(STATISTICSH_STR14,this);
+
+
+			catalogButton=new QPushButton(*catalogIcon,"",toolBar);
 			readListsFile();
 
 			typeBoxSlot(0);
@@ -149,6 +180,12 @@ class StatisticsWidget :public QWidget
 			QObject::connect(lists,SIGNAL(valueChanged(int,int)),this,SLOT(itemChangedSlot(int,int)));
 			QObject::connect(standardButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
 			QObject::connect(standardButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+			QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(buttonInputSlot(QString)));
+			QObject::connect(catalogButton,SIGNAL(clicked()),this,SLOT(catalogSlot()));
+			QObject::connect(functionTable,SIGNAL(currentChanged(int,int)),this,SLOT(selectionChangedSlot(int,int)));
+			QObject::connect(functionTable,SIGNAL(textEditStarted(QString)),this,SLOT(tableEditSlot(QString)));
+			QObject::connect(inputLine,SIGNAL(returnPressed()),this,SLOT(inputTextFinished()));
+			QObject::connect(inputLine,SIGNAL(textChanged(const QString&)),this,SLOT(inputTextChanged(const QString&)));
 		}
 
 		void setPref(Preferences);
@@ -166,6 +203,12 @@ class StatisticsWidget :public QWidget
 		void printButtonSlot();
 		void buttonInputSlot(QString);
 		void redrawGraphSlot();
+		void catalogSlot();
+		
+		void selectionChangedSlot(int row,int col);
+		void tableEditSlot(QString);
+		void inputTextChanged(const QString&);
+		void inputTextFinished();
 
 	protected:
 		void resizeEvent(QResizeEvent*);

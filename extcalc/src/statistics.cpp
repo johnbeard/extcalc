@@ -24,18 +24,20 @@ void StatisticsWidget::resizeEvent(QResizeEvent*)
 	int height=geometry().bottom() - geometry().top();
 	if(fullscreen)
 	{
-		splitter->setGeometry(20,50,width-40,height-100);
-		drawButton->setGeometry(20,height-45,90,35);
-		typeBox->setGeometry(120,height-45,90,35);
-		maximizeButton->setGeometry(220,height-45,90,35);
+		horzSplit->setGeometry(20,menuBottom+40,width-40,height-90);
+	//	drawButton->setGeometry(20,height-45,90,35);
+	//	typeBox->setGeometry(120,height-45,90,35);
+	//	maximizeButton->setGeometry(220,height-45,90,35);
+		dockArea->setGeometry(0,menuBottom,width,35);
 	}
 	else
 	{
-		splitter->setGeometry(20,50,width-40,height-290);
+		horzSplit->setGeometry(20,50,width-40,height-290);
 
-		drawButton->setGeometry(width/2+15,height-220,90,35);
-		typeBox->setGeometry(width/2+115,height-220,90,35);
-		maximizeButton->setGeometry(width/2+215,height-220,90,35);
+	//	drawButton->setGeometry(width/2+15,height-220,90,35);
+	//	typeBox->setGeometry(width/2+115,height-220,90,35);
+	//	maximizeButton->setGeometry(width/2+215,height-220,90,35);
+		dockArea->setGeometry(width/2+15,height-220,width/2-35,35);
 		
 		standardButtons->setGeometry(20,height-220,280,200);
 		
@@ -129,13 +131,15 @@ void StatisticsWidget::maximizeButtonSlot()
 
 	if(fullscreen)
 	{
-		maximizeButton->setText(STATISTICSC_STR1);
+	//	maximizeButton->setText(STATISTICSC_STR1);
+		maximizeButton->setIconSet(*minimizeIcon);
 		standardButtons->hide();
 		typeBoxSlot(-1);
 	}
 	else 
 	{
-		maximizeButton->setText(STATISTICSH_STR13);
+//		maximizeButton->setText(STATISTICSH_STR13);
+		maximizeButton->setIconSet(*maximizeIcon);
 		typeBoxSlot(typeBox->currentItem());
 		standardButtons->show();
 	}
@@ -732,8 +736,86 @@ void StatisticsWidget::redrawGraphSlot()
 	print=false;
 }
 
-void StatisticsWidget::buttonInputSlot(QString)
+void StatisticsWidget::buttonInputSlot(QString text)
 {
+	if(text == "calculate")
+	{
+//		drawSlot();
+	}
+	else if(text == "backkey")
+	{
+		if(inputLine->cursorPosition() > 0)
+			inputLine->backspace();
+		else inputLine->del();
+		functionTable->setText(functionTable->currentRow(),0,inputLine->text());
+		if((inputLine->text().length())<=0)
+		{
+			QCheckTableItem *checkItem=(QCheckTableItem*)functionTable->item(functionTable->currentRow(),2);
+			checkItem->setChecked(false);
+		}
+	}
+	else if(text == "clearall")
+	{
+		functionTable->setFunctionText("");
+	}
+	else {
+		QString fullText=inputLine->text();
+		int cursorPos=inputLine->cursorPosition();
+		fullText.insert(cursorPos,text);
+		inputLine->setText(fullText);
+		inputLine->setCursorPosition(cursorPos+text.length());
+		functionTable->setText(functionTable->currentRow(),0,inputLine->text());
+		QCheckTableItem *checkItem=(QCheckTableItem*)functionTable->item(functionTable->currentRow(),2);
+		checkItem->setChecked(true);
+	}
+}
+
+void StatisticsWidget::selectionChangedSlot(int row,int)
+{
+	if(functionChanged)
+	{
+		inputTextFinished();
+	}
+	if(functionTable->text(row,0).length() > 0)
+		inputLine->setText(functionTable->text(row,0));
+	else inputLine->clear();
+	changedRow=row;
+	functionChanged=false;
+}
+
+void StatisticsWidget::tableEditSlot(QString string)
+{
+	if(functionChanged)
+	{
+		inputTextFinished();
+	}
+	changedRow=functionTable->currentRow();
+	if(string.length() > 0)
+		inputLine->setText(string);
+	else inputLine->clear();
+	inputLine->setActiveWindow();
+	inputLine->setFocus();
+	functionChanged=false;
+}
+
+void StatisticsWidget::inputTextChanged(const QString&)
+{
+	functionChanged=true;
+}
+
+void StatisticsWidget::inputTextFinished()
+{
+	if(functionChanged)
+	{
+		functionTable->setFunctionText(inputLine->text(),changedRow);
+		functionChanged=false;
+	}
+	inputLine->clearFocus();
+}
+
+void StatisticsWidget::catalogSlot()
+{
+	catalog->exec(toolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));
 }
 
 

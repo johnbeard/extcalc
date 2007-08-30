@@ -611,7 +611,7 @@ MainObject() :QTabWidget()
 	scripting=new ScriptWidget(this,pref,vars,tabbarSize.bottom());
 	scriptIO=new ScriptIOWidget(this,pref,vars,graph->getShareContext());
 	matrix=new MatrixWidget(this,pref,vars,threadData);
-	statistics=new StatisticsWidget(this,pref,vars,threadData);
+	statistics=new StatisticsWidget(this,pref,vars,threadData,tabbarSize.bottom());
 //	addTab(calculator,EXTCALCH_STR6);
 //	addTab(calculator2,EXTCALCH_STR7);
 //	addTab(graph,EXTCALCH_STR8);
