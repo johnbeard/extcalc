@@ -146,8 +146,8 @@ class MatrixWidget :public QWidget
 			vectorBox=new QComboBox(this);
 			
 			QValueList<int> s = split->sizes();
-			s[1]=150;
-			s[0]=450;
+			s[0]=150;
+			s[1]=450;
 			split->setSizes(s);
 			invertButton->setFixedWidth(30);
 			detButton->setFixedWidth(30);

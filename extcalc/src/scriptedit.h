@@ -28,6 +28,7 @@ The class for the script editor tab window. It does the script file management.
 #include <qfiledialog.h>
 #include <qinputdialog.h>
 #include <qlabel.h>
+#include <qtooltip.h>
 #include <qiconset.h>
 #include <qaction.h>
 #include <sys/types.h>
@@ -35,6 +36,7 @@ The class for the script editor tab window. It does the script file management.
 #include <dirent.h>
 #include <list.h>
 #include "buttons.h"
+#include "catalog.h"
 
 
 class LineNumberView :public QTextEdit
@@ -64,12 +66,13 @@ class ScriptWidget :public QWidget
 	Variable * vars;
 	StandardButtons* standardButtons;
 	ExtButtons* extButtons;
+	Catalog *catalog;
 	QTextEdit*editor;
 	QListView*fileBrowser;
 	LineNumberView*lineNumbers;
 //	QLabel*lineNumbers;
 	QSplitter*splitter;
-	QPushButton*maximizeButton,*runButton,*saveButton;
+//	QPushButton*maximizeButton,*runButton,*saveButton;
 	QFont *stdFont;
 	int fontWidth,fontHeight;
 	int menuBottom;
@@ -82,9 +85,12 @@ class ScriptWidget :public QWidget
 	QListViewItem*clickedFileItem;
 	QToolBar*editorToolBar;
 	QDockArea*dockArea;
-	QPixmap*newIcon,*saveIcon,*saveallIcon,*undoIcon,*redoIcon,*cutIcon,*copyIcon,*pasteIcon,*importIcon,*exportIcon,*runIcon,*minimizeIcon;
-	QAction*newAction,*saveAction,*saveallAction,*undoAction,*redoAction,*cutAction,*copyAction,*pasteAction,*importAction,*exportAction,*runAction,*minimizeAction;
-
+	QPixmap*newIcon,*saveIcon,*saveallIcon,*undoIcon,*redoIcon,*cutIcon,*copyIcon,*pasteIcon,*importIcon,*exportIcon,*runIcon,*minimizeIcon,*catalogIcon;
+//	QAction*newAction,*saveAction,*saveallAction,*undoAction,*redoAction,*cutAction,*copyAction,*pasteAction,*importAction,*exportAction,*runAction,*minimizeAction,*catalogAction;
+	QPushButton *newButton,*saveButton,*saveallButton,*undoButton,*redoButton,*cutButton,*copyButton,*pasteButton,*importButton,*exportButton,*runButton,*minimizeButton,*catalogButton;
+	
+	
+	
 	Q_OBJECT
 public:
 
@@ -100,23 +106,23 @@ public:
 
 		standardButtons=new StandardButtons(this);void scriptSlot(QString*code);
 		extButtons=new ExtButtons(this);
+		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX | CATMATRIX | CATMATHLOGIC | CATSCRIPT,this);
 		splitter=new QSplitter(Qt::Horizontal,this);
 		fileBrowser=new QListView(splitter);
 		lineNumbers=new LineNumberView(splitter);
 //		lineNumbers=new QLabel("1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15",splitter);
 		editor=new QTextEdit(splitter);
-		maximizeButton=new QPushButton(SCRIPTEDITH_STR1,this);
-		runButton=new QPushButton(SCRIPTEDITH_STR2,this);
-		saveButton=new QPushButton(SCRIPTEDITH_STR3,this);
+//		maximizeButton=new QPushButton(SCRIPTEDITH_STR1,this);
+//		runButton=new QPushButton(SCRIPTEDITH_STR2,this);
+//		saveButton=new QPushButton(SCRIPTEDITH_STR3,this);
 		
-		maximizeButton->hide();
-		runButton->hide();
-		saveButton->hide();
+
 
 		fileBrowserMenu=new QPopupMenu(fileBrowser);
 		modifiedIcon=new QPixmap(QString(INSTALLDIR)+"/data/modified.png");
 		dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
 		editorToolBar=new QToolBar();
+		dockArea->moveDockWindow(editorToolBar);
 		
 	
 	
@@ -143,64 +149,57 @@ public:
 		exportIcon=new QPixmap(INSTALLDIR+QString("/data/filesaveas.png"));
 		runIcon=new QPixmap(INSTALLDIR+QString("/data/exec.png"));
 		minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
+		catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
 		
 
-		newAction=new QAction(editorToolBar);
-		saveAction=new QAction(editorToolBar);
-		saveallAction=new QAction(editorToolBar);
-		undoAction=new QAction(editorToolBar);
-		redoAction=new QAction(editorToolBar);
-		cutAction=new QAction(editorToolBar);
-		copyAction=new QAction(editorToolBar);
-		pasteAction=new QAction(editorToolBar);
-		importAction=new QAction(editorToolBar);
-		exportAction=new QAction(editorToolBar);
-		runAction=new QAction(editorToolBar);
-		minimizeAction=new QAction(editorToolBar);
+		newButton=new QPushButton(*newIcon,"",editorToolBar);
+		importButton=new QPushButton(*importIcon,"",editorToolBar);
+		exportButton=new QPushButton(*exportIcon,"",editorToolBar);
+		editorToolBar->addSeparator();
+		saveButton=new QPushButton(*saveIcon,"",editorToolBar);
+		saveallButton=new QPushButton(*saveallIcon,"",editorToolBar);
+		editorToolBar->addSeparator();
+		undoButton=new QPushButton(*undoIcon,"",editorToolBar);
+		redoButton=new QPushButton(*redoIcon,"",editorToolBar);
+		cutButton=new QPushButton(*cutIcon,"",editorToolBar);
+		copyButton=new QPushButton(*copyIcon,"",editorToolBar);
+		pasteButton=new QPushButton(*pasteIcon,"",editorToolBar);
+		editorToolBar->addSeparator();
+		catalogButton=new QPushButton(*catalogIcon,"",editorToolBar);
+		minimizeButton=new QPushButton(*minimizeIcon,"",editorToolBar);
+		editorToolBar->addSeparator();
+		runButton=new QPushButton(*runIcon,"",editorToolBar);
 		
-		newAction->setIconSet(*newIcon);
-		saveAction->setIconSet(*saveIcon);
-		saveallAction->setIconSet(*saveallIcon);
-		undoAction->setIconSet(*undoIcon);
-		redoAction->setIconSet(*redoIcon);
-		cutAction->setIconSet(*cutIcon);
-		copyAction->setIconSet(*copyIcon);
-		pasteAction->setIconSet(*pasteIcon);
-		importAction->setIconSet(*importIcon);
-		exportAction->setIconSet(*exportIcon);
-		runAction->setIconSet(*runIcon);
-		minimizeAction->setIconSet(*minimizeIcon);
+
 		
-		newAction->setToolTip(SCRIPTEDITH_STR12);
-		saveAction->setToolTip(SCRIPTEDITH_STR13);
-		saveallAction->setToolTip(SCRIPTEDITH_STR14);
-		undoAction->setToolTip(SCRIPTEDITH_STR15);
-		redoAction->setToolTip(SCRIPTEDITH_STR16);
-		cutAction->setToolTip(SCRIPTEDITH_STR17);
-		copyAction->setToolTip(SCRIPTEDITH_STR18);
-		pasteAction->setToolTip(SCRIPTEDITH_STR19);
-		importAction->setToolTip(SCRIPTEDITH_STR20);
-		exportAction->setToolTip(SCRIPTEDITH_STR21);
-		runAction->setToolTip(SCRIPTEDITH_STR22);
-		minimizeAction->setToolTip(SCRIPTEDITH_STR23);
+		newButton->setFlat(true);
+		saveButton->setFlat(true);
+		saveallButton->setFlat(true);
+		undoButton->setFlat(true);
+		redoButton->setFlat(true);
+		cutButton->setFlat(true);
+		copyButton->setFlat(true);
+		pasteButton->setFlat(true);
+		importButton->setFlat(true);
+		exportButton->setFlat(true);
+		runButton->setFlat(true);
+		minimizeButton->setFlat(true);
+		catalogButton->setFlat(true);
 		
-		newAction->addTo(editorToolBar);
-		importAction->addTo(editorToolBar);
-		exportAction->addTo(editorToolBar);
-		editorToolBar->addSeparator();
-		saveAction->addTo(editorToolBar);
-		saveallAction->addTo(editorToolBar);
-		editorToolBar->addSeparator();
-		undoAction->addTo(editorToolBar);
-		redoAction->addTo(editorToolBar);
-		cutAction->addTo(editorToolBar);
-		copyAction->addTo(editorToolBar);
-		pasteAction->addTo(editorToolBar);
-		editorToolBar->addSeparator();
-		minimizeAction->addTo(editorToolBar);
-		editorToolBar->addSeparator();
-		runAction->addTo(editorToolBar);
-		dockArea->moveDockWindow(editorToolBar);
+		QToolTip::add(newButton,SCRIPTEDITH_STR12);
+		QToolTip::add(saveButton,SCRIPTEDITH_STR13);
+		QToolTip::add(saveallButton,SCRIPTEDITH_STR14);
+		QToolTip::add(undoButton,SCRIPTEDITH_STR15);
+		QToolTip::add(redoButton,SCRIPTEDITH_STR16);
+		QToolTip::add(cutButton,SCRIPTEDITH_STR17);
+		QToolTip::add(copyButton,SCRIPTEDITH_STR18);
+		QToolTip::add(pasteButton,SCRIPTEDITH_STR19);
+		QToolTip::add(importButton,SCRIPTEDITH_STR20);
+		QToolTip::add(exportButton,SCRIPTEDITH_STR21);
+		QToolTip::add(runButton,SCRIPTEDITH_STR22);
+		QToolTip::add(minimizeButton,SCRIPTEDITH_STR23);
+		QToolTip::add(catalogButton,"Function Catalog");
+		
 		
 		
 		stdFont=new QFont("Courier");
@@ -236,26 +235,28 @@ public:
 		QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(standardButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
 		QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
-		QObject::connect(maximizeButton,SIGNAL(released()),this,SLOT(maximizeButtonSlot()));
-		QObject::connect(runButton,SIGNAL(released()),this,SLOT(runButtonSlot()));		
+//		QObject::connect(maximizeButton,SIGNAL(released()),this,SLOT(maximizeButtonSlot()));
+//		QObject::connect(runButton,SIGNAL(released()),this,SLOT(runButtonSlot()));		
 		QObject::connect(fileBrowser,SIGNAL(selectionChanged(QListViewItem*)),this,SLOT(showFile(QListViewItem*)));
 		QObject::connect(fileBrowser,SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)),this,SLOT(createFileBrowserMenu(QListViewItem*,const QPoint&,int)));
 		QObject::connect(editor,SIGNAL(contentsMoving (int,int)),this,SLOT(lineNumSlot(int,int)));
 		QObject::connect(fileBrowserMenu,SIGNAL(activated(int)),this,SLOT(fileBrowserMenuSlot(int)));
 		QObject::connect(editor,SIGNAL(textChanged()),this,SLOT(textChangedSlot()));
-		QObject::connect(saveButton,SIGNAL(released()),this,SLOT(saveSlot()));
-		QObject::connect(saveAction,SIGNAL(activated()),this,SLOT(saveSlot()));
-		QObject::connect(minimizeAction,SIGNAL(activated()),this,SLOT(maximizeButtonSlot()));
-		QObject::connect(runAction,SIGNAL(activated()),this,SLOT(runButtonSlot()));
-		QObject::connect(saveallAction,SIGNAL(activated()),this,SLOT(saveallSlot()));
-		QObject::connect(newAction,SIGNAL(activated()),this,SLOT(newSlot()));
-		QObject::connect(importAction,SIGNAL(activated()),this,SLOT(importSlot()));
-		QObject::connect(exportAction,SIGNAL(activated()),this,SLOT(exportSlot()));
-		QObject::connect(copyAction,SIGNAL(activated()),editor,SLOT(copy()));
-		QObject::connect(pasteAction,SIGNAL(activated()),editor,SLOT(paste()));
-		QObject::connect(cutAction,SIGNAL(activated()),editor,SLOT(cut()));
-		QObject::connect(undoAction,SIGNAL(activated()),editor,SLOT(undo()));
-		QObject::connect(redoAction,SIGNAL(activated()),editor,SLOT(redo()));
+//		QObject::connect(saveButton,SIGNAL(released()),this,SLOT(saveSlot()));
+		QObject::connect(saveButton,SIGNAL(clicked()),this,SLOT(saveSlot()));
+		QObject::connect(minimizeButton,SIGNAL(clicked()),this,SLOT(maximizeButtonSlot()));
+		QObject::connect(runButton,SIGNAL(clicked()),this,SLOT(runButtonSlot()));
+		QObject::connect(saveallButton,SIGNAL(clicked()),this,SLOT(saveallSlot()));
+		QObject::connect(newButton,SIGNAL(clicked()),this,SLOT(newSlot()));
+		QObject::connect(importButton,SIGNAL(clicked()),this,SLOT(importSlot()));
+		QObject::connect(exportButton,SIGNAL(clicked()),this,SLOT(exportSlot()));
+		QObject::connect(copyButton,SIGNAL(clicked()),editor,SLOT(copy()));
+		QObject::connect(pasteButton,SIGNAL(clicked()),editor,SLOT(paste()));
+		QObject::connect(cutButton,SIGNAL(clicked()),editor,SLOT(cut()));
+		QObject::connect(undoButton,SIGNAL(clicked()),editor,SLOT(undo()));
+		QObject::connect(redoButton,SIGNAL(clicked()),editor,SLOT(redo()));
+		QObject::connect(catalogButton,SIGNAL(clicked()),this,SLOT(catalogSlot()));
+		QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(buttonInputSlot(QString)));
 	}
 	
 	
@@ -285,9 +286,8 @@ public slots:
 	void newSlot();
 	void importSlot();
 	void exportSlot();
+	void catalogSlot();
 
-	
-	
 protected:
 virtual void resizeEvent(QResizeEvent*);
 	

@@ -134,6 +134,7 @@ void StatisticsWidget::maximizeButtonSlot()
 	//	maximizeButton->setText(STATISTICSC_STR1);
 		maximizeButton->setIconSet(*minimizeIcon);
 		standardButtons->hide();
+		typeBox->hide();
 		typeBoxSlot(-1);
 	}
 	else 
@@ -142,6 +143,7 @@ void StatisticsWidget::maximizeButtonSlot()
 		maximizeButton->setIconSet(*maximizeIcon);
 		typeBoxSlot(typeBox->currentItem());
 		standardButtons->show();
+		typeBox->show();
 	}
 	resizeEvent(NULL);
 }
@@ -494,6 +496,9 @@ void StatisticsWidget::typeBoxSlot(int index)
 	stepsBox->hide();
 	stepsLabel->hide();
 	
+	if(fullscreen)
+		index=-1;
+	
 	switch(index)
 	{
 		case 0:
@@ -542,6 +547,8 @@ void StatisticsWidget::typeBoxSlot(int index)
 			listNumberLabel->show();
 			stepsBox->show();
 			stepsLabel->show();
+			break;
+		default:
 			break;
 	}
 	resizeEvent(NULL);

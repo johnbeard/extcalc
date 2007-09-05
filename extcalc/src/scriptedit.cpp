@@ -33,9 +33,10 @@ void ScriptWidget::resizeEvent(QResizeEvent*)
 	else {
 		splitter->setGeometry(20,50,width-40,height-290);
 
-		runButton->setGeometry(width/2+15,height-220,90,35);
-		maximizeButton->setGeometry(width/2+115,height-220,90,35);
-		saveButton->setGeometry(width/2+215,height-220,90,35);
+//		runButton->setGeometry(width/2+15,height-220,90,35);
+//		maximizeButton->setGeometry(width/2+115,height-220,90,35);
+//		saveButton->setGeometry(width/2+215,height-220,90,35);
+		dockArea->setGeometry(width/2+15,height-220,width/2-35,35);
 
 		standardButtons->setGeometry(20,height-220,280,200);
 		extButtons->setGeometry(width/2+10,height-180,300,160);
@@ -86,20 +87,33 @@ void ScriptWidget::maximizeButtonSlot()
 //		maximizeButton->setText(SCRIPTEDITC_STR1);
 		standardButtons->show();
 		extButtons->show();
-		dockArea->hide();
-		saveButton->show();
-		maximizeButton->show();
-		runButton->show();
+//		dockArea->hide();
+//		saveButton->show();
+//		maximizeButton->show();
+//		runButton->show();
+		saveallButton->hide();
+		cutButton->hide();
+		copyButton->hide();
+		pasteButton->hide();
+		importButton->hide();
+		exportButton->hide();
 
 	}
 	else {
 //		maximizeButton->setText(SCRIPTEDITC_STR2);
 		standardButtons->hide();
 		extButtons->hide();
-		dockArea->show();
-		saveButton->hide();
-		maximizeButton->hide();
-		runButton->hide();
+//		dockArea->show();
+//		saveButton->hide();
+//		maximizeButton->hide();
+//		runButton->hide();
+		saveallButton->show();
+		cutButton->show();
+		copyButton->show();
+		pasteButton->show();
+		importButton->show();
+		exportButton->show();
+
 
 	}
 	maximized=!maximized;
@@ -792,6 +806,11 @@ void ScriptWidget::runButtonSlot()
 {
 	QString txt=editor->text();
 	emit runScript(&txt);
+}
+
+void ScriptWidget::catalogSlot()
+{
+	catalog->exec(editorToolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));
 }
 
 

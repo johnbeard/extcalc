@@ -27,6 +27,11 @@ The ScriptGL class provides the 3D-graphics window for scripts with GL commands.
 #include <qmutex.h>
 #include <qscrollbar.h>
 #include <qtimer.h>
+#include <qtoolbar.h>
+#include <qdockarea.h>
+#include <qiconset.h>
+#include <qpopupmenu.h>
+#include <qtooltip.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -315,7 +320,7 @@ class ScriptIOWidget :public QWidget
 	QPopupMenu*contextMenu;
 	
 	bool maximized;
-	int ioFieldWidth,ioFieldHeight;
+	int ioFieldWidth,ioFieldHeight,ioFieldX,ioFieldY;
 	QPixmap*buffer;
 	QFont*drawFont;
 	QPen*drawPen;
@@ -333,6 +338,9 @@ class ScriptIOWidget :public QWidget
 	int countDifference;
 	bool errorFlag;
 	
+	QToolBar*toolBar;
+	QDockArea*dockArea;
+	
 	bool scriptExec;
 	ScriptThread*script;
 	Script*scriptObject;
@@ -340,6 +348,7 @@ class ScriptIOWidget :public QWidget
 	QMutex*mutex;
 	
 	QScrollBar * scrollBar;
+	QPixmap *maximizeIcon,*minimizeIcon,*runIcon,*killIcon;
 	
 	QTimer*t;
 	int timerInterval,redrawTime;
@@ -347,14 +356,16 @@ class ScriptIOWidget :public QWidget
 	int selectStartLine,selectStartRow,selectEndLine,selectEndRow;
 	int displayType;
 	int modeRequest;
+	int menuBottom;
 	bool autosize;
 
 	Q_OBJECT
 
 	public:
-		ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWidget*shareContext) :QWidget(parent)
+		ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWidget*shareContext, int mB) :QWidget(parent)
 		{
 			vars=va;
+			menuBottom=mB;
 			vars=new Variable [VARNUM];
 			for(int c=0; c<VARNUM;c++)
 				vars[c]=0.0;
@@ -396,16 +407,26 @@ class ScriptIOWidget :public QWidget
 			t=new QTimer(this);
 			timerInterval=25;
 			redrawTime=20000;
+			
+			minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
+			maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
+			runIcon=new QPixmap(INSTALLDIR+QString("/data/exec.png"));
+			killIcon=new QPixmap(INSTALLDIR+QString("/data/exit.png"));
 
 			selectStartLine=selectStartRow=selectEndLine=selectEndRow=0;
-			
+
 			calcButtons=new  StandardButtons(this);
 			extButtons=new ExtButtons(this);
 			glWindow=new ScriptGL(this,pref,shareContext);
-			maximizeButton=new QPushButton(CALCWIDGETC_STR2,this);
-			killButton=new QPushButton(SCRIPTIO_STR1,this);
+			toolBar=new QToolBar();
+			dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
+			dockArea->moveDockWindow(toolBar);
+			runButton=new QPushButton(*runIcon,"",toolBar);
+			killButton=new QPushButton(*killIcon,"",toolBar);
+			maximizeButton=new QPushButton(*minimizeIcon,"",toolBar);
+
 			killButton->setEnabled(false);
-			runButton=new QPushButton(SCRIPTIO_STR7,this);
+
 			runButton->setEnabled(false);
 			contextMenu=new QPopupMenu(this);
 			contextMenu->insertItem(SCRIPTIO_STR12,EDITCOPY);
@@ -414,7 +435,13 @@ class ScriptIOWidget :public QWidget
 			contextMenu->insertItem(SCRIPTIO_STR14,EDITSELECTALL);
 			contextMenu->insertSeparator();
 			contextMenu->insertItem(SCRIPTIO_STR15,EDITCUT);
+			
+			QToolTip::add(killButton,"Exit Script");
+			QToolTip::add(runButton,"Run Script");
+			QToolTip::add(maximizeButton,"Change View");
 
+			ioFieldX=20;
+			ioFieldY=50;
 			ioFieldWidth=600;
 			ioFieldHeight=310;
 			cursorX=cursorY=0;

@@ -19,7 +19,7 @@ any later version.
 void ScriptPreferences::windowActivationChange(bool)
 {
 
-	if(!isActiveWindow())
+	if(!isActiveWindow()&&!dialog)
 	{
 		setActiveWindow();
 	}
@@ -33,6 +33,8 @@ void ScriptPreferences::saveSlot()
 	if(mainPath[0]!='/')
 	{
 		MessageBox(SCRIPTPREFC_STR1);
+		perror("scriptPath: "+pref.scriptPath);
+		perror("mainPath: "+mainPath);
 		return;
 	}
 	
@@ -144,7 +146,9 @@ void ScriptPreferences::saveSlot()
 
 void ScriptPreferences::fileDialogSlot()
 {
+	dialog=true;
 	QString path=QFileDialog::getExistingDirectory(getenv("HOME"),this,"getdir",SCRIPTPREFC_STR8,true);
+	dialog=false;
 	
 	if(!path.isNull())
 		mainPathLine->setText(path);

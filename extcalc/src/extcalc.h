@@ -136,7 +136,7 @@ dialog, the todo list and the bug list.
 //  - reorganisation of the checkString and script preprocessor functions               ok  //
 //  - optimization of the split and parse methods                                           //
 //  - change structure of exec and calc methods                                             //
-//  - standardized user interface design for all tabs                                       //
+//  - standardized user interface design for all tabs                                   ok  //
 //                                                                                          //
 ////////////////////////////////////////beta releases/////////////////////////////////////////
 
@@ -178,9 +178,10 @@ dialog, the todo list and the bug list.
 //	- inserting text into a running script doesn't work									ok	//
 //	- gl script programming does not work on every system									//
 //	- import script dialog path check is wrong											ok	//
-//	- bug in script console at selection													//
-//	- file dialog in script preferences window is always in background						//
-//	- view error when maximizing statistics tab												//
+//	- bug in script console at selection												ok	//
+//	- file dialog in script preferences window is always in background					ok	//
+//	- view error when maximizing statistics tab											ok	//
+//	- directory creation at first start does not work									ok	//
 
 
 //////////////////////////used variables//////////////////////////
@@ -609,7 +610,7 @@ MainObject() :QTabWidget()
 	graph = new GraphWidget(this,pref,vars,threadData,tabbarSize.bottom());
 	table=new TableWidget(this,pref,vars,threadData,tabbarSize.bottom());
 	scripting=new ScriptWidget(this,pref,vars,tabbarSize.bottom());
-	scriptIO=new ScriptIOWidget(this,pref,vars,graph->getShareContext());
+	scriptIO=new ScriptIOWidget(this,pref,vars,graph->getShareContext(),tabbarSize.bottom());
 	matrix=new MatrixWidget(this,pref,vars,threadData);
 	statistics=new StatisticsWidget(this,pref,vars,threadData,tabbarSize.bottom());
 //	addTab(calculator,EXTCALCH_STR6);
@@ -660,9 +661,7 @@ MainObject() :QTabWidget()
 	QObject::connect(this,SIGNAL(removeGraphicsLinesSignal()),graph,SIGNAL(removeLinesSignal()));
 
 	
-	pref.scriptPath=getenv("HOME")+QString("/.extcalc/script");
-	pref.scriptDirName="code";
-	pref.dataDirName="data";
+
 	
 	
 	int ret=readConfigFile();
@@ -677,7 +676,9 @@ MainObject() :QTabWidget()
 		{
 			ret=YesNoBox(EXTCALCH_MENU76);
 		}
-	
+		pref.scriptPath=getenv("HOME")+QString("/.extcalc/script/");
+		pref.scriptDirName="code";
+		pref.dataDirName="data";
 		if(ret==0)
 		{
 			if(scriptPref != NULL)

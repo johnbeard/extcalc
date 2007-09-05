@@ -37,6 +37,7 @@ class ScriptPreferences :public QWidget
 	QLineEdit *mainPathLine,*scriptPathLine,*dataPathLine;
 	QCheckBox *memoryBox;
 	Preferences pref;
+	bool dialog;
 	
 	
 	Q_OBJECT

@@ -31,14 +31,16 @@ void ScriptIOWidget::maximizeSlot()
 		maximized=false;
 		calcButtons->show();
 		extButtons->show();
-		maximizeButton->setText(CALCWIDGETC_STR1);
+//		maximizeButton->setText(CALCWIDGETC_STR1);
+		maximizeButton->setIconSet(*maximizeIcon);
 		resizeEvent(NULL);
 	}
 	else 
 	{
 		calcButtons->hide();
 		extButtons->hide();
-		maximizeButton->setText(CALCWIDGETC_STR2);
+//		maximizeButton->setText(CALCWIDGETC_STR2);
+		maximizeButton->setIconSet(*minimizeIcon);
 		maximized=true;
 		resizeEvent(NULL);
 	}
@@ -172,7 +174,8 @@ void ScriptIOWidget::paintEvent(QPaintEvent*)
 	
 		p.end();
 		p.begin(this);
-		p.drawPixmap(20,50,*buffer);
+
+		p.drawPixmap(ioFieldX,ioFieldY,*buffer);
 		p.end();
 	}
 	else if(displayType==SCRIPT3D)
@@ -184,7 +187,9 @@ void ScriptIOWidget::paintEvent(QPaintEvent*)
 		p.drawText(100,100,"Hallo");
 		p.end();
 */		p.begin(this);
-		p.drawPixmap(20,50,*buffer);
+
+		p.drawPixmap(ioFieldX,ioFieldY,*buffer);
+
 		p.end();
 	}
 
@@ -198,58 +203,35 @@ void ScriptIOWidget::resizeEvent(QResizeEvent*)
 	int height=geometry().bottom()-geometry().top();
 	
 	
-
-	/*some testing
-	double plbd[3]={-5.0,-5.0,-5.0},prbd[3]={ 5.0,-5.0,-5.0},prfd[3]={ 5.0,-5.0, 5.0},plfd[3]={-5.0,-5.0, 5.0};
-	double plbu[3]={-5.0, 5.0,-5.0},prbu[3]={ 5.0, 5.0,-5.0},prfu[3]={ 5.0, 5.0, 5.0},plfu[3]={-5.0, 5.0, 5.0};
-	
-	glWindow->clearAllLists();
-	int num=glWindow->startList();
-	glWindow->setDrawColor(QColor(255,0,0));
-	glWindow->drawPolygon(plbd,prbd,prbu);
-	glWindow->drawPolygon(plbd,prbu,plbu);
-	glWindow->setDrawColor(QColor(255,255,0));
-	glWindow->drawPolygon(plfd,prfd,prfu);
-	glWindow->drawPolygon(plfd,prfu,plfu);
-	
-	glWindow->setDrawColor(QColor(0,255,0));
-	glWindow->drawPolygon(plfd,plbd,plbu);
-	glWindow->drawPolygon(plfd,plbu,plfu);
-	glWindow->setDrawColor(QColor(255,0,255));
-	glWindow->drawPolygon(prfd,prbd,prbu);
-	glWindow->drawPolygon(prfd,prbu,prfu);
-	
-	glWindow->setDrawColor(QColor(0,0,255));
-	glWindow->drawPolygon(plfd,prfd,prbd);
-	glWindow->drawPolygon(plfd,prbd,plbd);
-	glWindow->setDrawColor(QColor(0,255,255));
-	glWindow->drawPolygon(plfu,prfu,prbu);
-	glWindow->drawPolygon(plfu,prbu,plbu);
-	glWindow->endList();
-	glWindow->enableList(num);
-	
-*/	
-
 	if(maximized)
 	{
-		maximizeButton->setGeometry(10,height-45,90,35);
-		killButton->setGeometry(110,height-45,90,35);
-		runButton->setGeometry(210,height-45,90,35);
+//		maximizeButton->setGeometry(10,height-45,90,35);
+//		killButton->setGeometry(110,height-45,90,35);
+//		runButton->setGeometry(210,height-45,90,35);
+		
+		dockArea->setGeometry(0,menuBottom,width,35);
+		
 		if(inputMode==IMDEFAULT)
-			scrollBar->setGeometry(width-40,50,20,height-100);
+			scrollBar->setGeometry(width-40,menuBottom+40,20,height-100);
 		ioFieldWidth=width-40;
 		ioFieldHeight=height-100;
+		ioFieldX=20;
+		ioFieldY=menuBottom+40;
 	}
 	else {
 		calcButtons->setGeometry(20,height-220,280,200);
 		extButtons->setGeometry(320,height-180,300,160);
-		maximizeButton->setGeometry(325,height-220,90,35);
-		killButton->setGeometry(425,height-220,90,35);
-		runButton->setGeometry(525,height-220,90,35);
+//		maximizeButton->setGeometry(325,height-220,90,35);
+//		killButton->setGeometry(425,height-220,90,35);
+//		runButton->setGeometry(525,height-220,90,35);
+		dockArea->setGeometry(325,height-220,width-345,35);
+
 		if(inputMode==IMDEFAULT)
 			scrollBar->setGeometry(width-40,50,20,height-290);
 		ioFieldWidth=width-40;
 		ioFieldHeight=height-290;
+		ioFieldX=20;
+		ioFieldY=50;
 	}
 	if(displayType==SCRIPT3D)
 	{
@@ -260,8 +242,9 @@ void ScriptIOWidget::resizeEvent(QResizeEvent*)
 				glWidth=glHeight;
 			else glHeight=glWidth;
 		}
-				
-		glWindow->setGeometry(10+(width-20-glWidth)/2,50,glWidth,glHeight);
+
+		glWindow->setGeometry(10+(width-20-glWidth)/2,ioFieldY,glWidth,glHeight);
+
 	}
 	if(inputMode==IMDEFAULT)
 		ioFieldWidth-=20;
@@ -370,7 +353,7 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 					cursorY--;
 				if(e->key() == Qt::Key_Down && cursorY<scrollBar->value()+lineNum)
 					cursorY++;
-				repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+				repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
 			}
 			else if(inputMode==IMGETLINE)
 			{
@@ -396,7 +379,7 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 						cursorX=charNum-1;
 					}
 				}
-				repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+				repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
 			}
 			break;
 		default:
@@ -449,7 +432,7 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 						insert(&inputBuffer[bufferCursor],false);
 						cursorX=cx;
 						cursorY=cy;
-						repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+						repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
 					}
 				}
 				else if(inputMode==IMGETKEY)
@@ -935,12 +918,12 @@ void ScriptIOWidget::mousePressEvent(QMouseEvent*e)
 		return;
 	}
 	int scrollbarPos=scrollBar->value();
-	selectEndLine=selectStartLine=(e->y()-50)/charHeight+scrollbarPos;
-	selectEndRow=selectStartRow=(e->x()-20)/charWidth;
+	selectEndLine=selectStartLine=(e->y()-ioFieldY)/charHeight+scrollbarPos;
+	selectEndRow=selectStartRow=(e->x()-ioFieldX)/charWidth;
 	
 	if(inputMode!=IMDEFAULT)
 		return;
-	int mouseX=e->x()-20,mouseY=e->y()-50;
+	int mouseX=e->x()-ioFieldX,mouseY=e->y()-ioFieldY;
 
 	if(mouseX>=0 && mouseX <=ioFieldWidth && mouseY>=0 && mouseY<=ioFieldHeight)
 	{
@@ -954,25 +937,33 @@ void ScriptIOWidget::mousePressEvent(QMouseEvent*e)
 	
 
 
-	repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+	repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
 }
 void ScriptIOWidget::mouseReleaseEvent(QMouseEvent*me)
 {
 	int scrollbarPos=scrollBar->value();
 //	p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c]);
-	selectEndLine=(me->y()-50)/charHeight+scrollbarPos;
-	selectEndRow=(me->x()-20)/charWidth;
-	repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+	selectEndLine=(me->y()-ioFieldY)/charHeight+scrollbarPos;
+	selectEndRow=(me->x()-ioFieldX)/charWidth;
+	repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
 }
 void ScriptIOWidget::mouseMoveEvent(QMouseEvent*me)
 {
 	int scrollbarPos=scrollBar->value();
 	int oldEndLine=selectEndLine,oldEndRow=selectEndRow;
-	selectEndLine=(me->y()-50)/charHeight+scrollbarPos;
-	selectEndRow=(me->x()-20)/charWidth;
+	selectEndLine=(me->y()-ioFieldY)/charHeight+scrollbarPos;
+	selectEndRow=(me->x()-ioFieldX)/charWidth;
+	if(selectEndRow<0)
+		selectEndRow=0;
+	if(selectEndLine<0)
+		selectEndLine=0;
+	if(selectEndLine<scrollbarPos)
+		scrollBar->setValue(selectEndLine);
+	else if(selectEndLine>scrollbarPos+lineNum)
+		scrollBar->setValue(selectEndLine-lineNum);
 //	perror(QString::number(selectStartLine)+" "+QString::number(selectStartRow)+" "+QString::number(selectEndLine)+" "+QString::number(selectEndRow));
 	if(oldEndRow!=selectEndRow || oldEndLine!=selectEndLine)
-		repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+		repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
 }
 
 
@@ -1056,7 +1047,7 @@ void ScriptIOWidget::insert(QString text,bool redraw)
 	}
 	
 	if(redraw)
-		repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+		repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
 
 }
 
@@ -1067,14 +1058,14 @@ void ScriptIOWidget::backKey()
 	{
 		lines[cursorY].remove(cursorX-1,1);
 		cursorX--;
-		repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+		repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
 	}
 }
 
 void ScriptIOWidget::deleteKey()
 {
 		lines[cursorY].remove(cursorX,1);
-		repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+		repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
 }
 
 
@@ -1087,7 +1078,7 @@ void ScriptIOWidget::clearAll()
 	{
 		lines[c].fill(' ',charNum);
 	}
-	repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+	repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
 }
 
 
@@ -1650,7 +1641,7 @@ void ScriptIOWidget::timerSlot()
 		threadData->usleep=true;
 	}
 	*/
-	repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+	repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
 }
 
 
@@ -1722,7 +1713,7 @@ void ScriptIOWidget::contextMenuSlot(int item)
 					memmove(&inputBuffer[bufferCursor+strlen(clipText)],&inputBuffer[bufferCursor],strlen(inputBuffer)-bufferCursor+1);
 					memcpy(&inputBuffer[bufferCursor],clipText,strlen(clipText));
 					bufferCursor+=strlen(clipText);
-					repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+					repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
 				}
 			}
 			break;
@@ -1735,7 +1726,7 @@ void ScriptIOWidget::contextMenuSlot(int item)
 			selectStartLine=0;
 			selectEndLine=lines.GetLen()-1;
 			selectEndRow=lines[selectEndLine].length()-1;
-			repaint(20,50,ioFieldWidth,ioFieldHeight,false);
+			repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
 			break;
 	}
 }
