@@ -198,7 +198,7 @@ public:
 		QToolTip::add(exportButton,SCRIPTEDITH_STR21);
 		QToolTip::add(runButton,SCRIPTEDITH_STR22);
 		QToolTip::add(minimizeButton,SCRIPTEDITH_STR23);
-		QToolTip::add(catalogButton,"Function Catalog");
+		QToolTip::add(catalogButton,SCRIPTEDITH_STR24);
 		
 		
 		

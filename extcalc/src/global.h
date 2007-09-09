@@ -47,10 +47,14 @@ using namespace std;
 #ifdef LANGUAGE_EN
 #define VERSIONSTRING "Version: 0.8.8\n2007-09-05\n\n"+QString(DEVVERSION)
 #endif
+#ifdef LANGUAGE_FR
+#define VERSIONSTRING "Version: 0.8.8\n2007-09-05\n\n"+QString(DEVVERSION)
+#endif
 #ifdef LANGUAGE_DE
 #define VERSIONSTRING "Version: 0.8.8\n5.9.2007\n\n"+QString(DEVVERSION)
 #endif
-#define AUTHORSTRING "Autor:\nRainer Strobel  2007\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
+
+#define AUTHORSTRING QString(GLOBALH_STR1)+":\nRainer Strobel  2007\n\nHomepage:\nhttp://extcalc-linux.sourceforge.net"
 
 
 #define FILEM				1

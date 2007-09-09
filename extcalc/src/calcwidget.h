@@ -111,11 +111,11 @@ class CalcWidget :public QWidget
 		catalog->show();
 		catalogButton=new QPushButton(*catalogIcon,"",toolBar);
 		
-		QToolTip::add(viewButton,"Change View");
-		QToolTip::add(typeBox,"Scientific/Base Mode");
-		QToolTip::add(baseBox,"Set Base");
-		QToolTip::add(angleBox,"Set Angle");
-		QToolTip::add(catalogButton,"Function Catalog");
+		QToolTip::add(viewButton,CALCWIDGETH_STR4);
+		QToolTip::add(typeBox,CALCWIDGETH_STR5);
+		QToolTip::add(baseBox,CALCWIDGETH_STR6);
+		QToolTip::add(angleBox,CALCWIDGETH_STR7);
+		QToolTip::add(catalogButton,CALCWIDGETH_STR8);
 
 
 

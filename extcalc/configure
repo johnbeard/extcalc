@@ -1292,6 +1292,7 @@ Optional Features:
   --enable-dependency-tracking   do not reject slow dependency extractors
 Set the install-laguage
 
+
 Some influential environment variables:
   CXX         C++ compiler command
   CXXFLAGS    C++ compiler flags
@@ -5675,10 +5676,19 @@ CPPFLAGS="$CPPFLAGS -DLANGUAGE_DE"
 echo "${ECHO_T}german" >&6; }
 
 else
+  # Check whether --enable-language_fr was given.
+if test "${enable_language_fr+set}" = set; then
+  enableval=$enable_language_fr; CFLAGS="$CFLAGS -DLANGUAGE_FR"
+CPPFLAGS="$CPPFLAGS -DLANGUAGE_FR"
+{ echo "$as_me:$LINENO: result: french" >&5
+echo "${ECHO_T}french" >&6; }
+else
   CFLAGS="$CFLAGS -DLANGUAGE_EN"
 CPPFLAGS="$CPPFLAGS -DLANGUAGE_EN"
 { echo "$as_me:$LINENO: result: english" >&5
 echo "${ECHO_T}english" >&6; }
+fi
+
 fi
 
 

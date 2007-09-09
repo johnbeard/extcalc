@@ -97,6 +97,10 @@ public:
 		typeBox=new QComboBox(toolBar);
 		catalogButton=new QPushButton(*catalogIcon,"",toolBar);
 		
+		QToolTip::add(maximizeButton,TABLEH_STR13);
+		QToolTip::add(typeBox,TABLEH_STR14);
+		QToolTip::add(catalogButton,TABLEH_STR15);
+		
 		typeBox->insertItem(TABLEH_STR3);
 		typeBox->insertItem(TABLEH_STR4);
 		typeBox->insertItem(TABLEH_STR5);

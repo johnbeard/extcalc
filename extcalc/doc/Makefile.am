@@ -4,6 +4,7 @@ documentationdir = $(datadir)/extcalc/doc
 
 documentation_DATA = help_de.html \
                      help_en.html \
+                     help_fr.html \
 					 dev_docu.html  \
 					 alpha.jpg \
 					 calculator.jpg \

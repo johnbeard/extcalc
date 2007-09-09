@@ -38,6 +38,14 @@ int main( int argc, char **argv ) {
 		a.installTranslator(&german);
 	else MessageBox("QT-Sprachpaket konnte nicht geladen werden");
 #endif
+	
+#ifdef LANGUAGE_FR
+	QTranslator french(NULL);
+
+	if(french.load("data/qt_fr.qm",INSTALLDIR))
+		a.installTranslator(&french);
+	else MessageBox("Error loading Qt language file");
+#endif
 
 //root		8730
 //Pi		960   (982)
@@ -263,10 +271,10 @@ int MainObject::readConfigFile()
 				MessageBox(EXTCALCC_MSG3+QString(CONFIGFILE));
 				return -3;
 			}
-				
+
 		}
 		else {
-			MessageBox(EXTCALCC_MSG1+QString(CONFIGFILE)+EXTCALCC_MSG2);
+			MessageBox(EXTCALCC_MSG1+QString(CONFIGFILE));
 			ret=-2;
 		}
 	}
@@ -851,7 +859,7 @@ void MainObject::writeConfigFile()
 	configFile = fopen(CONFIGFILE,"w");
 	if(configFile == NULL)
 	{
-		MessageBox(EXTCALCC_MSG4+QString(CONFIGFILE));
+		MessageBox(EXTCALCC_MSG1+QString(CONFIGFILE));
 		return;
 	}
 	QString configuration="";
@@ -1125,7 +1133,7 @@ void MainObject::readVarFile()
 	FILE*varFile = fopen(VARSFILE,"r");
 	if(varFile == NULL)
 	{
-		MessageBox("Unable to read variables file: "+QString(VARSFILE));
+		MessageBox(EXTCALCH_STR21+QString(VARSFILE));
 		return;
 	}
 	char* cConfFile = new char[fileLen+1];
@@ -1223,7 +1231,7 @@ void MainObject::writeVarFile()
 	configFile = fopen(VARSFILE,"w");
 	if(configFile == NULL)
 	{
-		ErrorBox("Unable to write variables file: "+QString(VARSFILE));
+		ErrorBox(EXTCALCH_STR22+QString(VARSFILE));
 		return;
 	}
 	QString vars="";
@@ -1390,6 +1398,9 @@ void MainObject::helpMenuSlot(int item)
 #endif
 #ifdef LANGUAGE_EN
 		helpProcess->addArgument(QString(INSTALLDIR)+"/doc/help_en.html");
+#endif
+#ifdef LANGUAGE_FR
+		helpProcess->addArgument(QString(INSTALLDIR)+"/doc/help_fr.html");
 #endif
 		helpProcess->start();
 		break;
@@ -1809,8 +1820,8 @@ void ImportDialog::saveSlot()
 		  (openPath.find(pref.scriptPath+"/"+pref.scriptDirName) !=0 && !importFile))
 	{
 		if(importFile)
-			ErrorBox(EXTCALCC_MSG6);
-		else ErrorBox(EXTCALCC_MSG7);
+			ErrorBox(EXTCALCC_MSG6+savePath);
+		else ErrorBox(EXTCALCC_MSG7+savePath);
 	}
 	else
 	{
@@ -1818,7 +1829,7 @@ void ImportDialog::saveSlot()
 		
 		if(lstat(savePath,&testStat)==0)
 		{
-			if(YesNoBox(EXTCALCC_MSG8)==1)
+			if(YesNoBox(EXTCALCC_MSG8+savePath)==1)
 				return;
 		}
 		system("cp -f "+openPath+" "+savePath);

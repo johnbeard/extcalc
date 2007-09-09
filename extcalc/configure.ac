@@ -119,8 +119,10 @@ AC_MSG_CHECKING([for chosen language])
 AC_ARG_ENABLE(language_de,[Set the install-laguage],[CFLAGS="$CFLAGS -DLANGUAGE_DE"]
 [CPPFLAGS="$CPPFLAGS -DLANGUAGE_DE"]
 [AC_MSG_RESULT([german])]
-,[CFLAGS="$CFLAGS -DLANGUAGE_EN"]
+,[AC_ARG_ENABLE(language_fr,,[CFLAGS="$CFLAGS -DLANGUAGE_FR"]
+[CPPFLAGS="$CPPFLAGS -DLANGUAGE_FR"]
+[AC_MSG_RESULT([french])],[CFLAGS="$CFLAGS -DLANGUAGE_EN"]
 [CPPFLAGS="$CPPFLAGS -DLANGUAGE_EN"]
-[AC_MSG_RESULT([english])])
+[AC_MSG_RESULT([english])])])
 
 AC_OUTPUT([Makefile src/Makefile doc/Makefile share/Makefile])

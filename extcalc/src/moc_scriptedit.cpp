@@ -1,7 +1,7 @@
 /****************************************************************************
 ** ScriptWidget meta object code from reading C++ file 'scriptedit.h'
 **
-** Created: Sat Sep 1 20:59:49 2007
+** Created: Sat Sep 8 20:59:36 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!

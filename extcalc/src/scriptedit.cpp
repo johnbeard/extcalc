@@ -442,7 +442,7 @@ void ScriptWidget::fileBrowserMenuSlot(int item)
 				}
 				newPath+=newName;
 				if(rename(oldPath,newPath)!=0)
-					ErrorBox(SCRIPTEDITC_STR8);
+					ErrorBox(SCRIPTEDITC_STR8+clickedFileItem->text(0));
 				int slash=oldPath.findRev('/');
 				oldPath.insert(slash+1,".tmp");
 				slash=newPath.findRev('/');
@@ -466,10 +466,10 @@ void ScriptWidget::fileBrowserMenuSlot(int item)
 			if(clickedFileItem==NULL)
 				break;
 			QString path=getFileName(clickedFileItem);
-			if(YesNoBox(SCRIPTEDITC_STR9)==0)
+			if(YesNoBox(SCRIPTEDITC_STR9+path)==0)
 			{
 				if(remove(pref.scriptPath+"/"+pref.scriptDirName+"/"+path)!=0)
-					ErrorBox(SCRIPTEDITC_STR10);
+					ErrorBox(SCRIPTEDITC_STR10+path);
 				updateFileList();
 			}
 			break;
@@ -500,13 +500,13 @@ void ScriptWidget::fileBrowserMenuSlot(int item)
 			struct stat testStat;
 			if(lstat(filePath,&testStat)==0)
 			{
-				if(YesNoBox(SCRIPTEDITC_STR15)==1)
+				if(YesNoBox(SCRIPTEDITC_STR15+filePath)==1)
 					break;
 			}
 			FILE*editorFile=fopen(filePath,"w");
 			if(editorFile==NULL)
 			{
-				ErrorBox(SCRIPTEDITC_STR16);
+				ErrorBox(SCRIPTEDITC_STR16+activeFileItem->text(0));
 				break;
 			}
 
@@ -737,7 +737,7 @@ void ScriptWidget::saveSlot()
 			activeFileItem->setPixmap(0,NULL);
 		currentTextChanged=false;
 	}
-	else MessageBox(SCRIPTEDITC_STR23);
+	else MessageBox(SCRIPTEDITC_STR23+filePath);
 }
 
 
