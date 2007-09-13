@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - Scientific Calculator </h1>
-  Version 0.8.5
+  Version 0.9.0
   <br>
   <br>
   <h3>Contents</h3>
@@ -35,7 +35,7 @@
   <a name="introduction"><h2>1. Introduction</h2></a>
   Extcalc is a scientific graphic calculator for Linux. Extcalc is able to process difficult
   mathematical functions, to draw graph and to work with them. It includes a C-like script language.<br>
-  This is the documentation for version 0.8.5. 
+  This is the documentation for version 0.9.0 beta. 
   <br>
   <br>
   <br>
@@ -43,8 +43,8 @@
   This description is only for the installation of the source code package (.tar.gz). If you install a binary package, you have to use the
   packet manager of your distribution.<br><br>
   <UL>
-  <LI> extract packet (tar -xzf extcalc-0.8.5.tar.gz)<br>
-  <LI> switch to directory (cd extcalc-0.8.5)<br>
+  <LI> extract packet (tar -xzf extcalc-0.9.0.tar.gz)<br>
+  <LI> switch to directory (cd extcalc-0.9.0)<br>
   <LI> configure (./configure)<br>
   <LI> compile (make)<br>
   <LI> become root (su)<br>
@@ -71,11 +71,16 @@
   Then input the calculation by your keyboard and press Enter to calculate.
   You can not use all functions of the calculator with your keyboard.<br>
   <h5>2. Using the integrated buttons</h5>
-  You can see all possible operations on the buttons of the calculator.
+  You can see most operations on the buttons of the calculator.
   Just click into the text window and push the buttons you need. The text 
   you type will be inserted at the cursor position. If don't edit the last line,
   the content of this line will be copied into the last line.
   Press the "="-Button to calculate.<br>
+  <h5> 3. Function catalog</h5>
+  If you press the catalog button <img src="catalogbutton.jpg"></img> in the menu bar, you will see
+  a list of all operations and commands that are supported by the calculator. The list is seperated 
+  into groups of operations and commands. When you choose an operation from the menu, the text is
+  copied into the calculator window.
   <br>
   <h5>Special keys:</h5>
   <DL>
@@ -181,7 +186,7 @@ sin, cos, tan<br>
 asin, acos, atan<br>
 sinh, cosh, tanh<br>
 asinh ,acosh, atanh<br>
-log, ln<br>
+log, ln, exp<br>
 sqrt, curt<br>
 real, imag, abs, arg, conj<br>
 ! (not)<br>
@@ -580,6 +585,8 @@ Rubber: If you want to erase a part of the drawn things, you can use this tool. 
   with the box in the table window or by the table menu or by the table preferences dialog.<br>
   In the table preferences dialog, you can set the start and the end value for your table and you can choose the
   number of values to calculate.<br>
+  It is also possible to change the input values by clicking into the header of the table that shows the results.
+  You can insert the new input value into the shown dialog window.<br>
   For functions with the variable x or the complex z, on column per function is generated with the function values. For parameter
   functions with the variable T, the same options as for the variable x are used. For every functions of this type, 
   one column with x-values and one column with y-values will be generated. If you generate a table with 3D-functions,
@@ -599,7 +606,7 @@ Rubber: If you want to erase a part of the drawn things, you can use this tool. 
   not in the calculator.
   The scripts programs run in a separate console, and you may use the other extcalc functions while running a script.
   Scripts can be managed, edited and started from the integrated script editor.<br>
-  In this version 0.8.5 are not all planned features included.<br><br>
+  In this version 0.9.0 are not all planned features included.<br><br>
 
   <a name="scriptedit"><h3>3.4.2 The Script-Editor</h3></a>
   <img src="scriptedit.jpg"></img>
@@ -647,10 +654,10 @@ If is running while you change something, you can press the right mouse button a
   You can always stop a running script by pressing the "Kill"-Button at the script console window.<br>
   If the script does not stop before the timeout, an error message is displayed. You have to press the kill-button again to stop the script correctly.<br>
   <a name="scriptsyntax"><h3>3.4.3 Scripting Language</h3></a>
-  In version 0.8.5 of Extcalc, not all features are included. You can read more about the planned features 
+  In version 0.9.0 of Extcalc, not all features are included. You can read more about the planned features 
   at <a href="#else">Chapter 4</a>.<br>
   <h5>Problems:</h5>
-  This is a list of the current problems of the 0.8.5 version of the Extcalc Script Interpreter<br><br>
+  This is a list of the current problems of the 0.9.0 version of the Extcalc Script Interpreter<br><br>
   <OL>
   <LI>Speed<br>
   The extcalc scripts were ran by an Interpreter and so they run not as fast as compiled programms, but it will be optimized in later versions.<br><br>
@@ -670,12 +677,13 @@ If is running while you change something, you can press the right mouse button a
   <LI> It is possible to use mathematical operations in the code. They are also finished with the semicolon.<br>
   <LI> You can insert newlines, tabs and spaces everywhere in your code.<br>
   <LI> The whitespace will be removed before running the script.<br>
-  <LI> It is possible to use C++-like comments //. Everything in this line after the slash signs will be ignored.<br>
-  <LI> You can't use the C-Comments /* ... */ int your scripts<br>
+  <LI> It is possible to use C++-like comments // or C-comments. Everything in this line after the slash signs will be ignored.<br>
+  <LI> You can also use the C-Comments /* ... */ in your scripts. Everything inside the comment will be ignored<br>
   <LI> The compare operator is written like in C with ==, the single = operator is the set-operator<br>
   <LI> If you want to use a Variable as an Array, use the Index-Operator with it. Example: A[3]=5;<br>
-  <LI> It is not possible to use functions. The commands are written directly into the code file.<br>
-  <LI> it is possible to execute another script file by the run() command.<br>
+  <LI> It is not possible to define and functions. The commands are written directly into the code file.<br>
+  <LI> It is possible to execute another script file by the run() command.<br>
+  <LI> You can define macros with a #define line like in C, but only without arguments<br>
   </UL>
   </OL>
   <br>
@@ -689,10 +697,11 @@ If is running while you change something, you can press the right mouse button a
   but the script contains logic errors.<br>
   If the console shows the error message "Preprocessor Error", it was unable to run the script interpreter. This may be because the file is empty, or because
   the file does not contain anything translatable, or if the code contains a backlash outside of a string.<br>
-  If the console shows the message "Preference Preprocessor: Error text", there is an error in the #config commands.
+  If there is a problem with the #config preferences or with #define macros, you will also get a "Preprocessor Error".
   <h5>Variables:</h5>
   You can use the uppercase letters from A to Z as variables.<br>
-  This variables may be initialized directly in the code, or.<br>
+  When you prefer symboly names for your variables, you may want to define a macro like #define counter C.<br>
+  This variables can be initialized directly in the code.<br>
   The variables are not pre-initialized, so the content is not defined. But they can always be used without initialization.<br>
   The variables can contain different types of content. The variable type may change in the running program.<br>
   The following types are available:<br>
@@ -1228,6 +1237,68 @@ while(1)
   The coordinates are in pixels. x and y are integer values. Text can be a string or a number (float or int).
   <br><br><br>
   
+  <LI>drawpoint<br>
+  Syntax: <br>
+  <pre>
+  drawpoint(x,y);
+  </pre>
+  This command draws a point of the currently set color into the 2D-graphics window of the script interpreter.
+  The origin of the coordinate system is the upper left corner of the window and x and y are integer values.
+  <br><br><br>
+  
+  <LI>drawline<br>
+  Syntax: <br>
+  <pre>
+  drawline(xstart,ystart,xend,yend);
+  </pre>
+  This command draws a line of the currently set color from the given start point to the given end point.
+  All coordinates are integer values.
+  <br><br><br>
+  
+  <LI>drawrect<br>
+  Syntax: <br>
+  <pre>
+  drawrect(xstart,ystart,xend,yend);
+  </pre>
+  Draws a rectangle with the given coordinates. All coordinate values are of integer type.
+  <br><br><br>
+  
+  <LI>drawcircle<br>
+  Syntax: <br>
+  <pre>
+  drawcircle(xstart,ystart,xend,yend);
+  </pre>
+  Draws an ellipse into the rectangle defined by the given coordinates.
+  The coordinates are integer values.
+  <br><br><br>
+  
+  <LI>drawstring<br>
+  Syntax: <br>
+  <pre>
+  drawstring(x,y,text);
+  </pre>
+  This command shows a text at the position x,y.
+  The coordinates are integer values. Text can be a string or a number (float or int).
+  <br><br><br>
+  
+  <LI>drawcolor<br>
+  Syntax: <br>
+  <pre>
+  drawcolor(r,g,b);
+  </pre>
+  Sets the draw color for all 2D-drawing commands. The color is set by red, green and blue component which can
+  have values from 0 to 255.
+  <br><br><br>
+  
+  <LI>drawclear<br>
+  Syntax: <br>
+  <pre>
+  drawclear;
+  </pre>
+  This command clears the 2D-graphics window of the script interpreter.
+  <br><br><br>
+  
+  
 
   <LI>type converting<br>
   Syntax: <br>
@@ -1344,16 +1415,28 @@ while(1)
 #config gl                    //switch to 3D-GL window
                               //this MUST be set to use 3D-graphics
 
-#config axeson                //enalbe or disable 3D-coodinate system axis
+#config graphics              //switch to 2D-graphics window
+                              //this MUST be set to use 2D-graphics
+
+#config axeson                //enable or disable 3D-coodinate system axis
 #config axesoff
 
-#config rasteron              //enalbe or disable 3D-coodinate system raser
+#config rasteron              //enable or disable 3D-coodinate system raser
 #config rasteroff
 
-#config labelson              //enalbe or disable 3D-coodinate system labels
+#config labelson              //enable or disable 3D-coodinate system labels
 #config labelsoff
 </pre>
 
+  <h5>Macros</h5>
+  As in C, it is possible to define macros to replace parts of the program before the script
+  interpreter processes the code file.<br>
+  Macros are used in this way:<br>
+  <pre>
+  #define macro replacement
+  </pre>
+  Macros with arguments are not allowed.<br>
+  You may use this macros to give variables symbolic names or to replace short code parts<br>
 
   <h5>Example codes:</h5>
   Example 1:<br>
@@ -1692,6 +1775,12 @@ while(1)
   <br>
   <br>
   <a name="else"><h2>4. Other</h2></a>
+  <h5> Version</h5>
+  Extcalc version 0.9.0<br>
+  This is a beta-version of Extcalc.<br>
+  This means, that there may be some bugs in this program, because the new features from the earlier version have to be tested.<br>
+  Further information to the beta version can be found on the <a href="http://extcalc-linux.sourceforge.net">projekt homepage</a>.
+  
   <h5>Precision</h5>
   The maximum precision of Extcalc on a 32-bit PC-Processor is 18 decimal digits
   because it uses double-variables for calculation. Because of the architecture of a normal 
@@ -1763,7 +1852,7 @@ while(1)
   <br>
   <h5>Needed software:</h5>
   Linux<br> 
-  GCC 3 or GCC 4 (doesn't work on GCC 2.xx)<br> 
+  GCC 3 or GCC 4 (doesn't work with GCC 2.xx)<br> 
   QT3.1 or higher (no QT 4)<br> 
   OpenGL<br>
   libXT<br>

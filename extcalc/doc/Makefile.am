@@ -33,4 +33,5 @@ documentation_DATA = help_de.html \
 					 screenshot.jpg \
 					 matvec.jpg \
 					 stat1.jpg \
-					 stat2.jpg
+					 stat2.jpg \
+					 catalogbutton.jpg

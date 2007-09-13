@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - wissenschaftlicher Taschenrechner </h1>
-  Version 0.8.5
+  Version 0.9.0
   <br>
   <br>
   <h3>Inhalt</h3>
@@ -35,15 +35,15 @@
   <a name="introduction"><h2>1. Einleitung</h2></a>
   Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner. Extcalc kann zum berechen komplizierter mathematischer Ausdr&uuml;cke,
   zum Zeichnen von Funktionsgraphen, und zum Auswerten von Funktionen benutzt werden. Es enth&auml;lt auch eine C-&auml;hnliche Script-Sprache.<br>
-  Diese Hilfe wurde f&uuml;r die Version 0.8.5 von Extcalc geschrieben.
+  Diese Hilfe wurde f&uuml;r die Version 0.9.0 von Extcalc geschrieben.
   <br>
   <br>
   <br>
   <a name="install"><h2>2. Installation</h2></a>
   Dies ist die Beschreibung zur Installation von Extcalc aus dem Quellcode-Paket. Vorkompilierte Pakete m&uuml;ssen mit dem Paketmanager der jeweiligen
   Distribution installiert werden.<br><br>
-  - Paket auspacken (tar -xzf extcalc-0.8.5.tar.gz)<br>
-  - ins Verzeichnis wechseln (cd extcalc-0.8.5)<br>
+  - Paket auspacken (tar -xzf extcalc-0.9.0.tar.gz)<br>
+  - ins Verzeichnis wechseln (cd extcalc-0.9.0)<br>
   - konfigurieren (./configure --enable-language_de)<br>
   - kompilieren (make)<br>
   - root-rechte erlangen (su)<br>
@@ -54,7 +54,7 @@
    
   <a name="use"><h2>3. Bedienung</h2></a>
   Da dies noch eine Enticklungsversion von Extcalc ist, kann sich die Bedienoberfl&auml;che noch
-  stark &auml;ndern. Diese Informationen beziehen sich auf die Version 0.8.5. Mit dem Reiter unter der
+  stark &auml;ndern. Diese Informationen beziehen sich auf die Version 0.9.0. Mit dem Reiter unter der
   Men&uuml;leiste kann man zwischen den einzelnen Komponenten umschalten.Dies sind  ein Taschenrechner, ein Grafik-Fenster
   zum Zeichnen und analysieren verschiedner Typen von Graphen, ein Tabellen-Fenster, ein Script-Editor und eine Script-Konsole zum
   Ausf&uuml;hren von Scripten.
@@ -74,7 +74,7 @@
   und Ausgabe Fensters, der Status-Umschaltknopf (siehe <a href="#calcstd">3.1.1</a> und <a href="#calcbase">3.1.2</a>)
   und Schnelleinstellungmen&uuml;, das entweder, wie im Bild oben, das verwendete Winkelma&szlig;, oder die Zahlenbasis anzeigt.
   <h4>Eingabe einer Rechnung</h4>
-  Es gibt zwei M&ouml;glichkeiten, eine Rechnung in Extcalc einzugeben:<br>
+  Es gibt verschiedene M&ouml;glichkeiten, eine Rechnung in Extcalc einzugeben:<br>
   <h5>1. Eingabe per Tastatur</h5>
   Dazu muss man nur in den Eingabebereich des Fensters klicken und dort die Rechnung eingeben
   Zum Berechnen des Werts einfach die Eingabetaste dr&uuml;cken. Wird die Eingabetaste ohne weitere
@@ -86,12 +86,16 @@
   Da es nicht m&ouml;glich ist, mit der Tastatur alle Rechenzeichen einzugeben, ist es manchmal
   n&ouml;tig, die integrierten Tasten zu ben&uuml;tzen.<br>
   <h5>2. Eingabe &uuml;ber die Rechner-Tasten</h5>
-  Mit der integrierten Tastatur k&ouml;nnen alle unterst&uuml;tzten Rechenfunktionen eingegeben werden.
+  Mit der integrierten Tastatur k&ouml;nnen die meisten unterstützten Rechenfunktionen eingegeben werden.
   Um die Eingabe zu starten, ist es ebenfalls n&ouml;tig, dass man mit der Maus in das Eingabefenster
   klickt. Anschlie&szlig;end kann man mit den jeweiligen Tasten die Rechnung eingeben. Zum Ausf&uuml;hren 
   der Berechnung dr&uuml;ckt man die "="-Taste. Es ist auch m&ouml;glich, vorher eingegebene Rechnungen zu
   ver&auml;ndern und erneut berechnen zu lassen. Dazu muss man ebenfalls mit der Maus in die
   entsprechende Zeile klicken und kann anschlie&szlig;end die Rechnung beliebeg ver&auml;ndern.<br>
+  <h5>3. Eingabe &uuml;ber den Funktionskatalog</h5>
+  Durch drücken des Katalog-Knopfes <img src="catalogbutton.jpg"></img> erhält man eine Liste aller in Extcalc
+  verfügbaren Operationen und Befehle. Die Befehle sind zur Übersicht in Gruppen gegliedert. Beim Auswählen eines
+  Befehls oder einer Operation wird der entsprechende Text in das Eingabefenster kopiert.<br>
   <br>
   <h5>Besondere Tasten:</h5>
   DEL<br>
@@ -504,7 +508,7 @@
   m&ouml;glich, dass das Abbrechen-Signal nicht rechtzeitig vom Script empfangen wird. Man muss dann den Abbrechen-Knopf noch einmal dr&uuml;cken, um
   das Programm korrekt zu Beenden.<br>
   <a name="scriptsyntax"><h3>3.4.3 Die Script-Sprache</h3></a>
-  In Version 0.8.5 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. N&auml;here Informationen zu den geplaten
+  In Version 0.9.0 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. N&auml;here Informationen zu den geplaten
   Funktionen finden Sie im <a href="#else">Kapitel 4</a>.<br>
   <h5>Probleme:</h5>
   In der folgenden Liste sind Probleme aufgef&uuml;hrt, die im Script-Interpreter noch vorhanden sind.<br><br>
@@ -512,7 +516,7 @@
   Da die Programme von einem Interpreter abgearbeitet werden, laufen diese auch wesentlich langsamer, als kompilierte Programme.
   Der Interpreter wird aber in sp&auml;teren Versionen noch weiter optimiert.<br><br>
   2. Variablen:<br>
-  Es k&ouml;nnen nur die Gro&szlig;buchstaben von A bis Z als Variablen verwendet werden. Jede Variable kann auch als Array benutzt werden.<br><br>
+  Es k&ouml;nnen nur die Gro&szlig;buchstaben von A bis Z als Variablen verwendet werden. Jede Variable kann auch als Array benutzt werden. Will man anstatt der Buchstaben symbolische Namen für die Variablen verwenden, so kann man sich entsprechende Makros definieren, z. B. "#define counter C".<br><br>
   3. Geringere M&ouml;glichkeiten<br>
   In dieser Version ist nur ein Teil der geplanten Funktionalit&auml;ten bereits aktiviert. Deshalb ist es nicht m&ouml;glich, komplexe Probleme mit den
   Script-Programmen zu l&ouml;sen. Die Sprache wird in sp&auml;teren Versionen noch so weit wie m&ouml;glich ausgebaut. Sie ist aber trotzdem nur zum L&ouml;sen oder
@@ -528,7 +532,7 @@
   - Es k&ouml;nnen beliebig vielse Leerzeilen, Tabulatoren oder Leerzeichen im Code enthalten sein.<br>
   - Diese sind aber nicht zum Interpretieren des Programms n&ouml;tig, und werden ohnehin vor dem Interpretieren entfernt<br>
   - Es ist m&ouml;glich, ganze Kommentare wie in C++ mit zwei Schr&auml;gstrichen // zu beginnen. Der Rest der Zeile wird dann ignoriert<br>
-  - Der C-Kommenter /* ... */ kann noch NICHT verwendet werden<br>
+  - Der C-Kommenter /* ... */ kann ebenfals verwendet werden. Alles, was sich innerhalb des Kommentars befindet, wird ingoriert.<br>
   - Der Vergleichsoperator besteht wie in C aus ZWEI GLEICHHEITSZEICHEN ==, ein Gleichheitszeichen bedeutet Zuweisung<br>
   - Will man eine Variable als Array verwenden, h&auml;ngt man einfach den []-Operator an, das Array wird dann automatisch generiert<br>
   - Es gibt keine Unterfunktionen. Die Befehle werden direkt in die Datei geschrieben<br>
@@ -546,8 +550,7 @@
   Es kann auch vorkommen, dass nur die Fehlermeldung "Preprozessor Error" ausgegeben wird, und der Script-Interpreter gar nicht aufgerufen wird.
   Dann ist die Datei entweder leer, oder enth&auml;lt &uuml;berhaupt keine interpretierbare Information, oder Sie enth&auml;lt einen R&uuml;ckschr&auml;gstrich au&szlig;erhalb
   eines Strings.<br>
-  Wird eine Fehlermeldung in der Form "Preference Preprocessor: Fehlermeldung" ausgegeben, dann liegt ein Fehler in den 
-  #config-Anweisungen vor.<br>
+  Auch bei einem Fehler in einer #config oder einer #define Anweisung wird die "Preprocessor Error"-Fehlermeldung ausgegeben.<br>
   <h5>Variablen:</h5>
   Als Variablen stehen wie oben genannt die Gro&szlig;buchstaben von A bis Z zur Verf&uuml;gung.<br>
   Diese k&ouml;nnen mit festen Werten vorinitialisiert werden, oder im Programmablauf errechnet werden.<br>
@@ -1098,6 +1101,68 @@ while(1)
   Die Koordinaten werden in Pixeln angegeben, wobei der Koordinatenursprung links oben im Fenster ist.
   Text kann ein String oder eine Zahl sein (float oder int).
   <br><br><br>
+  
+  <LI>drawpoint<br>
+  Syntax: <br>
+  <pre>
+  drawpoint(x,y);
+  </pre>
+  Dieser Befehl zeichnet einen eizelnen Punkt in der aktuell ausgewählten Farbe in das 2D-Anzeigefenster des
+  Script-Interpreters.
+  Der Koordinatenursprung ist die linke, obere Ecke des Anzeigefensters. Die Koordinaten werden als Ganzzahlen angegeben.
+  <br><br><br>
+  
+  <LI>drawline<br>
+  Syntax: <br>
+  <pre>
+  drawline(xstart,ystart,xend,yend);
+  </pre>
+  Dieser Befehl zeichnet eine Linie vom gegebenen Startpunkt zum gegebenen Endpunkt in der aktuell gewählten Farbe.
+  Alle Koordinaten werden als Integer-Ganzzahlen angegeben.
+  <br><br><br>
+  
+  <LI>drawrect<br>
+  Syntax: <br>
+  <pre>
+  drawrect(xstart,ystart,xend,yend);
+  </pre>
+  Zeichnet ein Rechteck mit den gegebenen Eckpunkten. Alle Koordinaten sind Ganzzahlen (Integer).
+  <br><br><br>
+  
+  <LI>drawcircle<br>
+  Syntax: <br>
+  <pre>
+  drawcircle(xstart,ystart,xend,yend);
+  </pre>
+  Zeichnet eine Ellipse in das durch die Eckpunkte definierte Rechteck. Alle Koordinaten werden als Integer-Ganzzahlen angegeben.
+  <br><br><br>
+  
+  <LI>drawstring<br>
+  Syntax: <br>
+  <pre>
+  drawstring(x,y,text);
+  </pre>
+  Dieser Befehl zeichnet einen Text and die durch die x- und y-Koordinate angegebene Stelle. Der Text kann entweder ein String
+  oder eine Zahl sein.
+  <br><br><br>
+  
+  <LI>drawcolor<br>
+  Syntax: <br>
+  <pre>
+  drawcolor(r,g,b);
+  </pre>
+  Mit diesem Befehl wird die aktuelle Zeichenfarbe für die 2D-Grafik des Script-Interpreters gesetzt. Die Farbe wird als
+  Rot- Grün- und Blau-Anteil angegeben, wobei die Werte Ganzzahlen in einem Bereich von 0 bis 255 sein müssen.
+  <br><br><br>
+  
+  <LI>drawclear<br>
+  Syntax: <br>
+  <pre>
+  drawclear;
+  </pre>
+  Löscht das 2D-Anzeigefenster.
+  <br><br><br>
+  
 
   10. Unterprogramme<br>
   Syntax: <br>
@@ -1194,6 +1259,22 @@ while(1)
                               //Die Stellenzahl wird ohne Leerschritt direkt hinter outputlength geschrieben
 
 #config clearmemory           //Array-Speicher vor dem Start l&ouml;schen
+
+#config gl                    //Aktiviert den GL-Modus für 3D-Grafik
+                              //Diese Option muss aktiviert sein, um 3D-Grafikbefehle verwenden zu können
+
+#config graphics              //Aktiviert den 2D-Grafikmodus
+                              //Diese Option muss aktiviert sein, um 2D-Grafikbefehle verwenden zu können
+
+#config axeson                //Aktiviert oder deaktiviert die Koordinatenachsen im 3D-Modus
+#config axesoff
+
+#config rasteron              //Aktiviert oder deaktiviert das Koordinatenraster im 3D-Modus
+#config rasteroff
+
+#config labelson              //Aktiviert oder deaktiviert die Achsenbeschriftung im 3D-Modus
+#config labelsoff
+
 </pre>
   
   
@@ -1553,8 +1634,12 @@ while(1)
   <br>
   <a name="else"><h2>4. Sonstiges</h2></a>
   <h5> Version</h5>
-  Extcalc Version 0.8.5<br>
-  Dies ist eine Testversion! Deshalb konnen einige Funktionen inaktiv oder fehlerhaft sein.<br>    
+  Extcalc Version 0.9.0<br>
+  Dies ist eine Betaversion von Extcalc!<br>
+  Im Programm können noch einige Fehler enthalten sein, weil die zahlreichen neuen Features, die in den letzten Versionen
+  integriert wurden, noch ausreichend getestet werden müssen.<br>
+  Zusätzliche Informationen zur Betaversion werden auf der <a href="http://extcalc-linux.sourceforge.net">Projekt-Homepage</a>
+  bereitgestellt.<br>
   <h5>Rechengenauigkeit:</h5>
   Aufgrund des Aufbaus eines PC-Prozessors und der verwendeten Variablen vom Typ long double (80 Bit)
   wird theoretisch eine maximale Stellengenauigkeit von 18 Dezimalstellen erreicht. Da die
