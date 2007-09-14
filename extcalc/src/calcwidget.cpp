@@ -154,6 +154,12 @@ void CalcWidget::catalogSlot()
 	catalog->exec(toolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));
 }
 
+
+void CalcWidget::dockWindowSlot()
+{
+	dockArea->moveDockWindow(toolBar);
+}
+
 void CalcWidget::setPref(Preferences newPref)
 {
 	pref=newPref;

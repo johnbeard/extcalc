@@ -1,7 +1,7 @@
 /****************************************************************************
 ** StatisticsWidget meta object code from reading C++ file 'statistics.h'
 **
-** Created: Thu Aug 30 18:52:58 2007
+** Created: Tue Sep 11 10:41:47 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -74,21 +74,22 @@ QMetaObject* StatisticsWidget::staticMetaObject()
     };
     static const QUMethod slot_7 = {"buttonInputSlot", 1, param_slot_7 };
     static const QUMethod slot_8 = {"redrawGraphSlot", 0, 0 };
-    static const QUMethod slot_9 = {"catalogSlot", 0, 0 };
-    static const QUParameter param_slot_10[] = {
+    static const QUMethod slot_9 = {"dockWindowSlot", 0, 0 };
+    static const QUMethod slot_10 = {"catalogSlot", 0, 0 };
+    static const QUParameter param_slot_11[] = {
 	{ "row", &static_QUType_int, 0, QUParameter::In },
 	{ "col", &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_10 = {"selectionChangedSlot", 2, param_slot_10 };
-    static const QUParameter param_slot_11[] = {
-	{ 0, &static_QUType_QString, 0, QUParameter::In }
-    };
-    static const QUMethod slot_11 = {"tableEditSlot", 1, param_slot_11 };
+    static const QUMethod slot_11 = {"selectionChangedSlot", 2, param_slot_11 };
     static const QUParameter param_slot_12[] = {
 	{ 0, &static_QUType_QString, 0, QUParameter::In }
     };
-    static const QUMethod slot_12 = {"inputTextChanged", 1, param_slot_12 };
-    static const QUMethod slot_13 = {"inputTextFinished", 0, 0 };
+    static const QUMethod slot_12 = {"tableEditSlot", 1, param_slot_12 };
+    static const QUParameter param_slot_13[] = {
+	{ 0, &static_QUType_QString, 0, QUParameter::In }
+    };
+    static const QUMethod slot_13 = {"inputTextChanged", 1, param_slot_13 };
+    static const QUMethod slot_14 = {"inputTextFinished", 0, 0 };
     static const QMetaData slot_tbl[] = {
 	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
 	{ "maximizeButtonSlot()", &slot_1, QMetaData::Public },
@@ -99,11 +100,12 @@ QMetaObject* StatisticsWidget::staticMetaObject()
 	{ "printButtonSlot()", &slot_6, QMetaData::Public },
 	{ "buttonInputSlot(QString)", &slot_7, QMetaData::Public },
 	{ "redrawGraphSlot()", &slot_8, QMetaData::Public },
-	{ "catalogSlot()", &slot_9, QMetaData::Public },
-	{ "selectionChangedSlot(int,int)", &slot_10, QMetaData::Public },
-	{ "tableEditSlot(QString)", &slot_11, QMetaData::Public },
-	{ "inputTextChanged(const QString&)", &slot_12, QMetaData::Public },
-	{ "inputTextFinished()", &slot_13, QMetaData::Public }
+	{ "dockWindowSlot()", &slot_9, QMetaData::Public },
+	{ "catalogSlot()", &slot_10, QMetaData::Public },
+	{ "selectionChangedSlot(int,int)", &slot_11, QMetaData::Public },
+	{ "tableEditSlot(QString)", &slot_12, QMetaData::Public },
+	{ "inputTextChanged(const QString&)", &slot_13, QMetaData::Public },
+	{ "inputTextFinished()", &slot_14, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -130,7 +132,7 @@ QMetaObject* StatisticsWidget::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"StatisticsWidget", parentObject,
-	slot_tbl, 14,
+	slot_tbl, 15,
 	signal_tbl, 5,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -209,11 +211,12 @@ bool StatisticsWidget::qt_invoke( int _id, QUObject* _o )
     case 6: printButtonSlot(); break;
     case 7: buttonInputSlot((QString)static_QUType_QString.get(_o+1)); break;
     case 8: redrawGraphSlot(); break;
-    case 9: catalogSlot(); break;
-    case 10: selectionChangedSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
-    case 11: tableEditSlot((QString)static_QUType_QString.get(_o+1)); break;
-    case 12: inputTextChanged((const QString&)static_QUType_QString.get(_o+1)); break;
-    case 13: inputTextFinished(); break;
+    case 9: dockWindowSlot(); break;
+    case 10: catalogSlot(); break;
+    case 11: selectionChangedSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
+    case 12: tableEditSlot((QString)static_QUType_QString.get(_o+1)); break;
+    case 13: inputTextChanged((const QString&)static_QUType_QString.get(_o+1)); break;
+    case 14: inputTextFinished(); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }

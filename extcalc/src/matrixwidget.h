@@ -219,6 +219,7 @@ class MatrixWidget :public QWidget
 		void size1BoxSlot(int);
 		void sizeButtonSlot();
 		void typeBoxSlot(int);
+		void dockWindowSlot();
 		void catalogSlot();
 	
 	protected:

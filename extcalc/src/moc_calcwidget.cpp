@@ -1,7 +1,7 @@
 /****************************************************************************
 ** CalcWidget meta object code from reading C++ file 'calcwidget.h'
 **
-** Created: Sat Sep 8 20:51:19 2007
+** Created: Mon Sep 10 15:00:39 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -74,10 +74,11 @@ QMetaObject* CalcWidget::staticMetaObject()
     };
     static const QUMethod slot_5 = {"editSlot", 1, param_slot_5 };
     static const QUMethod slot_6 = {"catalogSlot", 0, 0 };
-    static const QUParameter param_slot_7[] = {
+    static const QUMethod slot_7 = {"dockWindowSlot", 0, 0 };
+    static const QUParameter param_slot_8[] = {
 	{ "text", &static_QUType_QString, 0, QUParameter::In }
     };
-    static const QUMethod slot_7 = {"processText", 1, param_slot_7 };
+    static const QUMethod slot_8 = {"processText", 1, param_slot_8 };
     static const QMetaData slot_tbl[] = {
 	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
 	{ "viewSlot()", &slot_1, QMetaData::Public },
@@ -86,7 +87,8 @@ QMetaObject* CalcWidget::staticMetaObject()
 	{ "typeSlot(int)", &slot_4, QMetaData::Public },
 	{ "editSlot(int)", &slot_5, QMetaData::Public },
 	{ "catalogSlot()", &slot_6, QMetaData::Public },
-	{ "processText(QString)", &slot_7, QMetaData::Public }
+	{ "dockWindowSlot()", &slot_7, QMetaData::Public },
+	{ "processText(QString)", &slot_8, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -102,7 +104,7 @@ QMetaObject* CalcWidget::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"CalcWidget", parentObject,
-	slot_tbl, 8,
+	slot_tbl, 9,
 	signal_tbl, 2,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -159,7 +161,8 @@ bool CalcWidget::qt_invoke( int _id, QUObject* _o )
     case 4: typeSlot((int)static_QUType_int.get(_o+1)); break;
     case 5: editSlot((int)static_QUType_int.get(_o+1)); break;
     case 6: catalogSlot(); break;
-    case 7: processText((QString)static_QUType_QString.get(_o+1)); break;
+    case 7: dockWindowSlot(); break;
+    case 8: processText((QString)static_QUType_QString.get(_o+1)); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }

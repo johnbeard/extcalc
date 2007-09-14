@@ -3023,6 +3023,60 @@ char* Script::parse(char* line)
 		delete[]recString1;
 		return NULL;
 	}
+	else if((pos1=bracketFindRev(line,"^")) != -1)
+	{
+		operation=SFAIL;
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1];
+		if(pos1<1)
+			printError("First operand of ^ invalid",semicolonCount,eventReciver->eventReciver);
+		else if(len-pos1<2)
+			printError("Second operand of ^ invalid",semicolonCount,eventReciver->eventReciver);
+		else 
+		{
+			if(pref->complex)
+				operation=CPOW;
+			else operation=POW;
+		}
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+1],len-pos1-1);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		if(strcmp(recString2,"-1")!=0)
+			vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+		else {
+			operation=INVERT;
+			vertObj2=NULL;
+		}
+			
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}
+	else if(bracketFind(line,"$r") != -1)
+	{
+		pos1=bracketFindRev(line,"$r")-1;
+		operation=SFAIL;
+		if(pos1<1)
+			printError("First operand of root invalid",semicolonCount,eventReciver->eventReciver);
+		else if(len-pos1<3)
+			printError("Second operand of root invalid",semicolonCount,eventReciver->eventReciver);
+		else {
+			if(pref->complex)
+				operation=CROOT;
+			else operation=ROOT;
+		}
+		char*recString1=new char[pos1+1];
+		char*recString2=new char[len-pos1-1];
+
+		
+		strcopy(recString1,line,pos1);
+		strcopy(recString2,&line[pos1+2],len-pos1-2);
+		vertObj=new Script(this,recString1,pref,vars,eventReciver);
+		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
+		delete[]recString1;
+		delete[]recString2;
+		return NULL;
+	}	
 	else if((pos1=bracketFind(line,"print(")) == 0)
 	{
 //		perror("print");
@@ -4202,61 +4256,6 @@ char* Script::parse(char* line)
 		delete[]recString1;
 		return NULL;
 	}
-	else if((pos1=bracketFindRev(line,"^")) != -1)
-	{
-		operation=SFAIL;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		if(pos1<1)
-			printError("First operand of ^ invalid",semicolonCount,eventReciver->eventReciver);
-		else if(len-pos1<2)
-			printError("Second operand of ^ invalid",semicolonCount,eventReciver->eventReciver);
-		else 
-		{
-			if(pref->complex)
-				operation=CPOW;
-			else operation=POW;
-		}
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		if(strcmp(recString2,"-1")!=0)
-			vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		else {
-			operation=INVERT;
-			vertObj2=NULL;
-		}
-			
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
-	}
-	else if(bracketFind(line,"$r") != -1)
-	{
-		pos1=bracketFindRev(line,"$r")-1;
-		operation=SFAIL;
-		if(pos1<1)
-			printError("First operand of root invalid",semicolonCount,eventReciver->eventReciver);
-		else if(len-pos1<3)
-			printError("Second operand of root invalid",semicolonCount,eventReciver->eventReciver);
-		else {
-			if(pref->complex)
-				operation=CROOT;
-			else operation=ROOT;
-		}
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1-1];
-
-		
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+2],len-pos1-2);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
-	}	
-	
 	else if(line[0] == '(' && (line[len-1]==')' || strncmp(&line[1],"float",5)==0 || strncmp(&line[1],"int",3)==0 || strncmp(&line[1],"bool",4)==0 || strncmp(&line[1],"string",6)==0))
 	{
 //		perror("bracket");

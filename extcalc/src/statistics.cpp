@@ -820,6 +820,11 @@ void StatisticsWidget::inputTextFinished()
 	inputLine->clearFocus();
 }
 
+void StatisticsWidget::dockWindowSlot()
+{
+	dockArea->moveDockWindow(toolBar);
+}
+
 void StatisticsWidget::catalogSlot()
 {
 	catalog->exec(toolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));

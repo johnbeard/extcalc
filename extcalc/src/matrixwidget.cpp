@@ -711,6 +711,10 @@ void MatrixWidget::typeBoxSlot(int index)
 	}
 }
 
+void MatrixWidget::dockWindowSlot()
+{
+	dockArea->moveDockWindow(toolBar);
+}
 
 void MatrixWidget::catalogSlot()
 {

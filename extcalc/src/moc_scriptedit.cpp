@@ -1,7 +1,7 @@
 /****************************************************************************
 ** ScriptWidget meta object code from reading C++ file 'scriptedit.h'
 **
-** Created: Sat Sep 8 20:59:36 2007
+** Created: Tue Sep 11 10:41:47 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -91,7 +91,8 @@ QMetaObject* ScriptWidget::staticMetaObject()
     static const QUMethod slot_12 = {"newSlot", 0, 0 };
     static const QUMethod slot_13 = {"importSlot", 0, 0 };
     static const QUMethod slot_14 = {"exportSlot", 0, 0 };
-    static const QUMethod slot_15 = {"catalogSlot", 0, 0 };
+    static const QUMethod slot_15 = {"dockWindowSlot", 0, 0 };
+    static const QUMethod slot_16 = {"catalogSlot", 0, 0 };
     static const QMetaData slot_tbl[] = {
 	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
 	{ "buttonInputSlot(QString)", &slot_1, QMetaData::Public },
@@ -108,7 +109,8 @@ QMetaObject* ScriptWidget::staticMetaObject()
 	{ "newSlot()", &slot_12, QMetaData::Public },
 	{ "importSlot()", &slot_13, QMetaData::Public },
 	{ "exportSlot()", &slot_14, QMetaData::Public },
-	{ "catalogSlot()", &slot_15, QMetaData::Public }
+	{ "dockWindowSlot()", &slot_15, QMetaData::Public },
+	{ "catalogSlot()", &slot_16, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -129,7 +131,7 @@ QMetaObject* ScriptWidget::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"ScriptWidget", parentObject,
-	slot_tbl, 16,
+	slot_tbl, 17,
 	signal_tbl, 3,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -200,7 +202,8 @@ bool ScriptWidget::qt_invoke( int _id, QUObject* _o )
     case 12: newSlot(); break;
     case 13: importSlot(); break;
     case 14: exportSlot(); break;
-    case 15: catalogSlot(); break;
+    case 15: dockWindowSlot(); break;
+    case 16: catalogSlot(); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }

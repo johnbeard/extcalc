@@ -203,6 +203,7 @@ class StatisticsWidget :public QWidget
 		void printButtonSlot();
 		void buttonInputSlot(QString);
 		void redrawGraphSlot();
+		void dockWindowSlot();
 		void catalogSlot();
 		
 		void selectionChangedSlot(int row,int col);

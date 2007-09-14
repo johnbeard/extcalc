@@ -537,6 +537,7 @@ class ScriptIOWidget :public QWidget
 		void runSlot();
 		void scrollbarSlot(int);
 		void clearMemSlot();
+		void dockWindowSlot();
 		void contextMenuSlot(int);
 
 	signals:

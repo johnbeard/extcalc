@@ -172,6 +172,7 @@ public slots:
 	void typeSlot(int);
 	void editSlot(int);
 	void catalogSlot();
+	void dockWindowSlot();
 
 	
 	void processText(QString text)

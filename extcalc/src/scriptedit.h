@@ -286,6 +286,7 @@ public slots:
 	void newSlot();
 	void importSlot();
 	void exportSlot();
+	void dockWindowSlot();
 	void catalogSlot();
 
 protected:

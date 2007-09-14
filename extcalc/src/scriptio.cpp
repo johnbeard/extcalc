@@ -1731,6 +1731,11 @@ void ScriptIOWidget::contextMenuSlot(int item)
 	}
 }
 
+void ScriptIOWidget::dockWindowSlot()
+{
+	dockArea->moveDockWindow(toolBar);
+}
+
 void ScriptIOWidget::setDisplayMode(int mode)
 {
 	displayType=mode;

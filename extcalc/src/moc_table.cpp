@@ -1,7 +1,7 @@
 /****************************************************************************
 ** TableWidget meta object code from reading C++ file 'table.h'
 **
-** Created: Sat Sep 8 20:59:35 2007
+** Created: Tue Sep 11 10:41:47 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -92,7 +92,8 @@ QMetaObject* TableWidget::staticMetaObject()
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
     static const QUMethod slot_11 = {"tableMenuSlot", 1, param_slot_11 };
-    static const QUMethod slot_12 = {"catalogSlot", 0, 0 };
+    static const QUMethod slot_12 = {"dockWindowSlot", 0, 0 };
+    static const QUMethod slot_13 = {"catalogSlot", 0, 0 };
     static const QMetaData slot_tbl[] = {
 	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
 	{ "selectionChangedSlot(int,int)", &slot_1, QMetaData::Public },
@@ -106,7 +107,8 @@ QMetaObject* TableWidget::staticMetaObject()
 	{ "horzHeaderSlot(int)", &slot_9, QMetaData::Public },
 	{ "vertHeaderSlot(int)", &slot_10, QMetaData::Public },
 	{ "tableMenuSlot(int)", &slot_11, QMetaData::Public },
-	{ "catalogSlot()", &slot_12, QMetaData::Public }
+	{ "dockWindowSlot()", &slot_12, QMetaData::Public },
+	{ "catalogSlot()", &slot_13, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -117,7 +119,7 @@ QMetaObject* TableWidget::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"TableWidget", parentObject,
-	slot_tbl, 13,
+	slot_tbl, 14,
 	signal_tbl, 1,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -166,7 +168,8 @@ bool TableWidget::qt_invoke( int _id, QUObject* _o )
     case 9: horzHeaderSlot((int)static_QUType_int.get(_o+1)); break;
     case 10: vertHeaderSlot((int)static_QUType_int.get(_o+1)); break;
     case 11: tableMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 12: catalogSlot(); break;
+    case 12: dockWindowSlot(); break;
+    case 13: catalogSlot(); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }

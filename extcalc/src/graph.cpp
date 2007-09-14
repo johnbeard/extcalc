@@ -423,6 +423,12 @@ void GraphWidget::catalogSlot()
 	catalog->exec(toolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));
 }
 
+void GraphWidget::dockWindowSlot()
+{
+	dockArea->moveDockWindow(toolBar);
+}
+
+
 void GraphWidget::graphSizeSlot()
 {
 	int width=graphArea->width(),height=graphArea->height();

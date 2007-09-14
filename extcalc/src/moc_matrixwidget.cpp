@@ -1,7 +1,7 @@
 /****************************************************************************
 ** MatrixWidget meta object code from reading C++ file 'matrixwidget.h'
 **
-** Created: Sat Sep 1 22:56:59 2007
+** Created: Tue Sep 11 10:41:47 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -101,7 +101,8 @@ QMetaObject* MatrixWidget::staticMetaObject()
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
     static const QUMethod slot_15 = {"typeBoxSlot", 1, param_slot_15 };
-    static const QUMethod slot_16 = {"catalogSlot", 0, 0 };
+    static const QUMethod slot_16 = {"dockWindowSlot", 0, 0 };
+    static const QUMethod slot_17 = {"catalogSlot", 0, 0 };
     static const QMetaData slot_tbl[] = {
 	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
 	{ "sprodButtonSlot()", &slot_1, QMetaData::Public },
@@ -119,7 +120,8 @@ QMetaObject* MatrixWidget::staticMetaObject()
 	{ "size1BoxSlot(int)", &slot_13, QMetaData::Public },
 	{ "sizeButtonSlot()", &slot_14, QMetaData::Public },
 	{ "typeBoxSlot(int)", &slot_15, QMetaData::Public },
-	{ "catalogSlot()", &slot_16, QMetaData::Public }
+	{ "dockWindowSlot()", &slot_16, QMetaData::Public },
+	{ "catalogSlot()", &slot_17, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -130,7 +132,7 @@ QMetaObject* MatrixWidget::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"MatrixWidget", parentObject,
-	slot_tbl, 17,
+	slot_tbl, 18,
 	signal_tbl, 1,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -183,7 +185,8 @@ bool MatrixWidget::qt_invoke( int _id, QUObject* _o )
     case 13: size1BoxSlot((int)static_QUType_int.get(_o+1)); break;
     case 14: sizeButtonSlot(); break;
     case 15: typeBoxSlot((int)static_QUType_int.get(_o+1)); break;
-    case 16: catalogSlot(); break;
+    case 16: dockWindowSlot(); break;
+    case 17: catalogSlot(); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }

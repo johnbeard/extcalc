@@ -859,6 +859,11 @@ void ScriptWidget::importSlot()
 	emit controlScriptMenu(IMPORTSCRIPT);
 }
 
+void ScriptWidget::dockWindowSlot()
+{
+	dockArea->moveDockWindow(editorToolBar);
+}
+
 void ScriptWidget::exportSlot()
 {
 	emit controlScriptMenu(EXPORTSCRIPT);

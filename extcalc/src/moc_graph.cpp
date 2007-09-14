@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GraphArea meta object code from reading C++ file 'graph.h'
 **
-** Created: Thu Aug 30 18:44:25 2007
+** Created: Tue Sep 11 08:57:33 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -174,14 +174,15 @@ QMetaObject* GraphWidget::staticMetaObject()
     static const QUMethod slot_9 = {"editSlot", 1, param_slot_9 };
     static const QUMethod slot_10 = {"catalogSlot", 0, 0 };
     static const QUMethod slot_11 = {"graphSizeSlot", 0, 0 };
-    static const QUParameter param_slot_12[] = {
+    static const QUMethod slot_12 = {"dockWindowSlot", 0, 0 };
+    static const QUParameter param_slot_13[] = {
 	{ "newPref", &static_QUType_ptr, "Preferences", QUParameter::In }
     };
-    static const QUMethod slot_12 = {"getPref", 1, param_slot_12 };
-    static const QUParameter param_slot_13[] = {
+    static const QUMethod slot_13 = {"getPref", 1, param_slot_13 };
+    static const QUParameter param_slot_14[] = {
 	{ "fType", &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_13 = {"functionTypeSlot", 1, param_slot_13 };
+    static const QUMethod slot_14 = {"functionTypeSlot", 1, param_slot_14 };
     static const QMetaData slot_tbl[] = {
 	{ "selectionChangedSlot(int,int)", &slot_0, QMetaData::Public },
 	{ "tableEditSlot(QString)", &slot_1, QMetaData::Public },
@@ -195,8 +196,9 @@ QMetaObject* GraphWidget::staticMetaObject()
 	{ "editSlot(int)", &slot_9, QMetaData::Public },
 	{ "catalogSlot()", &slot_10, QMetaData::Public },
 	{ "graphSizeSlot()", &slot_11, QMetaData::Public },
-	{ "getPref(Preferences)", &slot_12, QMetaData::Public },
-	{ "functionTypeSlot(int)", &slot_13, QMetaData::Public }
+	{ "dockWindowSlot()", &slot_12, QMetaData::Public },
+	{ "getPref(Preferences)", &slot_13, QMetaData::Public },
+	{ "functionTypeSlot(int)", &slot_14, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -223,7 +225,7 @@ QMetaObject* GraphWidget::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"GraphWidget", parentObject,
-	slot_tbl, 14,
+	slot_tbl, 15,
 	signal_tbl, 5,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -305,8 +307,9 @@ bool GraphWidget::qt_invoke( int _id, QUObject* _o )
     case 9: editSlot((int)static_QUType_int.get(_o+1)); break;
     case 10: catalogSlot(); break;
     case 11: graphSizeSlot(); break;
-    case 12: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 13: functionTypeSlot((int)static_QUType_int.get(_o+1)); break;
+    case 12: dockWindowSlot(); break;
+    case 13: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
+    case 14: functionTypeSlot((int)static_QUType_int.get(_o+1)); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }

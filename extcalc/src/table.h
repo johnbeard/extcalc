@@ -146,6 +146,7 @@ public slots:
 	void horzHeaderSlot(int);
 	void vertHeaderSlot(int);
 	void tableMenuSlot(int);
+	void dockWindowSlot();
 	void catalogSlot();
 	
 protected:

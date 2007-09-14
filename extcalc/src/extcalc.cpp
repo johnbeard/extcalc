@@ -1269,13 +1269,24 @@ void MainObject::writeVarFile()
 
 void MainObject::tabChangeSlot(QWidget*activeWidget)
 {
+	calculator->dockWindowSlot();
+	calculator2->dockWindowSlot();
+	graph->dockWindowSlot();
+	table->dockWindowSlot();
+	matrix->dockWindowSlot();
+	statistics->dockWindowSlot();
+	scripting->dockWindowSlot();
+	scriptIO->dockWindowSlot();
+
+
+	
 	if(activeWidget==(QWidget*)calculator || activeWidget==(QWidget*)calculator2)
 	{
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,false);
 		mainMenu->setItemVisible(SCRIPTM,false);
 		mainMenu->setItemVisible(STATISTICSM,false);
-
+		
 	}
 	else if(activeWidget==(QWidget*)graph)
 	{
@@ -1819,9 +1830,7 @@ void ImportDialog::saveSlot()
 	if((savePath.find(pref.scriptPath+"/"+pref.scriptDirName) !=0 && importFile) || 
 		  (openPath.find(pref.scriptPath+"/"+pref.scriptDirName) !=0 && !importFile))
 	{
-		if(importFile)
-			ErrorBox(EXTCALCC_MSG6+savePath);
-		else ErrorBox(EXTCALCC_MSG7+savePath);
+		ErrorBox(EXTCALCC_MSG6+savePath);
 	}
 	else
 	{

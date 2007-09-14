@@ -137,9 +137,11 @@ dialog, the todo list and the bug list.
 //  - optimization of the split and parse methods                                           //
 //  - change structure of exec and calc methods                                             //
 //  - standardized user interface design for all tabs                                   ok  //
-//  - open help file always in default browser                                              //
+//  - open help file in default browser                                                     //
 //  - integrate constants list                                                              //
 //  - precise error messages                                                                //
+//  - RPN                                                                                   //
+//  - Port to QT 4                                                                          //
 //                                                                                          //
 ////////////////////////////////////////beta releases/////////////////////////////////////////
 
@@ -185,7 +187,8 @@ dialog, the todo list and the bug list.
 //	- file dialog in script preferences window is always in background					ok	//
 //	- view error when maximizing statistics tab											ok	//
 //	- directory creation at first start does not work									ok	//
-//	- command priority in script interpreter wrong											//
+//	- command priority in script interpreter wrong										ok	//
+//	- autosize setting leads to wrong screenshot size									ok	//
 
 
 //////////////////////////used variables//////////////////////////

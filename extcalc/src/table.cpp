@@ -476,6 +476,12 @@ void TableWidget::tableMenuSlot(int item)
 	}
 }
 
+void TableWidget::dockWindowSlot()
+{
+	dockArea->moveDockWindow(toolBar);
+}
+
+
 void TableWidget::catalogSlot()
 {
 	catalog->exec(toolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));

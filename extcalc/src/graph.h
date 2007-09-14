@@ -290,6 +290,7 @@ public slots:
 	void editSlot(int);
 	void catalogSlot();
 	void graphSizeSlot();
+	void dockWindowSlot();
 	void getPref(Preferences newPref)
 	{
 		emit prefChange(newPref);
