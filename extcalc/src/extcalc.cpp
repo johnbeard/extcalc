@@ -268,13 +268,13 @@ int MainObject::readConfigFile()
 			
 			if(lstat(CONFIGFILE,&fileStat) != 0)
 			{
-				MessageBox(EXTCALCC_MSG3+QString(CONFIGFILE));
+				ErrorBox(EXTCALCC_MSG3+QString(CONFIGFILE)+"\n\n"+getErrorMessage());
 				return -3;
 			}
 
 		}
 		else {
-			MessageBox(EXTCALCC_MSG1+QString(CONFIGFILE));
+			ErrorBox(EXTCALCC_MSG1+QString(CONFIGFILE)+"\n\n"+getErrorMessage());
 			ret=-2;
 		}
 	}
@@ -285,7 +285,7 @@ int MainObject::readConfigFile()
 	configFile = fopen(CONFIGFILE,"r");
 	if(configFile == NULL)
 	{
-		MessageBox(EXTCALCC_MSG3+QString(CONFIGFILE));
+		MessageBox(EXTCALCC_MSG3+QString(CONFIGFILE)+"\n\n"+getErrorMessage());
 		return -3;
 	}
 	char* cConfFile = new char[fileLen+1];
@@ -859,7 +859,7 @@ void MainObject::writeConfigFile()
 	configFile = fopen(CONFIGFILE,"w");
 	if(configFile == NULL)
 	{
-		MessageBox(EXTCALCC_MSG1+QString(CONFIGFILE));
+		MessageBox(EXTCALCC_MSG1+QString(CONFIGFILE)+"\n\n"+getErrorMessage());
 		return;
 	}
 	QString configuration="";
@@ -1133,7 +1133,7 @@ void MainObject::readVarFile()
 	FILE*varFile = fopen(VARSFILE,"r");
 	if(varFile == NULL)
 	{
-		MessageBox(EXTCALCH_STR21+QString(VARSFILE));
+		MessageBox(EXTCALCH_STR21+QString(VARSFILE)+"\n\n"+getErrorMessage());
 		return;
 	}
 	char* cConfFile = new char[fileLen+1];
@@ -1231,7 +1231,7 @@ void MainObject::writeVarFile()
 	configFile = fopen(VARSFILE,"w");
 	if(configFile == NULL)
 	{
-		ErrorBox(EXTCALCH_STR22+QString(VARSFILE));
+		ErrorBox(EXTCALCH_STR22+QString(VARSFILE)+"\n\n"+getErrorMessage());
 		return;
 	}
 	QString vars="";

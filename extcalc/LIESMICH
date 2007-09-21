@@ -20,8 +20,8 @@ Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner für Linux. Er unte
 
 
 2. INSTALLATION
-- auspacken (tar -xzf extcalc-0.8.5.tar.gz)
-- in Verzeichnis wechseln (cd extcalc-0.8.5)
+- auspacken (tar -xzf extcalc-0.9.0.tar.gz)
+- in Verzeichnis wechseln (cd extcalc-0.9.0)
 - konfigurieren (./configure --enable-language_de)
 - kompilieren (make)
 - root werden (su)
@@ -50,10 +50,11 @@ doc/                 Dokumentation
    
 	   
 4. VERSION
-Version 0.8.5
+Version 0.9.0
 
-Dies ist eine Testversion!
-Teile des Programms sind noch nicht fertig und deshalb inaktiv oder fehlerhaft.
+Dies ist eine beta-Version von Extcalc.
+Wenn Sie einen Fehler melden wollen, folgen Sie bitte den Anweisungen
+auf der Projekt-Homepage http://extcalc-linux.sourceforge.net.
 
 Fertig:
 Grafische Oberfläche Rechner

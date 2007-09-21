@@ -359,6 +359,55 @@ long double runCalc(QString line,Preferences*pref,Variable*vars)
 	}
 }
 
+QString getErrorMessage()
+{
+	int er=errno;
+	switch(er)
+	{
+		case EACCES:
+			return(QString("Permission denied"));
+		case EBADF:
+		case EBADFD:
+			return(QString("Bad file descriptor"));
+		case EBUSY:
+			return(QString("Device or resource busy"));
+		case ECANCELED:
+			return(QString("Operation canceled"));
+		case EEXIST:
+			return(QString("File exists"));
+		case EFAULT:
+			return(QString("Bad address"));
+		case EFBIG:
+			return(QString("File too large"));
+		case EINVAL:
+			return(QString("Invalid argument"));
+		case EIO:
+			return(QString("Input/output error"));
+		case EISDIR:
+			return(QString("Is a directory"));
+		case EMFILE:
+			return(QString("Too many open files"));
+		case ENAMETOOLONG:
+			return(QString("Filename too long"));
+		case ENOENT:
+			return(QString("No such file or directory"));
+		case ENOMEM:
+			return(QString("Not enough space"));
+		case ENOTDIR:
+			return(QString("Not a directory"));
+		case ENOTEMPTY:
+			return(QString("Directory not empty"));
+		case EPERM:
+			return(QString("Operation not permitted"));
+		case EROFS:
+			return(QString("Read-only file system"));
+		case EUSERS:
+			return(QString("Too many users"));
+		default:
+			return(QString("Unknown error"));
+	}
+}
+
 void MessageBox(QString text)
 {
 	QMessageBox mb("Extcalc",text,
@@ -7712,6 +7761,7 @@ bool invertMatrix(int size,long double*matrix)
 	
 	return true;
 }
+
 
 
 void printError(const char*text,int num,QObject*eventReciver)

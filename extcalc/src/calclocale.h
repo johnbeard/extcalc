@@ -18,8 +18,9 @@ English and German is currently supported.
 The installation language is set by the configure script. Default is English.
 
 This localization is currently translated into French.
-Eugène Clément
+Eugene Clement
 
+é ê è à ç
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 
@@ -138,7 +139,7 @@ Eugène Clément
 #define EXTCALCH_MENU78 "Komplexe Funktionen"
 
 #define EXTCALCC_MSG1 "Die folgende Konfigurationsdatei konnte nicht geschrieben werden:"
-#define EXTCALCC_MSG3 "Die folgende Konfigurationsdatei konnte nicht geladen werden "
+#define EXTCALCC_MSG3 "Die folgende Konfigurationsdatei konnte nicht geladen werden: "
 #define EXTCALCC_MSG6 "Datei is außerhalb des Quellcode-Verzeichnisses: "
 #define EXTCALCC_MSG8 "Soll folgende Datei überschrieben werden?\n\n"
 #define EXTCALCC_MSG9 "Script zum Exportieren auswählen"
@@ -147,7 +148,7 @@ Eugène Clément
 #define EXTCALCC_MSG12 "save file dialog"
 #define EXTCALCC_MSG13 "Dateinamen zum Speichern auswählen"
 
-#define GLOBALH_STR1 "Autoren:\nRainer Strobel\nProgrammierung und Entwicklung"
+#define GLOBALH_STR1 "Autoren:\nRainer Strobel\nProgrammierung und Entwicklung\nEugene Clement\nFranzösische Übersetzung"
 
 #define CALCWIDGETH_STR4 "Ansicht ändern"
 #define CALCWIDGETH_STR5 "wissenschaftlicher Modus/Logikmodus"
@@ -659,7 +660,7 @@ Eugène Clément
 #define EXTCALCC_MSG12 "save file dialog"
 #define EXTCALCC_MSG13 "Choose a filename to save under"
 
-#define GLOBALH_STR1 "Authors:\nRainer Strobel\nProgramming and development"
+#define GLOBALH_STR1 "Authors:\nRainer Strobel\nProgramming and development\nEugene Clement\nTranslation"
 
 #define CALCWIDGETH_STR4 "Change View"
 #define CALCWIDGETH_STR5 "Scientific/Base Mode"
@@ -857,7 +858,7 @@ Eugène Clément
 #define GRAPHSOLVEC_STR40 "Imaginary values"
 #define GRAPHSOLVEC_STR41 "Real values"
 #define GRAPHSOLVEC_STR42 "Imaginary value"
-#define GRAPHSOLVEC_STR43 "By Ending"
+#define GRAPHSOLVEC_STR43 "Extension"
 #define GRAPHSOLVEC_STR44 "Unknown file format!\nAssuming png."
 
 
@@ -904,7 +905,7 @@ Eugène Clément
 #define TABLEPREFC_STR7 "X-Steps must be greather than 0"
 #define TABLEPREFC_STR8 "Z-Steps must be greather than 0"
 
-#define SCRIPTIO_STR1 "kill"
+#define SCRIPTIO_STR1 "Kill"
 #define SCRIPTIO_STR2 "Script could not be stopped.\nYou may press the kill button again."
 #define SCRIPTIO_STR3 "\n*** killed ***\n"
 #define SCRIPTIO_STR4 "\n*** finish ***\n"
@@ -1066,7 +1067,7 @@ Eugène Clément
 #define EXTCALCH_STR1 "Ce programme est distribué selon les termes de la license GPL v2.\n\nLe fichier ne fut pas trouvé."
 #define EXTCALCH_STR2 "Ce programme est distribué selon les termes de la license GPL v2.\n\n"
 #define EXTCALCH_STR3 "Version"
-#define EXTCALCH_STR4 "Auteur"											//changed to authors
+#define EXTCALCH_STR4 "Auteurs"											//changed to authors
 #define EXTCALCH_STR5 "License"
 #define EXTCALCH_STR6 "Calculatrice"
 #define EXTCALCH_STR7 "Une autre Calculatrice"
@@ -1162,18 +1163,17 @@ Eugène Clément
 #define EXTCALCH_MENU77 "Répertoire par defaut créer."
 #define EXTCALCH_MENU78 "Nombres Complexes"
 
-#define EXTCALCC_MSG1 "Imposible d'ecrire le fichier de configuration "								//removed strings that were no longer needed
-#define EXTCALCC_MSG3 "Il y a eu une erreur lors du chargement du fichier de configuration "
-#define EXTCALCC_MSG6 "Le fichier est à l'extérieure du répertoire des codes de script: "+savePath	//changed this strings, so that the +... is no longer needed
-#define EXTCALCC_MSG8 "Désirez-vous vraiment écraser le fichier "+savePath+" ?"						//no +savePath
+#define EXTCALCC_MSG1 "Imposible d'ecrire le fichier de configuration :"								//removed strings that were no longer needed
+#define EXTCALCC_MSG3 "Il y a eu une erreur lors du chargement du fichier de configuration :"
+#define EXTCALCC_MSG6 "Le fichier est à l'extérieure du répertoire des codes de script: "
+#define EXTCALCC_MSG8 "Désirez-vous vraiment écraser le fichier ?"
 #define EXTCALCC_MSG9 "Choisissez un fichier à exporter"
 #define EXTCALCC_MSG10 "Choisissez un fichier à importer"
 #define EXTCALCC_MSG11 "dialogue d'ouverture de fichier"
 #define EXTCALCC_MSG12 "dialogue de sauvegarde de fichier"
 #define EXTCALCC_MSG13 "Entrez un nom de fichier"
 
-#define GLOBALH_STR1 "Auteur"				//New author string; Don't forget to add your name
-
+#define GLOBALH_STR1 "Auteur:\nEugène Clément\nTraduction"				//New author string; Don't forget to add your name
 #define CALCWIDGETH_STR4 "Changer de Vue"
 #define CALCWIDGETH_STR5 "Mode Scientifique/Logique"
 #define CALCWIDGETH_STR6 "Définir les Bases Numeriques"
@@ -1245,13 +1245,13 @@ Eugène Clément
 #define GRAPHH_COL10 "cyan"
 #define GRAPHH_COL11 "colorié"
 
-#define GRAPHC_STR3 "Analyse"				//removed two lines
+#define GRAPHC_STR3 "Analyse"
 #define GRAPHC_STR4 "Mode Editer"
 #define GRAPHC_STR5 "Stop"
 
 
-#define GRAPHOUTC_STR1 "Extcalc - Texte à dessiner(?)"		//graphics window -> choose "Screenshot in the toolbar -> press T-Button (Text)
-#define GRAPHOUTC_STR2 "Entrez le texte à dessiner(?):"
+#define GRAPHOUTC_STR1 "Extcalc - Texte à afficher"
+#define GRAPHOUTC_STR2 "Entrez le texte à afficher:"
 
 #define GRAPHPREFH_STR1 "Extcalc - Préférences"
 #define GRAPHPREFH_STR2 "Système de Coordonnées Cartésien"
@@ -1265,12 +1265,12 @@ Eugène Clément
 #define GRAPHPREFH_STR10 "Système de Coordonnées Polaire"
 #define GRAPHPREFH_STR11 "angle max:"
 #define GRAPHPREFH_STR12 "radius max:"
-#define GRAPHPREFH_STR13 "Echelle angulaire(?):"			//preferences for polar coordinate system
+#define GRAPHPREFH_STR13 "Echelle angulaire:"
 #define GRAPHPREFH_STR14 "Echelle des rayons:"
 #define GRAPHPREFH_STR15 "Standard"
 #define GRAPHPREFH_STR16 "Polaire"
 #define GRAPHPREFH_STR17 "Graphes-3D"
-#define GRAPHPREFH_STR18 "Parametres de l'étendue(?) T:"	//preferences for parametric equation
+#define GRAPHPREFH_STR18 "Parametres de la plage T:"
 #define GRAPHPREFH_STR19 "Début:"
 #define GRAPHPREFH_STR20 "Fin:"
 #define GRAPHPREFH_STR21 "Echelle-Z"
@@ -1286,7 +1286,7 @@ Eugène Clément
 #define GRAPHPREFH_STR31 "Compter en avant et en reculant"
 #define GRAPHPREFH_STR32 "Système de Coordonnées"
 #define GRAPHPREFH_STR33 "Précision/Performance"
-#define GRAPHPREFH_STR34 "Parametres de l'étendue(?)"				//The text of the tab
+#define GRAPHPREFH_STR34 "Parametres de la plage"
 #define GRAPHPREFH_STR35 "Calculation de pas pour les Graphes-2D"
 #define GRAPHPREFH_STR36 "Calculation de pas pour les Graphs-3D"
 #define GRAPHPREFH_STR37 "Parametres de pas des graphes"
@@ -1295,7 +1295,7 @@ Eugène Clément
 #define GRAPHPREFH_STR40 "bas"
 #define GRAPHPREFH_STR41 "Normal"
 #define GRAPHPREFH_STR42 "haut"
-#define GRAPHPREFH_STR43 "Dessiner les Graphes-3D en grille(?)"			//this option is not yet enabled; 3D-graphs are always shown as grid
+#define GRAPHPREFH_STR43 "Dessiner les Graphes-3D, format grille"
 #define GRAPHPREFH_STR44 "Parametre Z du diagramme de Nyquist (2D uniquement)"
 #define GRAPHPREFH_STR45 "Valeur de début:"
 #define GRAPHPREFH_STR46 "Valeur de fin:"
@@ -1373,7 +1373,7 @@ Eugène Clément
 #define GRAPHSOLVEC_STR40 "Valeurs imaginaire"
 #define GRAPHSOLVEC_STR41 "Valeur réelle"
 #define GRAPHSOLVEC_STR42 "Valeur imaginaire"
-#define GRAPHSOLVEC_STR43 "By Ending(?)"										//should be by filename extension or by extension
+#define GRAPHSOLVEC_STR43 "Extension"
 #define GRAPHSOLVEC_STR44 "Nom de fichier inconnu!\nAssume png."
 
 
@@ -1387,8 +1387,8 @@ Eugène Clément
 #define TABLEH_STR8 "Minimiser()"
 #define TABLEH_STR9 "Nombres Complexes"
 #define TABLEH_STR10 "Extcalc - Table"
-#define TABLEH_STR11 "Enter column value(?) "           //text of the dialog which is shown when you ckick on the row or column
-#define TABLEH_STR12 "Enter row value(?) "				//header of the table that shows the results
+#define TABLEH_STR11 "Entrer la valeur de la colonne "
+#define TABLEH_STR12 "Entrer la valeur de la ligne "
 #define TABLEH_STR13 "Changer de Vue"
 #define TABLEH_STR14 "Choisir un Type de Fonction"
 #define TABLEH_STR15 "Catalogue de Fonctions"
@@ -1422,7 +1422,7 @@ Eugène Clément
 
 /* é ê è à ç */
 //this is the text for the script console
-#define SCRIPTIO_STR1 "kill"															
+#define SCRIPTIO_STR1 "Detruire"															
 #define SCRIPTIO_STR2 "Script could not be stopped.\nYou may press the kill button again."	//Error message when the script thread is hanging
 #define SCRIPTIO_STR3 "\n*** killed ***\n"													//console output messages
 #define SCRIPTIO_STR4 "\n*** finish ***\n"

@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - Scientific Calculator </h1>
-  Version 0.6.5
+  Version 0.9.0
   <br>
   <br>
   <h3>Inhalt</h3>
@@ -19,9 +19,7 @@
   <a href="#inter"><h3>4. Internal Interfaces</h3></a>
   <a href="#inter"><h4>4.1 Basic Structures</h4></a>
   <a href="#inter"><h4>4.2 Variables</h4></a>
-  <a href="#inter"><h4>4.3 Internal Interfaces GUI</h4></a>
-  <a href="#inter"><h4>4.4 Internal Interfaces Script-Interpreter</h4></a>
-  <a href="#inter"><h4>4.5 Config file and Preferences</h4></a>
+  <a href="#inter"><h4>4.3 Config file and Preferences</h4></a>
   <a href="#var"><h3>5. Mathematical Algorithms</h3></a>
   <a href="#automake"><h3>6. Installation Files</h3></a>
   <br>
@@ -56,7 +54,10 @@
   scriptedit.cpp<br>
   scriptpref.cpp<br>
   scriptio.cpp<br>
-  <h5>Object Header Files:</h5>
+  matrixwidget.cpp<br>
+  statistics.cpp<br>
+  catalog.cpp<br>
+  <h5>Header Files:</h5>
    extcalc.h<br>
   buttons.h<br>
   calcwidget.h<br>
@@ -73,6 +74,9 @@
   tablepref.h<br>
   scriptedit.h<br>
   scriptpref.h<br>
+  matrixwidget.h<br>
+  statistics.h<br>
+  catalog.h<br>
   scriptio.h<br>
   <h5>Extra Header Files:</h5>
   list.h<br>
@@ -85,16 +89,16 @@
   
                                      calclocale.h            list.h
                                           |                 /  |  \________________________
-          ________________________________|________________/   |                           \
-         /                             global.h                |                        calctable.h___________
-        /  _______________________________|____________________|_____________________________|________________\___________________________________________________________________________________________________________
-       /  /                    /                         \     |                      \      |             \  |        \               \                \                    \               \               \            \
-  calcinput.h              buttons.h                       graphout.h                  graphsolve.h   functiontable.h  |               |                |                    |               |               |            |
-      \____              _____/     \                            \______        ______/                /            \  |               |                |                    |               |               |            |
-           \            /            \_________________________________ \      /______________________/              \ |               |                |                    |               |               |            |
-            calcwidget.h                                                graph.h                                     table.h       scriptedit.h       scriptio.h         graphpref.h    calcpref.h     tablepref.h     scriptpref.h
-                  \________________________           ___________________/                                            /                /                /                   /               /               /             /
-                                           \         /_______________________________________________________________/________________/________________/___________________/_______________/_______________/_____________/
+          ________________________________|________________/   |                 _________ \ ________________ catalog.h
+         /                             global.h       _________|________________/       calctable.h___________      \______________________________________________________________________
+        /  _______________________________|__________/_________|_______________/_____________|________________\______\________________\________________\____________________\_______________\_____________________________________________________________
+       /  /                    /                    /    \     |              /       \      |             \  |        \               \                \                    \               \               \            \              \               \
+  calcinput.h              buttons.h               /       graphout.h        /         graphsolve.h   functiontable.h  |               |                |                    |               |               |            |              |                |
+      \____              _____/   __\_____________/              \______    /   ______/                /            \  |               |                |                    |               |               |            |              |                |
+           \            /        /   \_________________________________ \  |   /______________________/              \ |               |                |                    |               |               |            |              |                |
+            calcwidget.h________/                                       graph.h                                     table.h       scriptedit.h       scriptio.h       matrixwidget.h    statistics.h   graphpref.h    calcpref.h     tablepref.h     scriptpref.h
+                  \________________________           ___________________/                                            /                /                /                   /               /               /             /             /                /
+                                           \         /_______________________________________________________________/________________/________________/___________________/_______________/_______________/_____________/_____________/________________/
                                             extcalc.h
   </pre>
   <h3>File Description</h3>
@@ -122,6 +126,13 @@
   Table window (table tab). This is the main window for calculating result tables of functions<br><br>
   tablepref:<br>
   Preferences dialog for tables.<br><br><br>
+  
+  matrixwidget:<br>
+  Window form matrix and vector operations. In this window, the user can show and change all variables.<br><br><br>
+  
+  statistics:<br>
+  The window for statistics, approximation and interpolation. It includes operations to calculate functions from
+  lists data.<br><br><br>
 
   scriptedit:<br>
   Editor window for creating, editing and managing scripts<br><br>
@@ -137,13 +148,15 @@
   functiontable:<br>
   Overloaded calctable class, which manages the functions strings for graphs and tables. It can also manage
   the function preferences like color, type, ...<br><br>
+  catalog:<br>
+  Overloaded QPopupMenu which includes sorted lists of all calculator operations and functions<br><br>
   global:<br>
   This object includes accerelated calculator class and all needed subroutines.
   It also includes the script  class for running calculator scripts and functions for processing configfiles and unicode.
   In it's header file, all macros and the Preferences struct are defined.<br><br>
 
   <a name="math"><h2>3. Mathematical Functions</h2></a>
-  From v0.6.5 on, there are only two classes which can be used to process a calculation. The Calculate class and the Script class.<br>
+  Two classes were used to process a calculation. The Calculate class and the Script class.<br>
   The normal calculator and the script interpreter use the script class. The Calculate class is used for graph drawing, function
   tables and function analysis. The console calculator calc only uses the Script class. All mathematical functions and classes
   are located in the global.h and global.cpp source files.
@@ -174,6 +187,23 @@
   It must be large enough for inserting. If you don't want to copy the string to the start of dest, use for example
   <pre> dest[start_index]</pre> instead of dest.<br>
   
+  
+  <h4>String Operations: strreplace</h4>
+  Prototype:<br>
+  <pre>char* strreplace(char*st,int index,int len,char*rep);</pre><br>
+  Description:<br>
+  This function replaces the part of the string str with the lenght len from position index through the string rep.
+  When the replacement is longer than len, the string will be resized. Return value is the new string, resized by
+  realloc.<br>
+  
+  
+  <h4>String Operations: strinsert</h4>
+  Prototype:<br>
+  <pre>char* strinsert(char*st,int index,char*ins);</pre><br>
+  Description:<br>
+  This function inserts the string ins into the string st at positon index. The string is resized by realloc. The return value
+  is the new string.<br>
+  
   <h4>Search Functions: bracketFind</h4>
   The search functions are an important part of the parser algorithms, to find the relevant parts of a string.<br><br>
   Prototype:<br>
@@ -189,34 +219,62 @@
   Description:<br>
   This function does the same as the function above, but it searches from the end to the start of the string.
   The search start index can also be set. -1 means always start at the end.<br>
+
+  <h4>Preprocessor Functions: preprocessor</h4>
+  Prototype:<br>
+  <pre>char* preprocessor(char*,Preferences*,bool);</pre><br>
+  Prototype:<br>
+  <pre>char* preprocessor(QString*,Preferences*,bool);</pre><br>
+  Description:<br>
+  This is the main function which should be used to preprocess the input string of a calculaton.<br>
+  It can be called with a char pointer or with a QString pointer. When it is called with a QString, the
+  unicode signs were replaced through the ascii ascii commands by the removeUnicode function.<br>
+  The parameters are the input string, a pointer to the current preferences struct and a flag weather the
+  the string should be treated as script or as normal calculation. If this parameter is false, the comments
+  will not be removed and the macro preprocessor and the preferences preprocessor will not be run.<br>
+  This function allways runs <br>
   
-  <h4>Preprocessor: checkStringAnsi (Calc: checkString)</h4>
-  The preprocessor functions process a given input string and replace some operators, insert multiply operators where they are needed,
-  and remove whitespace and other things that are not needed for the parser.<br>
-  The checkStringAnsi functions is part of Calc and Extcalc, but in Calc it is named checkString. In Extcalc is it called
-  checkStringAnsi, because it is written in Ansi-C++ without QT commands. Therefore, Extcalc needs an additional preprocessor
-  function, which is called checkString (in Extcalc). This function replaces the Unicode characters through standard ASCII.<br><br>
+  
+  <h4>Preprocessor Functions: preferencesPreprocessor</h4>
   Prototype:<br>
-  <pre>char* checkStringAnsi(char*calcString,Preferences*pref);</pre><br>
+  <pre>char* preferencesPreprocessor(char*,Preferences*);</pre><br>
   Description:<br>
-  The given parameters are the input string as char pointer and a pointer to the preferences struct.<br>
-  Be careful with the return value of this function, because it can be NULL and the parser should not be called with NULL.<br>
-  This function works in five steps with five loops.<br>
-  The first loop removes whitespace and comments. It returns an error when the string length becomes zero or when it finds the 
-  reserved backslash character.<br>
-  The second loop replaces some operators (integral, root, ...) through their internal representations. It also replaces
-  the engeneering signs, for example n through e-9. Finally, it removes unneeded + und - operators. If calculator mode is
-  scientific, lowercase z and x are replaced through uppercase X and Z.<br>
-  The third loop inserts all multiply signs that are not written, but for the parser.<br>
-  The fourth loop replaces numeric constants (pi and the euler constant) through their numeric values.<br>
-  The fourth loop does the same as the third one. That is needed after inserting the constants.<br>
-   
-  <h4>Preprocessor: checkString (Extcalc only)</h4>
+  This function checks the input string for #config commands. The function sets the preferences in the
+  Preferences struct which it receives and removes the commands from the string. The return value is the new
+  string without #config commands. This function should only be used for scripts.
+  <br>
+  
+  <h4>Preprocessor Functions: macroPreprocessor</h4>
   Prototype:<br>
-  <pre>char* checkString(QString calcString,Preferences*pref);</pre><br>
+  <pre>char* macroPreprocessor(char*);</pre><br>
   Description:<br>
-  This function replaces unicode characters through ASCII code and runs checkStringAnsi. It returns a pointer to the cleaned string.
-  The parameters are a pointer to the Preferences struct (only to give it to checkStringAnsi) and the input string as QString.<br> 
+  The macro preprocessor interprets the #define commands and replaces the macros in the given string.
+  The return value is a string with replaced macros.
+  <br>
+  
+    <h4>Preprocessor Functions: cleanString</h4>
+  Prototype:<br>
+  <pre>char* cleanString(char*,Preferences*);</pre><br>
+  Description:<br>
+  This function removes whitespace from the string and replaces some constants and commands.
+  The return value is the result string.
+  <br>
+  
+    <h4>Preprocessor Functions: removeUnicode</h4>
+  Prototype:<br>
+  <pre>char* removeUnicode(QString*);</pre><br>
+  Description:<br>
+  This function creates a char* form a QString. It replaces all unicode commands through the 
+  ascii text commands.
+  <br>
+  
+    <h4>Preprocessor Functions: removeComments</h4>
+  Prototype:<br>
+  <pre>char* removeComments(char*);</pre><br>
+  Description:<br>
+  This function removes the comments from the input string. The return value is the resulting string without
+  comments.
+  <br>
   
   <a name="math2"><h3>3.2 Class Description</h3></a>
   There are two classes which can be used to process mathematical expressions. The Calculate class and the Script class.
@@ -232,34 +290,34 @@
   <pre>
 class Math
 {
-	protected:											//These are the variables, needed for Calculate and Script
-	Variable*vars;										//The variables array for Calc
-	Preferences*pref;									//The preferences for this calculation
-	Math*parent;										//A pointer to the parent object
-														//At the root object, this is set to NULL
-	Math *vertObj,*horzObj;								//Pointers to the following objects
-	double number;										//A variable as temporary memory for calculations and to store
-														//the value of constants
-	int var;											//if the object represents a variable, this contains the index (A is 0)
-	int operation;										//this variable stores the operation code
-														//the operation codes are defined in global.h
+	protected:                                          //These are the variables, needed for Calculate and Script
+	Variable*vars;                                      //The variables array for Calc
+	Preferences*pref;                                   //The preferences for this calculation
+	Math*parent;                                        //A pointer to the parent object
+	                                                    //At the root object, this is set to NULL
+	Math *vertObj,*horzObj;                             //Pointers to the following objects
+	double number;                                      //A variable as temporary memory for calculations and to store
+	                                                    //the value of constants
+	int var;                                            //if the object represents a variable, this contains the index (A is 0)
+	int operation;                                      //this variable stores the operation code
+	                                                    //the operation codes are defined in global.h
 	public:
-	Math(Math*par,Preferences*pr,Variable*va);			//constructor
-	virtual ~Math();									//destructor
+	Math(Math*par,Preferences*pr,Variable*va);          //constructor
+	virtual ~Math();                                    //destructor
 	
-	int getOperation();									//returns the operation code of the object
-	virtual double calc() {return 0.0;}					//the following virtual methods run the calculator
-	virtual double calcVertObj() {return 0.0;}			//they run recursive
-	virtual double calcHorzObj() {return 0.0;}			//calc is overloaded in Calculate
+	int getOperation();                                 //returns the operation code of the object
+	virtual double calc() {return 0.0;}                 //the following virtual methods run the calculator
+	virtual double calcVertObj() {return 0.0;}          //they run recursive
+	virtual double calcHorzObj() {return 0.0;}          //calc is overloaded in Calculate
 	
-	virtual Number exec() {Number r;r.type=NNONE;return r;}			//exec ist used in the Script class
+	virtual Number exec() {Number r;r.type=NNONE;return r;}       //exec ist used in the Script class
 	virtual Number execVertObj() {Number r;r.type=NNONE;return r;}
 	virtual Number execHorzObj() {Number r;r.type=NNONE;return r;}
 
-	virtual int split(char*){return 0;}					//this method is used to run the interpreter
-														//normally, this is done by the contructor, so you don't have to use it
-	virtual char* parse(char*){return 0;}				//for the Script parser, this second method is needed
-};														//it contains the parser itself, while split decides how to run it
+	virtual int split(char*){return 0;}                 //this method is used to run the interpreter
+	                                                    //normally, this is done by the contructor, so you don't have to use it
+	virtual char* parse(char*){return 0;}               //for the Script parser, this second method is needed
+};                                                      //it contains the parser itself, while split decides how to run it
    </pre>
    
   <h4>Calculate class</h4>
@@ -274,10 +332,10 @@ class Math
 	virtual int split(char* line);			//this private method contains the script parser
 											//the constructor runs it automatically
 	public:
-	Calculate(Math *par,char* line,Preferences*pr,Variable*va) :Math((Math*)par,pr,va);	//constructor
-	~Calculate();																		//destructor
+	Calculate(Math *par,char* line,Preferences*pr,Variable*va) :Math((Math*)par,pr,va);    //constructor
+	~Calculate();                                                                          //destructor
 
-	virtual double calc();					//the following methods can be used to run the calculation after building the object tree
+	virtual double calc();                  //the following methods can be used to run the calculation after building the object tree
 	virtual double calcVertObj();
 	virtual double calcHorzObj();
 };
@@ -292,23 +350,23 @@ class Math
 
 class Script :public Math
 {
-	Number value;							//Variable to store values and temporary memory for calculation
-	Math*nextObj,*vertObj2,*vertObj3;		//additional pointers to build the tree
-	ThreadSync*eventReciver;				//structure for synchronisation with the main application
-											//and for extra preferences
-											//it also contains the variables array
+	Number value;                           //Variable to store values and temporary memory for calculation
+	Math*nextObj,*vertObj2,*vertObj3;       //additional pointers to build the tree
+	ThreadSync*eventReciver;                //structure for synchronisation with the main application
+	                                        //and for extra preferences
+	                                        //it also contains the variables array
 	private:
-	inline bool resizeVar(int var,int newlen);	//method to manage the variables memory
+	inline bool resizeVar(int var,int newlen);  //method to manage the variables memory
 
 	public:
 
-	Script(Script*par,char*line,Preferences*pr,Variable*va,ThreadSync*evrec) :Math((Math*)par,pr,va);	//constructor
-	~Script();								//destructor
-	char*parse(char*line);					//the two methods to build the object tree
+	Script(Script*par,char*line,Preferences*pr,Variable*va,ThreadSync*evrec) :Math((Math*)par,pr,va);    //constructor
+	~Script();                              //destructor
+	char*parse(char*line);                  //the two methods to build the object tree
 	virtual int split(char* line);
 
 
-	virtual double calc();					//methods to run calculator
+	virtual double calc();                  //methods to run calculator
 	virtual double calcVertObj();
 	virtual double calcHorzObj();
 
@@ -327,13 +385,13 @@ class Script :public Math
   <pre>
 struct Preferences
 {
-	int angle;					//angle type DEG,RAD,GRA
-	int outputType;				//how to format output (not important for Math classes)
-	int outputLength;			//number of output digits
-	int calcType;				//calculator mode BASE for logic operations, SCIENTIFIC for normal operation
-	int base;					//base for BASE-mode BIN,DEC,OCT,HEX
-	int precision;				//maximum possible precision on this system
-	bool complex;				//enable or disable complex numbers
+	int angle;                  //angle type DEG,RAD,GRA
+	int outputType;             //how to format output (not important for Math classes)
+	int outputLength;           //number of output digits
+	int calcType;               //calculator mode BASE for logic operations, SCIENTIFIC for normal operation
+	int base;                   //base for BASE-mode BIN,DEC,OCT,HEX
+	int precision;              //maximum possible precision on this system
+	bool complex;               //enable or disable complex numbers
 };
   </pre>
   This structure must be filled, and Script and Calculate will get a pointer to this structure.<br>
@@ -354,12 +412,17 @@ struct Preferences
   Extcalc needs an additional struct 
 <h4>Calculate</h4>
 First, you need the string that contains the matematic operations to process.
-<pre>char operations[]="3+4*5sinx";</pre>
+The memory for this string must be allocated by malloc.
+<pre>
+char input[]="3+4*5sinx";
+char*operation=(char*)malloc(strlen(input+1));
+memcpy(operation,input,strlen(input)+1);
+</pre>
 This string must be processed by the preprocessor, which returns another string.
-<pre> char*cleanString=checkString(operations,&pref); //returns 3+4*5*sinX</pre>
+<pre> operation=preprocessor(operations,&pref); //returns 3+4*5*sinX</pre>
 The returend string can be used to generate an object tree.<br>
 This object tree represents the matematical operations in the memory.<br>
-<pre>Calculate calc(NULL,cleanString,&pref,vars);</pre>
+<pre>Calculate calc(NULL,operation,&pref,vars);</pre>
 Now, the calc object has been created, and it can be used to run the operations.<br
 <pre> double result=calc.calc();</pre>
 calc() can be used several times with different variable values<br>
@@ -369,11 +432,143 @@ calc() can be used several times with different variable values<br>
     results[c]=calc.calc();
 }
 </pre>
-  
-  <h1>This help file is not complete and not up-to-date</h1>
-  
-  
-  
-  
+
+<a name="inter"><h2>4. Internal Interfaces</h2></a>
+This chapter of the of the documentation describes the internal communication structures of Extcalc.
+<a name="inter"><h3>4.1 Basic Structures</h3></a>
+Most of the internal internal communication is based on structs in which the information is stored.<br>
+Here is a list of these structs with a short description<br><br>
+<h4>Preferences</h4>
+This is the main preferences struct of Extcalc. It holds all configuration information, including
+functions for graph drawing. The script is defined in global.h.<br>
+Every object in Extcalc which uses the Preferences has setPref method which updates its preferences and a prefChange
+signal which shows that it has changed the preferences. The prefChange signal is sent to the getPref slot of the
+parent object, which submits it to its parent, until it reaches the main object. The main object calls the setPref
+methods of its childs and so on. So do all objects receive the new preferences.<br>
+<pre>
+struct Preferences
+{
+	int angle;                                           //angle type: DEG,RAD or GRA
+	int outputType;                                      //calculator output format
+	int outputLength;                                    //number of shown digits
+	int precision;                                       //information about the maximum precision of the computer (in digits)
+	bool shift;                                          //shift key pressed?
+	bool alpha;                                          //alpha key pressed?
+	bool hyp;                                            //hyp key pressed?
+	bool showWindows[8];                                 //information, which tabs are visible
+	double xmin,xmax,ymin,ymax,zmin,zmax;                //coordinate system (cartesian)
+	double rasterSizeX,rasterSizeY,rasterSizeZ;          //coordinate system raster
+	double radiusMax,angleMax;                           //polar coordinate system
+	double rasterSizeRadius,rasterSizeAngle;             //polar coordinate system raster
+	double parameterStart,parameterEnd;                  //start and end value for drawing parameter function
+	double dynamicStart,dynamicEnd;                      //start and and value for dynamic parameter
+	double nyquistStart,nyquistEnd;                      //start and and value for nyquist plot
+	double tableXStart,tableXEnd,tableZStart,tableZEnd;  //start and and value for tables
+	double tableAValue;                                  //fixed A value for tables
+	int parameterSteps;                                  //number of steps for drawing parameter functions
+	int dynamicSteps;                                    //number of steps for dynamic parameter
+	int dynamicDelay;                                    //delay time for dynamic graphs
+	int nyquistSteps;                                    //number of steps for drawing nyquist plots
+	int prec2dSteps;                                     //number of steps for drawing normal functions
+	int prec3dSteps;                                     //number of steps for 3D-graphs
+	int solvePrec;                                       //precision for graph analysis functions
+	int tableXSteps,tableZSteps;                         //number of steps for calculating tables
+	bool raster;                                         //show coordinate system raster
+	bool axis;                                           //show axes
+	bool label;                                          //show labels
+	bool autosize;                                       //correct size of coordinate system
+	bool moveUpDown;                                     //for dynamic functions
+	bool show3dGrid;                                     //not active
+	bool logNyquistSteps;                                //use logarithmic steps for nyquist plots
+	bool complex;                                        //enable support for complex numbers
+	bool clearScriptMemory;                              //delete script variables before running script
+	bool showStatLines;                                  //view preferences for statistics functions
+	bool showStatPoints;
+	bool statAutoClear;
+	int graphType;                                       //coordinate system (2D, 3D, polar)
+	int calcType;                                        //calculator state (scientific or logic mode)
+	int tableType;                                       //function type for tables (2D, 3D, polar, ...)
+	int base;                                            //numeral base for logic mode
+	int scriptGraphicsMode;                              //is script text-based, 2D-graphics or 3D-graphics
+	QString scriptPath;                                  //path of the root-directory for scripts
+	QString scriptDirName;                               //script code directory
+	QString dataDirName;                                 //script data directory (for file operations)
+	QString*functions;                                   //function list (for graph drawing, tables, ...)
+	bool*activeFunctions;                                //which of the functions were currently shown
+	int*functionTypes;                                   //function types of all functions
+	bool*dynamicFunctions;                               //dynamic flag for all functions
+	QColor*functionColors;                               //colors of the functions
+	QString drawText;
+};
+</pre>
+<h4>ThreadSync</h4>
+This structure is used for the communication between the a running script in the script interpreter and the object
+which has started the script. Data transfer is done by QEvents. The struct also includes variables for load balancing
+between script and user interface and pointers to the variables memory.<br>
+<pre>
+struct ThreadSync
+{
+	QMutex*mutex;                                        //mutex to lock thread (for load balancing)
+	QObject*eventReciver;                                //receiver of the Events
+	void*data;                                           //pointer to the event data
+	int type;                                            //event type
+	int sleepTime;                                       //variable to delay script execution (for load balancing)
+	int status;                                          //status variable (must be set that the script reads the status flags)
+	int eventCount;                                      //number of events in the event loop (for load balancing)
+	bool usleep;                                         //sleep flag (for load balancing)
+	bool exit;                                           //exit flag (immediately stop execution of the script)
+	bool bbreak;                                         //stop the next loop
+	bool bcontinue;                                      //continue with the next step of a loo
+	bool calcMode;                                       //running a script or a simple calculation?
+	int numlen[VARNUM];                                  //number of elements allocated for each variable
+	int dimension[VARNUM][VARDIMENSIONS];                //size of the dimensions of every variable
+	Number**vars;                                        //pointers to the variables memory
+	List &lt;Math*&gt;subprograms;                             //pointers to the root objects of the subroutines
+	List &lt;char*&gt;subprogramPath;                          //pathes to identify the subroutines (needed for interpreter)
+};
+</pre>
+<a name="inter"><h3>4.2 Variables</h3></a>
+The calculator uses different types of variables for calculation. This chapter describes these variables.<br>
+<h4>Variable</h4>
+This variable definition is used for the Calculate class. This class can only process real values.
+It is optimal for fast graph drawing.
+<pre>typedef long double Variable;</pre>
+<h4>Complex</h4>
+The script interpreter supports complex numbers for calculation. For these variables, an additional definition for
+a complex number is needed. This sort of complex numbers can be used with the C++ math functions.
+<pre>typedef complex <long double> Complex;</pre>
+<h4>Number</h4>
+The number struct is used for the script interpreter. It can hold several different data types in one strut.<br>
+<pre>
+struct Number
+{
+
+	complex &lt;long double&gt; fval;                 //complex floating point value
+	long long ival;                             //64-bit integer value
+	bool bval;                                  //boolean value
+	char*cval;                                  //string value
+	int type;                                   //variable type (NFLOAT, NINT, NBOOL or NCHAR)
+};
+</pre>
+
+<a name="inter"><h3>4.3 Config file and Preferences</h3></a>
+All the preferences which were saved when the program is closed, are stored in the Preferences struct.<br>
+These preferences were saved in a single file in the .extcalc directory in the users home directory.<br>
+The configuration file is named extcalc.conf.<br>
+The calculator also stores the floating point values of all variables and the lists for statistics functions.<br>
+By default, the script code and data is also stored in a sub directory in .extcalc.<br>
+<a name="var"><h2>5. Mathematical Algorithms</h2></a>
+
+<a name="automake"><h2>6. Installation Files</h2></a>
+The installation package uses the standard unix installer with configure script and Makefile.
+The configure script is created from the configure.ac file with autoconf. The makefiles were created by
+running the configure script before the installation. The configure script uses the information of the
+Makefile.in files to create the Makefiles. This Makefile.in files were created with automake from the 
+Makefile.am files.<br>
+The Installation package includes a doc directory with all documentation, a src directory with the source code and 
+a share directory with all files that will be installed (icons, example scripts, ...).<br>
+
+
+
     </body>
 </html>

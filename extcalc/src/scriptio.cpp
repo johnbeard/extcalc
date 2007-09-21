@@ -1938,6 +1938,7 @@ void ScriptGL::initializeGL()
 	glShadeModel( GL_SMOOTH);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_TEXTURE_2D);
 	glMatrixMode( GL_MODELVIEW );

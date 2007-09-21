@@ -139,3 +139,9 @@ dialogs
 graphs
 - fixed bug in matrix module
 
+0.9.0
+- optimized preprocessor routines
+- added support for macros
+- updated user interface
+- added french translation
+

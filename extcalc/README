@@ -21,8 +21,8 @@ mathmatical functions, draw graphs and work with functions. You can also calcula
 
 
 2. INSTALLATION
-- unpack archive (tar -xzf extcalc-0.8.5.tar.gz)
-- switch to directory (cd extcalc-0.8.5)
+- unpack archive (tar -xzf extcalc-0.9.0.tar.gz)
+- switch to directory (cd extcalc-0.9.0)
 - run configure (./configure)
 - compile (make)
 - become root (su)
@@ -57,10 +57,11 @@ doc/                         documentation
 	   
 	   
 4. VERSION
-Version 0.8.5
+Version 0.9.0
 
-This is a TESTING VERSION!
-Parts of the program may not work or may work wrong!
+This is a beta release.
+For information, how to report a bug, please visit the
+project home page http://extcalc-linux.sourceforge.net/.
 
 done:
 User Interface for Calculator
@@ -96,8 +97,7 @@ beta test
 
 5. IMPORTANT
 
-This is a TESTING VERSION!
-Parts of the program may not work or calculated results may be wrong!
+This is a beta version. The program may have some bugs.
 
 Tested Distributions:
 Suse Linux 8.2         ok

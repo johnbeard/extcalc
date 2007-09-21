@@ -20,7 +20,7 @@ any later version.
 
 void GraphOutput::initializeGL()
 {
-	glClearColor( 1.0,1.0,1.0,1.0 ); 
+	glClearColor( 1.0,1.0,1.0,1.0 );
 //	qglClearColor(white ); 
 	if(axes!=0xffffffff)
 		glDeleteLists(axes,1);

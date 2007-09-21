@@ -35,6 +35,7 @@ file.
 #include <pthread.h>
 #include <math.h>
 #include <complex>
+#include <errno.h>
 #include "list.h"
 #include "calclocale.h"
 
@@ -526,6 +527,7 @@ QString formatOutput(long double num,Preferences*pref);
 QString formatOutput(Number num,Preferences*pref,ThreadSync*varData=NULL);
 QColor getColor(QString colorName);
 QString getColorName(QColor col);
+QString getErrorMessage();
 long double runCalc(QString,Preferences*,Variable*);
 long double determinant(int,long double*);
 long double gauss(int sizex,int sizey,long double*matrix);
