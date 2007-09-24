@@ -138,8 +138,8 @@ Eugene Clement
 #define EXTCALCH_MENU77 "Die Standard-Verzeichnisse wurden angelegt."
 #define EXTCALCH_MENU78 "Komplexe Funktionen"
 
-#define EXTCALCC_MSG1 "Die folgende Konfigurationsdatei konnte nicht geschrieben werden:"
-#define EXTCALCC_MSG3 "Die folgende Konfigurationsdatei konnte nicht geladen werden: "
+#define EXTCALCC_MSG1 "Die folgende Konfigurationsdatei konnte nicht geschrieben werden:\n\n"
+#define EXTCALCC_MSG3 "Die folgende Konfigurationsdatei konnte nicht geladen werden:\n\n"
 #define EXTCALCC_MSG6 "Datei is außerhalb des Quellcode-Verzeichnisses: "
 #define EXTCALCC_MSG8 "Soll folgende Datei überschrieben werden?\n\n"
 #define EXTCALCC_MSG9 "Script zum Exportieren auswählen"
@@ -1130,7 +1130,7 @@ Eugene Clement
 #define EXTCALCH_MENU44 "Genre de Fonction"
 #define EXTCALCH_MENU45 "Préférences des Tables"
 #define EXTCALCH_MENU46 "Table"
-#define EXTCALCH_MENU47 "Défaire(Undo)"
+#define EXTCALCH_MENU47 "Défaire"
 #define EXTCALCH_MENU48 "Refaire"
 #define EXTCALCH_MENU49 "Couper"
 #define EXTCALCH_MENU50 "Copier"
@@ -1143,8 +1143,8 @@ Eugene Clement
 #define EXTCALCH_MENU57 "Quitter"
 #define EXTCALCH_MENU58 "&Editer"
 #define EXTCALCH_MENU59 "&Voir"
-#define EXTCALCH_MENU60 "Préférences de Script"
-#define EXTCALCH_MENU61 "Vue Console de Script"
+#define EXTCALCH_MENU60 "Préférences de Scripts"
+#define EXTCALCH_MENU61 "Vue Console de Scripts"
 #define EXTCALCH_MENU62 "Exporter un Script"
 #define EXTCALCH_MENU63 "Importer un Script"
 #define EXTCALCH_MENU64 "Toujours vider la mémoire des tableaux"
@@ -1163,7 +1163,7 @@ Eugene Clement
 #define EXTCALCH_MENU77 "Répertoire par defaut créer."
 #define EXTCALCH_MENU78 "Nombres Complexes"
 
-#define EXTCALCC_MSG1 "Imposible d'ecrire le fichier de configuration :"								//removed strings that were no longer needed
+#define EXTCALCC_MSG1 "Impossible d'ecrire le fichier de configuration :"								//removed strings that were no longer needed
 #define EXTCALCC_MSG3 "Il y a eu une erreur lors du chargement du fichier de configuration :"
 #define EXTCALCC_MSG6 "Le fichier est à l'extérieure du répertoire des codes de script: "
 #define EXTCALCC_MSG8 "Désirez-vous vraiment écraser le fichier ?"
@@ -1420,103 +1420,103 @@ Eugene Clement
 #define TABLEPREFC_STR7 "Les Pas de X doivent etre plus grand que zéro"
 #define TABLEPREFC_STR8 "Les Pas de Z doivent etre plus grand que zéro"
 
-/* é ê è à ç */
 //this is the text for the script console
-#define SCRIPTIO_STR1 "Detruire"															
-#define SCRIPTIO_STR2 "Script could not be stopped.\nYou may press the kill button again."	//Error message when the script thread is hanging
-#define SCRIPTIO_STR3 "\n*** killed ***\n"													//console output messages
-#define SCRIPTIO_STR4 "\n*** finish ***\n"
-#define SCRIPTIO_STR5 "You are already running a script.\nKill it?"							//Warning message when you try to start a second script
+#define SCRIPTIO_STR1 "Détruire"															
+#define SCRIPTIO_STR2 "Le Script ne fonctionne pas correctement. Il ne semble plus répondre\nIl est possible d'appuyer sur le bouton détruire encore une fois."
+#define SCRIPTIO_STR3 "\n*** Script terminé  ***\n"
+#define SCRIPTIO_STR4 "\n*** terminé ***\n"
+#define SCRIPTIO_STR5 "Il y a déja un script en fonctionnement.\nDésirez-vous le détruire?"
 #define SCRIPTIO_STR6 "\n*** script ***\n"
-#define SCRIPTIO_STR7 "Run"																	//run button
-#define SCRIPTIO_STR8 "\nProcessing main file ..."
-#define SCRIPTIO_STR9 "\nProcessing file "
-#define SCRIPTIO_STR10 "\nScript sucessfully loaded.\nNow you can press run.\n"
-#define SCRIPTIO_STR11 "\nProcessing script failed!\n"
-#define SCRIPTIO_STR12 "Copy\tCtrl-C"														//popup menu (right mouse button)
-#define SCRIPTIO_STR13 "Paste\tCtrl-V"
-#define SCRIPTIO_STR14 "Select All\tCtrl-A"
-#define SCRIPTIO_STR15 "Clear All"
+#define SCRIPTIO_STR7 "Exécuter"
+#define SCRIPTIO_STR8 "\nFichier principal en préparation ..."
+#define SCRIPTIO_STR9 "\nFichier en préparation "
+#define SCRIPTIO_STR10 "\nChargement du script réussi.\nMaintenant, il est possible d'appuyer sur 'Exécuter'.\n"
+#define SCRIPTIO_STR11 "\nLa préparation du script a échoué!\n"
+#define SCRIPTIO_STR12 "Copier\tCtrl-C"														//popup menu (right mouse button)
+#define SCRIPTIO_STR13 "Coller\tCtrl-V"
+#define SCRIPTIO_STR14 "Tout Sélectionner\tCtrl-A"
+#define SCRIPTIO_STR15 "Tout nettoyer"
 
 //all text of the script editor. Most of that is standard
-#define SCRIPTEDITH_STR2 "Run"
-#define SCRIPTEDITH_STR3 "Save"
-#define SCRIPTEDITH_STR4 "Update View"
-#define SCRIPTEDITH_STR5 "New Code File"
-#define SCRIPTEDITH_STR6 "New Directory"
-#define SCRIPTEDITH_STR7 "Save"
-#define SCRIPTEDITH_STR8 "Save All"
-#define SCRIPTEDITH_STR9 "Rename"
-#define SCRIPTEDITH_STR10 "Delete"
-#define SCRIPTEDITH_STR11 "Files"
-#define SCRIPTEDITH_STR12 "Create new script file"
-#define SCRIPTEDITH_STR13 "Save changes of current file"
-#define SCRIPTEDITH_STR14 "Save changes of all modified files"
-#define SCRIPTEDITH_STR15 "Undo"
-#define SCRIPTEDITH_STR16 "Redo"
-#define SCRIPTEDITH_STR17 "Cut"
-#define SCRIPTEDITH_STR18 "Copy"
-#define SCRIPTEDITH_STR19 "Paste"
-#define SCRIPTEDITH_STR20 "Import script file"
-#define SCRIPTEDITH_STR21 "Export script file"
-#define SCRIPTEDITH_STR22 "Run current script"
-#define SCRIPTEDITH_STR23 "Change view"					//do or do not show calculator buttons
-#define SCRIPTEDITH_STR24 "Function Catalog"
+#define SCRIPTEDITH_STR2 "Exécuter"
+#define SCRIPTEDITH_STR3 "Sauvegarder"
+#define SCRIPTEDITH_STR4 "Mise à jour de la Vue"
+#define SCRIPTEDITH_STR5 "Nouveau Code de Fichier"
+#define SCRIPTEDITH_STR6 "Nouveau Répertoire"
+#define SCRIPTEDITH_STR7 "Sauvegarder"
+#define SCRIPTEDITH_STR8 "Tout Sauvegarder"
+#define SCRIPTEDITH_STR9 "Renommer"
+#define SCRIPTEDITH_STR10 "Effacer"
+#define SCRIPTEDITH_STR11 "Fichiers"
+#define SCRIPTEDITH_STR12 "Créer un nouveau fichier de script"
+#define SCRIPTEDITH_STR13 "Sauvegarder les modifications du fichier courant"
+#define SCRIPTEDITH_STR14 "Sauvegarder les changements de tout les fichiers modifier"
+#define SCRIPTEDITH_STR15 "Défaire"
+#define SCRIPTEDITH_STR16 "Refaire"
+#define SCRIPTEDITH_STR17 "Couper"
+#define SCRIPTEDITH_STR18 "Copier"
+#define SCRIPTEDITH_STR19 "Coller"
+#define SCRIPTEDITH_STR20 "Importer un fichier de script"
+#define SCRIPTEDITH_STR21 "Exporter un fichier de script"
+#define SCRIPTEDITH_STR22 "Exécuter le script courant"
+#define SCRIPTEDITH_STR23 "Changement de vues"					//do or do not show calculator buttons
+#define SCRIPTEDITH_STR24 "Catalogues de fonctions"
 
 //Some of these texts are error messages
 //The rest is dialog text.
 //All dialogs can be shown by the klicking with the right mouse button into the files list of the script editor
-#define SCRIPTEDITC_STR4 "Do you want to save your changes?"
-#define SCRIPTEDITC_STR5 "Rename File"							//rename file dialog
-#define SCRIPTEDITC_STR6 "Insert new file name:"
-#define SCRIPTEDITC_STR7 "Invalid name for renaming!"
-#define SCRIPTEDITC_STR8 "Renaming of the following file failed:\n\n"
-#define SCRIPTEDITC_STR9 "Really delete the following file?\n\n"
-#define SCRIPTEDITC_STR10 "Removing of the following file failed:\n\n"
-#define SCRIPTEDITC_STR12 "Save current File?"
-#define SCRIPTEDITC_STR13 "Choose filename to create"					//create file dialog
-#define SCRIPTEDITC_STR14 "Can't create file outside script directory"
-#define SCRIPTEDITC_STR15 "Really overwrite this file?\n\n "
-#define SCRIPTEDITC_STR16 "Unable to create file:\n\n"
-#define SCRIPTEDITC_STR17 "Create directory"							//create directory dialog
-#define SCRIPTEDITC_STR18 "Insert direcotry name:"
-#define SCRIPTEDITC_STR19 "Invalid directory name"
-#define SCRIPTEDITC_STR20 "Creating directory failed"
-#define SCRIPTEDITC_STR21 "Choose filename to save"						//create file dialog
-#define SCRIPTEDITC_STR22 "Can't save file outside script directory"
-#define SCRIPTEDITC_STR23 "Unable to save file:"
-#define SCRIPTEDITC_STR24 "Some code files have been modified.\n\nDo you want to save your changes?"	//This message is shown when you close Extcalc
-#define SCRIPTEDITC_STR25 "Error saving file "
+#define SCRIPTEDITC_STR4 "Désirez-vous sauvegarder les modifications effectuées?"
+#define SCRIPTEDITC_STR5 "Renommer le Fichier"
+#define SCRIPTEDITC_STR6 "Entrer un nouveau nom de fichier:"
+#define SCRIPTEDITC_STR7 "Nom de fichier non valable!"
+#define SCRIPTEDITC_STR8 "Le Changement de nom du fichier suivant à échoué:\n\n"
+#define SCRIPTEDITC_STR9 "Désirez-vous vraiment effacer le fichier suivant?\n\n"
+#define SCRIPTEDITC_STR10 "Le fichier suivant n'a pas pu etre enlevé:\n\n"
+#define SCRIPTEDITC_STR12 "Sauvegarder le fichier suivant?"
+#define SCRIPTEDITC_STR13 "Choisir un nom pour le nouveau fichier"
+#define SCRIPTEDITC_STR14 "Impossible d'ecrire le fichier en dehors du répertoire de scripts"
+#define SCRIPTEDITC_STR15 "Désirez-vous vraiment ecraser ce fichier?\n\n "
+#define SCRIPTEDITC_STR16 "Impossible de créer le fichier:\n\n"
+#define SCRIPTEDITC_STR17 "Créer un nouveau répertoire"
+#define SCRIPTEDITC_STR18 "Entrez un nom pour le nouveau répertoire:"
+#define SCRIPTEDITC_STR19 "Le nom du répertoire n'est pas valable!"
+#define SCRIPTEDITC_STR20 "La creation du répertoire à échoué"
+#define SCRIPTEDITC_STR21 "Choisir un nom pour le fichier à sauvegarder"
+#define SCRIPTEDITC_STR22 "Impossible de sauvegarder un fichier à l'extérieur du répertoire de scripts"
+#define SCRIPTEDITC_STR23 "Le fichier ne peux pas être sauvegarder:"
+#define SCRIPTEDITC_STR24 "Quelques codes de fichiers ont été modifié.\n\nDésirez-vous sauvegarder les modifications effectuées?"
+#define SCRIPTEDITC_STR25 "Il y a eu une erreur lors de la sauvegarde du fichier "
 
 //Script preferences dialog Preferences->Scripting
-#define SCRIPTPREFH_STR1 "Scripting Preferences"
-#define SCRIPTPREFH_STR2 "Path to scripting root directory"
-#define SCRIPTPREFH_STR3 "Name of code subdirectory"
-#define SCRIPTPREFH_STR4 "Name of data subdirectory"
-#define SCRIPTPREFH_STR5 "Save"
-#define SCRIPTPREFH_STR6 "Cancel"
-#define SCRIPTPREFH_STR7 "Search"
-#define SCRIPTPREFH_STR8 "Clear array memory after script running"
+#define SCRIPTPREFH_STR1 "Préférences de Scripts"
+#define SCRIPTPREFH_STR2 "Chemin du répertoire de script racine"
+#define SCRIPTPREFH_STR3 "Nom du sous-répertoire des codes"
+#define SCRIPTPREFH_STR4 "Nom du sous-répertoire des données"
+#define SCRIPTPREFH_STR5 "Sauvegarder"
+#define SCRIPTPREFH_STR6 "Annuler"
+#define SCRIPTPREFH_STR7 "Rechercher"
+#define SCRIPTPREFH_STR8 "Nettoyer la mémoire, une fois l'exécution du script terminée"
 
-#define SCRIPTPREFC_STR1 "Please insert complete Path"
-#define SCRIPTPREFC_STR2 "Can't create scripting root directory"
-#define SCRIPTPREFC_STR3 "Invalid path to scripting root directory"
-#define SCRIPTPREFC_STR4 "Can't create code subdirectory"
-#define SCRIPTPREFC_STR5 "Invalid scripting subdirectory name"
-#define SCRIPTPREFC_STR6 "Can't create data subdirectory"
-#define SCRIPTPREFC_STR7 "Invalid data subdirectory name"
-#define SCRIPTPREFC_STR8 "Choose a directory"
+#define SCRIPTPREFC_STR1 "S'il vous plait, insérez le chemin complet !"
+#define SCRIPTPREFC_STR2 "Impossible de créer le répertoire racine des scripts"
+#define SCRIPTPREFC_STR3 "Chemin du répertoire racine des scripts non valable"
+#define SCRIPTPREFC_STR4 "Impossible de créer le sous-répertoire des scripts codes"
+#define SCRIPTPREFC_STR5 "Nom du sous-répertoire des scripts non valable"
+#define SCRIPTPREFC_STR6 "Impossible de créer le sous-répertoire des données"
+#define SCRIPTPREFC_STR7 "Nom du sous-répertoire des données non valable"
+#define SCRIPTPREFC_STR8 "Sélectionnez un répertoire !"
 
 //The matrix/vector tab
+/* é ê è à ç */
 #define MATRIXWIDGETH_STR1 "Type"								//header text of the left table
-#define MATRIXWIDGETH_STR2 "Rows"
-#define MATRIXWIDGETH_STR3 "Columns"
-#define MATRIXWIDGETH_STR4 "Calculator"							//text of the box in the toolbar
-#define MATRIXWIDGETH_STR5 "Linear System of Equations"
-#define MATRIXWIDGETH_STR6 "Generate Matrix"
-#define MATRIXWIDGETH_STR7 "Analyse Matrix"
-#define MATRIXWIDGETH_STR8 "Inverse Matrix"
-#define MATRIXWIDGETH_STR9 "Calculate"
+#define MATRIXWIDGETH_STR2 "Lignes"
+#define MATRIXWIDGETH_STR3 "Colonnes"
+#define MATRIXWIDGETH_STR4 "Calculatrice"							//text of the box in the toolbar
+#define MATRIXWIDGETH_STR5 "Systeme d'équations linéaire"
+#define MATRIXWIDGETH_STR6 "Generation de Matrice"
+#define MATRIXWIDGETH_STR7 "Analyse de Matrice"
+#define MATRIXWIDGETH_STR8 "Matrice Inverse"
+#define MATRIXWIDGETH_STR9 "Calculer maintenant"
 #define MATRIXWIDGETH_STR10 "Set"
 #define MATRIXWIDGETH_STR11 "no vector"					//Solve equations; You can either choose a vector from A to Z or nothing (no vector)
 #define MATRIXWIDGETH_STR12 "Identity Matrix"			//Generate matrix
@@ -1583,4 +1583,3 @@ Eugene Clement
 #define STATISTICSC_STR8 "For this approximation, at least three points were needed"
 
 #endif
-

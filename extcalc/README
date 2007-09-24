@@ -32,8 +32,7 @@ Languages:
 To install the german version of the calculator, type "./configure --enable-language_de" instead of
 "./configure"
 
-Configuration:
-
+For the french fersion, type "./configure --enable-language_fr"
 
 
 
