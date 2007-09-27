@@ -1,0 +1,1882 @@
+<html>
+  <head>
+    <title>Extcalc</title>
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+  <h1> Extcalc - Scientific Calculator </h1>
+  Version 0.9.0
+  <br>
+  <br>
+  <h4>
+  Bien que le programme "extcalc" est traduit en Francais, la
+documentation en langue francaise (le fichier d'aide "html"), n'est pas
+encore disponible en Francais.<br><br>
+
+Cette documentation sera disponible sur le site web internet
+<a href="http://extcalc-linux.sourceforge.net/">http://extcalc-linux.sourceforge.net/</a> des qu'elle sera traduite.<br><br>
+
+Chacun est le bienvenu d'y contribuer meme juste quelques lignes.
+N'hesitez pas a faire part de vos remarques concernant la traduction
+francophone.<br>
+<a href="mailto:pixonet@yahoo.com">pixonet@yahoo.com</a><br><br>
+  </h4>
+  <h3>Contents</h3>
+  <a href="#introduction"><h3>1. Introduction</h3></a>
+  <a href="#install"><h3>2. Installation</h3></a>
+  <a href="#use"><h3>3. Usage</h3></a>
+  <a href="#calc"><h4>3.1 Calculator</h4></a>
+  <a href="#calcstd"><h5>3.1.1 Standard Mode</h5></a>
+  <a href="#calcstd"><h5>3.1.2 Base Mode</h5></a>
+  <a href="#graph"><h4>3.2 Graphics</h4></a>
+  <a href="#graphdraw"><h5>3.2.1 Draw Graphs</h5></a>
+  <a href="#graphsolve"><h5>3.2.2 Analyze Graphs</h5></a>
+  <a href="#screenshot"><h5>3.2.3 Screen shots</h5></a>
+  <a href="#table"><h4>3.3 Tables</h4></a>
+  <a href="#script"><h4>3.4 Script Programming</h4></a>
+  <a href="#scriptcom"><h5>3.4.1 Introduction</h5></a>
+  <a href="#scriptedit"><h5>3.4.2 Script Editor</h5></a>
+  <a href="#scriptsyntax"><h5>3.4.3 Scripting Language</h5></a>
+  <a href="#matrixvector"><h4>3.5 Vector/Matrix Arithmetics</h4></a>
+  <a href="#stat"><h4>3.6 Statistics</h4></a>
+  <a href="#pref"><h4>3.7 Preferences</h4></a>
+  <a href="#else"><h3>4. Other</h3></a>
+  <br>
+  <br>
+  <br>
+  <a name="introduction"><h2>1. Introduction</h2></a>
+  Extcalc is a scientific graphic calculator for Linux. Extcalc is able to process difficult
+  mathematical functions, to draw graph and to work with them. It includes a C-like script language.<br>
+  This is the documentation for version 0.9.0 beta. 
+  <br>
+  <br>
+  <br>
+  <a name="install"><h2>2. Installation</h2></a>
+  This description is only for the installation of the source code package (.tar.gz). If you install a binary package, you have to use the
+  packet manager of your distribution.<br><br>
+  <UL>
+  <LI> extract packet (tar -xzf extcalc-0.9.0.tar.gz)<br>
+  <LI> switch to directory (cd extcalc-0.9.0)<br>
+  <LI> configure (./configure)<br>
+  <LI> compile (make)<br>
+  <LI> become root (su)<br>
+  <LI> install (make install)<br>
+  </UL>
+ 
+  <h5>Languages</h5>
+  To choose German as installation language, please type "./configure --enable-language_de"
+  instead of "./configure"<br>    
+
+ 
+  <a name="use"><h2>3. Usage</h2></a>
+  This is a testing version of extcalc. For this reason parts of the user interface may
+  be damaged. 
+  <br>
+  <br>
+  <a name="calc"><h2>3.1 Calculator</h2></a>
+  <br>
+  <img src="calculator.jpg"> </img>
+  <br>
+  This Tab is a normal calculator. You can input a calculation in this window<br>
+  <h5>1. Using the keyboard</h5>
+  First click into the text window so that you can see a write cursor there.
+  Then input the calculation by your keyboard and press Enter to calculate.
+  You can not use all functions of the calculator with your keyboard.<br>
+  <h5>2. Using the integrated buttons</h5>
+  You can see most operations on the buttons of the calculator.
+  Just click into the text window and push the buttons you need. The text 
+  you type will be inserted at the cursor position. If don't edit the last line,
+  the content of this line will be copied into the last line.
+  Press the "="-Button to calculate.<br>
+  <h5> 3. Function catalog</h5>
+  If you press the catalog button <img src="catalogbutton.jpg"></img> in the menu bar, you will see
+  a list of all operations and commands that are supported by the calculator. The list is seperated 
+  into groups of operations and commands. When you choose an operation from the menu, the text is
+  copied into the calculator window.
+  <br>
+  <h5>Special keys:</h5>
+  <DL>
+  <DT>DEL<br>
+  <DD>This is the same as Backspace-key on the keyboard.<br>
+  <DT>AC<br>
+  <DD>This key removes the complete history.<br>
+  <DT>Shift<br>
+  <DD>Press this button to use additional operations<br>
+  <DT>Alpha<br>
+  <DD>Press this button to use variables<br>
+  <DT>hyp<br>
+  <DD>Use this button for hyperbolic functions.<br>
+  <DT>ANS<br>
+  <DD>This is the answer-memory. Use this key to recall the last result.<br>
+  </DL>
+  <br>
+  <h5>Calculation Priority:</h5>
+  Highest is first<br>
+  <OL>
+  <LI>Brackets<br> 
+  <LI>Special operations: integration, differentiation<br>
+  <LI>Binary operators 1: root, power, ...<br> 
+  <LI>Unary operators: sin, cos, log, ...<br>
+  <LI>Bit operations: &amp;, |, ...<br>
+  <LI>Binary operators 2: *, /<br>
+  <LI>Binary operators 3: +, -<br>
+  <LI>Compare operations: ==, !=, ...<br>
+  <LI>Set operations: -&gt;, =<br>
+  <LI>Logic operations: &amp;&amp;, ||, ...<br>
+  </OL>
+  <br>
+  
+<h5>Syntax - How to input calculation formulas</h5> 
+<TABLE BORDER>
+<TR><TH>Operation</TH><TH>Key</TH><TH>Usage</TH><TH>Example</TH>
+<TR><TD>Square Root</TD>
+<TD><img src="sqrtbutton.jpg"></img></TD>
+<TD><img src="sqrtbutton.jpg"></img>expression</TD>
+<TD><img src="sqrt.jpg"></img><br>
+<img src="sqrtbracket.jpg"></img>
+<br>Use brackets for calculations under a root
+<br>To use the square root operation first press the square root button and then insert the argument
+</TD>
+<TR><TD>Cubic root</TD>
+<TD><img src="shift.jpg"></img>+<img src="curoot.jpg"></img></TD>
+<TD><img src="shift.jpg"></img>+<img src="curoot.jpg"></img>expression</TD>
+<TD>&nbsp;</TD>
+<TR><TD>Other Roots</TD>
+<TD><img src="nrootbutton.jpg"></img></TD>
+<TD>expression<img src="nrootbutton.jpg"></img>expression</TD>
+<TD>
+<img src="nroot.jpg"></img>
+<br>To use this operation, first type the degree of the root and then type the argument.
+</TD>
+<TR><TD>Random Number Generator</TD>
+<TD><img src="randbutton.jpg"></img></TD>
+<TD><img src="randbutton.jpg"></img> random number key</TD>
+<TD>
+<img src="random.jpg"></img>
+<br>(Number between 0 and 10)
+<br>The number after the "rnd" is the maximum value of the random number.
+</TD>
+<TR><TD>Differentiation</TD>
+<TD><img src="diffbutton.jpg"></img></TD>
+<TD><img src="diffbutton.jpg"></img>(function,x-value)</TD>
+<TD>
+<img src="diff.jpg"></img><br>
+The function parameter must be X. Example: 2X^3-3X+3
+<br>The result is the is the gradient of the function at the given x-value.
+<br>The program can only calculate an approximated value of the differentiation.
+The precision is about +/-1e-8
+</TD>
+<TR><TD>Integration:<br>
+<TD><img src="integralbutton.jpg"></img></TD>
+<TD><img src="integralbutton.jpg"></img>(function, start value, end value)</TD>
+<TD><img src="integral.jpg"></img>
+<br>The function parameter must be X. Example: sin(X)*3
+<br>The area below the graph of "function" between "start value" and "end value" is calculated.
+<br>An integral calculation will fail if there is a vertical asymptote between start and end point.
+The precision is about +/-1e-9.<br>
+</TD>
+<TR><TD>Usage of Variables</TD>
+<TD><img src="alpha.jpg"></img></TD>
+<TD><img src="alpha.jpg"></img>+ any letter.</TD>
+<TD>
+You can use 26 variables to store values. To use the variables by the integrated buttons, press
+<TR><TD>Store/Recall Values</TD>
+<TD>&nbsp</TD>
+<TD>&nbsp</TD>
+<TD><img src="setvar.jpg"></img> store a value<br>
+  <img src="usevar.jpg"></img> use stored value<br>
+  A stored value can be used like any other number. Unused variables are set to 0.
+</TD>
+</TABLE>
+  <h5>Function Catalog</h5>
+  
+<TABLE BORDER>
+<TR><TD>Unary operators with operand right</TD>
+<TD>
+-<br>
+sin, cos, tan<br>
+asin, acos, atan<br>
+sinh, cosh, tanh<br>
+asinh ,acosh, atanh<br>
+log, ln, exp<br>
+sqrt, curt<br>
+real, imag, abs, arg, conj<br>
+! (not)<br>
+~<br>
+(int), (float), (bool), (string)
+</TD>
+<TR><TD>Unary operators with operand left</TD>
+<TD>
+! (Faculty)
+</TD>
+	
+<TR><TD>Binary operators</TD>
+<TD>
+;<br>
+&amp;&amp; ||<br>
+-&gt; =<br>
+== != &gt;= &lt;= &gt; &lt;<br>
++ - * / %<br>
+&lt;&lt; &gt;&gt;<br>
+x &amp; |<br>
+^<br>
+root<br>
+sprod
+</TD>
+
+<TR><TD>Script commands</TD>
+<TD>
+if else<br>
+while for<br>
+print() clear setcursor(,)<br>
+sleep()<br>
+rnd()<br>
+run()<br>
+d/dx(,) integ(,,)<br>
+getline getkey keystate<br>
+break continue stop
+</TD>
+<TR><TD>brackets</TD>
+<TD>
+( )<br>
+{}<br><br>
+</TD>
+
+<TR><TD>values</TD>
+<TD>
+345<br>
+786.899<br>
+-76e-8<br>
+786i<br>
+"lkasdjl"
+</TD>
+<TR><TD>variables</TD>
+<TD>
+A<br>
+A[]<br>
+A[][]<br>
+</TD>
+</TABLE>
+
+  <br><br><br>
+  <a name="calcstd"><h3>3.1.1 Standard Mode</h3></a>
+  This is the mode for normal scientific calculations. All input and output numbers are decimal floating point numbers.
+  All scientific functions can be used here. In the quick preferences box, you can choose the angle type for trigonometric
+  calculations.<br>
+  The variables from A to Z can be used to store results.<br>
+  It is not possible to use non-decimal numbers in this mode and some of the logic functions are disabled.
+  If you want to use logic functions, choose the base mode and not the normal mode.
+  <h4>Complex Numbers</h4>
+  By default, Extcalc uses real numbers for calculation. You can switch complex numbers on by enabling them in the 
+  cacluator preferences dialog or by choosing it at the calculator menu. Complex numbers can be written by using the i.
+  The following operations can use complex numbers:<br>
+  +  -  *  /  ^<br>
+  root  sqrt  curt<br>
+  sin  cos  tan<br>
+  sinh  cosh  tanh<br>
+  lg  ln<br>
+  abs  arg  conj  real imag<br>
+  <br>
+  <br> 
+  <a name="calcbase"><h3>3.1.2 Base Mode</h3></a>
+When you press the "Mode" button in the calculator window, the calculator switches into base mode.
+In this mode, you can't use scientific functions like sine and cosine, because the calculator uses 64 bit integer values for calculation.
+The base of the input and output numbers can be changed into hexadecimal, decimal, octal and binary mode.
+  <br>
+<P>
+    In base mode, the letters A - F are reserved for hexadecimal numbers, so they can't be used as variables.
+  But you can use the variables from G to Z to store results in base mode.<br>
+  This mode is mainly used for logic functions and transformations between the different numeral systems.<br>
+  If you want to input a number of a numeral system different to the default one, which you can choose with the 
+  quick preferences box, you have to write a special prefix before the number:<br>
+  Examples:<br>
+<TABLE BORDER>
+<TR><TD>Hexadecimal</TD><TD>hex0FA46B<br>
+  The letters in hexadecimal numbers must be uppercase.
+</TD>
+<TR><TD>Decimal</TD><TD>dec4575</TD>
+<TR><TD>Octal</TD><TD>oct01243</TD>
+<TR><TD>Binary</TD><TD>bin1000101111010</TD>
+</TABLE>
+  <br>
+  You can see all logic functions, which you can use in base mode, on the calculator keys. You can press shift key
+  to use additional logic functions.<br>
+  The following functions can be used:<br>
+<TABLE BORDER>
+<TR><TD>Logic functions</TD>
+<TD>
+These functions return only true or false as a result.
+0 is false and everything different from 0 is true.<br>
+  &amp&amp (and), || (or), ! (not)<br>
+</TD>
+<TR><TD>Binary functions</TD>
+<TD>
+  These functions modify every single bit of a number.<br>
+  &amp (and), | (or), ~ (not), &lt&lt (left shift), &gt&gt (right shift), xor
+</TD>   
+</TABLE>
+  
+  <br>
+  <br> 
+  <a name="graph"><h2>3.2 Graphic</h2></a> 
+<br><img src="graph.jpg"></img><br><br>
+  In this window of Extcalc, you can draw and analyze different function graphs.<br>
+  You can choose different types of graphs and different types of coordinate systems.<br>
+  This is a short list of the available types of graphs with a short description:<br>
+  <h4>Graph Types</h4>
+  <h5>Standard Graphs y(x)=X</h5>
+  This is the standard for drawing function graphs. This type draws a normal 2D-Graph. The function variable
+  is X (a lowercase x can also be used).
+  <h5>Polar Graphs r(x)=X</h5>
+  this is also a 2D graphic mode, but it uses a polar coordinate system. X represents the angle and r is the
+  radius of the angle X. For this type of function, a polar coordinate system should be used.
+  <h5>Parameter Graphs x(T)=T; y(T)=T</h5>
+  This is a special type of 2D function. The function variable T doesn't exist at the coordinate system.
+  A parameter function contains two functions; one for the X-coordinate and one for the Y-coordinate.
+  Both functions have the same variable T. You can set the range of the variable T in the graphics preferences dialog.
+  <h5>Inequality Graphs y(X) &gt X, y(X) &lt X, y(X) &gt=X, y(X) &lt=X</h5>
+  When you use this type of graph, the area in which the function is true will be colored.
+  <h5>3D Graphs y(x,z)=XZ</h5>
+  This is the graph type for standard 3D-graphs. You need a 3D-coordinate system to show this type of graph.
+  The 3D-function contains the two variable X and Z. The Y-coordinate is calculated by this function containing X and Z.
+  <h5>Nyquist plots and 3D-Nyquist plots Y=Zi+Z</h5>
+  Both graph types can be used to show complex function graphs. The X-Axis represents the Real part of Y and the Y-Axis shows 
+  the Imaginary part of Y. The function parameter is always Z. But at the normal Nyquist plot, the range of Z must be set by the
+  graph preferences dialog. At the 3D-Nyquist plot, the Z range is equal to the Z range of the coordinate system. This type of
+  Nyquist plot shows the Z-Value as a third Axis.
+  <h5> Dynamic graphs</h5>
+  All above described types of graphs can be used in a dynamic mode. For this dynamic graphs, an extra parameter A must
+  exist in your function. This parameter depends on the time. So you can show moving graphs.
+  This type of graphs needs much graphics performance, so you may need a 3D-Card for using this type of graphs.
+  <h4>Coordinate Systems</h4>
+  It is possible to draw every type of graph in every coordinate system, but some combinations don't make sense.<br>
+  <h5>Standard Coordinate System</h5>
+  This is normally used for standard graphs and also for parameter graphs. It is a Cartesian 2D coordinate system
+  with x-axis and y-axis. Both can be negative and positive. You can set a standard size and a trigonometric size for
+  the coordinate system. This coordinate system can be moved by holding the right mouse button and moving the mouse, 
+  and it can be zoomed with the mouse wheel.
+  <h5>Polar Coordinate System</h5>
+  This coordinate system is mainly used for polar graphs. It has a maximum angle and a maximum radius, which can be
+  set at the graph preferences dialog. Both, maximum angle and maximum radius can only be positive and start at 0.
+  The coordinate system can be zoomed with the mouse wheel.
+  <h5>3D Coordinate System</h5>
+  This is the coordinate system for 3D-graphs, but it can also be used for all other types of graphs. It is a 
+  Cartesian 3D coordinate system, which has x-axes, y-axes and z-axes. They all can be positive and negative.
+  The x-coordinate is horizontal, the y-coordinate is vertical and the z-coordinate is the deep. The 3D-coordinate
+  system can be zoomed by the mouse wheel and it can be rotated by pressing the right mouse button and moving the
+  cursor.
+  
+  
+  <br>
+  <br>
+  <a name="graphdraw"><h3>3.2.1 Draw Graphs </h3></a>
+ 
+  <img src="3dgraph.jpg"></img>
+  <br>
+The graphics window of Extcalc consists of three parts: function table, output window and keyboard.
+
+<h5>Function Table</h5>
+In the first column of the table, you can insert all functions you need to draw.
+You can insert up to 20 functions here.<br>
+If you want to show the function graphs in different colors, you can choose colors in the second column of the table.
+The function is shown in the chosen color and the graph will also be drawn in this color.<br>
+If you don't want to draw all functions of the function table, you can turn some functions off.
+To activate and inactivate functions, just click into the check boxes of the third column.<br>
+In Extcalc, you can use different function types, which you can choose in the fourth column.
+Here you can choose normal functions, polar functions, parameter functions, 3D-Functions and inequalities.
+You can also draw different types of functions at the same time, but you can only draw them into one coordinate system.<br>
+In the last column, you can switch the function to a dynamic function.<br>
+
+<h5>Output Window</h5>
+If you press the print button, the graphs of all active functions will be drawn at the output window.
+You can choose one type of coordinate system for your output window at the graphics menu or at the graphic preferences dialog.<br>
+
+  <br>
+  <a name="graphsolve"><h3>3.2.2 Analyze Graphs </h3></a>
+<img src="analyse.jpg"></img>
+<br>
+If you want to analyze graphs, you can press the analyze button. <br>
+This will switch the graphics window into analysis mode where you can analyze your graphs.
+Just choose one from the menu.<br>
+All analyzation methods expect Newton, integration and differentiation analyze only the the part of the graph which is shown in the output window.<br>
+You can only analyze the type of functions matching with your coordinate system type.
+This means, if you want to analyze standard 2D-graphs, parameter graphs or graphs of inequality functions, you will have to choose a Cartesian 2D-coordinate system.
+If you want to analyze polar functions, you will need a polar coordinate system and if you want to analyze 3D-graphs, you will have to choose the Cartesian 3D-coordinate system<br>
+The function type, which you want to analyze, can be chosen at the box below the function table.
+  <br>
+  <br>
+Not all function types have the same analyzation options.
+The table below shows you the different analyzation methods and the function types needed for this methods.<br>
+<P>
+<table border>
+<tr>
+  <td ALIGN="CENTER"></td>
+  <td ALIGN="CENTER">standard</td>
+  <td ALIGN="CENTER">polar</td>
+  <td ALIGN="CENTER">parameter</td>
+  <td ALIGN="CENTER">inequality</td>
+  <td ALIGN="CENTER">3D-graph</td>
+  <td ALIGN="CENTER">Nyquist plot</td>
+</tr>
+<tr>
+  <td ALIGN="CENTER">Calculate Y-value</td>
+  <td ALIGN="CENTER">x</td>
+  <td ALIGN="CENTER">x</td>
+  <td ALIGN="CENTER">x</td>
+  <td ALIGN="CENTER">x</td>
+  <td ALIGN="CENTER">x</td>
+  <td ALIGN="CENTER">x</td>
+</tr>
+<tr>
+  <td ALIGN="CENTER">Calculate roots</td>
+  <td ALIGN="CENTER">x</td>
+  <td ALIGN="CENTER">x</td>
+  <td ALIGN="CENTER">x</td>
+  <td ALIGN="CENTER">x</td>
+  <td ALIGN="CENTER">&nbsp;</td>
+  <td ALIGN="CENTER">x</td>
+</tr>
+<tr>
+  <td ALIGN="CENTER">Newton's Method</td>
+  <td ALIGN="CENTER">x</td>
+  <td ALIGN="CENTER">x</td>
+  <td ALIGN="CENTER">&nbsp;</td>
+  <td ALIGN="CENTER">x</td>
+  <td ALIGN="CENTER">&nbsp;</td>
+  <td ALIGN="CENTER">&nbsp;</td>
+</tr>
+<tr>
+  <td ALIGN="CENTER">Calculate X-values</td> 		  
+  <td ALIGN="CENTER">x</td>		
+  <td ALIGN="CENTER">x</td>	   
+  <td ALIGN="CENTER">x</td>		  
+  <td ALIGN="CENTER">x</td>		 
+  <td ALIGN="CENTER">x</td>			
+  <td ALIGN="CENTER">x</td>
+</tr>
+<tr>
+  <td ALIGN="CENTER">Points of Intersection</td>	  
+  <td ALIGN="CENTER">x</td>		
+  <td ALIGN="CENTER">x</td>	   
+  <td ALIGN="CENTER">&nbsp;</td>		  
+  <td ALIGN="CENTER">x</td>		 
+  <td ALIGN="CENTER">&nbsp;</td>			
+  <td ALIGN="CENTER">&nbsp;</td>
+</tr>
+<tr>
+  <td ALIGN="CENTER">Maximum and minimum values</td> 
+  <td ALIGN="CENTER">x</td>		
+  <td ALIGN="CENTER">x</td>	   
+  <td ALIGN="CENTER">&nbsp;</td>		  
+  <td ALIGN="CENTER">x</td>		 
+  <td ALIGN="CENTER">&nbsp;</td>			
+  <td ALIGN="CENTER">&nbsp;</td>
+</tr>
+<tr> 
+  <td ALIGN="CENTER">Calculate Integral</td> 		  
+  <td ALIGN="CENTER">x</td>		
+  <td ALIGN="CENTER">x</td>	   
+  <td ALIGN="CENTER">&nbsp;</td>		  
+  <td ALIGN="CENTER">x</td>		 
+  <td ALIGN="CENTER">x</td>			
+  <td ALIGN="CENTER">&nbsp;</td>
+</tr>
+<tr> 
+  <td ALIGN="CENTER">Calculate Differential</td> 	  
+  <td ALIGN="CENTER">x</td>		
+  <td ALIGN="CENTER">x</td>	   
+  <td ALIGN="CENTER">x</td>		  
+  <td ALIGN="CENTER">x</td>		 
+  <td ALIGN="CENTER">x</td>			
+  <td ALIGN="CENTER">&nbsp;</td>
+</tr>
+<tr> 
+  <td ALIGN="CENTER">Calculate Z-value</td> 		  
+  <td ALIGN="CENTER">&nbsp;</td>		
+  <td ALIGN="CENTER">&nbsp;</td>	   
+  <td ALIGN="CENTER">&nbsp;</td>		  
+  <td ALIGN="CENTER">&nbsp;</td>		 
+  <td ALIGN="CENTER">x</td>			
+  <td ALIGN="CENTER">&nbsp;</td>
+</tr>
+</table>
+<P>
+
+<TABLE BORDER>
+<TR><TH>Function</TH><TH>Procedure</TD>
+<TR>
+<TD>Calculate y-value</TD>
+<TD>Insert a x-value into the input line or click into the graphics output window where you want to calculate the y-value.
+Then press the calculate button.
+The y-value of all displayed graphs will be shown in a table.
+Parameter graphs may have more than one y-value with the same x-value.
+For 3D-Graphs you have to insert x-value and z-value to calculate the y-value
+</TD>
+<TR>
+<TD>Calculate Roots</TD>
+<TD>Choose a function from the function box and press the calculate button to calculate the roots of a function.
+</TD>
+<TR>
+<TD>Newton's Method</TD>
+<TD>This is a special method of calculating roots.
+You can set a start value for the calculation and the number of steps to calculate.
+All results will be shown in the table. The first item in the last line is your result.
+</TD>
+<TR>
+<TD>Calculate x-values</TD>
+<TD>Choose a function from the box and type the y-value you want into the input line.
+When you press the calculate button, the x-values are shown in the output table.
+For 3D-graphs, the y-value is also needed for calculation.
+</TD>
+<TR>
+<TD>Points of intersection</TD>
+<TD>Choose two graphs from the boxes and press the calculate button.
+Then the points of intersection of the two graphs are shown.
+Don't choose two times the same function.
+</TD>
+<TR>
+<TD>Maximum and Minimum values</TD>
+<TD>Choose a graph and press the calculate button and then all extreme values will be calculated.
+</TD>
+<TR>
+<TD>Integral Calculation</TD>
+<TD>Just set a start point and an end point, then you can integrate the cosine function.
+The size of the area between the graph and the x-Axis is calculated.
+In 3D-Mode, you have to set X-Start, X-End, Z-Start and Z-End points for integration.
+The volume between the X-Z-Plane and the graph is calculated.
+</TD>
+<TR>
+<TD>Differential Calculation</TD>
+<TD>For a differential calculation, you must choose a function and the point to calculate, then press the calculate button.
+It is also possible to calculate the Cartesian differentiation of a parameter function.
+For 3D-Functions, you have to set a X- and a Z-Value.
+All partial differentials at the given point were calculated.
+</TD>
+<TR>
+<TD>Calculate z-values</TD>
+<TD>Choose a function from the box and type the x-value and the y-value into the input fields.
+Pressing the calculate-button will show you the results.
+</TD>
+</TABLE>
+  
+  <br>
+  <a name="screenshot"><h3>3.2.3 Screen shots </h3></a>
+  If you choose the point Screenshot/Drawing in the box below the graphics area, you can save Screen shots and draw into the graphics window.<br>
+  <img src="screenshot.jpg"></img>
+  <br>
+  <h5>Saving a screenshot</h5>
+  In the window, shown above, you can save a screenshot of the graphics window. Before saving, you can change some options. You can set the size of
+  the picture, the image format and the file name. If you have set this, press the Save-button to save the image.<br>
+  <h5>Drawing</h5>
+If you want to point out something in the screenshot or if you want to make an annotation, Extcalc provides some drawing tools.<br>
+The drawing area is independent from the graphs and the coordinate system.
+That means, when you change the coordinate system or redraw graphs, the extra drawn elements will not move or disappear.<br>
+The drawing functions have a preview mode.
+While you hold down the mouse button, you can only see a preview.
+The final view will be generated when you release the mouse button.<br>
+You can use several standard tools: free drawing, line, rectangle, circle<br>
+For each, you can change width and color.
+<P>
+Text drawing: If you press the text button, you will see an input dialog where you can set the text to draw.
+When you hold down the left mouse button, you can also see a preview. If you press the mouse button again, the text will be inserted again.
+To change the text, text size or color, you have to press the Text-button again.
+<P>
+Rubber: If you want to erase a part of the drawn things, you can use this tool. It makes the erased areas transparent. In preview mode, it is shown white.
+  <br>
+  <br>
+  Furthermore, you have an undo button and a button to clear the complete draw area.<br>
+  
+  <a name="table"><h2>3.3 Tables</h2></a>
+  In Extcalc, it is also possible to generate tables from functions. <br>
+  <img src="table.jpg"> </img><br>
+  The table window of Extcalc.<br><br>
+  For the generation of this value tables, the same functions as for graphs will be used. You can generate tables
+  from every types of functions.<br>
+  The tables are generated from the functions, which are activated in the function table. You can calculate 
+  only tables from the type of functions, which is chosen at the type box. You can choose the table function type directly
+  with the box in the table window or by the table menu or by the table preferences dialog.<br>
+  In the table preferences dialog, you can set the start and the end value for your table and you can choose the
+  number of values to calculate.<br>
+  It is also possible to change the input values by clicking into the header of the table that shows the results.
+  You can insert the new input value into the shown dialog window.<br>
+  For functions with the variable x or the complex z, on column per function is generated with the function values. For parameter
+  functions with the variable T, the same options as for the variable x are used. For every functions of this type, 
+  one column with x-values and one column with y-values will be generated. If you generate a table with 3D-functions,
+  for every z-value of every function, one column will be generated.
+
+
+
+
+  <a name="script"><h2>3.4 Script Programming</h2></a>
+  <img src="scriptrun.jpg"></img>
+  <br><br>
+  Extcalc contains a script interpreter for running small scripts. You can edit and run this scripts directly with Extcalc. <br><br>
+  <a name="scriptcom"><h3>3.4.1 Introduction</h3></a>
+  The syntax for Extcalc scripts is similar to C-language syntax, but the normal calculator commands and operations can also be used in
+  this scripts.
+  You can't use all script commands in the normal calculator. Loops and the command to run another script can only be used in script,
+  not in the calculator.
+  The scripts programs run in a separate console, and you may use the other extcalc functions while running a script.
+  Scripts can be managed, edited and started from the integrated script editor.<br>
+  In this version 0.9.0 are not all planned features included.<br><br>
+
+  <a name="scriptedit"><h3>3.4.2 The Script-Editor</h3></a>
+  <img src="scriptedit.jpg"></img>
+  <br><br>
+  The integrated script editor includes all needed editor functions and you can use it to write, modify and run your scripts.<br><br>
+  Before you can use this editor, you have to create the script directories. Normally, this is done at the first start of extcalc, but if you
+  haven't done it there, you may need use the script preferences dialog from the preferences menu to create them.<br>
+  There you have to create a script root directory and set the names for a code subdirectory and a data subdirectory.<br>
+  This new script code directory will contain some example scripts. Other example scripts can be found at the Extcalc homepage
+  <a href="http://extcalc-linux.sourceforge.net">extcalc-linux.sourceforge.net</a>.
+  <h5>Create a New Script:</h5>
+  To create a new script you just need to write into an empty editor window and press the "Save"-Button, or you press the right mouse button
+  in the file list and choose "Create New Script".
+  The new file will then be shown in the editor window.<br>
+  <h5>Load and Save Scripts:</h5>
+  To load a saved script, just choose it at the file list. The code will be shown in your editor window. If you have modified another code before,
+  this code will be marked as modified in the file list, but the changes will not be written to the disk.<br>
+  If you want to save the current code, just press the "Save"-Button<br>
+  If you want to save any other modified code, you can choose the code with the right mouse button at the file list and choose "Save" so save it.<br>
+  If you want to save all modified codes, press the right mouse button at the file list and choose "save all".<br>
+  Before closing Extcalc, you were asked if you want to save all your codes, if you have not saved any changes.<br>
+  <h5>Import and Export Scripts</h5>
+  With the import function, you can copy a script from outside into the script code directory. With the export fuction, you
+  can copy it from the code directory to outside.<br>
+  You can import and export scripts by pressing the import or export button of the script editor, or by using the script menu.<br>
+  If you do this, you can see the import/export dialog where you can choose source and destination for copying.<br>
+  <h5>Managing files:</h5>
+<DL>
+<DT>Subdirectories:
+<DD>You can create subdirectories in your script directory to save your scripts there.<br>
+<DT>Renaming:
+<DD>You may also rename your scripts, but drag and drop for moving files is currently not available.<br>
+<DT>Removing:<br>
+<DD>You can also remove your code files and subdirectories, but you can remove directories only if they are empty.<br>
+<DT>Changes without Extcalc:<br>
+<DD>You can also modify your script files and directories without Extcalc.
+If is running while you change something, you can press the right mouse button at the file list and choose "Update" to see your changes in Extcalc.
+</DL>
+  <h5>Running Scripts:</h5>
+  To run a script, just choose it from the file list and press the "Run"-Button.<br>
+  Then, the script will be translated and the active window switches to the script console.<br>
+  In the script console, you can see the interpreter errors. If the script was translated without errors, you can press the run-button to run the script.<br>
+  It is not possible, to run two scripts at the same time. If you start another script while one is running, you were asked, if you want to 
+  kill the currently running script.<br>
+  You can always stop a running script by pressing the "Kill"-Button at the script console window.<br>
+  If the script does not stop before the timeout, an error message is displayed. You have to press the kill-button again to stop the script correctly.<br>
+  <a name="scriptsyntax"><h3>3.4.3 Scripting Language</h3></a>
+  In version 0.9.0 of Extcalc, not all features are included. You can read more about the planned features 
+  at <a href="#else">Chapter 4</a>.<br>
+  <h5>Problems:</h5>
+  This is a list of the current problems of the 0.9.0 version of the Extcalc Script Interpreter<br><br>
+  <OL>
+  <LI>Speed<br>
+  The extcalc scripts were ran by an Interpreter and so they run not as fast as compiled programms, but it will be optimized in later versions.<br><br>
+  <LI>Variables:<br>
+  You can use the uppercase letters from A to Z as variables. Every variable can also be used as an array or a matrix.<br><br>
+  <LI>Features<br>
+  Most of the planned features is available, now, but this is only a calculator script interpreter that can be used to solve simple mathematical problems.
+  It will never have the flexibility and power of a complex programming language like C.
+  <br><br>
+  <h5>Syntax:</h5>
+  The syntax of the Extcalc Script interpreter is similar to the C syntax.<br>
+  Main Rules:<br>
+  <UL>
+  <LI> Every command ends with a ; semicolon<br>
+  <LI> Behind loops and conditions directly follows the command to run, and no semicolon<br>
+  <LI> If you want to run more than one command in a loop or a condition, you have to write this commands in braces {}.<br>
+  <LI> It is possible to use mathematical operations in the code. They are also finished with the semicolon.<br>
+  <LI> You can insert newlines, tabs and spaces everywhere in your code.<br>
+  <LI> The whitespace will be removed before running the script.<br>
+  <LI> It is possible to use C++-like comments // or C-comments. Everything in this line after the slash signs will be ignored.<br>
+  <LI> You can also use the C-Comments /* ... */ in your scripts. Everything inside the comment will be ignored<br>
+  <LI> The compare operator is written like in C with ==, the single = operator is the set-operator<br>
+  <LI> If you want to use a Variable as an Array, use the Index-Operator with it. Example: A[3]=5;<br>
+  <LI> It is not possible to define and functions. The commands are written directly into the code file.<br>
+  <LI> It is possible to execute another script file by the run() command.<br>
+  <LI> You can define macros with a #define line like in C, but only without arguments<br>
+  </UL>
+  </OL>
+  <br>
+  <h5>Error Messages:</h5>
+  If you want to run a script in Extcalc, your script code is first processed by an script interpreter. This script interpreter generates 
+  a executable object in the memory without executing it. This object can be ran as often as you want.<br>
+  If this script interpreter is unable to process your code, it prints out an error message and the line, where the error was found.
+  But the interpreter doesn't have the original code format, so it can't exactly say, where to find the error in the code. The line number, which 
+  the interpreter shows is calculated by searching for the semicolons in the code, so it may be that the shown error is above the shown line number.
+  Sometimes, the script interpreter may process a script without finding the errors inside. This happens, when the syntax is ok,
+  but the script contains logic errors.<br>
+  If the console shows the error message "Preprocessor Error", it was unable to run the script interpreter. This may be because the file is empty, or because
+  the file does not contain anything translatable, or if the code contains a backlash outside of a string.<br>
+  If there is a problem with the #config preferences or with #define macros, you will also get a "Preprocessor Error".
+  <h5>Variables:</h5>
+  You can use the uppercase letters from A to Z as variables.<br>
+  When you prefer symboly names for your variables, you may want to define a macro like #define counter C.<br>
+  This variables can be initialized directly in the code.<br>
+  The variables are not pre-initialized, so the content is not defined. But they can always be used without initialization.<br>
+  The variables can contain different types of content. The variable type may change in the running program.<br>
+  The following types are available:<br>
+<DL>
+<DT>float:
+<DD>floating point number of type long double (size depends on the system, normally 10 Bytes)
+<DT>int:
+<DD>integer number of type long long int (8 Byte)
+<DT>bool:
+<DD>boolean value of type bool (can be true or false)
+<DT>string:
+<DD>Text of type char* (length is variable, allocating and freeing is made by the interpreter)
+</DL>
+  <br>
+  If you set a variable with a floating point value, it will be of type float.
+  If you insert a integer value into the variable, it will be of type int.
+  Results from logic operations are of type bool.
+  Text, and input from the user is of type string.
+  If an operation fails, the variable will be set to NONE.<br>
+  Every variable type contains a correct floating point value for compatibility with the normal calculator algorithms.<br>
+  <br>
+  <h5>Arrays:</h5>
+  Every variable can also be used as an Array.
+  The normal value of the Array-Variable is stored at index 0.
+  If you use a Variable without Index-Operator, you use the element with index 0.
+  A=5 is the same as A[0]=5.
+  N-dimensional arrays were not supported in this version.
+  An array can only have one or two dimensions.
+  If you want to use a two dimensional array, you have to write two index operators.
+  For example A[3][2]=5;
+  <h5>Matrices and Vectors:</h5>
+  If you have filled a one-dimensional array, you can use this variable as a vector.
+  If you want to use a variable as a vector, you have to write for example A[] for the
+  variable A. If there is nothing inside the brackets, the variable is used as vector.
+  For every vector operation, including print a vector out, all vector elements were
+  converted to float.<br>
+  Extcalc supports several vector operations:
+  <TABLE BORDER>
+  <TR><TH>Operation</TH><TH>Description</TH>
+  <TR>
+  <TD>vector+constant, constant+vector, vector-constant, constant-vector</TD>
+  <TD>Add a constant value to every element of the vector
+  </TD>
+  <TR>
+  <TD>vector+vector, vector-vector</TD>
+  <TD>Vector sum. Elements with the same index were added
+  </TD>
+  <TR>
+  <TD>dotproduct: vector°vector</TD>
+  <TD>Multiply two vectors with a scalar as result
+  </TD>
+  <TR>
+  <TD>crossproduct: vector*vector</TD>
+  <TD>Multiply two vectors with a vector as result. Both vectors must have three elements.
+  </TD>
+  <TR>
+  <TD>vector*constant, constant*vector</TD>
+  <TD>Every element of the vector is multiplied with the constant.
+  </TD>
+  </TABLE>
+   <br>
+  For matrix operations, you have to fill a two-dimensional array.<br>
+  You say that you want to use an array as a matrix, when you type for example A[][].
+  As at vector operations, all elements were converted to float.<br>
+  If you access a single element of a vector for example by typing A[2][3], the first index
+  [2], is the line (2 means the third line), and the second index [3] is the row (3 means the fourth row).<br>
+  Here is a list of supported matrix operations:
+  <TABLE BORDER>
+  <TR><TH>Operation</TH><TH>Description</TH>
+  <TR>
+  <TD>matrix+constant, constant+matrix, matrix-constant, constant-matrix</TD>
+  <TD>Add a constant value to every element of the matrix
+  </TD>
+  <TR>
+  <TD>matrix+matrix, matrix-matrix</TD>
+  <TD>Matrix sum. Elements with the same indices were added
+  </TD>
+  <TR>
+  <TD>matrixproduct: matrix*matrix</TD>
+  <TD>Multiply two matrices. The result is also a matrix.
+  </TD>
+  <TR>
+  <TD>vector*matrix</TD>
+  <TD>Multiply a vector with a matrix. The result is a matrix.
+  </TD>
+    <TR>
+  <TD>matrix*vector</TD>
+  <TD>Multiply a matrix with a vector. The result is a vector.
+  </TD>
+  <TR>
+  <TD>matrix*constant, constant*matrix</TD>
+  <TD>Every element of the matrix is multiplied with the constant.
+  </TD>
+      <TR>
+  <TD>matrix^-1</TD>
+  <TD>Calculate inverse matrix
+  </TD>
+    <TR>
+  <TD>det matrix</TD>
+  <TD>Calculate determinant of a matrix.
+  </TD>
+  </TABLE>
+  <br>
+  General hints:<br>
+  <UL>
+  <LI>Matrices and vectors can be copied from one variable to another. You write for example
+  B=A[][] to copy the complete matrix A into B.</LI>
+  <LI>If you want to copy a single element of a Matrix A into B, write for example B=A[3][2].</LI>
+  <LI>When you write B=A, and A is a matrix, ONLY the first element of the matrix is copied. This is equal to B=A[0][0].</LI>
+  <LI>If you want to use the result Vector or result Matrix from the last operation, you can writ ans[] or ans[][].</LI>
+  <LI>The only way to make a matrix or a vector smaller, is to copy another, smaller vector or matrix into it.</LI>
+  <LI>When you want to erase all matrix an vector data, you must press th AC button.</LI>
+  </UL>
+  <br><br>
+  <h5>Commands:</h5>
+  The following basic commands can be used for programming:<br><br>
+  <OL>
+  <LI>If<br>
+  Syntax: <br>
+ <pre>
+ if( condition )
+    command for condition true;
+  else 
+    command for condition false;
+  </pre>
+  If you want to run more commands, they must be written in braces (without semicolon at the end).<br>
+  Example:<br>
+  <pre>
+  if(A==5)
+   A=7;
+  else 
+  {
+    A=A+1;
+    if(A&gt;10)
+      A=0;
+  }
+  </pre>
+
+  <LI>While<br>
+  Syntax: <br>
+ <pre>
+ while( condition )
+    command that is ran while condition true;
+  </pre>
+  If you want to run more commands, they must be written in braces (without semicolon at the end).<br>
+  If the loop should run all time, you can write while(1), but you always have to set a condition<br>
+  Example:<br>
+  <pre>
+  F=0;
+  while(F==0)
+  {
+    F=keystate;
+    sleep(10000);
+  }
+  </pre>
+
+  <LI>For<br>
+  Syntax: <br>
+ <pre>
+ for(initialization; condition; count-command)
+    command that is ran while condition true;
+  </pre>
+  If you want to run more commands, they must be written in braces (without semicolon at the end).<br>
+  At initialization, you can set the counter variable to the start value.<br>
+  The loop runs, as long as the condition is true.<br>
+  The printf-command is executed in every run. It can be any command.<br>
+  If you don't need the initialization or the condition, you can only type a semicolon. If you don't need the count-command
+  you can leave it out.<br>
+  Example:<br>
+  <pre>
+  for(A=-4;A&lt;0;A+1-&gt;A)
+     print(A);
+
+  for(;;)
+    print("this runs always");
+  </pre>
+
+  <LI>Print<br>
+  Syntax: <br>
+ <pre>
+ print( Output );
+  </pre>
+  Output can be a variable, a command or a constant (like text).<br>
+  You can only set one input.<br>
+  Example:<br>
+  <pre>
+  A=12;
+  print(A+3);  //Output: 15
+
+  print("Hello World!\n");    // Text with newline at the end
+
+  print(3&gt;5);  //prints out false
+  </pre>
+
+  <LI>getline<br>
+  Syntax: <br>
+  <pre>
+  getline;
+  </pre>
+  This command does only make sense, if you use the return value.<br>
+  Example:<br>
+  <pre>
+  X=getline;
+  print(X);
+  //or:
+  print(getline);
+  </pre>
+
+  <LI>getkey<br>
+  Syntax: <br>
+  <pre>
+  getkey;
+  </pre>
+  This command does only make sense, if you use the return value.<br>
+  It blocks the program until you press any button.<br>
+  The return value is a string and you may need to convert it.<br>
+  Example:<br>
+  <pre>
+  F=0;
+  while(F!=97)  //loop runs, until you press a
+  {
+    F=getkey;
+    F=(int)F;
+  }
+  </pre>
+
+  <LI>Keystate<br>
+  Syntax: <br>
+  <pre>
+  keystate;
+  </pre>
+  This command does only make sense, if you use the return value.<br>
+  It doesn't block the program.<br>
+  If no button was currently pressed, it returns 0.<br>
+  The return value is a string and you may need to convert it.<br>
+  Example:<br>
+  <pre>
+  F=0;
+  while(F!=97)  //Loop runs, until you press a
+  {
+   F= keystate;
+    F=(int)F;
+    sleep(10000);                         //break
+    if(F==0)    
+      print("Press a to stop\n");    //This text is always printed
+  }
+  </pre>
+
+  <LI>Sleep<br>
+  Syntax: <br>
+  <pre>
+  sleep( Time in microseconds );
+  </pre>
+  The script is stopped for the given time.<br>
+  If you want to make a program run slower, you should use this command and no empty loop.<br>
+  A program that interacts with the user or a program that prints very much should use this command because
+  otherwise the script console may not have enough cpu time to show to show its content on time.<br>
+  An example can be found at the keystate command.<br><br><br>
+
+  <LI>readfile<br>
+  Syntax: <br>
+  <pre>
+  readfile( filename );
+  </pre>
+  Reads the file with the name filename and returns its content as string.<br>
+  The files to read and write must be located in the script data directory. Subdirectories were not supported.<br>
+  filename must be a string. if filename is no string, or the file could not be read, an empty string is returned.<br><br><br>
+  
+  <LI>writefile<br>
+  Syntax: <br>
+  <pre>
+  writefile(filename , content);
+  </pre>
+  Writes the content ans string into a file named filename.<br>
+  If the file doesn't exsit, it will be created. If it exists, it will be cleared.<br>
+  The filename must be a string. As at readfile, subdirectories and absolute paths were not supported.<br>
+  <br><br><br>
+  
+  
+  <LI>appendfile<br>
+  Syntax: <br>
+  <pre>
+  appendfile(filename , content);
+  </pre>
+  The same as writefile, but if a file still exists, the content will be appended.<br>
+  Example:
+  <pre>
+  removefile("count.txt");             //remove file, if it exists
+  for(C=0; C&lt;100; C++)              //loop from 0 to 99
+  {
+    apendfile("count.txt",C);          //write numbers from 0 to 99 into a file
+    appendfile("count.txt","\n");       //seperated by a newline
+  }
+  </pre>
+  <br><br><br>
+
+  <LI>removefile<br>
+  Syntax: <br>
+  <pre>
+  removefile(filename);
+  </pre>
+  This command removes the file filename from the script data directory.<br><br><br>
+  
+  
+  <LI>glshow<br>
+  Syntax: <br>
+  <pre>
+  glshow;
+  </pre>
+  This command updates the GL window.<br><br><br>
+  
+  
+  <LI>glclear<br>
+  Syntax: <br>
+  <pre>
+  glclear;
+  </pre>
+  This command clears the GL window.<br><br><br>
+  
+  
+  <LI>glbegin<br>
+  Syntax: <br>
+  <pre>
+  glbegin( type );
+  </pre>
+  This commands must be called to start drawing. It must also be called to draw into a dislplay list.<br>
+  The draw type is also set by this command. The command is just written inside the brackets.<br>
+  The following types can be set:<br>
+  points<br>
+  lines<br>
+  linestrip<br>
+  lineloop<br>
+  triangles<br>
+  trianglestrip<br>
+  trianglefan<br>
+  quads<br>
+  quadstrip<br>
+  polygon<br><br>
+
+<br><br><br>
+  
+  
+  <LI>glend<br>
+  Syntax: <br>
+  <pre>
+  glend;
+  </pre>
+  This command must be called after glbegin(), when drawing is done.<br><br><br>
+  
+ 
+  <LI>glbeginlist<br>
+  Syntax: <br>
+  <pre>
+  glbeginlist;
+  </pre>
+  This command starts a display list. After this command, all gl commands expect text drawing were stored in the
+  display list.<br><br><br>
+  
+  
+  <LI>glendlist<br>
+  Syntax: <br>
+  <pre>
+  glendlist;
+  </pre>
+  This command ends the display list and returns the list ID.<br>
+  The returned ID is an integer and must be stored to call the list.<br>
+  <br><br><br>
+  
+  
+  <LI>glcalllist<br>
+  Syntax: <br>
+  <pre>
+  glcalllist;
+  </pre>
+  With this command, you can call a display list, so that it is drawn.<br>
+  Using display lists instead of calling GL commands directly is much faster.<br><br>
+  Example:<br>
+  <pre>
+  glbeginlist;          //start list
+  glbegin(lines)        //start drawing lines
+  glpoint(-5,-5,-5);    //set coordinates
+  glpoint(5,5,5);
+  glend;                //end drawing lines
+  glbegin(triangles);   //start drawing triangles
+  glpoint(-5,-5,0);     //set coordinates
+  glpoint(5,-5,0);
+  glpoint(0,5,0);
+  glend;                //end drawing triangles
+  L=glendlist;          //end list, store ID
+
+  glclear;
+  glmove(0,0,1);        //set transformation matrix
+  glcalllist(L);        //call list
+  glmove(0,0,-2);       //change transformation matrix settings
+  glcalllist(L);        //call list again
+  glshow;               //show scene
+  </pre>
+
+<br><br><br>
+  
+  <LI>glpoint<br>
+  Syntax: <br>
+  <pre>
+  glpoint(x,y,z);
+  </pre>
+  This command must be called to set object coodinates after calling glbegin().<br>
+  Parameters are three floating point values for x-, y-, and z-coordinate.<br><br><br>
+  
+  
+  <LI>glcolor<br>
+  Syntax: <br>
+  <pre>
+  glcolor(r,g,b);
+  </pre>
+  With this command, you can set the draw color.<br>
+  The parameters are integer values for red, green and blue. They must be in a range between 0 and 255.<br><br><br>
+  
+  
+  <LI>glmove<br>
+  Syntax: <br>
+  <pre>
+  glmove(x,y,z);
+  </pre>
+  This command moves a GL object.<br>
+  The paramters are float values for the coordinates.<br>
+  GL transformations were always multiplied to a single transformation matrix. This means, that the transformation command that has
+  been called first, will be done as last.<br><br><br>
+  
+  
+  <LI>glrotate<br>
+  Syntax: <br>
+  <pre>
+  glrotate(angle,x,y,z);
+  </pre>
+  GL objects can be rotated by this command. The rotation is described by the angle in degrees (angle)
+  and by a vector (x,y,z), which represents the rotation axes. All parameters are of type float.<br>
+  GL transformations were always multiplied to a single transformation matrix. This means, that the transformation command that has
+  been called first, will be done as last.<br><br><br>
+  
+  
+  <LI>glscale<br>
+  Syntax: <br>
+  <pre>
+  glscale(x,y,z);
+  </pre>
+  With this command, a GL object can be scaled. All parameters are of type float.<br>
+  GL transformations were always multiplied to a single transformation matrix. This means, that the transformation command that has
+  been called first, will be done as last.<br>
+  Example:<br>
+  <pre>
+#config gl              //gl initialisation
+#config axesoff
+#config rasteroff
+#config labelsoff
+
+glstartlist;            //generate gl list for a cube
+glbegin(quads);
+glpoint(-1,-1,-1);
+glpoint(1,-1,-1);
+glpoint(1,1,-1);
+glpoint(-1,1,-1);
+
+glpoint(-1,-1,1);
+glpoint(1,-1,1);
+glpoint(1,1,1);
+glpoint(-1,1,1);
+
+glpoint(-1,-1,-1);
+glpoint(-1,-1,1);
+glpoint(-1,1,1);
+glpoint(-1,1,-1);
+
+
+glpoint(1,-1,-1);
+glpoint(1,-1,1);
+glpoint(1,1,1);
+glpoint(1,1,-1);
+
+glpoint(-1,-1,-1);
+glpoint(-1,-1,1);
+glpoint(1,-1,1);
+glpoint(1,-1,-1);
+
+glpoint(-1,1,-1);
+glpoint(-1,1,1);
+glpoint(1,1,1);
+glpoint(1,1,-1);
+glend;
+L=glendlist;             //end list and store list
+
+R=0;                     //rotation angle
+while(1)
+{
+  R=R+1;
+  glclear;              //draw scene
+                        //int this order, the cube rotates around its y-axes, has a size of 4x4x4, and
+                        //its rotatione axes is located at 12,0,0
+  glscale(4,4,4);       //resize
+  glmove(3,0,0);        //move
+  glrotate(R,0,1,0);    //rotate
+  glcolor(30,30,200);
+  glcalllist(L);
+  
+  glloadidentity;
+                        //int this order, the cube rotates around the coordinate systems y-axes, has a size of 3x3x3, and
+                        //rotatis with radius of 9
+  glscale(3,3,3);       //resize
+  glrotate(R,0,1,0);    //rotate
+  glmove(3,0,0);        //move
+  glcolor(200,30,20);
+  glcalllist(L);
+  glshow;
+  sleep(30000);
+}
+</pre>
+<br><br><br>
+  
+  
+  <LI>glloadidentity<br>
+  Syntax: <br>
+  <pre>
+  glloadidentity;
+  </pre>
+  This command resets all transformations.<br><br><br>
+  
+  
+  <LI>glstring<br>
+  Syntax: <br>
+  <pre>
+  glstring(x,y,text);
+  </pre>
+  This command shows a text at the 2D-position x,y. The start point is the upper left edge.
+  The coordinates are in pixels. x and y are integer values. Text can be a string or a number (float or int).
+  <br><br><br>
+  
+  <LI>drawpoint<br>
+  Syntax: <br>
+  <pre>
+  drawpoint(x,y);
+  </pre>
+  This command draws a point of the currently set color into the 2D-graphics window of the script interpreter.
+  The origin of the coordinate system is the upper left corner of the window and x and y are integer values.
+  <br><br><br>
+  
+  <LI>drawline<br>
+  Syntax: <br>
+  <pre>
+  drawline(xstart,ystart,xend,yend);
+  </pre>
+  This command draws a line of the currently set color from the given start point to the given end point.
+  All coordinates are integer values.
+  <br><br><br>
+  
+  <LI>drawrect<br>
+  Syntax: <br>
+  <pre>
+  drawrect(xstart,ystart,xend,yend);
+  </pre>
+  Draws a rectangle with the given coordinates. All coordinate values are of integer type.
+  <br><br><br>
+  
+  <LI>drawcircle<br>
+  Syntax: <br>
+  <pre>
+  drawcircle(xstart,ystart,xend,yend);
+  </pre>
+  Draws an ellipse into the rectangle defined by the given coordinates.
+  The coordinates are integer values.
+  <br><br><br>
+  
+  <LI>drawstring<br>
+  Syntax: <br>
+  <pre>
+  drawstring(x,y,text);
+  </pre>
+  This command shows a text at the position x,y.
+  The coordinates are integer values. Text can be a string or a number (float or int).
+  <br><br><br>
+  
+  <LI>drawcolor<br>
+  Syntax: <br>
+  <pre>
+  drawcolor(r,g,b);
+  </pre>
+  Sets the draw color for all 2D-drawing commands. The color is set by red, green and blue component which can
+  have values from 0 to 255.
+  <br><br><br>
+  
+  <LI>drawclear<br>
+  Syntax: <br>
+  <pre>
+  drawclear;
+  </pre>
+  This command clears the 2D-graphics window of the script interpreter.
+  <br><br><br>
+  
+  
+
+  <LI>type converting<br>
+  Syntax: <br>
+  <pre>
+  (target type)variable;
+  </pre>
+  target type must be one of (int) (float) (string) (bool).<br>
+  You can also use them with constants.<br>
+  Example:<br>
+  <pre>
+  A=12.3545;
+  A=(int)A; // A is now 12
+
+  print((int)"abc");  //abc can not be converted to a number, so it is set to 97 (ASCII-Code of a)
+
+  C="234.45";
+  D=(float)C;   //text can be interpreted as number, so it is set to the value
+  print(D+1);    //prints 235.45
+  </pre>
+
+  <LI>Running subprograms<br>
+  Syntax:<br>
+  <pre>
+  run("script path");
+  </pre>
+  With this command, you can execute another code file from your script.<br>
+  The script path must be relative to the script code directory.<br>
+  The script path must be hard coded in your script code<br>
+  With this command, it is also possible to program a recursive algorithm. But you should not do that, because this 
+  may lead to a stack overflow and the program will crash. The script interpreter can not prevent this crash.<br>
+  Example:<br>
+  <pre>
+  run("subprogram");       //runs a subprogram with the name subprogram that is in the script code directory
+  runt("prog/routine4");   //runs a subprogram with the name routine4 which is in the directory prog
+  </pre>
+
+  <LI>Arrays<br>
+  Syntax: <br>
+  <pre>
+  Variable[index];                               //1-dimesional array
+  Variable[1. index][2. index];                 //2-dimensional array
+  </pre>
+  Every variable can also be an array, if you use the index-operator on it<br>
+  Without index-operator, you always access the element with index 0.<br>
+  If you want to access a single character of a string, you use the same syntax.
+  If you write one index, and the variable contains only a string at index 0, you access a character inside the string.<br>
+  If you write two indices and the element at the first index is a character, you also access a character inside the string.<br>
+  Example:<br>
+  <pre>
+  A="          ";
+  for(C=9; C&gt;=0; C=C-1)             //reads 10 characters
+     A[C]=getkey;
+  print(A);                            //prints the characters inverted
+  </pre>
+
+  <LI>Possible Operators<br>
+  Operator List <br>
+  <pre>
+  In script interpreter integrated operators (can be used with every variable type)
+  + add
+  - sub
+  == compare
+  != unequal
+  &gt; greater
+  &lt; less
+  &gt;= greater or equal
+  &lt;= less or equal
+  &amp;&amp; logic and
+  || logic or
+  ! logic not
+  = set (like in C)
+  -&gt; set (like in Calculator)
+  [] index operator
+  [][] index operator matrix
+
+  All other operators can be used like in the calculator.
+  </pre>
+  The operators can also be used together.<br>
+  <pre>
+  12.3545-&gt;A;
+  (int)A-&gt;A; // A is now 12
+
+  print((int)"abc");  //abc can not be converted to a number, so it is set to 97 (ASCII-Code of a)
+
+  "234.45"-&gt;C;
+  (float)C-&gt;D;   //Text can be converted do a number, so D is set to this value
+  print(D+1);    //prints 235.45
+  </pre>
+  </OL>
+  
+  <h5>Script Preferences</h5>
+  It is possible to set special preferences for a script. This is often needed to guarantee that the script works, no matter how
+  the preferences made by the user are set.<br>
+  This preferences don't change the user settings. They were only changed for the script, that is executed<br>
+  This preferences are set inside the script code with the command #config.<br>
+  The Syntax is:<pre>#config PREFERENCE</pre>
+  Here is a list of possible preferences:
+  <pre>
+#config complexon             //switch complex numbers on
+#config complexoff            //switch complex numbers off
+
+#config angledeg              //set angle type to degrees
+#config anglerad              //set angle type to radian
+#config anglegra              //set angle type to grade
+
+#config modebase              //set base mode
+#config modescientific        //set scientific mode (default)
+
+#config outputlengthXX        //set length of floating point output; XX must be a number between 2 and the max. output length
+                              //the number is written directly behind outputlength without space
+
+#config clearmemory           //always clear array memory before starting
+
+#config gl                    //switch to 3D-GL window
+                              //this MUST be set to use 3D-graphics
+
+#config graphics              //switch to 2D-graphics window
+                              //this MUST be set to use 2D-graphics
+
+#config axeson                //enable or disable 3D-coodinate system axis
+#config axesoff
+
+#config rasteron              //enable or disable 3D-coodinate system raser
+#config rasteroff
+
+#config labelson              //enable or disable 3D-coodinate system labels
+#config labelsoff
+</pre>
+
+  <h5>Macros</h5>
+  As in C, it is possible to define macros to replace parts of the program before the script
+  interpreter processes the code file.<br>
+  Macros are used in this way:<br>
+  <pre>
+  #define macro replacement
+  </pre>
+  Macros with arguments are not allowed.<br>
+  You may use this macros to give variables symbolic names or to replace short code parts<br>
+
+  <h5>Example codes:</h5>
+  Example 1:<br>
+  Prime number generator<br><br>
+  <pre>
+  //loop starts at 3 (so it can add 2 instead of 1 per step)
+  print("2 ");
+  for(3-&gt;A;;A+2-&gt;A)
+  {
+    0-&gt;C;
+    sqrtA-&gt;D;
+    //prime number check with modulo
+    for(2-&gt;B; C==0 &amp;&amp; B&lt;=D; B+1-&gt;B)
+    {
+      if((A%B)==0)
+      1-&gt;C;
+    }
+    if(C==0)
+    {
+      print(A);
+      print("\t");
+    }
+  }
+ </pre>
+ <br>
+  Example 2:<br>
+  A ping pong game<br><br>
+  <pre>
+  //initialization
+  //variables for ball movement
+  4-&gt;A;
+  1-&gt;B;
+  1-&gt;C;
+  1-&gt;D;
+  
+  //variable for player movement
+  10-&gt;E;
+  
+  //stop variable
+  0-&gt;S;
+  
+  //counter for ball movement
+  //the ball moves only every fifth run
+  0-&gt;I;
+  
+  //variables to store old drawing coordinates
+  //needed that it redraws only if needed
+  //and that the screen can be cleared without
+  //flickering
+  4-&gt;G;
+  4-&gt;H;
+  9-&gt;J;
+  0-&gt;X;
+  
+  clear;
+  
+  for(;S==0;I+1-&gt;I)
+  {
+  
+    //move ball every fifth time
+    E-&gt;J;
+    if(I==5)
+    {
+      0-&gt;I;
+      A-&gt;G;
+      B-&gt;H;
+      A+C-&gt;A;
+      B+D-&gt;B;
+      if(A&gt;50)
+        -1-&gt;C;
+      else if(A&lt;1)
+        1-&gt;C;
+      if(B&lt;1)
+        1-&gt;D;
+      else if(B&gt;12)
+      {
+        if(A&gt;E-3 &amp;&amp; A&lt;E+3)
+        {
+          -1-&gt;D;
+          X+1-&gt;X;
+        }
+        else 1-&gt;S;
+      }
+      //long break for ball movement
+      sleep(30000);
+    }
+  
+    //read keystate and move player
+    keystate-&gt;K;
+    1+K-1-&gt;K;
+    if(K==100 &amp;&amp; E&lt;48)
+      E+1-&gt;E;
+    if(K==97 &amp;&amp; E&gt;2)
+      E-1-&gt;E;
+    
+    //short break
+    //needed that player can move fast
+    sleep(5000);
+  
+    //print ball if needed
+    if(A!=G || B!=H)
+    {
+      setcursor(G,H);
+      print(" ");
+      setcursor(A,B);
+      print("*");
+    }
+  
+    //print payer if needed
+    if(E!=J)
+    {
+        if(E&gt;J)
+        {
+          setcursor(J-2,14);
+          print(" ");
+          setcursor(E-2,14);
+          print("#####");
+        }
+        else 
+        {
+          setcursor(J+2,14);
+          print(" ");
+          setcursor(E-2,14);
+          print("#####");
+        }
+    }
+  
+    //print score
+    setcursor(51,1);
+    print(X);
+  }
+  
+  //loop finished
+  //because player didn't get the ball
+  //print score
+  sleep(300000);
+  clear;
+  print("\n\n\n***********End************\n");
+  print("********Points: **********");
+  setcursor(16,4);
+  print(X);
+  print("\n\n");
+  </pre>
+  <a name="matrixvector"><h2>3.5 Matrix/Vector Arithmetics</h2></a>
+  <img src="matvec.jpg"></img><br><br>
+  The Matrix/Vector window of Extcalc consists of several modules for matrix and vector calculations.
+  The top half of the window always shows the variable list with the 26 calculator variables and the answer memory and
+  the content of the current variable.<br>
+  The variable memory used for matrix and vector calculation is the same as the memory used for the standard calculator.
+  <br>
+  The variables list shows size and type of every variable. The size can be changed within this list.
+  The table that shows the content of a variable and can be edited.<br>
+  <br>
+  <h3>Modules</h3>
+  Here is a short description of the different matrix/vector calculation modules.<br>
+  <h4>Calculator</h4>
+  This module has the same functions as the standard calculator. It is just smaller and located at the bottom right side of
+  the window. In this calculator, all matrix and vector functions can be used. The results are shown directly at the calculator
+  window, but they are also copied to the answer memory, which is part of the variables list.
+  <h4>Linear System of Equations</h4>
+  This modules can be used to solve linear systems of equations.<br>
+  There are two possibilities to insert the parameters of the equations.<br>
+  - coose a matrix of size n x (n+1) and insert all parameters into the matrix.<br>
+  Example:<br>
+  The equations to solve are:
+  <pre>
+  4x - 2y  =  9
+ -2x + 5y  = -2
+  </pre>
+  The matrix size would be 2 x 3<br>
+  The matrix content would be:
+  <pre>
+   4 -2  9
+  -2  5 -2
+  </pre>
+  - choose a matrix of size n x n and a vector of size n<br>
+  With the same example as above:<br>
+  The matrix of size 2x2 would be:
+  <pre>
+   4 -2
+  -2  5
+  </pre>
+  The vector of size 2 would be:
+  <pre>
+   9
+  -2
+  </pre>
+  You can set the number of unknowns with the unknowns box. The chosen matrix and vector will be resized by pressing the set button.<br>
+  The table at the bottom right side will show the result vector.<br>
+  In this example, the result would be x=2.25 and y=0.75<br>
+  The table would show:
+  <pre>
+  2.25
+  0.75
+  </pre>
+  If the linear system of equations could not be solved, because it has no valid results or infinitely mutch results, the last step
+  of the gauss algorithm will be shown at the table.<br>
+  This can be used for further calculations.<br>
+  <h4>Generate Matrix</h4>
+  With this module, you can create matrices and vectors with a predefined content.<br>
+  You always have to choose the type of matrix or vector to create, and the variable that should be used.<br>
+  The following things can be created:<br>
+    <TABLE BORDER>
+  <TR><TH>Type</TH><TH>Description</TH>
+  <TR>
+  <TD>Identity Matrix</TD>
+  <TD>Size n x n, the diagonal values are 1, the rest is set to 0. Identity of matrix multiplication.
+  </TD>
+    <TR>
+  <TD>Zero Matrix</TD>
+  <TD>Size n x m, all values 0.
+  </TD>
+    <TR>
+  <TD>Zero Vector</TD>
+  <TD>Vector Size n, all values 0.
+  </TD>
+    <TR>
+  <TD>- X-, Y-, Z-rotation matrix</TD>
+  <TD>Size can be 2 x 2 or 3 x 3. Generates a rotation matrix with the given angle.
+  </TD>
+    <TR>
+  <TD>Scaling Matrix</TD>
+  <TD>Size can be 2 x 2 or 3 x 3. Generates a scaling matrix with the given scale values.
+  </TD>
+  </TABLE>
+
+  <h4>Analyse Matrix/Vector</h4>
+  This module shows some information about the chosen variable.
+  <h4>Inverse Matrix</h4>
+  This module does the same as the calculator operation X[][]^-1.<br>
+  It calculates the inverse matrix of the chosen variable, if possible, and shows it at the table.<br>
+
+  <a name="stat"><h2>3.6 Statistics</h2></a>
+  <img src="stat2.jpg"></img><img src="stat1.jpg"></img><br><br>
+  The statistics window of Extcalc serves modules for statistical analyzation of tables of values or point coordinates.
+  At all modules, the result can be shown graphically by pressing the print-button.<br>
+  <h4>Approximate</h4>
+  This module lets you calculate approximated functions from a list of points. To calculate the function, a function type and the list 
+  (1 to 5) that contains the points data must be chosen. The result function can be shown by pressing the calculate button. To copy the
+  function into the global function list, choose a function list entery and press the copy button.<br>
+  The following functions can be used for approximation:<br>
+      <TABLE BORDER>
+   <TR><TH>function</TH><TH>Description</TH>
+  <TR>
+  <TD>const</TD>
+  <TD>Constant value. This calculates the mean of the given y-values.
+  </TD>
+    <TR>
+  <TD>a*x+b</TD>
+  <TD>Straight line. The line is approximated by least square regression.
+  </TD>
+    <TR>
+  <TD>a*x^2+b*x+c</TD>
+  <TD>Quadratic equation. The points data is approximated by a quadratic function using least square regression.
+  </TD>
+    <TR>
+  <TD>a*e^(b*x)</TD>
+  <TD>e-function. Approximates the given points by a e-function using least square regression.
+  </TD>
+    <TR>
+  <TD>a*b^x</TD>
+  <TD>Exponential function. Approximates the given points by a exponential function using least square regression.
+  </TD>
+  </TABLE>
+  
+  <h4>Interpolate</h4>
+  This module calculates the interpolation graph for a given list of points. The interpolation graph is a polynomial that includes
+  every given point. The result function will become very large, if more interpolation points were given.
+
+  <h4>Show Line-Graph</h4>
+  This module shows a graph of all given points connected by lines. You just have to choose the input list and press the print button.
+
+  <h4>Normal Distribution Graph</h4>
+  With this module, a gaussian normal distribution graph can be calculated. As input data, it needs a list of values (no points!).
+  To calculate the normal distribution function, just choose an input data column with the input box and press the calculate button.
+  The graph can also be shown by pressing the print button.
+
+
+  <h4>Distribution Graph</h4>
+  This module prints a graph of the distribution of a list of values (no points). The number of steps can also be set.
+  Press the print button to see the graph.
+  
+  
+  <a name="pref"><h2>3.7 Preferences</h2></a>
+  Preferences can be changed directly by using the menu item "Calculator" for calculator preferences
+  and the item "Graphic" for the preferences of the graphics window or
+  by the preferences dialogs. You find them at the "Preferences"
+  menu-point.<br>
+    <h3>Calculator Preferences Dialog</h3>
+  In this dialog, you can set the calculator mode and the output format. The calculator mode (scientific or base mode) only
+ refers to the
+  calculator window. The output format preferences, output length and output type, change the output format 
+  of the complete program. The angle type is also set for the complete program. All these preferences can also be set
+  by the preferences menu.
+  <h3>Graphics Preferences Dialog</h3>
+  The graphics preferences are seperated to three tabs.
+  <h4>Coordinate Systems</h4>
+  Here you can set the coordinate system type, the sizes of the coordinate systems, and the look of them.<br>
+  There are two buttons to set standard values for the coordinate system sizes. The "Standard"-Button sets standard values
+  which make sense for most graphs. The "Trigonometric"-Button sets the coordinate system to special values to show trigonometric
+  functions like sinus and cosinus optimally. This values depend on the current angle type.<br>
+  The maximum radius and the maximum angle of the polar coordinate system can only be positive values.<br>
+  Furthermore, there are some options depending the look. The axis, the raster and the labels can be switched on and off and
+  the coordinate systems width-to-hight-ratio can be scaled equal to the size of the x- and y-axes.<br>
+  <h4>Parameter Range</h4>
+  For some graphs were parameter needed, which don't depend on the coordinate system size.<br><br>
+  Parameter T:<br>
+  This one is needed for parameter functions. You can set its start and end point, here. Remember that if you set the
+  range too wide, you will not see most of the calculated graph, and the visible part will not be shown precise 
+  enough.<br><br>
+  Parameter Z:<br>
+  This parameter is only for 2D-Nyquist-Plots. 3D-Nyquist plots use the Z-axes of the coordinate system.
+  You have two modes, to set this parameter's range. The standard is logarithmic scale, which means, that if you set the range to -3 ... 3,
+  the parameter runs from 10^-3 to 10^3 with logarithmic scale.This is the best for the most nyquist plots. If you switch logarithmic
+  scale off, the parameter runs from the start to the end value in equal steps.<br><br>
+  Parameter A:<br>
+  This is the parameter for all dynamic graphs. First, you have to set the start and the end value. Then you must set the 
+  number of steps to calculate. If you want to show an animation, you will have to set about 30 steps. You should
+  not set so much steps, when you use single step mode. As next, you can choose, whether the parameter should only be counted in one
+  direction, or whether it should be counted up and down. If you have selected automatic mode, you can also set the delay time.
+  For animations, 3 (=30ms) is a good value.<br><br>
+  <h4>Precision/Performance</h4>
+  In this dialog, you can set the steps for graph calculation and the precision of some graph analysis functions.
+  Normally, it is not needed to change the steps count for 2D-graphs. It can be increased, if details of a graph, for example
+  an asymptote, are not shown correctly.
+  The number of steps of the 3D-graph is equal to the number of grid lines that show the graph. Remember, that if you increase
+  this value, the number of points to calculate raises by the power of two.
+  The graph analysis presition should also be increased only if details are calculated wrong. It does not increase the
+  precision of the results themselve, because they are always calculated as exact as possible.
+  <h3>Table Preferences</h3>
+  If you want to calculate a table of function values, you can set the start value, end value and number of values, here.
+  The function type, for which the table is calculated, can be set here or in the table preferences menu.
+  <h3>Scripting Preferences</h3>
+  Here you can set the path to the script root directory. This directory contains two subdirectories, one for the code
+  files and one for the data files. Their names can also be set in this dialog.
+  <br>
+  <br>
+  <a name="else"><h2>4. Other</h2></a>
+  <h5> Version</h5>
+  Extcalc version 0.9.0<br>
+  This is a beta-version of Extcalc.<br>
+  This means, that there may be some bugs in this program, because the new features from the earlier version have to be tested.<br>
+  Further information to the beta version can be found on the <a href="http://extcalc-linux.sourceforge.net">projekt homepage</a>.
+  
+  <h5>Precision</h5>
+  The maximum precision of Extcalc on a 32-bit PC-Processor is 18 decimal digits
+  because it uses double-variables for calculation. Because of the architecture of a normal 
+  PC-Processor, the last digit is often calculated wrong.<br>
+  The precision of the integration-operation is about 9 digits and the precision of the
+  differentiation-operation is about 8 digits depending on the formula to calculate.<br>
+  The precision of trigonometric functions and logarithms is about 17 digits.<br> 
+  
+ 
+  <h5>enabled features</h5>
+  User Interface for calculator<br> 
+  User Interface for graphics<br> 
+  parser for calculations<br> 
+  drawing graphs<br> 
+  working with graphs<br> 
+  integration, differentiation<br> 
+  base-n calculations<br> 
+  logic functions<br>
+  3D-Graphs<br>
+  dynamic graphs<br>
+  most scripting functions<br>
+  script debugging<br>
+  zooming and moving graphics<br>
+  saving screen shots<br>
+  drawing into graphics window<br>
+  complex numbers<br>
+  matrix calculation<br> 
+  vector calculation<br>
+  scripting functions for graph drawing and file usage<br> 
+  sperate window for matrix and vector operations<br>
+  statistic functions<br>
+
+  <h5>To-do-list</h5>
+  beta testing<br>
+
+ 
+         
+  <h5>Tested Distributions:</h5>
+  <table border>
+  <tr><td>Suse Linux 8.2:</td><td>OK</td></tr>
+  <tr><td>Suse Linux 9.2:</td><td>OK</td></tr>
+  <tr><td>Suse Linux 10.1:</td><td>OK</td></tr>
+  <tr><td>Debian 3.1 Sarge:</td><td>Update needed</td></tr>
+  <tr><td>Debian Etch:</td><td>OK</td></tr>
+  <tr><td>Ubuntu Linux 5.10:</td><td>OK</td></tr>
+  <tr><td>Ubuntu Linux 6.06:</td><td>OK</td></tr>
+  <tr><td>Mepis Linux 6.0:</td><td>OK</td></tr>
+  <tr><td>Mandriva 2006:</td><td>OK</td></tr>
+  <tr><td>Slackware 10:</td><td>OK</td></tr>
+  <tr><td>Fedora Core 3 (64Bit):</td><td>OK</td></tr>
+  <tr><td>Fedora Core 4:</td><td>Update needed</td></tr>
+  <tr><td>Fedora Core 6:</td><td>OK</td></tr>
+  <tr><td>FreeBSD 6.2:</td><td>read comment</td></tr>
+  </table>
+  <h5>Debian 3.1 Sarge</h5>
+  The installer works and the program can be started, but the graphics window doesn't work.<br>
+  If this problem exists, you will have to install the updates for your X and OpenGL packets.<br>
+
+  <h5>Fedora Core 4</h5>
+  The Installer runs without problems, but if the program is started, it stops immediately with
+  segmentation fault.<br>
+  This error is caused by the linker of FC4, which generates a wrong ELF header.<br>
+  This bug can be fixed by an update for gcc and g++. The program will work if you install this
+  updates before installation.<br>
+
+  <h5>FreeBSD 6.2</h5>
+  The source can be built under FreeBSD, when the development packages of QT and OpenGL were installed.
+  You may need to set the QTDIR environment variable to installation path of the QT development package.
+  <br>
+  <h5>Needed software:</h5>
+  Linux<br> 
+  GCC 3 or GCC 4 (doesn't work with GCC 2.xx)<br> 
+  QT3.1 or higher (no QT 4)<br> 
+  OpenGL<br>
+  libXT<br>
+
+  <h5>Needed hardware:</h5>
+  CPU at about 1GHz (32Bit or 64Bit)<br> 
+  enough RAM to run X<br> 
+  For 3D-graphics, a 3D-graphics card is recommended<br>
+  A mouse with mouse wheel is needed for zooming, moving and rotating graphs<br>
+
+
+
+  </body>
+</html>
