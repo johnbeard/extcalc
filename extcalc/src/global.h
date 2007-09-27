@@ -46,13 +46,13 @@ using namespace std;
 #define VARSFILE ".extcalc/vars.conf"
 #define LISTSFILE ".extcalc/lists.conf"
 #ifdef LANGUAGE_EN
-#define VERSIONSTRING "Version: 0.8.9\n2007-09-14\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.9\n2007-09-27\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_FR
-#define VERSIONSTRING "Version: 0.8.9\n2007-09-14\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.9\n2007-09-27\n\n"+QString(DEVVERSION)
 #endif
 #ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.8.9\n14.9.2007\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.8.9\n27.9.2007\n\n"+QString(DEVVERSION)
 #endif
 
 #define AUTHORSTRING "Homepage:\nhttp://extcalc-linux.sourceforge.net\n\n"+QString(GLOBALH_STR1)

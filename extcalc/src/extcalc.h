@@ -139,9 +139,10 @@ dialog, the todo list and the bug list.
 //  - standardized user interface design for all tabs                                   ok  //
 //  - open help file in default browser                                                     //
 //  - integrate constants list                                                              //
-//  - precise error messages                                                                //
+//  - precise error messages                                                            ok  //
 //  - RPN                                                                                   //
 //  - Port to QT 4                                                                          //
+//  - use QTranslator for internationalization                                              //
 //                                                                                          //
 ////////////////////////////////////////beta releases/////////////////////////////////////////
 

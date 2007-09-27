@@ -507,26 +507,19 @@ char* preprocessor(char*input,Preferences*pref,bool script)
 	if(ret==NULL)
 		return NULL;
 
-
 	if(script)
 	{
 		ret=preferencesPreprocessor(ret,pref);
 		if(ret==NULL)
 			return NULL;
 
-		
 		ret=macroPreprocessor(ret);
 		if(ret==NULL)
 			return NULL;
-
 	}
-	perror("before clean string");
-	perror(ret);	
 	ret=cleanString(ret,pref);
 	if(ret==NULL)
 		return NULL;
-	perror("clean string");
-	perror(ret);
 		
 	return ret;	
 }
@@ -744,6 +737,7 @@ char* macroPreprocessor(char*code)
 			
 			configString=(char*)malloc(endPos-configStartPos+1);
 			strcopy(configString,&code[configStartPos],endPos-configStartPos);
+			
 
 			memmove(&code[startPos],&code[endPos],len-endPos+1);
 			len=strlen(code);
@@ -762,6 +756,9 @@ char* macroPreprocessor(char*code)
 			while((configString[startPos]==' ' || configString[startPos]=='\t') && startPos<=(signed)strlen(configString))
 				startPos++;
 			endPos=strlen(configString);
+			
+			if(endPos<=startPos)
+				return NULL;
 			
 			replacement=(char*)malloc(endPos-startPos+1);
 			memcpy(replacement,&configString[startPos],endPos-startPos);
@@ -812,6 +809,8 @@ char* macroPreprocessor(char*code)
 				}
 			}
 			free(configString);
+			free(macro);
+			free(replacement);
 		}
 		pos++;
 	}
@@ -1207,8 +1206,6 @@ char* strreplace(char*st,int index,int len,char*rep)
 char* strinsert(char*st,int index,char*ins)
 {
 	
-	perror(ins);
-	perror(st);
 	unsigned int inslen=strlen(ins),stlen=strlen(st);
 	char*tmp=(char*)malloc(stlen-index+1);
 	memcpy(tmp,&st[index],stlen-index+1);
@@ -2396,9 +2393,9 @@ char* Script::parse(char* line)
 		return NULL;
 	}
 	
-	perror(line);
 	int pos1;
 	int len=strlen(line);
+//	perror(line);
 
 	
 	if(line[0]== '{' && bracketFind(line,"}")==len-1 || line[0]== '(' && bracketFind(line,")")==len-1)
@@ -5845,7 +5842,7 @@ Number Script::exec()
 		case SDRAW:
 		{
 			QCustomEvent *ev=new QCustomEvent(SIGDRAW);
-			char*eventContent;
+			char*eventContent=NULL;
 			int arg;
 			switch(var)
 			{

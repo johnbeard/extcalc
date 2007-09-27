@@ -437,17 +437,19 @@ void GraphWidget::graphSizeSlot()
 	if(pref.autosize)
 	{
 		wtohWin=(float)width/(float)height;
-		wtohCs=((pref.xmax-pref.xmin)/pref.rasterSizeX)/((pref.ymax-pref.ymin)/pref.rasterSizeY);
+		if(pref.graphType==GRAPHSTD)
+			wtohCs=((pref.xmax-pref.xmin)/pref.rasterSizeX)/((pref.ymax-pref.ymin)/pref.rasterSizeY);
+		else wtohCs=1.0;
 		
 		if(wtohCs<wtohWin)
 		{
 			newHeight=height;
-			newWidth=height*wtohCs;
+			newWidth=(int)((float)height*wtohCs);
 		}
 		else 
 		{
 			newWidth=width;
-			newHeight=width/wtohCs;
+			newHeight=(int)((float)width/wtohCs);
 		}
 	}
 	else 

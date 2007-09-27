@@ -161,7 +161,9 @@ void StatisticsWidget::calculateButtonSlot()
 		listNum=listNumber->value()-1;
 		while(c<lists->numRows())
 		{
-			if(lists->text(c,2*listNum).length()>0 && lists->text(c,2*listNum+1).length()>0)
+			if(lists->text(c,2*listNum).length()>0 && lists->text(c,2*listNum+1).length()>0 &&
+					!((functionTypeBox->currentItem()==3 || functionTypeBox->currentItem()==4)
+					&& type==STATAPPROX && strtold(lists->text(c,2*listNum+1),NULL)<=0.0))
 			{
 				lineNum++;
 				coordinatesList=(long double*)realloc(coordinatesList,sizeof(long double)*lineNum*2);
@@ -740,6 +742,7 @@ void StatisticsWidget::redrawGraphSlot()
 {
 	print=true;
 	calculateButtonSlot();
+
 	print=false;
 }
 

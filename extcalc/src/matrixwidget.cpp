@@ -919,7 +919,7 @@ void MatrixWidget::calcButtonSlot()
 					else if(size==3)
 					{
 						num=runCalc(input1->text(),&pref,vars);
-						threadData->vars[var][9].fval=Complex(num);
+						threadData->vars[var][0].fval=Complex(num);
 						num=runCalc(input2->text(),&pref,vars);
 						threadData->vars[var][4].fval=Complex(num);
 						num=runCalc(input3->text(),&pref,vars);

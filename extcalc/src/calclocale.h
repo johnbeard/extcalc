@@ -705,7 +705,7 @@ Eugene Clement
 #define GRAPHH_STR13 "Color"
 #define GRAPHH_STR14 "Active"
 #define GRAPHH_STR15 "normal y(x)=x"
-#define GRAPHH_STR16 "polair r(x)=x"
+#define GRAPHH_STR16 "polar r(x)=x"
 #define GRAPHH_STR17 "parameter x=T; y=T"
 #define GRAPHH_STR18 "3d y(xz)=xz"
 #define GRAPHH_STR20 "inequality y(x)>x"
@@ -1173,7 +1173,8 @@ Eugene Clement
 #define EXTCALCC_MSG12 "dialogue de sauvegarde de fichier"
 #define EXTCALCC_MSG13 "Entrez un nom de fichier"
 
-#define GLOBALH_STR1 "Auteur:\nEugène Clément\nTraduction"				//New author string; Don't forget to add your name
+#define GLOBALH_STR1 "Auteurs:\nRainer Strobel\nProgramming and development\nEugène Clément\nTraduction"				//New author string; Don't forget to add your name
+
 #define CALCWIDGETH_STR4 "Changer de Vue"
 #define CALCWIDGETH_STR5 "Mode Scientifique/Logique"
 #define CALCWIDGETH_STR6 "Définir les Bases Numeriques"
@@ -1191,8 +1192,8 @@ Eugene Clement
 #define CALCPREFH_STR1 "Sauvegarder"
 #define CALCPREFH_STR2 "Annuler"
 #define CALCPREFH_STR3 "Angle"
-#define CALCPREFH_STR4 "Output Type"
-#define CALCPREFH_STR5 "Output Digits"
+#define CALCPREFH_STR4 "Output Type (?)"
+#define CALCPREFH_STR5 "Output Digits (?)"
 #define CALCPREFH_STR6 "Mode"
 #define CALCPREFH_STR7 "Base"
 #define CALCPREFH_STR8 "Nombre fixe de décimales"
@@ -1432,7 +1433,7 @@ Eugene Clement
 #define SCRIPTIO_STR9 "\nFichier en préparation "
 #define SCRIPTIO_STR10 "\nChargement du script réussi.\nMaintenant, il est possible d'appuyer sur 'Exécuter'.\n"
 #define SCRIPTIO_STR11 "\nLa préparation du script a échoué!\n"
-#define SCRIPTIO_STR12 "Copier\tCtrl-C"														//popup menu (right mouse button)
+#define SCRIPTIO_STR12 "Copier\tCtrl-C"
 #define SCRIPTIO_STR13 "Coller\tCtrl-V"
 #define SCRIPTIO_STR14 "Tout Sélectionner\tCtrl-A"
 #define SCRIPTIO_STR15 "Tout nettoyer"
@@ -1459,7 +1460,7 @@ Eugene Clement
 #define SCRIPTEDITH_STR20 "Importer un fichier de script"
 #define SCRIPTEDITH_STR21 "Exporter un fichier de script"
 #define SCRIPTEDITH_STR22 "Exécuter le script courant"
-#define SCRIPTEDITH_STR23 "Changement de vues"					//do or do not show calculator buttons
+#define SCRIPTEDITH_STR23 "Changement de vues"
 #define SCRIPTEDITH_STR24 "Catalogues de fonctions"
 
 //Some of these texts are error messages
@@ -1507,7 +1508,6 @@ Eugene Clement
 #define SCRIPTPREFC_STR8 "Sélectionnez un répertoire !"
 
 //The matrix/vector tab
-/* é ê è à ç */
 #define MATRIXWIDGETH_STR1 "Type"								//header text of the left table
 #define MATRIXWIDGETH_STR2 "Lignes"
 #define MATRIXWIDGETH_STR3 "Colonnes"
@@ -1517,69 +1517,69 @@ Eugene Clement
 #define MATRIXWIDGETH_STR7 "Analyse de Matrice"
 #define MATRIXWIDGETH_STR8 "Matrice Inverse"
 #define MATRIXWIDGETH_STR9 "Calculer maintenant"
-#define MATRIXWIDGETH_STR10 "Set"
-#define MATRIXWIDGETH_STR11 "no vector"					//Solve equations; You can either choose a vector from A to Z or nothing (no vector)
-#define MATRIXWIDGETH_STR12 "Identity Matrix"			//Generate matrix
-#define MATRIXWIDGETH_STR13 "Zero Matrix"
-#define MATRIXWIDGETH_STR14 "Zero Vector"
+#define MATRIXWIDGETH_STR10 "Mode"
+#define MATRIXWIDGETH_STR11 "Pas de Vecteur"
+#define MATRIXWIDGETH_STR12 "Matrice Identité"
+#define MATRIXWIDGETH_STR13 "Matrice Nulle"
+#define MATRIXWIDGETH_STR14 "Vecteur Nul"
 #define MATRIXWIDGETH_STR15 "X-Rotation Matrix"
 #define MATRIXWIDGETH_STR16 "Y-Rotation Matrix"
 #define MATRIXWIDGETH_STR17 "Z-Rotation Matrix"
-#define MATRIXWIDGETH_STR18 "Scaling Matrix"
-#define MATRIXWIDGETC_STR1 "Vector"						//Text of the solve equations function
-#define MATRIXWIDGETC_STR2 "Unknowns:"
-#define MATRIXWIDGETC_STR3 "Matrix"
-#define MATRIXWIDGETC_STR4 "Choose a Matrix\nor a Matrix and a Vector\nto insert data\n"
-#define MATRIXWIDGETC_STR5 "Variable"					//Text of the generate matrix function
-#define MATRIXWIDGETC_STR6 "Generate"
-#define MATRIXWIDGETC_STR7 "Gauss"						//Text of the analyse matrix function
-#define MATRIXWIDGETC_STR8 "Type: Matrix"
+#define MATRIXWIDGETH_STR18 "Matrice Scalaire"
+#define MATRIXWIDGETC_STR1 "Vecteur"
+#define MATRIXWIDGETC_STR2 "Inconnu:"
+#define MATRIXWIDGETC_STR3 "Matrice"
+#define MATRIXWIDGETC_STR4 "Choisir une Matrice\nou une matrice et un vecteur\nafin d'entrer des données\n"
+#define MATRIXWIDGETC_STR5 "Variable"
+#define MATRIXWIDGETC_STR6 "Générer"
+#define MATRIXWIDGETC_STR7 "Gauss"
+#define MATRIXWIDGETC_STR8 "Type: Matrice"
 #define MATRIXWIDGETC_STR9 "Dimensions:"
-#define MATRIXWIDGETC_STR10 "Determinant:"
-#define MATRIXWIDGETC_STR11 "not possible"
-#define MATRIXWIDGETC_STR12 "Rank:"
-#define MATRIXWIDGETC_STR13 "Type: Vector"
-#define MATRIXWIDGETC_STR14 "Size:"
-#define MATRIXWIDGETC_STR15 "Absolute:"
-#define MATRIXWIDGETC_STR16 "Type: Scalar"
-#define MATRIXWIDGETC_STR17 "Can't choose the same variable twice!\nChoose a matrix,\nor a matrix and a vector\nto insert data"   //more text of the solve equations function
-#define MATRIXWIDGETC_STR18 "Insert data \nand press calculate button"
-#define MATRIXWIDGETC_STR19 "Press set button to adjust size"
-#define MATRIXWIDGETC_STR20 "Insert data \nand press calculate button"
-#define MATRIXWIDGETC_STR21 "Press set button to adjust size"
-#define MATRIXWIDGETC_STR22 "x angle"									//more text for the generate matrix function
-#define MATRIXWIDGETC_STR23 "y angle"
-#define MATRIXWIDGETC_STR24 "z angle"
-#define MATRIXWIDGETC_STR25 "x scale"
-#define MATRIXWIDGETC_STR26 "y scale"
-#define MATRIXWIDGETC_STR27 "z scale"
-#define MATRIXWIDGETC_STR28 "More than one result found\nShowing matrix"	//even more text for the solve equations function
-#define MATRIXWIDGETC_STR29 "No results found\nShowing matrix"
-#define MATRIXWIDGETC_STR30 "Showing result Vector"
-#define MATRIXWIDGETC_STR31 "Number of rows of matrix must \nbe equal to number of columns."		//Inverse matrix error messages
-#define MATRIXWIDGETC_STR32 "Can't calculate inverse matrix.\nDeterminant is equal 0."
+#define MATRIXWIDGETC_STR10 "Déterminant:"
+#define MATRIXWIDGETC_STR11 "pas possible"
+#define MATRIXWIDGETC_STR12 "Rang:"
+#define MATRIXWIDGETC_STR13 "Type: Vecteur"
+#define MATRIXWIDGETC_STR14 "Taille:"
+#define MATRIXWIDGETC_STR15 "Absolue:"
+#define MATRIXWIDGETC_STR16 "Type: Scalaire"
+#define MATRIXWIDGETC_STR17 "Il n'est pas possible de choisir la meme variable plus d'une fois!\nChoisir une Matrice\nou une matrice et un vecteur\nafin d'entrer des données"
+#define MATRIXWIDGETC_STR18 "Entrer des données \net appuyer sur le bouton \"Calculer maintenant\" "
+#define MATRIXWIDGETC_STR19 "Appuyer sur le bouton \"mode\" afin d'ajuster la taille"
+#define MATRIXWIDGETC_STR20 "Entrer des données \net appuyer sur le bouton \"Calculer maintenant\" "
+#define MATRIXWIDGETC_STR21 "Appuyer sur le bouton \"mode\" afin d'ajuster la taille"
+#define MATRIXWIDGETC_STR22 "angle x"									//more text for the generate matrix function
+#define MATRIXWIDGETC_STR23 "angle y"
+#define MATRIXWIDGETC_STR24 "angle z"
+#define MATRIXWIDGETC_STR25 "scale x (?)"
+#define MATRIXWIDGETC_STR26 "scale y (?)"
+#define MATRIXWIDGETC_STR27 "scale z (?)"
+#define MATRIXWIDGETC_STR28 "Trouvé plus d'un résultat\nPrésenter la matrice"	//even more text for the solve equations function
+#define MATRIXWIDGETC_STR29 "Aucun résultat trouvé\nPrésenter la matrice"
+#define MATRIXWIDGETC_STR30 "Présenter le resultat du vecteur (?)"
+#define MATRIXWIDGETC_STR31 "Le nombre de lignes de la matrice doit être\n égual au nombre de colonnes."		//Inverse matrix error messages
+#define MATRIXWIDGETC_STR32 "Impossible de calculer la matrice inverse.\nDéterminant est égual à 0."
 
 //finally, the statistics, approximatin, interpolation tab
-#define STATISTICSH_STR1 "Function Type"			//text for the approximate function
-#define STATISTICSH_STR2 "Input List Number"
-#define STATISTICSH_STR3 "Result Function"
-#define STATISTICSH_STR4 "Copy to"
-#define STATISTICSH_STR5 "Copy"
-#define STATISTICSH_STR6 "Approximate"				//text of the box in the toolbar
-#define STATISTICSH_STR7 "Interpolate"
-#define STATISTICSH_STR8 "Show Line-Graph"
-#define STATISTICSH_STR9 "Normal Distribution"
-#define STATISTICSH_STR10 "Distribution Graph"
-#define STATISTICSH_STR11 "Steps"
-#define STATISTICSH_STR12 "Calculate"
-#define STATISTICSH_STR14 "Print"
+#define STATISTICSH_STR1 "Genre de Fonction"
+#define STATISTICSH_STR2 "Entrée des Listes de Nombres"
+#define STATISTICSH_STR3 "Result Function (?)"
+#define STATISTICSH_STR4 "Copier vers"
+#define STATISTICSH_STR5 "Copier"
+#define STATISTICSH_STR6 "Approximation"
+#define STATISTICSH_STR7 "Interpolation"
+#define STATISTICSH_STR8 "Montrer Graphiques en ligne"
+#define STATISTICSH_STR9 "Distribution Normale"
+#define STATISTICSH_STR10 "Distribution Graphique"
+#define STATISTICSH_STR11 "Pas"
+#define STATISTICSH_STR12 "Calculer maintenant"
+#define STATISTICSH_STR14 "Imprimer"
 
-#define STATISTICSC_STR2 "Really overwrite function f"									//function copy warning message (a number is added between f and ? like f12?)
+#define STATISTICSC_STR2 "Désirez-vous vraiment ecraser la fonction f"
 #define STATISTICSC_STR3 " ?"
-#define STATISTICSC_STR4 "Unable to write lists file: "									//file error messages
-#define STATISTICSC_STR5 "Unable to read lists file: "
-#define STATISTICSC_STR6 "For this approximation, at least one point is needed"			//approximation error messages
-#define STATISTICSC_STR7 "For this approximation, at least two points were needed"
-#define STATISTICSC_STR8 "For this approximation, at least three points were needed"
+#define STATISTICSC_STR4 "Impossible d'ecrire la liste des fichiers: "
+#define STATISTICSC_STR5 "Impossible de lire la  liste des fichiers: "
+#define STATISTICSC_STR6 "Pour cette approximation, au moins un point est nécessaire"
+#define STATISTICSC_STR7 "Pour cette approximation, au moins deux points sont nécessaire"
+#define STATISTICSC_STR8 "Pour cette approximation, au moins trois points sont nécessaire"
 
 #endif

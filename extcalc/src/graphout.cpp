@@ -28,6 +28,7 @@ void GraphOutput::initializeGL()
 		axes=drawPolarAxes();
 	else if(pref.graphType==GRAPH3D)
 		axes=draw3dAxes();
+
 	else axes = drawStdAxes();
 	dynamicSteps=pref.dynamicSteps;
 	dynamicStart=pref.dynamicStart;
@@ -44,8 +45,7 @@ void GraphOutput::initializeGL()
 		generateTexture();
 	}
 	if(drawState!=DRAWNONE)
-	generateTexture();
-	
+		generateTexture();
 	
 	
 	glDisable(GL_TEXTURE_2D);
@@ -1442,7 +1442,8 @@ void GraphOutput::setPref(Preferences newPref)
 	currentSolvePrec=pref.solvePrec;
 	oldXMin=pref.xmin;
 	oldXMax=pref.xmax;
-	initializeGL();
+	if(!drawScreenshot)
+		initializeGL();
 }
 
 bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
@@ -2443,7 +2444,8 @@ void GraphOutput::drawPoints(long double *coordinates,int num,bool con)
 	}
 	glEndList();
 	additionalObjects.NewItem(list);
-	repaint();
+	if(!drawScreenshot)
+		repaint();
 	hasStatisticsObjects=true;
 	
 }
@@ -2458,7 +2460,8 @@ void GraphOutput::removeLines()
 	}
 	hasSolveObjects=hasStatisticsObjects=false;
 	ineq1=ineq2=-1;
-	repaint();
+	if(!drawScreenshot)
+		repaint();
 }
 
 void GraphOutput::resetRotation()
@@ -2568,8 +2571,10 @@ void GraphOutput::screenshotSlot(int x, int y)
 	
 	scr=renderPixmap(x,y,false);
 	emit screenshotSignal(&scr);
-	initializeGL();
 	drawScreenshot=false;
+	initializeGL();
+	repaint();
+
 }
 
 

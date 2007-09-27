@@ -583,7 +583,7 @@ void GraphSolveWidget::resetDialog()
 			openButton->show();
 			spinBox->setValue(TEXTURESIZE);
 			spinBox->show();
-			if(pref.autosize)
+			if(pref.autosize && pref.graphType==GRAPHSTD)
 				spinBox2->setValue((int)((double)TEXTURESIZE*((pref.ymax-pref.ymin)/pref.rasterSizeY)/((pref.xmax-pref.xmin)/pref.rasterSizeX)));
 			else spinBox2->setValue(TEXTURESIZE);
 			spinBox2->show();
