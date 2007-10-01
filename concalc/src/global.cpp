@@ -205,6 +205,7 @@ char* macroPreprocessor(char*code)
 			
 			configString=(char*)malloc(endPos-configStartPos+1);
 			strcopy(configString,&code[configStartPos],endPos-configStartPos);
+			
 
 			memmove(&code[startPos],&code[endPos],len-endPos+1);
 			len=strlen(code);
@@ -223,6 +224,9 @@ char* macroPreprocessor(char*code)
 			while((configString[startPos]==' ' || configString[startPos]=='\t') && startPos<=(signed)strlen(configString))
 				startPos++;
 			endPos=strlen(configString);
+			
+			if(endPos<=startPos)
+				return NULL;
 			
 			replacement=(char*)malloc(endPos-startPos+1);
 			memcpy(replacement,&configString[startPos],endPos-startPos);
@@ -273,6 +277,8 @@ char* macroPreprocessor(char*code)
 				}
 			}
 			free(configString);
+			free(macro);
+			free(replacement);
 		}
 		pos++;
 	}
