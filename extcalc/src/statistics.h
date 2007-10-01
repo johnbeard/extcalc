@@ -165,9 +165,11 @@ class StatisticsWidget :public QWidget
 
 
 			calculateButton=new QPushButton(STATISTICSH_STR12,this);
-
-
 			catalogButton=new QPushButton(*catalogIcon,"",toolBar);
+			catalogButton->setFixedWidth(30);
+			maximizeButton->setFixedWidth(30);
+			typeBox->setFixedWidth(120);
+			
 			readListsFile();
 
 			typeBoxSlot(0);

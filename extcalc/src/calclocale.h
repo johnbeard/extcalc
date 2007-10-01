@@ -2,8 +2,8 @@
 /////////////////////////////////Scientific Graphic Calculator////////////////////////////////
 
 File:         calclocale.h
-Author:       Rainer Strobel
-Email:        rainer1223@users.sourceforge.net
+Authors:      Rainer Strobel          rainer1223@users.sourceforge.net
+              Eugene Clement          pixonet@yahoo.com
 Homepage:     http://extcalc-linux.sourceforge.net
 
 This program is free software; you can redistribute it and/or modify
@@ -14,14 +14,9 @@ any later version.
 Localization file for the complete Extcalc calculator.
 This file contains preprocessor definitions for all text strings in Extcalc that have to
 be translated.
-English and German is currently supported.
+English, German and French is currently supported.
 The installation language is set by the configure script. Default is English.
-
-This localization is currently translated into French.
-Eugene Clement
-
-é ê è à ç
-
+This program is currently translated into French by Eugene Clement.
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 
 //This macros will be defined by the configure-script at a normal installation
@@ -858,7 +853,7 @@ Eugene Clement
 #define GRAPHSOLVEC_STR40 "Imaginary values"
 #define GRAPHSOLVEC_STR41 "Real values"
 #define GRAPHSOLVEC_STR42 "Imaginary value"
-#define GRAPHSOLVEC_STR43 "Extension"
+#define GRAPHSOLVEC_STR43 "By Extension"
 #define GRAPHSOLVEC_STR44 "Unknown file format!\nAssuming png."
 
 
@@ -1116,7 +1111,7 @@ Eugene Clement
 #define EXTCALCH_MENU30 "Hexadécimal (HEX)"
 #define EXTCALCH_MENU31 "Mode Scientifique"
 #define EXTCALCH_MENU32 "Mode Logique"
-#define EXTCALCH_MENU33 "Base des nombres (?)"
+#define EXTCALCH_MENU33 "Base des nombres"
 #define EXTCALCH_MENU34 "Mode"
 #define EXTCALCH_MENU35 "Standard"
 #define EXTCALCH_MENU36 "Polaire"
@@ -1192,8 +1187,8 @@ Eugene Clement
 #define CALCPREFH_STR1 "Sauvegarder"
 #define CALCPREFH_STR2 "Annuler"
 #define CALCPREFH_STR3 "Angle"
-#define CALCPREFH_STR4 "Output Type (?)"
-#define CALCPREFH_STR5 "Output Digits (?)"
+#define CALCPREFH_STR4 "Output Type"
+#define CALCPREFH_STR5 "Output Digits"
 #define CALCPREFH_STR6 "Mode"
 #define CALCPREFH_STR7 "Base"
 #define CALCPREFH_STR8 "Nombre fixe de décimales"
@@ -1385,7 +1380,7 @@ Eugene Clement
 #define TABLEH_STR5 "parametre"
 #define TABLEH_STR6 "Inegalité"
 #define TABLEH_STR7 "3D"
-#define TABLEH_STR8 "Minimiser()"
+#define TABLEH_STR8 "Minimiser"
 #define TABLEH_STR9 "Nombres Complexes"
 #define TABLEH_STR10 "Extcalc - Table"
 #define TABLEH_STR11 "Entrer la valeur de la colonne "
@@ -1394,7 +1389,7 @@ Eugene Clement
 #define TABLEH_STR14 "Choisir un Type de Fonction"
 #define TABLEH_STR15 "Catalogue de Fonctions"
 
-#define TABLEPREFH_STR1 "Préférences de Table(?)"
+#define TABLEPREFH_STR1 "Préférences de Table"
 #define TABLEPREFH_STR2 "Type de Fonction:"
 #define TABLEPREFH_STR3 "Parametre x, valeur de départ T"
 #define TABLEPREFH_STR4 "Pas"
@@ -1404,7 +1399,7 @@ Eugene Clement
 #define TABLEPREFH_STR8 "Pas"
 #define TABLEPREFH_STR9 "Sauvegarder"
 #define TABLEPREFH_STR10 "Annuler"
-#define TABLEPREFH_STR11 "Préférences de Table(?)"
+#define TABLEPREFH_STR11 "Préférences de Table"
 #define TABLEPREFH_STR12 "Parametre X,T, nombre complexe Z"
 #define TABLEPREFH_STR13 "Parametre Z (3D)"
 #define TABLEPREFH_STR14 "Valeur du Parametre dynamique A:"
@@ -1550,19 +1545,19 @@ Eugene Clement
 #define MATRIXWIDGETC_STR22 "angle x"									//more text for the generate matrix function
 #define MATRIXWIDGETC_STR23 "angle y"
 #define MATRIXWIDGETC_STR24 "angle z"
-#define MATRIXWIDGETC_STR25 "scale x (?)"
-#define MATRIXWIDGETC_STR26 "scale y (?)"
-#define MATRIXWIDGETC_STR27 "scale z (?)"
+#define MATRIXWIDGETC_STR25 "scale x"
+#define MATRIXWIDGETC_STR26 "scale y"
+#define MATRIXWIDGETC_STR27 "scale z"
 #define MATRIXWIDGETC_STR28 "Trouvé plus d'un résultat\nPrésenter la matrice"	//even more text for the solve equations function
 #define MATRIXWIDGETC_STR29 "Aucun résultat trouvé\nPrésenter la matrice"
-#define MATRIXWIDGETC_STR30 "Présenter le resultat du vecteur (?)"
+#define MATRIXWIDGETC_STR30 "Présenter le resultat du vecteur"
 #define MATRIXWIDGETC_STR31 "Le nombre de lignes de la matrice doit être\n égual au nombre de colonnes."		//Inverse matrix error messages
 #define MATRIXWIDGETC_STR32 "Impossible de calculer la matrice inverse.\nDéterminant est égual à 0."
 
 //finally, the statistics, approximatin, interpolation tab
 #define STATISTICSH_STR1 "Genre de Fonction"
 #define STATISTICSH_STR2 "Entrée des Listes de Nombres"
-#define STATISTICSH_STR3 "Result Function (?)"
+#define STATISTICSH_STR3 "Result Function"
 #define STATISTICSH_STR4 "Copier vers"
 #define STATISTICSH_STR5 "Copier"
 #define STATISTICSH_STR6 "Approximation"

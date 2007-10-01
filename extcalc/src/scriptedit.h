@@ -170,7 +170,19 @@ public:
 		editorToolBar->addSeparator();
 		runButton=new QPushButton(*runIcon,"",editorToolBar);
 		
-
+		newButton->setFixedWidth(30);
+		saveButton->setFixedWidth(30);
+		saveallButton->setFixedWidth(30);
+		undoButton->setFixedWidth(30);
+		redoButton->setFixedWidth(30);
+		cutButton->setFixedWidth(30);
+		copyButton->setFixedWidth(30);
+		pasteButton->setFixedWidth(30);
+		importButton->setFixedWidth(30);
+		exportButton->setFixedWidth(30);
+		runButton->setFixedWidth(30);
+		minimizeButton->setFixedWidth(30);
+		catalogButton->setFixedWidth(30);
 		
 		newButton->setFlat(true);
 		saveButton->setFlat(true);

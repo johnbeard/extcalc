@@ -152,6 +152,7 @@ class MatrixWidget :public QWidget
 			invertButton->setFixedWidth(30);
 			detButton->setFixedWidth(30);
 			sprodButton->setFixedWidth(30);
+			catalogButton->setFixedWidth(30);
 			
 			vectorBox->insertItem(MATRIXWIDGETH_STR11);
 			for(int c=0; c<26; c++)

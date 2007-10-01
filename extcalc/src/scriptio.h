@@ -149,6 +149,7 @@ class ScriptGL :public QGLWidget
 
 		void scrBegin(GLuint type)
 		{
+			makeCurrent();
 			if(!staticListActive && !drawListActive)
 			{
 				drawListControl();
@@ -424,6 +425,9 @@ class ScriptIOWidget :public QWidget
 			runButton=new QPushButton(*runIcon,"",toolBar);
 			killButton=new QPushButton(*killIcon,"",toolBar);
 			maximizeButton=new QPushButton(*minimizeIcon,"",toolBar);
+			runButton->setFixedWidth(30);
+			maximizeButton->setFixedWidth(30);
+			killButton->setFixedWidth(30);
 
 			killButton->setEnabled(false);
 

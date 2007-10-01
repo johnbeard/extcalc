@@ -367,7 +367,6 @@ QString getErrorMessage()
 		case EACCES:
 			return(QString("Permission denied"));
 		case EBADF:
-		case EBADFD:
 			return(QString("Bad file descriptor"));
 		case EBUSY:
 			return(QString("Device or resource busy"));
@@ -993,12 +992,12 @@ char* cleanString(char*code,Preferences*pref)
 		{
 			if(code[c]=='\"')
 				quote=true;
-			else if((code[c]>='A' && code[c]<='Z' || code[c]==']') && 
+			else if((code[c]>='A' && code[c]<='F' && pref->calcType!=BASE || code[c]>='G' && code[c]<='Z' || code[c]==']') && 
 					(code[c+1]>='0' && code[c+1] <='9' || code[c+1]=='.' || 
 					code[c+1]>='a' && code[c+1] <='z' || (code[c+1]=='$' && code[c+1]=='A') || code[c+1]=='\\' || 
 					code[c+1]=='(') || 
 					(code[c]>='0' && code[c]<='9' || code[c]=='.') && 
-					(code[c+1]>='A' && code[c+1] <='Z' || 
+					(code[c+1]>='A' && code[c+1]<='F' && pref->calcType!=BASE || code[c+1]>='G' && code[c+1]<='Z' || 
 					code[c+1]>='a' && code[c+1] <='z' && code[c+1]!='e' || (code[c+1]=='$' && code[c+1]=='A') || code[c+1]=='\\' || 
 					code[c+1]=='(')/* || 
 					code[c]==')' &&
@@ -4577,7 +4576,7 @@ Number Script::exec()
 //			perror("events: "+QString::number(eventReciver->eventCount));
 			usleep(1000);
 			if(eventReciver->eventCount>210)
-				usleep(10000);
+				usleep(100000);
 		}
 #endif
 		if(eventReciver->usleep)
@@ -7197,7 +7196,7 @@ Number Script::exec()
 			int pathlen=strlen(value.cval);
 #ifndef CONSOLE
 			char*eventContent=(char*)malloc(pathlen+1);
-			memcpy(eventContent,value.cval,pathlen);
+			memcpy(eventContent,value.cval,pathlen+1);
 			eventReciver->data=NULL;
 			QCustomEvent*fileEvent=new QCustomEvent(SIGFILEREAD);
 			fileEvent->setData(eventContent);

@@ -83,6 +83,7 @@ class CalcWidget :public QWidget
 		dockArea->moveDockWindow(toolBar);
 		
 		viewButton=new QPushButton(*maximizeIcon,"",toolBar);
+		viewButton->setFixedWidth(30);
 
 		typeBox=new QComboBox(toolBar);
 		typeBox->insertItem(*scientificIcon,"scientific");
@@ -110,6 +111,7 @@ class CalcWidget :public QWidget
 
 		catalog->show();
 		catalogButton=new QPushButton(*catalogIcon,"",toolBar);
+		catalogButton->setFixedWidth(30);
 		
 		QToolTip::add(viewButton,CALCWIDGETH_STR4);
 		QToolTip::add(typeBox,CALCWIDGETH_STR5);

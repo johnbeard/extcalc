@@ -39,7 +39,7 @@ void CalcWidget::resizeEvent(QResizeEvent*)
 		textEdit->setGeometry(20,50,width-40,height-290);
 		calcButtons->setGeometry(20,height-220,280,200);
 		extButtons->setGeometry(320,height-180,300,160);
-		dockArea->setGeometry(325,height-220,290,30);
+		dockArea->setGeometry(320,height-220,width-340,30);
 	}
 
 } 

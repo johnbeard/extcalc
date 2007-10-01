@@ -774,6 +774,7 @@ void ScriptIOWidget::customEvent(QCustomEvent*ev)
 					else fileData=NULL;
 				}
 				else fileData=NULL;
+				perror("Path: "+path+"\nData: "+QString(fileData));
 				
 				if(fileData==NULL)
 					threadData->data=calloc(2,1);
@@ -1914,6 +1915,7 @@ void ScriptGL::wheelEvent(QWheelEvent*e)
 
 void ScriptGL::initializeGL()
 {
+	makeCurrent();
 	if(paintActive)
 		glEnd();
 	if(drawListActive)
@@ -1957,7 +1959,7 @@ void ScriptGL::resizeGL( int w, int h )
 
 void ScriptGL::paintGL()
 {
-	if(paintActive)
+	if(paintActive || staticListActive)
 		return;
 	if(drawListActive)
 		drawListControl();

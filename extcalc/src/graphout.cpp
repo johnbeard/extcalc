@@ -20,6 +20,7 @@ any later version.
 
 void GraphOutput::initializeGL()
 {
+	makeCurrent();
 	glClearColor( 1.0,1.0,1.0,1.0 );
 //	qglClearColor(white ); 
 	if(axes!=0xffffffff)
@@ -1452,6 +1453,7 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 	double xStart,xStep;
 	int steps,startStep;
 	bool ret=true;
+	makeCurrent();
 
 	if(pref.xmin>oldXMin)
 	{
@@ -1580,7 +1582,7 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 
 void GraphOutput::processFunction(int index)
 {
-
+	makeCurrent();
 	oldXMin=pref.xmin;
 	oldXMax=pref.xmax;
 	

@@ -96,6 +96,8 @@ public:
 		maximizeButton=new QPushButton(*maximizeIcon,"",toolBar);
 		typeBox=new QComboBox(toolBar);
 		catalogButton=new QPushButton(*catalogIcon,"",toolBar);
+		catalogButton->setFixedWidth(30);
+		maximizeButton->setFixedWidth(30);
 		
 		QToolTip::add(maximizeButton,TABLEH_STR13);
 		QToolTip::add(typeBox,TABLEH_STR14);

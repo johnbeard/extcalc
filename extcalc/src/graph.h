@@ -146,6 +146,8 @@ Q_OBJECT
 		maximizeButton=new QPushButton(*maximizeIcon,"",toolBar);
 		modeBox=new QComboBox(toolBar);
 		catalogButton=new QPushButton(*catalogIcon,"",toolBar);
+		catalogButton->setFixedWidth(30);
+		maximizeButton->setFixedWidth(30);
 		
 		drawButton->setFixedHeight(25);
 		
