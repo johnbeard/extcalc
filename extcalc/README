@@ -32,7 +32,7 @@ Languages:
 To install the german version of the calculator, type "./configure --enable-language_de" instead of
 "./configure"
 
-For the french fersion, type "./configure --enable-language_fr"
+For the french version, type "./configure --enable-language_fr"
 
 
 
@@ -102,6 +102,7 @@ Tested Distributions:
 Suse Linux 8.2         ok
 Suse Linux 9.2         ok
 Suse Linux 10.2        ok
+Suse Linux 10.0        ok
 Debian 3.1 Sarge       update needed
 Debian Etch            ok
 Mandriva 2007          ok
@@ -126,13 +127,13 @@ Fedora Core 4
              a working ELF header for this program.
              To fix this bug, please update gcc and g++.
 
-Needed software:
+Software Requirements:
 Linux
 GCC 3 or GCC 4 (doesn't run with gcc 2.xx)
 QT3.1 or higher
 OpenGL 
 
-Needed hardware:
+Hardware Requirements:
 CPU at about 1GHz (32Bit or 64Bit)
 enough RAM to run X
 For 3D-graphics, a 3D-graphics card is recommended
