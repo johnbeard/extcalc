@@ -1660,30 +1660,23 @@ while(1)
   <tr><td>Suse Linux 9.2:</td><td>OK</td></tr>
   <tr><td>Suse Linux 10.2:</td><td>OK</td></tr>
   <tr><td>Debian 3.1 Sarge:</td><td>Update n&ouml;tig</td></tr>
-  <tr><td>Debian Etch:</td><td>OK</td></tr>
-  <tr><td>Ubuntu Linux 6.06:</td><td>OK</td></tr>
-  <tr><td>Ubuntu Linux 6.10:</td><td>OK</td></tr>
+  <tr><td>Debian 4.0 Etch:</td><td>OK</td></tr>
+  <tr><td>Debian Testing Lenny:</td><td>OK</td></tr>
+  <tr><td>Ubuntu Linux 7.04:</td><td>OK</td></tr>
   <tr><td>Mepis Linux 6.0:</td><td>OK</td></tr>
-  <tr><td>Mandriva 2006:</td><td>OK</td></tr>
-  <tr><td>Slackware 10:</td><td>OK</td></tr>
-  <tr><td>Fedora Core 5:</td><td>OK</td></tr>
+  <tr><td>Mandriva 2007:</td><td>OK</td></tr>
   <tr><td>Fedora Core 6:</td><td>OK</td></tr>
-  <tr><td>OpenBSD 3.9:</td><td>s. Anmerkung</td></tr>
+  <tr><td>FreeBSD 6.2:</td><td>s. Anmerkung</td></tr>
   </table>
 
   <h5>Debian 3.1 Sarge:</h5>
   Ohne Update l&auml;sst sich Extcalc zwar installieren und starten, aber
   das Grafikfenster bleibt schwarz und kann nichts anzeigen.<br>
   Wenn dieser Fehler auftritt, m&uuml;ssen die X-Server und OpenGL-Pakete aktualisiert werden.<br>
-  <h5>OpenBSD 3.9:</h5>
-  Grunds&auml;tzlich ist der Code auf dem OpenBSD-System lauff&auml;hig, wenn QT installiert ist.<br>
-  Beim Test traten allerdings einige Probleme auf:<br>
-  1. Bei der Installation von QT auf OpenBSD wird kein allgemeiner Link f&uuml;r libqt-mt gesetzt. Ohne diesen schl&auml;gt das Linken fehl.<br>
-  2. Die QT-Environment-Variablen werden vom System nicht gesetzt. Dies muss von Hand, wie in der QT-Hilfe beschrieben, geschehen.<br>
-  3. Die pkg-config-Daten f&uuml;r die OpenGL- und die QT-Bibiliothek sind im System nicht vorhanden, weshalb die Installation mit dem Configure-Script
-  nicht m&ouml;glich ist. Die Installation ist von Hand vorzunehmen. Zum Compilieren von Hand kann man im src-Verzeichnis qmake -o Makefile extcalc.pro
-  ausf&uuml;hren. Damit wird ein Makefile generiert, das mit make aufgerufen werden kann und dann ein lauff&auml;higes Programm kompiliert.<br>
-  Unter diesen Umst&auml;nden scheint es sinnvoller, zu warten bis ein vorkompiliertes BSD-Paket f&uuml;r Extcalc bereitgestellt wird.<br>
+  <h5>FreeBSD 6.2:</h5>
+  Das Programm kann unter FreeBSD 6.2 installliert werden, wenn die Entwicklungspakete für Qt 3 und OpenGL installiert sind.
+  Es ist möglicherweise nötig, die Umgebungsvariable QTDIR auf den Installationspfad von Qt zu setzen.
+  
   
   <h5>Hardwareanforderungen:</h5>
   Prozessor mit ca. 1GHz (32Bit oder 64Bit)<br>

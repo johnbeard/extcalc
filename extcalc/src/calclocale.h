@@ -684,7 +684,7 @@ This program is currently translated into French by Eugene Clement.
 #define CALCPREFH_STR13 "Complex"
 
 #define INFOSTRING "Extcalc:\nGraphic scientific calculator\n\n"
-#define DEVVERSION "Beta version\nThis program is still in development  \n\n"
+#define DEVVERSION "Beta version\nThis program is still in development\n(it may still have a few errors)  \n\n"
 
 #define GRAPHH_STR1 "Print"
 #define GRAPHH_STR3 "Analyse"
@@ -1199,9 +1199,9 @@ This program is currently translated into French by Eugene Clement.
 #define CALCPREFH_STR13 "Nombres Complexes"
 
 #define INFOSTRING "Extcalc:\nCalculatrice graphique scientifique\n\n"
-#define DEVVERSION "Version de Dévelopement:\n Cette version est un travail en cours. Certaines options peuvent ne pas etre activées  \n\n"    //changed text for beta version
+#define DEVVERSION "Ce programme est une Version Beta\n(c'est a dire en fin de dévelopement, elle contient peut-être encore quelques erreurs)  \n\n"
 
-#define GRAPHH_STR1 "Imprimer"				//removed full screen, not needed int the new version
+#define GRAPHH_STR1 "Imprimer"
 #define GRAPHH_STR3 "Analyse"
 #define GRAPHH_STR4 "Calculer les valeurs-Y"
 #define GRAPHH_STR5 "Calculer les Racines"
@@ -1517,9 +1517,9 @@ This program is currently translated into French by Eugene Clement.
 #define MATRIXWIDGETH_STR12 "Matrice Identité"
 #define MATRIXWIDGETH_STR13 "Matrice Nulle"
 #define MATRIXWIDGETH_STR14 "Vecteur Nul"
-#define MATRIXWIDGETH_STR15 "X-Rotation Matrix"
-#define MATRIXWIDGETH_STR16 "Y-Rotation Matrix"
-#define MATRIXWIDGETH_STR17 "Z-Rotation Matrix"
+#define MATRIXWIDGETH_STR15 "Rotation de la Matrice - X"
+#define MATRIXWIDGETH_STR16 "Rotation de la Matrice - Y"
+#define MATRIXWIDGETH_STR17 "Rotation de la Matrice - Z"
 #define MATRIXWIDGETH_STR18 "Matrice Scalaire"
 #define MATRIXWIDGETC_STR1 "Vecteur"
 #define MATRIXWIDGETC_STR2 "Inconnu:"
@@ -1545,9 +1545,9 @@ This program is currently translated into French by Eugene Clement.
 #define MATRIXWIDGETC_STR22 "angle x"									//more text for the generate matrix function
 #define MATRIXWIDGETC_STR23 "angle y"
 #define MATRIXWIDGETC_STR24 "angle z"
-#define MATRIXWIDGETC_STR25 "scale x"
-#define MATRIXWIDGETC_STR26 "scale y"
-#define MATRIXWIDGETC_STR27 "scale z"
+#define MATRIXWIDGETC_STR25 "échelle x"
+#define MATRIXWIDGETC_STR26 "échelle y"
+#define MATRIXWIDGETC_STR27 "échelle z"
 #define MATRIXWIDGETC_STR28 "Trouvé plus d'un résultat\nPrésenter la matrice"	//even more text for the solve equations function
 #define MATRIXWIDGETC_STR29 "Aucun résultat trouvé\nPrésenter la matrice"
 #define MATRIXWIDGETC_STR30 "Présenter le resultat du vecteur"
