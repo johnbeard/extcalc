@@ -544,106 +544,106 @@ This program is currently translated into French by Eugene Clement.
 
 #ifdef LANGUAGE_EN
 
-#define EXTCALCH_MSG1 "Error loading icon"
-#define EXTCALCH_MSG2 "Error loading license"
-#define EXTCALCH_STR1 "This programme ist distributed under the terms of GPL v2.\n\nFile not found."
-#define EXTCALCH_STR2 "This programme ist distributed under the terms of GPL v2.\n\n"
-#define EXTCALCH_STR3 "Version"
-#define EXTCALCH_STR4 "Authors"
-#define EXTCALCH_STR5 "License"
-#define EXTCALCH_STR6 "Calculator"
-#define EXTCALCH_STR7 "Another Calculator"
-#define EXTCALCH_STR8 "Graphics"
-#define EXTCALCH_STR9 "Tables"
-#define EXTCALCH_STR12 "Script Editor"
-#define EXTCALCH_STR13 "Script Console"
-#define EXTCALCH_STR14 "Import/Export Script"
-#define EXTCALCH_STR15 "Import Script File"
-#define EXTCALCH_STR16 "File name to import"
-#define EXTCALCH_STR17 "File name to save"
-#define EXTCALCH_STR18 "Export Script File"
-#define EXTCALCH_STR19 "Script file to export"
-#define EXTCALCH_STR20 "File name to save"
-#define EXTCALCH_STR21 "Unable to read variables file: "
-#define EXTCALCH_STR22 "Unable to write variables file: "
-#define EXTCALCH_MENU1 "Degree (DEG)"
-#define EXTCALCH_MENU2 "Radian (RAD)"
-#define EXTCALCH_MENU3 "Grad (GRA)"
-#define EXTCALCH_MENU4 "Fixed number of digits"
-#define EXTCALCH_MENU5 "Variable number of digits"
-#define EXTCALCH_MENU6 "With symbol"
-#define EXTCALCH_MENU7 "Number of digits"
-#define EXTCALCH_MENU8 "Angle"
-#define EXTCALCH_MENU9 "Output Format"
-#define EXTCALCH_MENU10 "Calculator Preferences"
-#define EXTCALCH_MENU11 "Graphics Preferences"
-#define EXTCALCH_MENU12 "Extcalc Help"
-#define EXTCALCH_MENU13 "Info"
-#define EXTCALCH_MENU14 "&File"
-#define EXTCALCH_MENU15 "&Preferences"
-#define EXTCALCH_MENU16 "&Calculator"
-#define EXTCALCH_MENU17 "&Graphic"
-#define EXTCALCH_MENU18 "&Help"
-#define EXTCALCH_MENU19 "Set Standard Coordinates"
-#define EXTCALCH_MENU20 "Set Trigonometric Coordinates"
-#define EXTCALCH_MENU21 "Show Axes"
-#define EXTCALCH_MENU22 "Show Labels"
-#define EXTCALCH_MENU23 "Show Raster"
-#define EXTCALCH_MENU24 "Constant Width-To-Height-Ratio"
-#define EXTCALCH_MENU25 "Coordinate System"
-#define EXTCALCH_MENU26 "Graph Type"
-#define EXTCALCH_MENU27 "Binary (BIN)"
-#define EXTCALCH_MENU28 "Octal (OCT)"
-#define EXTCALCH_MENU29 "Decimal (DEC)"
-#define EXTCALCH_MENU30 "Hexadecimal (HEX)"
-#define EXTCALCH_MENU31 "Scientific Mode"
-#define EXTCALCH_MENU32 "Base Mode"
-#define EXTCALCH_MENU33 "Base"
-#define EXTCALCH_MENU34 "Mode"
-#define EXTCALCH_MENU35 "Standard"
-#define EXTCALCH_MENU36 "Polar"
-#define EXTCALCH_MENU37 "3D-Graph"
-#define EXTCALCH_MENU38 "Normal"
-#define EXTCALCH_MENU39 "Polar"
-#define EXTCALCH_MENU40 "Parameter"
-#define EXTCALCH_MENU41 "Inequality"
-#define EXTCALCH_MENU42 "3D"
-#define EXTCALCH_MENU43 "Standard Values"
-#define EXTCALCH_MENU44 "Function Type"
-#define EXTCALCH_MENU45 "Table Preferences"
-#define EXTCALCH_MENU46 "Table"
-#define EXTCALCH_MENU47 "Undo"
-#define EXTCALCH_MENU48 "Redo"
-#define EXTCALCH_MENU49 "Cut"
-#define EXTCALCH_MENU50 "Copy"
-#define EXTCALCH_MENU51 "Paste"
-#define EXTCALCH_MENU52 "View Calculator"
-#define EXTCALCH_MENU53 "View Second Calculator"
-#define EXTCALCH_MENU54 "View Graph Window"
-#define EXTCALCH_MENU55 "View Table Window"
-#define EXTCALCH_MENU56 "View Scripting Window"
-#define EXTCALCH_MENU57 "Quit"
-#define EXTCALCH_MENU58 "&Edit"
-#define EXTCALCH_MENU59 "&View"
-#define EXTCALCH_MENU60 "Scripting Preferences"
-#define EXTCALCH_MENU61 "View Script Console"
-#define EXTCALCH_MENU62 "Export Script"
-#define EXTCALCH_MENU63 "Import Script"
-#define EXTCALCH_MENU64 "Always clear Array Memory"
-#define EXTCALCH_MENU65 "Clear Array Memory now"
-#define EXTCALCH_MENU66 "Script"
-#define EXTCALCH_MENU67 "Complex"
-#define EXTCALCH_MENU68 "Reset Input Values"
-#define EXTCALCH_MENU69 "Clear Graphics Window"
-#define EXTCALCH_MENU70 "Automatic Graph Clear"
-#define EXTCALCH_MENU71 "Show Points"
-#define EXTCALCH_MENU72 "Show Lines"
-#define EXTCALCH_MENU73 "Matrix/Vector"
-#define EXTCALCH_MENU74 "Statistics"
-#define EXTCALCH_MENU75 "Welcome to Extcalc!\n\nThis seems to be the first time, you start this program.\nFor this reason, Extcalc must create directories to store scripts and data.\nSay yes, if you want to change the script configuration!"
-#define EXTCALCH_MENU76 "Welcome to the new version of Extcalc!\n\nThis seems to be the first time, you start the new version of Extcalc.\nThe new version ships some default script programs.\nThe script directories must exist to make them usable.\nSay yes, if you want to change the script configuration!"
-#define EXTCALCH_MENU77 "Default directories created."
-#define EXTCALCH_MENU78 "Complex"
+#define EXTCALCH_MSG1 tr("Error loading icon","extcalc.h")
+#define EXTCALCH_MSG2 tr("Error loading license","extcalc.h")
+#define EXTCALCH_STR1 tr("This programme ist distributed under the terms of GPL v2.\n\nFile not found.","extcalc.h")
+#define EXTCALCH_STR2 tr("This programme ist distributed under the terms of GPL v2.\n\n","extcalc.h")
+#define EXTCALCH_STR3 tr("Version","extcalc.h")
+#define EXTCALCH_STR4 tr("Authors","extcalc.h")
+#define EXTCALCH_STR5 tr("License","extcalc.h")
+#define EXTCALCH_STR6 tr("Calculator","extcalc.h")
+#define EXTCALCH_STR7 tr("Another Calculator","extcalc.h")
+#define EXTCALCH_STR8 tr("Graphics","extcalc.h")
+#define EXTCALCH_STR9 tr("Tables","extcalc.h")
+#define EXTCALCH_STR12 tr("Script Editor","extcalc.h")
+#define EXTCALCH_STR13 tr("Script Console","extcalc.h")
+#define EXTCALCH_STR14 tr("Import/Export Script","extcalc.h")
+#define EXTCALCH_STR15 tr("Import Script File","extcalc.h")
+#define EXTCALCH_STR16 tr("File name to import","extcalc.h")
+#define EXTCALCH_STR17 tr("File name to save","extcalc.h")
+#define EXTCALCH_STR18 tr("Export Script File","extcalc.h")
+#define EXTCALCH_STR19 tr("Script file to export","extcalc.h")
+#define EXTCALCH_STR20 tr("File name to save","extcalc.h")
+#define EXTCALCH_STR21 tr("Unable to read variables file: ","extcalc.h")
+#define EXTCALCH_STR22 tr("Unable to write variables file: ","extcalc.h")
+#define EXTCALCH_MENU1 tr("Degree (DEG)","extcalc.h")
+#define EXTCALCH_MENU2 tr("Radian (RAD)","extcalc.h")
+#define EXTCALCH_MENU3 tr("Grad (GRA)","extcalc.h")
+#define EXTCALCH_MENU4 tr("Fixed number of digits","extcalc.h")
+#define EXTCALCH_MENU5 tr("Variable number of digits","extcalc.h")
+#define EXTCALCH_MENU6 tr("With symbol","extcalc.h")
+#define EXTCALCH_MENU7 tr("Number of digits","extcalc.h")
+#define EXTCALCH_MENU8 tr("Angle","extcalc.h")
+#define EXTCALCH_MENU9 tr("Output Format","extcalc.h")
+#define EXTCALCH_MENU10 tr("Calculator Preferences","extcalc.h")
+#define EXTCALCH_MENU11 tr("Graphics Preferences","extcalc.h")
+#define EXTCALCH_MENU12 tr("Extcalc Help","extcalc.h")
+#define EXTCALCH_MENU13 tr("Info","extcalc.h")
+#define EXTCALCH_MENU14 tr("&File","extcalc.h")
+#define EXTCALCH_MENU15 tr("&Preferences","extcalc.h")
+#define EXTCALCH_MENU16 tr("&Calculator","extcalc.h")
+#define EXTCALCH_MENU17 tr("&Graphic","extcalc.h")
+#define EXTCALCH_MENU18 tr("&Help","extcalc.h")
+#define EXTCALCH_MENU19 tr("Set Standard Coordinates","extcalc.h")
+#define EXTCALCH_MENU20 tr("Set Trigonometric Coordinates","extcalc.h")
+#define EXTCALCH_MENU21 tr("Show Axes","extcalc.h")
+#define EXTCALCH_MENU22 tr("Show Labels","extcalc.h")
+#define EXTCALCH_MENU23 tr("Show Raster","extcalc.h")
+#define EXTCALCH_MENU24 tr("Constant Width-To-Height-Ratio","extcalc.h")
+#define EXTCALCH_MENU25 tr("Coordinate System","extcalc.h")
+#define EXTCALCH_MENU26 tr("Graph Type","extcalc.h")
+#define EXTCALCH_MENU27 tr("Binary (BIN)","extcalc.h")
+#define EXTCALCH_MENU28 tr("Octal (OCT)","extcalc.h")
+#define EXTCALCH_MENU29 tr("Decimal (DEC)","extcalc.h")
+#define EXTCALCH_MENU30 tr("Hexadecimal (HEX)","extcalc.h")
+#define EXTCALCH_MENU31 tr("Scientific Mode","extcalc.h")
+#define EXTCALCH_MENU32 tr("Base Mode","extcalc.h")
+#define EXTCALCH_MENU33 tr("Base","extcalc.h")
+#define EXTCALCH_MENU34 tr("Mode","extcalc.h")
+#define EXTCALCH_MENU35 tr("Standard","extcalc.h")
+#define EXTCALCH_MENU36 tr("Polar","extcalc.h")
+#define EXTCALCH_MENU37 tr("3D-Graph","extcalc.h")
+#define EXTCALCH_MENU38 tr("Normal","extcalc.h")
+#define EXTCALCH_MENU39 tr("Polar","extcalc.h")
+#define EXTCALCH_MENU40 tr("Parameter","extcalc.h")
+#define EXTCALCH_MENU41 tr("Inequality","extcalc.h")
+#define EXTCALCH_MENU42 tr("3D","extcalc.h")
+#define EXTCALCH_MENU43 tr("Standard Values","extcalc.h")
+#define EXTCALCH_MENU44 tr("Function Type","extcalc.h")
+#define EXTCALCH_MENU45 tr("Table Preferences","extcalc.h")
+#define EXTCALCH_MENU46 tr("Table","extcalc.h")
+#define EXTCALCH_MENU47 tr("Undo","extcalc.h")
+#define EXTCALCH_MENU48 tr("Redo","extcalc.h")
+#define EXTCALCH_MENU49 tr("Cut","extcalc.h")
+#define EXTCALCH_MENU50 tr("Copy","extcalc.h")
+#define EXTCALCH_MENU51 tr("Paste","extcalc.h")
+#define EXTCALCH_MENU52 tr("View Calculator","extcalc.h")
+#define EXTCALCH_MENU53 tr("View Second Calculator","extcalc.h")
+#define EXTCALCH_MENU54 tr("View Graph Window","extcalc.h")
+#define EXTCALCH_MENU55 tr("View Table Window","extcalc.h")
+#define EXTCALCH_MENU56 tr("View Scripting Window","extcalc.h")
+#define EXTCALCH_MENU57 tr("Quit","extcalc.h")
+#define EXTCALCH_MENU58 tr("&Edit","extcalc.h")
+#define EXTCALCH_MENU59 tr("&View","extcalc.h")
+#define EXTCALCH_MENU60 tr("Scripting Preferences","extcalc.h")
+#define EXTCALCH_MENU61 tr("View Script Console","extcalc.h")
+#define EXTCALCH_MENU62 tr("Export Script","extcalc.h")
+#define EXTCALCH_MENU63 tr("Import Script","extcalc.h")
+#define EXTCALCH_MENU64 tr("Always clear Array Memory","extcalc.h")
+#define EXTCALCH_MENU65 tr("Clear Array Memory now","extcalc.h")
+#define EXTCALCH_MENU66 tr("Script","extcalc.h")
+#define EXTCALCH_MENU67 tr("Complex","extcalc.h")
+#define EXTCALCH_MENU68 tr("Reset Input Values","extcalc.h")
+#define EXTCALCH_MENU69 tr("Clear Graphics Window","extcalc.h")
+#define EXTCALCH_MENU70 tr("Automatic Graph Clear","extcalc.h")
+#define EXTCALCH_MENU71 tr("Show Points","extcalc.h")
+#define EXTCALCH_MENU72 tr("Show Lines","extcalc.h")
+#define EXTCALCH_MENU73 tr("Matrix/Vector","extcalc.h")
+#define EXTCALCH_MENU74 tr("Statistics","extcalc.h")
+#define EXTCALCH_MENU75 tr("Welcome to Extcalc!\n\nThis seems to be the first time, you start this program.\nFor this reason, Extcalc must create directories to store scripts and data.\nSay yes, if you want to change the script configuration!","extcalc.h")
+#define EXTCALCH_MENU76 tr("Welcome to the new version of Extcalc!\n\nThis seems to be the first time, you start the new version of Extcalc.\nThe new version ships some default script programs.\nThe script directories must exist to make them usable.\nSay yes, if you want to change the script configuration!","extcalc.h")
+#define EXTCALCH_MENU77 tr("Default directories created.","extcalc.h")
+#define EXTCALCH_MENU78 tr("Complex","extcalc.h")
 
 #define EXTCALCC_MSG1 "Error writing configfile: "
 #define EXTCALCC_MSG3 "Error loading configfile: "
@@ -684,7 +684,7 @@ This program is currently translated into French by Eugene Clement.
 #define CALCPREFH_STR13 "Complex"
 
 #define INFOSTRING "Extcalc:\nGraphic scientific calculator\n\n"
-#define DEVVERSION "Beta version\nThis program is still in development\n(it may still have a few errors)  \n\n"
+#define DEVVERSION "Beta version\nThis program is still in development (it may still have a few errors)  \n\n"
 
 #define GRAPHH_STR1 "Print"
 #define GRAPHH_STR3 "Analyse"
@@ -1168,7 +1168,7 @@ This program is currently translated into French by Eugene Clement.
 #define EXTCALCC_MSG12 "dialogue de sauvegarde de fichier"
 #define EXTCALCC_MSG13 "Entrez un nom de fichier"
 
-#define GLOBALH_STR1 "Auteurs:\nRainer Strobel\nProgramming and development\nEugène Clément\nTraduction"				//New author string; Don't forget to add your name
+#define GLOBALH_STR1 "Auteurs:\nRainer Strobel\nProgramming and development\nEugène Clément\nTraduction"
 
 #define CALCWIDGETH_STR4 "Changer de Vue"
 #define CALCWIDGETH_STR5 "Mode Scientifique/Logique"
@@ -1199,7 +1199,7 @@ This program is currently translated into French by Eugene Clement.
 #define CALCPREFH_STR13 "Nombres Complexes"
 
 #define INFOSTRING "Extcalc:\nCalculatrice graphique scientifique\n\n"
-#define DEVVERSION "Ce programme est une Version Beta\n(c'est a dire en fin de dévelopement, elle contient peut-être encore quelques erreurs)  \n\n"
+#define DEVVERSION "Ce programme est une Version Beta (c'est a dire en fin de dévelopement, elle contient peut-être encore quelques erreurs)  \n\n"
 
 #define GRAPHH_STR1 "Imprimer"
 #define GRAPHH_STR3 "Analyse"
@@ -1511,7 +1511,7 @@ This program is currently translated into French by Eugene Clement.
 #define MATRIXWIDGETH_STR6 "Generation de Matrice"
 #define MATRIXWIDGETH_STR7 "Analyse de Matrice"
 #define MATRIXWIDGETH_STR8 "Matrice Inverse"
-#define MATRIXWIDGETH_STR9 "Calculer maintenant"
+#define MATRIXWIDGETH_STR9 "Calculer"
 #define MATRIXWIDGETH_STR10 "Mode"
 #define MATRIXWIDGETH_STR11 "Pas de Vecteur"
 #define MATRIXWIDGETH_STR12 "Matrice Identité"
@@ -1538,9 +1538,9 @@ This program is currently translated into French by Eugene Clement.
 #define MATRIXWIDGETC_STR15 "Absolue:"
 #define MATRIXWIDGETC_STR16 "Type: Scalaire"
 #define MATRIXWIDGETC_STR17 "Il n'est pas possible de choisir la meme variable plus d'une fois!\nChoisir une Matrice\nou une matrice et un vecteur\nafin d'entrer des données"
-#define MATRIXWIDGETC_STR18 "Entrer des données \net appuyer sur le bouton \"Calculer maintenant\" "
+#define MATRIXWIDGETC_STR18 "Entrer des données \net appuyer sur le bouton \"Calculer\" "
 #define MATRIXWIDGETC_STR19 "Appuyer sur le bouton \"mode\" afin d'ajuster la taille"
-#define MATRIXWIDGETC_STR20 "Entrer des données \net appuyer sur le bouton \"Calculer maintenant\" "
+#define MATRIXWIDGETC_STR20 "Entrer des données \net appuyer sur le bouton \"Calculer\" "
 #define MATRIXWIDGETC_STR21 "Appuyer sur le bouton \"mode\" afin d'ajuster la taille"
 #define MATRIXWIDGETC_STR22 "angle x"									//more text for the generate matrix function
 #define MATRIXWIDGETC_STR23 "angle y"
@@ -1566,7 +1566,7 @@ This program is currently translated into French by Eugene Clement.
 #define STATISTICSH_STR9 "Distribution Normale"
 #define STATISTICSH_STR10 "Distribution Graphique"
 #define STATISTICSH_STR11 "Pas"
-#define STATISTICSH_STR12 "Calculer maintenant"
+#define STATISTICSH_STR12 "Calculer"
 #define STATISTICSH_STR14 "Imprimer"
 
 #define STATISTICSC_STR2 "Désirez-vous vraiment ecraser la fonction f"

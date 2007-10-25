@@ -980,58 +980,6 @@ void GraphOutput::process3dFunction(QString function)
 	gettimeofday(&t2,NULL);
 
 
-	/*
-	// Code for 3D-graphs with polygons
-	glMatrixMode(GL_MODELVIEW);
-	float y;
-	float lastY[rasterSize+1];
-	QString num,num2;
-	Calculate ca1(NULL,func,&pref,vars);
-	struct timeval t1,t2;
-	bool end=false;
-
-	gettimeofday(&t1,NULL);
-	vars[25]=zStart;
-	vars[23]=xStart;
-	lastY[0]=ca1.calc();
-	for(int c=1; c<=rasterSize;c++)
-	{
-		vars[25]=zStart+(double)c*zStep;
-		lastY[c]=ca1.calc();
-	}
-	for(int c=1; c<=rasterSize;c++)
-	{
-		vars[23]=xStart+c*xStep;
-		glBegin(GL_TRIANGLE_STRIP);
-		for(int c1=0; c1<=rasterSize; c1++)
-		{
-			vars[25]=zStart+c1*zStep;
-			y=ca1.calc();
-			if((y > pref.ymin&&y<pref.ymax) || (lastY[c1] > pref.ymin && lastY[c1] < pref.ymax))
-			{
-				if(end)
-				{
-					glBegin(GL_TRIANGLE_STRIP);
-					end=false;
-				}
-				if(colored)
-					setGLColor(lastY[c1]);
-				glVertex3f(xStart+(c-1)*xStep,lastY[c1],vars[25]);
-				if(colored)
-					setGLColor(y);
-				glVertex3f(xStart+(c)*xStep,y,vars[25]);
-			}
-			else {
-				glEnd();
-				end=true;
-			}
-
-			lastY[c1]=y;
-		}
-		glEnd();
-	}
-	//end
-	*/	
 	glEndList();
 
 	int seconds,usecs;
@@ -1891,6 +1839,105 @@ void GraphOutput::processFunction(int index)
 	}
 }
 
+inline void GraphOutput::drawTriangle(float x[3],float y[3],float z[3],bool colored)
+{
+	int c;
+	if(y[0]>pref.ymin && y[0]<pref.ymax &&		//all vertex inside c s
+		   y[1]>pref.ymin && y[1]<pref.ymax &&
+		   y[2]>pref.ymin && y[2]<pref.ymax)
+	{
+		for(c=0; c<3; c++)
+		{
+			if(colored)
+				setGLColor(y[c]);
+			glVertex3f(x[c],y[c],z[c]);
+		}
+	}
+	if((y[0]>pref.ymax || y[1]>pref.ymax || y[2]>pref.ymax) &&	//one vertex over maximum, one below minimum
+		   (y[0]<pref.ymin || y[1]<pref.ymin || y[2]<pref.ymin))
+	{
+		return;
+	}
+	else if((y[0]>pref.ymin && y[0]<pref.ymax ||		//at least one vertex inside, at least one outside c s
+				y[1]>pref.ymin && y[1]<pref.ymax ||
+				y[2]>pref.ymin && y[2]<pref.ymax) && 
+				(y[0]<pref.ymin || y[0]>pref.ymax ||
+				y[1]<pref.ymin || y[1]>pref.ymax ||
+				y[2]<pref.ymin || y[2]>pref.ymax))
+	{
+		int vout[2],vin[2],outcount=0;
+		for(int c=0; c<3; c++)
+		{
+			if(y[c]>pref.ymax || y[c]<pref.ymin)
+			{
+				vout[outcount]=c;
+				outcount++;
+			}
+			else vin[c-outcount]=c;
+		}
+		
+		double tmpx[2],tmpy[2],tmpz[2],fakt,ygr;
+		if(y[vout[0]]>pref.ymax)
+			ygr=pref.ymax;
+		else ygr=pref.ymin;
+		
+		if(outcount==1)
+		{
+
+			
+			for(int c=0; c<2; c++)
+			{
+				fakt=(ygr-y[vin[c]])/(y[vout[0]]-y[vin[c]]);
+				
+				tmpx[c]=x[vin[c]]+(x[vout[0]]-x[vin[c]])*fakt;
+				tmpz[c]=z[vin[c]]+(z[vout[0]]-z[vin[c]])*fakt;
+				tmpy[c]=ygr;
+			}
+			if(colored)
+				setGLColor(y[vin[0]]);
+			glVertex3f(x[vin[0]],y[vin[0]],z[vin[0]]);
+			if(colored)
+				setGLColor(y[vin[1]]);
+			glVertex3f(x[vin[1]],y[vin[1]],z[vin[1]]);
+			if(colored)
+				setGLColor(tmpy[0]);
+			glVertex3f(tmpx[0],tmpy[0],tmpz[0]);
+
+			if(colored)
+				setGLColor(tmpy[0]);
+			glVertex3f(tmpx[0],tmpy[0],tmpz[0]);
+			if(colored)
+				setGLColor(tmpy[1]);
+			glVertex3f(tmpx[1],tmpy[1],tmpz[1]);
+			if(colored)
+				setGLColor(y[vin[1]]);
+			glVertex3f(x[vin[1]],y[vin[1]],z[vin[1]]);
+		}
+		else
+		{
+			for(int c=0; c<2; c++)
+			{
+				fakt=(ygr-y[vin[0]])/(y[vout[c]]-y[vin[0]]);
+				
+				tmpx[c]=x[vin[0]]+(x[vout[c]]-x[vin[0]])*fakt;
+				tmpz[c]=z[vin[0]]+(z[vout[c]]-z[vin[0]])*fakt;
+				tmpy[c]=ygr;
+			}
+
+			if(colored)
+				setGLColor(tmpy[0]);
+			glVertex3f(tmpx[0],tmpy[0],tmpz[0]);
+			if(colored)
+				setGLColor(tmpy[1]);
+			glVertex3f(tmpx[1],tmpy[1],tmpz[1]);
+			if(colored)
+				setGLColor(y[vin[0]]);
+			glVertex3f(x[vin[0]],y[vin[0]],z[vin[0]]);
+		}
+	}
+}
+
+
 GLuint GraphOutput::generateGLList(int index)
 {
 	GLuint list;
@@ -1931,97 +1978,143 @@ GLuint GraphOutput::generateGLList(int index)
 		if(objectCoordinates[index]!=NULL)
 		{
 			glMatrixMode(GL_MODELVIEW);
-			for(int c=0; c<PRECISION3D; c++)
+			if(!pref.show3dGrid)
 			{
-				z=zStart+c*zStep;
-				glBegin(GL_LINES);
-				lastY=objectCoordinates[index][c*PRECISION3D];
-				for(int c1=1; c1<PRECISION3D; c1++)
+				double z2,x2;
+				float xc[3],yc[3],zc[3];
+				glBegin(GL_TRIANGLES);
+				for(int c=1; c<PRECISION3D; c++)			//Z
 				{
-					x=xStart+c1*xStep;
-					y=objectCoordinates[index][c*PRECISION3D+c1];
-					
-					if((y > pref.ymin&&y<pref.ymax) || (lastY > pref.ymin && lastY < pref.ymax))
+					z=zStart+c*zStep;
+					z2=zStart+(c-1)*zStep;
+					for(int c1=1; c1<PRECISION3D; c1++)		//X
 					{
-						double newXStep=xStep,oldXStep=0.0,newY=y,oldY=lastY;
-						if(y<pref.ymin && lastY>pref.ymin)
-						{
-							newY=pref.ymin;
-							newXStep=xStep*(oldY-pref.ymin)/(oldY-y);
-						}
-						else if(y>pref.ymax && lastY<pref.ymax)
-						{
-							newY=pref.ymax;
-							newXStep=xStep*(pref.ymax-oldY)/(y-oldY);
-						}
-						else if(y>pref.ymin && lastY<pref.ymin)
-						{
-							oldY=pref.ymin;
-							oldXStep=xStep*(pref.ymin-oldY)/(y-oldY);
-						}
-						else if(y<pref.ymax && lastY>pref.ymax)
-						{
-							oldY=pref.ymax;
-							oldXStep=xStep*(oldY-pref.ymax)/(oldY-y);
-						}
-						oldXStep+=xStep*(c1-1)+xStart;
-						newXStep+=xStep*(c1-1)+xStart;
-						if(colored)
-							setGLColor(oldY);
-						glVertex3f(oldXStep,oldY,z);
-						if(colored)
-							setGLColor(newY);
-						glVertex3f(newXStep,newY,z);
+						x=xStart+c1*xStep;
+						x2=xStart+(c1-1)*xStep;
+						xc[0]=x2;
+						xc[1]=x2;
+						xc[2]=x;
+						
+						yc[0]=objectCoordinates[index][(c-1)*PRECISION3D+c1-1];
+						yc[1]=objectCoordinates[index][c*PRECISION3D+c1-1];
+						yc[2]=objectCoordinates[index][(c-1)*PRECISION3D+c1];
+						
+						zc[0]=z2;
+						zc[1]=z;
+						zc[2]=z2;
+						drawTriangle(xc,yc,zc,colored);
+
+						xc[0]=x2;
+						xc[1]=x;
+						xc[2]=x;
+						
+						yc[0]=objectCoordinates[index][c*PRECISION3D+c1-1];
+						yc[1]=objectCoordinates[index][c*PRECISION3D+c1];
+						yc[2]=objectCoordinates[index][(c-1)*PRECISION3D+c1];
+						
+						zc[0]=z;
+						zc[1]=z;
+						zc[2]=z2;
+						drawTriangle(xc,yc,zc,colored);
 					}
-					lastY=y;
+					
 				}
 				glEnd();
 			}
-			for(int c=0; c<PRECISION3D; c++)
+			else 
 			{
-				x=xStart+c*xStep;
-				glBegin(GL_LINES);
-				lastY=objectCoordinates[index][c];
-				for(int c1=1; c1<PRECISION3D; c1++)
+				for(int c=0; c<PRECISION3D; c++)
 				{
-					z=zStart+c1*zStep;
-					y=objectCoordinates[index][c1*PRECISION3D+c];
-					
-					if((y > pref.ymin&&y<pref.ymax) || (lastY > pref.ymin && lastY < pref.ymax))
+					z=zStart+c*zStep;
+					glBegin(GL_LINES);
+					lastY=objectCoordinates[index][c*PRECISION3D];
+					for(int c1=1; c1<PRECISION3D; c1++)
 					{
-						double newZStep=zStep,oldZStep=0.0,newY=y,oldY=lastY;
-						if(y<pref.ymin && lastY>pref.ymin)
+						x=xStart+c1*xStep;
+						y=objectCoordinates[index][c*PRECISION3D+c1];
+						
+						if((y > pref.ymin&&y<pref.ymax) || (lastY > pref.ymin && lastY < pref.ymax))
 						{
-							newY=pref.ymin;
-							newZStep=zStep*(oldY-pref.ymin)/(oldY-y);
+							double newXStep=xStep,oldXStep=0.0,newY=y,oldY=lastY;
+							if(y<pref.ymin && lastY>pref.ymin)
+							{
+								newY=pref.ymin;
+								newXStep=xStep*(oldY-pref.ymin)/(oldY-y);
+							}
+							else if(y>pref.ymax && lastY<pref.ymax)
+							{
+								newY=pref.ymax;
+								newXStep=xStep*(pref.ymax-oldY)/(y-oldY);
+							}
+							else if(y>pref.ymin && lastY<pref.ymin)
+							{
+								oldY=pref.ymin;
+								oldXStep=xStep*(pref.ymin-oldY)/(y-oldY);
+							}
+							else if(y<pref.ymax && lastY>pref.ymax)
+							{
+								oldY=pref.ymax;
+								oldXStep=xStep*(oldY-pref.ymax)/(oldY-y);
+							}
+							oldXStep+=xStep*(c1-1)+xStart;
+							newXStep+=xStep*(c1-1)+xStart;
+							if(colored)
+								setGLColor(oldY);
+							glVertex3f(oldXStep,oldY,z);
+							if(colored)
+								setGLColor(newY);
+							glVertex3f(newXStep,newY,z);
 						}
-						else if(y>pref.ymax && lastY<pref.ymax)
-						{
-							newY=pref.ymax;
-							newZStep=zStep*(pref.ymax-oldY)/(y-oldY);
-						}
-						else if(y>pref.ymin && lastY<pref.ymin)
-						{
-							oldY=pref.ymin;
-							oldZStep=zStep*(pref.ymin-oldY)/(y-oldY);
-						}
-						else if(y<pref.ymax && lastY>pref.ymax)
-						{
-							oldY=pref.ymax;
-							oldZStep=zStep*(oldY-pref.ymax)/(oldY-y);
-						}
-						oldZStep+=zStep*(c1-1)+zStart;
-						newZStep+=zStep*(c1-1)+zStart;
-						if(colored)
-							setGLColor(oldY);
-						glVertex3f(x,oldY,oldZStep);
-						if(colored)
-							setGLColor(newY);
-						glVertex3f(x,newY,newZStep);
+						lastY=y;
 					}
-					lastY=y;
+					glEnd();
 				}
-				glEnd();
+				for(int c=0; c<PRECISION3D; c++)
+				{
+					x=xStart+c*xStep;
+					glBegin(GL_LINES);
+					lastY=objectCoordinates[index][c];
+					for(int c1=1; c1<PRECISION3D; c1++)
+					{
+						z=zStart+c1*zStep;
+						y=objectCoordinates[index][c1*PRECISION3D+c];
+						
+						if((y > pref.ymin&&y<pref.ymax) || (lastY > pref.ymin && lastY < pref.ymax))
+						{
+							double newZStep=zStep,oldZStep=0.0,newY=y,oldY=lastY;
+							if(y<pref.ymin && lastY>pref.ymin)
+							{
+								newY=pref.ymin;
+								newZStep=zStep*(oldY-pref.ymin)/(oldY-y);
+							}
+							else if(y>pref.ymax && lastY<pref.ymax)
+							{
+								newY=pref.ymax;
+								newZStep=zStep*(pref.ymax-oldY)/(y-oldY);
+							}
+							else if(y>pref.ymin && lastY<pref.ymin)
+							{
+								oldY=pref.ymin;
+								oldZStep=zStep*(pref.ymin-oldY)/(y-oldY);
+							}
+							else if(y<pref.ymax && lastY>pref.ymax)
+							{
+								oldY=pref.ymax;
+								oldZStep=zStep*(oldY-pref.ymax)/(oldY-y);
+							}
+							oldZStep+=zStep*(c1-1)+zStart;
+							newZStep+=zStep*(c1-1)+zStart;
+							if(colored)
+								setGLColor(oldY);
+							glVertex3f(x,oldY,oldZStep);
+							if(colored)
+								setGLColor(newY);
+							glVertex3f(x,newY,newZStep);
+						}
+						lastY=y;
+					}
+					glEnd();
+				}
 			}
 		}
 		glEndList();

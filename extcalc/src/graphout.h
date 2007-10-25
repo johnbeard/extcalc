@@ -177,6 +177,9 @@ public:
 	void setPref(Preferences newPref);
 	void clearGL();
 	void setGLColor(float y);
+	
+private:
+	inline void drawTriangle(float[3],float[3],float[3],bool colored);
 
 public slots:
 	void drawHorizontalLine(double y);
