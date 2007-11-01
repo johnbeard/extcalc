@@ -20,9 +20,58 @@ MainObject *mainObj;
 
 
 int main( int argc, char **argv ) {
-//	lastResult=0.0F;
+
+	int language=LANG_EN;
+	struct stat fileStat;
+	QTranslator trans(NULL),qtTrans(NULL);
+	chdir(getenv("HOME"));
+	if(lstat(CONFIGFILE,&fileStat) == 0)
+	{
+		FILE*configFile = fopen(CONFIGFILE,"r");
+		if(configFile != NULL)
+		{
+			char* cConfFile = new char[fileStat.st_size+1];
+			fread((void*)cConfFile,fileStat.st_size,1,configFile);
+			cConfFile[fileStat.st_size]=(char)0;
+			QString confFile(cConfFile);
+
+			QString sLang=getConfigString(&confFile,"LANGUAGE");
+			if(sLang.lower()=="de")
+				language=LANG_DE;
+			else if(sLang.lower()=="fr")
+				language=LANG_FR;
+			delete[]cConfFile;
+			fclose(configFile);
+		}
+	}
+	
+	
 	QApplication a( argc, argv );
-//	a.setStyle("sgi");
+	
+	if(language==LANG_DE)
+	{
+
+
+		
+		if(trans.load("data/german.qm",INSTALLDIR))
+			a.installTranslator(&trans);
+		else MessageBox("Extcalc-Sprachpaket konnte nicht geladen werden");
+		
+		if(qtTrans.load("data/qt_de.qm",INSTALLDIR))
+			a.installTranslator(&qtTrans);
+		else MessageBox("QT-Sprachpaket konnte nicht geladen werden");
+	}
+	else if(language==LANG_FR)
+	{
+		if(trans.load("data/french.qm",INSTALLDIR))
+			a.installTranslator(&trans);
+		else MessageBox("Error loading Extcalc language file");
+		
+		if(qtTrans.load("data/qt_fr.qm",INSTALLDIR))
+			a.installTranslator(&qtTrans);
+		else MessageBox("Error loading Qt language file");
+	}
+
 	MainObject * mainObject = new MainObject;
 	mainObj=mainObject;
 
@@ -31,21 +80,8 @@ int main( int argc, char **argv ) {
 	a.setFont(stdFont);
 	setlocale(LC_NUMERIC,"C");	//use . for floating point values in every language
 	
-#ifdef LANGUAGE_DE
-	QTranslator german(NULL);
 
-	if(german.load("data/qt_de.qm",INSTALLDIR))
-		a.installTranslator(&german);
-	else MessageBox("QT-Sprachpaket konnte nicht geladen werden");
-#endif
-	
-#ifdef LANGUAGE_FR
-	QTranslator french(NULL);
 
-	if(french.load("data/qt_fr.qm",INSTALLDIR))
-		a.installTranslator(&french);
-	else MessageBox("Error loading Qt language file");
-#endif
 
 //root		8730
 //Pi		960   (982)
@@ -241,6 +277,7 @@ int MainObject::readConfigFile()
 			fwrite("/.extcalc/script\n",17,1,configFile);
 			fwrite("CODEPATH=code\n",14,1,configFile);
 			fwrite("DATAPATH=data\n",14,1,configFile);
+			fwrite("LANGUAGE=en\n",12,1,configFile);
 			
 			fwrite("F1=sinX\n",8,1,configFile);
 			for(int c=1; c<9; c++)
@@ -741,6 +778,16 @@ int MainObject::readConfigFile()
 			pref.tableType=TABLECOMPLEX;
 		
 	}
+	QString language=getConfigString(&confFile,"LANGUAGE");
+	if(language.length()>0)
+	{
+		if(language.lower() == "de")
+			pref.language=LANG_DE;
+		else if(language.lower() == "fr")
+			pref.language=LANG_FR;
+		else pref.language=LANG_EN;
+		
+	}
 	for(int c=0; c<8; c++)
 	{
 		QString showWinString=getConfigString(&confFile,"SHOWWIN"+QString::number(c+1));
@@ -1030,7 +1077,13 @@ void MainObject::writeConfigFile()
 		configuration+="bin";
 	else if(pref.base == DEC)
 		configuration+="dec";
-	configuration+="\n";
+	configuration+="\nLANGUAGE=";
+	if(pref.language == LANG_DE)
+		configuration+="de\n";
+	else if(pref.language == LANG_FR)
+		configuration+="fr\n";
+	else configuration+="en\n";
+
 
 	for(int c=0; c<8;c++)
 	{
@@ -1404,15 +1457,12 @@ void MainObject::helpMenuSlot(int item)
 	case EXTHELP:
 		helpProcess->clearArguments();
 		helpProcess->addArgument("konqueror");
-#ifdef LANGUAGE_DE
-		helpProcess->addArgument(QString(INSTALLDIR)+"/doc/help_de.html");
-#endif
-#ifdef LANGUAGE_EN
-		helpProcess->addArgument(QString(INSTALLDIR)+"/doc/help_en.html");
-#endif
-#ifdef LANGUAGE_FR
-		helpProcess->addArgument(QString(INSTALLDIR)+"/doc/help_fr.html");
-#endif
+		if(pref.language==LANG_DE)
+			helpProcess->addArgument(QString(INSTALLDIR)+"/doc/help_de.html");
+		else if(pref.language==LANG_FR)
+			helpProcess->addArgument(QString(INSTALLDIR)+"/doc/help_fr.html");
+		else helpProcess->addArgument(QString(INSTALLDIR)+"/doc/help_en.html");
+
 		helpProcess->start();
 		break;
 	case INFO:
@@ -1626,6 +1676,13 @@ void MainObject::prefMenuSlot(int item)
 			scriptPref->show();
 			break;
 	}
+}
+
+void MainObject::languageMenuSlot(int item)
+{
+	pref.language=item;
+	getPref(pref);
+	MessageBox(tr("Extcalc must be restarted to apply this changes!"));
 }
 
 void MainObject::fileMenuSlot(int item)

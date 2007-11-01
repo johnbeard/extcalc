@@ -86,9 +86,9 @@ class Catalog :public QPopupMenu
 
 
 			
-			insertItem("Math Standard",mathStandard);
-			insertItem("Math Trigonometric",mathTrigonometric);
-			insertItem("Math Extended",mathExtended);
+			insertItem(tr("Math Standard"),mathStandard);
+			insertItem(tr("Math Trigonometric"),mathTrigonometric);
+			insertItem(tr("Math Extended"),mathExtended);
 		}
 		if(state&CATMATHLOGIC)
 		{
@@ -107,7 +107,7 @@ class Catalog :public QPopupMenu
 			mathLogic->insertItem("left shift <<",13);
 			mathLogic->insertItem("right shift >>",14);
 
-			insertItem("Math Logic",mathLogic);
+			insertItem(tr("Math Logic"),mathLogic);
 		}
 		if(state&CATMATHCOMPLEX)
 		{
@@ -124,7 +124,7 @@ class Catalog :public QPopupMenu
 			matrix->insertItem("sprod",2);
 			matrix->insertItem("^-1",3);
 
-			insertItem("Matrix/Vector",matrix);
+			insertItem(tr("Matrix/Vector"),matrix);
 		}
 		if(state&CATSCRIPT)
 		{
@@ -182,11 +182,11 @@ class Catalog :public QPopupMenu
 			scriptFile->insertItem("appendfile",4);
 
 			
-			insertItem("Script Standard",scriptStandard);
-			insertItem("Script Text",scriptText);
-			insertItem("Script Graphics",scriptGraphics);
-			insertItem("Script GL",scriptGL);
-			insertItem("Script File",scriptFile);
+			insertItem(tr("Script Standard"),scriptStandard);
+			insertItem(tr("Script Text"),scriptText);
+			insertItem(tr("Script Graphics"),scriptGraphics);
+			insertItem(tr("Script GL"),scriptGL);
+			insertItem(tr("Script File"),scriptFile);
 			
 		}
 

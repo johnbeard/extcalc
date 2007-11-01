@@ -24,6 +24,7 @@ file.
 #include <qstring.h>
 #include <qapplication.h>
 #include <qmessagebox.h>
+#include <qtranslator.h>
 #include <qmutex.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -45,15 +46,9 @@ using namespace std;
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #define VARSFILE ".extcalc/vars.conf"
 #define LISTSFILE ".extcalc/lists.conf"
-#ifdef LANGUAGE_EN
+
 #define VERSIONSTRING "Version: 0.9.1\n2007-10-25\n\n"+QString(DEVVERSION)
-#endif
-#ifdef LANGUAGE_FR
-#define VERSIONSTRING "Version: 0.9.1\n2007-10-25\n\n"+QString(DEVVERSION)
-#endif
-#ifdef LANGUAGE_DE
-#define VERSIONSTRING "Version: 0.9.1\n25.10.2007\n\n"+QString(DEVVERSION)
-#endif
+
 
 #define AUTHORSTRING "Homepage:\nhttp://extcalc-linux.sourceforge.net\n\n"+QString(GLOBALH_STR1)
 
@@ -321,6 +316,11 @@ using namespace std;
 #define MPEMPTY				212
 #define MPINVALIDMACRO		213
 
+#define LANG_EN				214
+#define LANG_DE				215
+#define LANG_FR				216
+#define LPREF				217
+
 #define CATMATHSTD			0x1
 #define CATMATHCOMPLEX		0x2
 #define CATMATRIX			0x4
@@ -459,6 +459,7 @@ struct Preferences
 	bool*dynamicFunctions;
 	QColor*functionColors;
 	QString drawText;
+	int language;
 };
 
 struct Number

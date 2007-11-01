@@ -20,1561 +20,488 @@ This program is currently translated into French by Eugene Clement.
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 
 //This macros will be defined by the configure-script at a normal installation
-#ifndef LANGUAGE_EN
-#ifndef LANGUAGE_DE
-#ifndef LANGUAGE_FR
-#define LANGUAGE_EN
-#endif
-#endif
-#endif
 #ifndef INSTALLDIR
 #define INSTALLDIR "/usr/local/share/extcalc"
 #endif
 
-#ifdef LANGUAGE_DE
-#define EXTCALCH_MSG1 "Fehler beim Laden der Icons"
-#define EXTCALCH_MSG2 "Fehler beim Laden des Lizenstextes"
-#define EXTCALCH_STR1 "Dieses Programm wird unter den Bedingungen der GPL v2 veröffentlicht.\n\nDatei nicht gefunden"
-#define EXTCALCH_STR2 "Dieses Programm wird unter den Bedingungen der GPL v2 veröffentlicht.\n\n"
-#define EXTCALCH_STR3 "Version"
-#define EXTCALCH_STR4 "Autoren"
-#define EXTCALCH_STR5 "Lizenz"
-#define EXTCALCH_STR6 "Rechner"
-#define EXTCALCH_STR7 "Noch ein Rechner"
-#define EXTCALCH_STR8 "Grafik"
-#define EXTCALCH_STR9 "Tabellen"
-#define EXTCALCH_STR12 "Script Editor"
-#define EXTCALCH_STR13 "Script Konsole"
-#define EXTCALCH_STR14 "Script importieren/exportieren"
-#define EXTCALCH_STR15 "Script-Datei importieren"
-#define EXTCALCH_STR16 "Zu Importierende Datei"
-#define EXTCALCH_STR17 "Dateinamen zum Speichern"
-#define EXTCALCH_STR18 "Script-Datei exportieren"
-#define EXTCALCH_STR19 "Zu Exportierende Datein"
-#define EXTCALCH_STR20 "Dateinamen zum Speichern"
-#define EXTCALCH_STR21 "Variablen konnten nicht gelesen werden: "
-#define EXTCALCH_STR22 "Variablen konnten nicht geschrieben werden: "
-#define EXTCALCH_MENU1 "Grad (DEG)"
-#define EXTCALCH_MENU2 "Bogenmaß (RAD)"
-#define EXTCALCH_MENU3 "Altgrad (GRA)"
-#define EXTCALCH_MENU4 "Feste Stellenzahl"
-#define EXTCALCH_MENU5 "Variable Stellenzahl"
-#define EXTCALCH_MENU6 "Mit Vorsatz-Zeichen"
-#define EXTCALCH_MENU7 "Stellenzahl"
-#define EXTCALCH_MENU8 "Winkelfunktionen"
-#define EXTCALCH_MENU9 "Ausgabeformat"
-#define EXTCALCH_MENU10 "Rechner-Einstellungen"
-#define EXTCALCH_MENU11 "Grafik-Einstellungen"
-#define EXTCALCH_MENU12 "Extcalc-Hilfe"
-#define EXTCALCH_MENU13 "Info"
-#define EXTCALCH_MENU14 "&Datei"
-#define EXTCALCH_MENU15 "&Einstellungen"
-#define EXTCALCH_MENU16 "&Rechner"
-#define EXTCALCH_MENU17 "&Grafik"
-#define EXTCALCH_MENU18 "&Hilfe"
-#define EXTCALCH_MENU19 "Zurücksetzen standard"
-#define EXTCALCH_MENU20 "Zurücksetzen trigonometrisch"
-#define EXTCALCH_MENU21 "Achsen"
-#define EXTCALCH_MENU22 "Achsenbeschriftung"
-#define EXTCALCH_MENU23 "Raster"
-#define EXTCALCH_MENU24 "Festes Seitenverhältnis"
-#define EXTCALCH_MENU25 "Koordinatensystem"
-#define EXTCALCH_MENU26 "Zeichenformat"
-#define EXTCALCH_MENU27 "Binär (BIN)"
-#define EXTCALCH_MENU28 "Oktal (OCT)"
-#define EXTCALCH_MENU29 "Dezimal (DEC)"
-#define EXTCALCH_MENU30 "Hexadezimal (HEX)"
-#define EXTCALCH_MENU31 "Wissenschaftlicher Modus"
-#define EXTCALCH_MENU32 "Logikmodus"
-#define EXTCALCH_MENU33 "Zahlensystem"
-#define EXTCALCH_MENU34 "Rechenmodus"
-#define EXTCALCH_MENU35 "Standard"
-#define EXTCALCH_MENU36 "Polar"
-#define EXTCALCH_MENU37 "3D-Grafik"
-#define EXTCALCH_MENU38 "Normale Funktionen"
-#define EXTCALCH_MENU39 "Polarfunktionen"
-#define EXTCALCH_MENU40 "Parameterfunktionen"
-#define EXTCALCH_MENU41 "Ungleichungen"
-#define EXTCALCH_MENU42 "3D-Funktionen"
-#define EXTCALCH_MENU43 "Standardwerte"
-#define EXTCALCH_MENU44 "Functiontyp"
-#define EXTCALCH_MENU45 "Tabelleneinstellungen"
-#define EXTCALCH_MENU46 "Tabellen"
-#define EXTCALCH_MENU47 "Rückgängig"
-#define EXTCALCH_MENU48 "Wiederherstellen"
-#define EXTCALCH_MENU49 "Ausschneiden"
-#define EXTCALCH_MENU50 "Kopieren"
-#define EXTCALCH_MENU51 "Enfügen"
-#define EXTCALCH_MENU52 "Rechner"
-#define EXTCALCH_MENU53 "2. Rechner"
-#define EXTCALCH_MENU54 "Graphikfenster"
-#define EXTCALCH_MENU55 "Tabellenfenster"
-#define EXTCALCH_MENU56 "Scriptfenster"
-#define EXTCALCH_MENU57 "Beenden"
-#define EXTCALCH_MENU58 "&Bearbeiten"
-#define EXTCALCH_MENU59 "&Ansicht"
-#define EXTCALCH_MENU60 "Script Einstellungen"
-#define EXTCALCH_MENU61 "Script-Konsole anzeigen"
-#define EXTCALCH_MENU62 "Script exportieren"
-#define EXTCALCH_MENU63 "Script importieren"
-#define EXTCALCH_MENU64 "Array-Speicher automatisch löschen"
-#define EXTCALCH_MENU65 "Array-Speicher jetzt löschen"
-#define EXTCALCH_MENU66 "Script"
-#define EXTCALCH_MENU67 "Komplexe Rechnung"
-#define EXTCALCH_MENU68 "Eingabewerte zurücksetzen"
-#define EXTCALCH_MENU69 "Grafik-Fenster jetzt löschen"
-#define EXTCALCH_MENU70 "Grafik-Fenster automatisch löschen"
-#define EXTCALCH_MENU71 "Punkte anzeigen"
-#define EXTCALCH_MENU72 "Linien anzeigen"
-#define EXTCALCH_MENU73 "Matrix/Vektor"
-#define EXTCALCH_MENU74 "Statistik"
-#define EXTCALCH_MENU75 "Willkommen in Extcalc!\n\nBeim ersten Start von Extcalc, müssen Verzeichnisse zum Speichern von Script-Code und Script-Daten angelegt werden.\nDrücken Sie Ja, um die Standard-Konfiguration jetzt zu ändern!"
-#define EXTCALCH_MENU76 "Willkommen in der neuen Version von Extcalc.\n\nDiese Version enthält einige Beispiel-Script-Dateien. Um diese nutzen zu können, müssen Verzeichnisse zum Speichern von Code und Daten angelegt werden.\nDrücken Sie Ja, um die Standard-Konfiguration jetzt zu ändern!"
-#define EXTCALCH_MENU77 "Die Standard-Verzeichnisse wurden angelegt."
-#define EXTCALCH_MENU78 "Komplexe Funktionen"
-
-#define EXTCALCC_MSG1 "Die folgende Konfigurationsdatei konnte nicht geschrieben werden:\n\n"
-#define EXTCALCC_MSG3 "Die folgende Konfigurationsdatei konnte nicht geladen werden:\n\n"
-#define EXTCALCC_MSG6 "Datei is außerhalb des Quellcode-Verzeichnisses: "
-#define EXTCALCC_MSG8 "Soll folgende Datei überschrieben werden?\n\n"
-#define EXTCALCC_MSG9 "Script zum Exportieren auswählen"
-#define EXTCALCC_MSG10 "Zu Importierendes Script auswählen"
-#define EXTCALCC_MSG11 "open file dialog"
-#define EXTCALCC_MSG12 "save file dialog"
-#define EXTCALCC_MSG13 "Dateinamen zum Speichern auswählen"
-
-#define GLOBALH_STR1 "Autoren:\nRainer Strobel\nProgrammierung und Entwicklung\nEugene Clement\nFranzösische Übersetzung"
-
-#define CALCWIDGETH_STR4 "Ansicht ändern"
-#define CALCWIDGETH_STR5 "wissenschaftlicher Modus/Logikmodus"
-#define CALCWIDGETH_STR6 "Zahlensystem setzen"
-#define CALCWIDGETH_STR7 "Winkelformat setzen"
-#define CALCWIDGETH_STR8 "Funktionsliste"
-
-#define CALCWIDGETC_MENU1 "&Rückgängig\tStrg+Z"
-#define CALCWIDGETC_MENU2 "Wieder&herstellen\tStrg+Y"
-#define CALCWIDGETC_MENU3 "&Ausschneiden\tStrg+X"
-#define CALCWIDGETC_MENU4 "&Kopieren\tStrg+C"
-#define CALCWIDGETC_MENU5 "Ein&fügen\tStrg+V"
-
-#define CALCPREFH_STR1 "Speichern"
-#define CALCPREFH_STR2 "Abbrechen"
-#define CALCPREFH_STR3 "Winkelfunktion"
-#define CALCPREFH_STR4 "Ausgabeformat"
-#define CALCPREFH_STR5 "Stellenzahl"
-#define CALCPREFH_STR6 "Modus"
-#define CALCPREFH_STR7 "Zahlensystem"
-#define CALCPREFH_STR8 "Feste Stellenzahl"
-#define CALCPREFH_STR9 "Variable Stellenzahl"
-#define CALCPREFH_STR10 "Mit Vorsatz-Zeichen"
-#define CALCPREFH_STR11 "Wissenschaftlich"
-#define CALCPREFH_STR12 "Logik"
-#define CALCPREFH_STR13 "Komplexe Zahlen"
-
-#define INFOSTRING "Extcalc:\nWissenschaftlicher grafischer Taschenrechner\n\n"
-#define DEVVERSION "Entwicklungsversion:\n Teile des Programms können funktionslos oder beschädigt sein  \n\n"
-
-#define GRAPHH_STR1 "Zeichnen"
-#define GRAPHH_STR3 "Auswerten"
-#define GRAPHH_STR4 "Y-Wert berechnen"
-#define GRAPHH_STR5 "Nullstellen berechnen"
-#define GRAPHH_STR6 "Newton-Verfahren"
-#define GRAPHH_STR7 "X-Werte berechnen"
-#define GRAPHH_STR8 "Schnittpunkte berechnen"
-#define GRAPHH_STR9 "Extremwerte berechnen"
-#define GRAPHH_STR10 "Integral berechnen"
-#define GRAPHH_STR11 "Differential berechnen"
-#define GRAPHH_STR12 "Funktion"
-#define GRAPHH_STR13 "Farbe"
-#define GRAPHH_STR14 "Aktiv"
-#define GRAPHH_STR15 "Normal y(x)=x"
-#define GRAPHH_STR16 "Polar r(x)=x"
-#define GRAPHH_STR17 "Parameter x=T; y=T"
-#define GRAPHH_STR18 "3D y(x,z)=xz"
-#define GRAPHH_STR20 "Ungleichung y(x)>x"
-#define GRAPHH_STR21 "Ungleichung y(x)<x"
-#define GRAPHH_STR22 "Ungleichung y(x)>=x"
-#define GRAPHH_STR23 "Ungleichung y(x)<=x"
-#define GRAPHH_STR24 "Funktionstyp"
-#define GRAPHH_STR25 "Z-Wert berechnen"
-#define GRAPHH_STR26 "Speichern und zeichnen"
-#define GRAPHH_STR27 "Eingabe"
-#define GRAPHH_STR28 "Auswerten"
-#define GRAPHH_STR29 "Screenshot"
-#define GRAPHH_STR30 "Ortskurve"
-#define GRAPHH_COL1 "schwarz"
-#define GRAPHH_COL2 "grau"
-#define GRAPHH_COL3 "braun"
-#define GRAPHH_COL4 "grün"
-#define GRAPHH_COL5 "blau"
-#define GRAPHH_COL6 "violet"
-#define GRAPHH_COL7 "orange"
-#define GRAPHH_COL8 "rot"
-#define GRAPHH_COL9 "gelb"
-#define GRAPHH_COL10 "türkis"
-#define GRAPHH_COL11 "bunt"
-
-#define GRAPHC_STR3 "Auswerten"
-#define GRAPHC_STR4 "Eingabe"
-#define GRAPHC_STR5 "Stop"
-
-#define GRAPHOUTC_STR1 "Extcalc - Text zeichnen"
-#define GRAPHOUTC_STR2 "Text zum Zeichnen eingeben:"
-
-#define GRAPHPREFH_STR1 "Extcalc - Einstellungen"
-#define GRAPHPREFH_STR2 "Kartesisches Koordinatensystem"
-#define GRAPHPREFH_STR3 "Raster"
-#define GRAPHPREFH_STR4 "Koordinatenachsen"
-#define GRAPHPREFH_STR5 "Achsenbeschriftung"
-#define GRAPHPREFH_STR6 "Seitenverhältnis beibehalten"
-#define GRAPHPREFH_STR7 "X-Einteilung"
-#define GRAPHPREFH_STR8 "Y-Einteilung"
-#define GRAPHPREFH_STR9 "Koordinatensystem Format"
-#define GRAPHPREFH_STR10 "Polares Koordinatemsystem"
-#define GRAPHPREFH_STR11 "Max. Winkel:"
-#define GRAPHPREFH_STR12 "Max Radius:"
-#define GRAPHPREFH_STR13 "Winkel Einteilung:"
-#define GRAPHPREFH_STR14 "Radius Einteilung:"
-#define GRAPHPREFH_STR15 "Standard"
-#define GRAPHPREFH_STR16 "Polar"
-#define GRAPHPREFH_STR17 "3D-Grafik"
-#define GRAPHPREFH_STR18 "Grenzen des Parameters T:"
-#define GRAPHPREFH_STR19 "Start:"
-#define GRAPHPREFH_STR20 "Ende:"
-#define GRAPHPREFH_STR21 "Z-Einteilung"
-#define GRAPHPREFH_STR22 "Schritte"
-#define GRAPHPREFH_STR23 "Standard"
-#define GRAPHPREFH_STR24 "Einstellungen für Parameter A:"
-#define GRAPHPREFH_STR25 "Start:"
-#define GRAPHPREFH_STR26 "Ende:"
-#define GRAPHPREFH_STR27 "Schritte:"
-#define GRAPHPREFH_STR28 "Verzögerung (*10ms):"
-#define GRAPHPREFH_STR29 "Automatik Modus"
-#define GRAPHPREFH_STR30 "Nur aufwärts zählen"
-#define GRAPHPREFH_STR31 "Auf und ab zählen"
-#define GRAPHPREFH_STR32 "Koordinatensystem"
-#define GRAPHPREFH_STR33 "Rechenleistung/Genauigkeit"
-#define GRAPHPREFH_STR34 "Paramteter T,A,Z"
-#define GRAPHPREFH_STR35 "Rechenschritte für 2D-Graphen"
-#define GRAPHPREFH_STR36 "Rechenschritte für 3D-Graphen"
-#define GRAPHPREFH_STR37 "Rechenschritte für Parameterfunktionen"
-#define GRAPHPREFH_STR38 "Rechenschritte für Ortskurven"
-#define GRAPHPREFH_STR39 "Analyse-Genauigkeit"
-#define GRAPHPREFH_STR40 "niedrig"
-#define GRAPHPREFH_STR41 "normal"
-#define GRAPHPREFH_STR42 "hoch"
-#define GRAPHPREFH_STR43 "3D-Graphen als Gitternetz anzeigen"
-#define GRAPHPREFH_STR44 "Parameter Z für 2D-Ortskurven"
-#define GRAPHPREFH_STR45 "Startwert:"
-#define GRAPHPREFH_STR46 "Endwert:"
-#define GRAPHPREFH_STR47 "Logarithmische Schritte (10^Z)"
-#define GRAPHPREFH_BTN1 "Standard"
-#define GRAPHPREFH_BTN2 "Winkelfunktionen"
-#define GRAPHPREFH_BTN3 "Speichern"
-#define GRAPHPREFH_BTN4 "Abbrechen"
- 
-#define GRAPHPREFC_STR1 "Fehler\n\nDer minimale X-Wert muss kleiner sein als der maximale X-Wert!"
-#define GRAPHPREFC_STR2 "Fehler\n\nDer minimale Y-Wert muss kleiner sein als der maximale Y-Wert!"
-#define GRAPHPREFC_STR3 "Fehler\n\nDer X-Raster-Abstand muss positiv sein!"
-#define GRAPHPREFC_STR4 "Fehler\n\nDer Y-Raster-Abstand muss positiv sein!"
-#define GRAPHPREFC_STR5 "Fehler\n\nBitte wählen Sie zwei verschiedene Funktionen aus!"
-#define GRAPHPREFC_STR6 "Fehler\n\nZu viele Ergebnisse!"
-#define GRAPHPREFC_STR7 "Maximaler Winkel muss größer Null sein"
-#define GRAPHPREFC_STR8 "Maximaler Radius muss größer Null sein"
-#define GRAPHPREFC_STR9 "Maximale Winkeleinteilung muss größer Null sein"
-#define GRAPHPREFC_STR10 "Maximale Radiuseinteilung muss größer Null sein"
-#define GRAPHPREFC_STR11 "Parameterfunktions-Startwert muss kleiner sein als Endwert"
-#define GRAPHPREFC_STR12 "Fehler\n\nDer Z-Raster-Abstand muss positiv sein!"
-#define GRAPHPREFC_STR13 "Fehler\n\nDer minimale Z-Wert muss kleiner sein als der maximale Z-Wert!"
-#define GRAPHPREFC_STR14 "Die Schrittzahl muss größer 0 sein!"
-#define GRAPHPREFC_STR15 "Der Endwert für Parameter A muss größer als der Startwert sein!"
-#define GRAPHPREFC_STR16 "Die Verzögerungszeit muss größer 0 sein!"
-
-#define GRAPHSOLVEH_STR1 "Berechnen"
-#define GRAPHSOLVEH_STR2 "Parameter A:"
-#define GRAPHSOLVEH_STR3 "Stärke"
-#define GRAPHSOLVEH_STR4 "Speichern"
-#define GRAPHSOLVEH_STR5 "Rückgängig"
-#define GRAPHSOLVEH_STR6 "Wiederholen"
-#define GRAPHSOLVEH_STR7 "Löschen"
-#define GRAPHSOLVEH_STR8 "Farbe"
-
-#define GRAPHSOLVEC_STR1 "X-Wert eingeben:"
-#define GRAPHSOLVEC_STR2 "Y-Werte:"
-#define GRAPHSOLVEC_STR3 "Funktion auswählen"
-#define GRAPHSOLVEC_STR4 "Nullstellen:"
-#define GRAPHSOLVEC_STR5 "Startwert:"
-#define GRAPHSOLVEC_STR6 "Anzahl der Schritte:"
-#define GRAPHSOLVEC_STR7 "X-Werte:"
-#define GRAPHSOLVEC_STR8 "Y-Wert:"
-#define GRAPHSOLVEC_STR9 "Schnittpunkte:"
-#define GRAPHSOLVEC_STR10 "1. Funktion"
-#define GRAPHSOLVEC_STR11 "2.Funktion"
-#define GRAPHSOLVEC_STR12 "Startwert:"
-#define GRAPHSOLVEC_STR13 "Endwert:"
-#define GRAPHSOLVEC_STR14 "X-Wert:"
-#define GRAPHSOLVEC_STR15 "Startwert ungültig"
-#define GRAPHSOLVEC_STR16 "Endwert ungültig"
-#define GRAPHSOLVEC_STR17 "X-Wert ungültig"
-#define GRAPHSOLVEC_STR18 "Extremverte"
-#define GRAPHSOLVEC_STR19 "Ergebnisse"
-#define GRAPHSOLVEC_STR20 "X-Wert"
-#define GRAPHSOLVEC_STR21 "Y-Wert"
-#define GRAPHSOLVEC_STR22 "Z-Wert"
-#define GRAPHSOLVEC_STR23 "T-Wert"
-#define GRAPHSOLVEC_STR24 "z Start"
-#define GRAPHSOLVEC_STR25 "Ende"
-#define GRAPHSOLVEC_STR26 "x Start"
-#define GRAPHSOLVEC_STR27 "Ende"
-#define GRAPHSOLVEC_STR28 "Pfad"
-#define GRAPHSOLVEC_STR29 "Größe:"
-#define GRAPHSOLVEC_STR30 "Dateiformat:"
-#define GRAPHSOLVEC_STR31 "Bitte gültigen Dateinamen eingeben!"
-#define GRAPHSOLVEC_STR32 "Soll folgende Datei wirklich überschrieben werden: "
-#define GRAPHSOLVEC_STR33 " ist keine gültige Datei.\n Sie kann nicht überschrieben werden!"
-#define GRAPHSOLVEC_STR34 "Screenshot gespeichert."
-#define GRAPHSOLVEC_STR35 "Screenshot speichern fehlgeschlagen!"
-#define GRAPHSOLVEC_STR36 "Bilder (*.png *.xpm *.jpg *.bmp)"
-#define GRAPHSOLVEC_STR37 "Dateinamen zum speichern wählen"
-#define GRAPHSOLVEC_STR38 "Farbdialog"
-#define GRAPHSOLVEC_STR39 "Realteil eingeben"
-#define GRAPHSOLVEC_STR40 "Imaginäranteile"
-#define GRAPHSOLVEC_STR41 "Realanteile"
-#define GRAPHSOLVEC_STR42 "Imaginärteil eingeben"
-#define GRAPHSOLVEC_STR43 "Nach Endung"
-#define GRAPHSOLVEC_STR44 "Unbekanntes Dateiformat!\nEs wird png angenommen."
-
-#define TABLEH_STR1 "Berechnen"
-#define TABLEH_STR3 "Normal"
-#define TABLEH_STR4 "Polar"
-#define TABLEH_STR5 "Parameter"
-#define TABLEH_STR6 "Ungleichungen"
-#define TABLEH_STR7 "3D"
-#define TABLEH_STR8 "Minimieren"
-#define TABLEH_STR9 "Komplex"
-#define TABLEH_STR10 "Extcalc - Tabellen"
-#define TABLEH_STR11 "Wert eingeben für Spalte "
-#define TABLEH_STR12 "Wert eingeben für Zeile "
-#define TABLEH_STR13 "Ansicht ändern"
-#define TABLEH_STR14 "Funktionstyp auswählen"
-#define TABLEH_STR15 "Funktionsliste"
-
-#define TABLEPREFH_STR1 "Tabellen Einstellungen"
-#define TABLEPREFH_STR2 "Functionstyp:"
-#define TABLEPREFH_STR3 "Parameter X, T Startwert"
-#define TABLEPREFH_STR4 "Schritte"
-#define TABLEPREFH_STR5 "Endwert"
-#define TABLEPREFH_STR6 "Parameter Z Startwert"
-#define TABLEPREFH_STR7 "Endwert"
-#define TABLEPREFH_STR8 "Schritte"
-#define TABLEPREFH_STR9 "Speichern"
-#define TABLEPREFH_STR10 "Abbrechen"
-#define TABLEPREFH_STR11 "Tabllen-Einstellungen"
-#define TABLEPREFH_STR12 "Parameter X,T,Z komplex"
-#define TABLEPREFH_STR13 "Parameter Z (3D)"
-#define TABLEPREFH_STR14 "Wert für dynamischen Parameter A:"
-#define TABLEPREFH_STR15 "Start:"
-#define TABLEPREFH_STR16 "Schritte:"
-#define TABLEPREFH_STR17 "Ende:"
-
-#define TABLEPREFC_STR1 "X-Startwert ungültig!"
-#define TABLEPREFC_STR2 "X-Endwert ungültig!"
-#define TABLEPREFC_STR3 "Z-Startwert ungültig!"
-#define TABLEPREFC_STR4 "Z-Endwert ungültig!"
-#define TABLEPREFC_STR5 "X-Endwert muss größer als X-Startwert sein!"
-#define TABLEPREFC_STR6 "Z-Endwert muss größer als Z-Startwert sein!"
-#define TABLEPREFC_STR7 "X-Schrittzahl muss größer Null sein!"
-#define TABLEPREFC_STR8 "Z-Schrittzahl muss größer Null sein!"
-
-#define SCRIPTIO_STR1 "Abbrechen"
-#define SCRIPTIO_STR2 "Das Programm konnte nicht abgebrochen werden.\nDrücken Sie bitte noch einmal den Abbrechen-Knopf."
-#define SCRIPTIO_STR3 "\n*** abgebrochen ***\n"
-#define SCRIPTIO_STR4 "\n*** beendet ***\n"
-#define SCRIPTIO_STR5 "Es läuft bereits ein Programm.\nSoll es beendet werden?"
-#define SCRIPTIO_STR6 "\n*** script ***\n"
-#define SCRIPTIO_STR7 "Ausführen"
-#define SCRIPTIO_STR8 "\nLade Hauptdatei ..."
-#define SCRIPTIO_STR9 "\nLade Datei "
-#define SCRIPTIO_STR10 "\nScript erfolgreich geladen.\nZum starten Ausführen drücken.\n"
-#define SCRIPTIO_STR11 "\nScript konnte nicht geladen werden!\n"
-#define SCRIPTIO_STR12 "Kopieren\tStrg-C"
-#define SCRIPTIO_STR13 "Einfügen\tStrg-V"
-#define SCRIPTIO_STR14 "Alles auswählen\tStrg-A"
-#define SCRIPTIO_STR15 "Alles löschen"
-
-#define SCRIPTEDITH_STR2 "Ausführen"
-#define SCRIPTEDITH_STR3 "Speichern"
-#define SCRIPTEDITH_STR4 "Aktualisieren"
-#define SCRIPTEDITH_STR5 "Neue Code-Datei"
-#define SCRIPTEDITH_STR6 "Neues Verzeichnis"
-#define SCRIPTEDITH_STR7 "Speichern"
-#define SCRIPTEDITH_STR8 "Alles speichern"
-#define SCRIPTEDITH_STR9 "Umbenennen"
-#define SCRIPTEDITH_STR10 "Löschen"
-#define SCRIPTEDITH_STR11 "Dateien"
-#define SCRIPTEDITH_STR12 "Neue Quellcode-Datei erstellen"
-#define SCRIPTEDITH_STR13 "Änderungen der aktuellen Datei speichern"
-#define SCRIPTEDITH_STR14 "Änderungen aller Dateien speichern"
-#define SCRIPTEDITH_STR15 "Rückgängig"
-#define SCRIPTEDITH_STR16 "Wiederholen"
-#define SCRIPTEDITH_STR17 "Ausschneiden"
-#define SCRIPTEDITH_STR18 "Kopieren"
-#define SCRIPTEDITH_STR19 "Einfügen"
-#define SCRIPTEDITH_STR20 "Quellcode-Datei importieren"
-#define SCRIPTEDITH_STR21 "Quellcode-Datei exportieren"
-#define SCRIPTEDITH_STR22 "Script ausführen"
-#define SCRIPTEDITH_STR23 "Zur alternativen Ansicht umschalten"
-#define SCRIPTEDITH_STR24 "Funktionsliste"
-
-#define SCRIPTEDITC_STR4 "Sollen die Änderungen gespeichert werden?"
-#define SCRIPTEDITC_STR5 "Datei umbenennen"
-#define SCRIPTEDITC_STR6 "Neuen Dateinamen eingeben:"
-#define SCRIPTEDITC_STR7 "Der neue Dateinamen ist ungültig!"
-#define SCRIPTEDITC_STR8 "Umbenennen der folgende Datei fehlgeschlagen:\n\n"
-#define SCRIPTEDITC_STR9 "Soll die folgende Datei wirklich gelöscht werden?\n\n"
-#define SCRIPTEDITC_STR10 "Löschen der folgenden Datei fehlgeschlagen:\n\n"
-#define SCRIPTEDITC_STR12 "Soll die Datei gespeichert werden?"
-#define SCRIPTEDITC_STR13 "Neuen Dateinamen eingeben"
-#define SCRIPTEDITC_STR14 "Es kann keine Datei außerhalb des Script-Verzeichnisses erzeugt werden"
-#define SCRIPTEDITC_STR15 "Soll die folgende Datei wirklich überschrieben werden?\n\n"
-#define SCRIPTEDITC_STR16 "Kann die folgende nicht anlegen:\n\n"
-#define SCRIPTEDITC_STR17 "Verzeichnis anlegen"
-#define SCRIPTEDITC_STR18 "Verzeichnisnamen eingeben:"
-#define SCRIPTEDITC_STR19 "Ungültiger Verzeichnisnamen!"
-#define SCRIPTEDITC_STR20 "Anlegen des Verzeichnisses fehlgeschlagen!"
-#define SCRIPTEDITC_STR21 "Dateinamen zum Speichern angeben"
-#define SCRIPTEDITC_STR22 "Es kann keine Datei außerhalb des Script-Verzeichnisses gespeichert werden"
-#define SCRIPTEDITC_STR23 "Kann folgende Datei nicht speichern:\n\n"
-#define SCRIPTEDITC_STR24 "Es wurden Dateien verändert.\n\nSollen die Änderungen gespeichert werden?"
-#define SCRIPTEDITC_STR25 "Fehler beim Speichern von "
-
-#define SCRIPTPREFH_STR1 "Script Einstellungen"
-#define SCRIPTPREFH_STR2 "Pfad zum Script-Hauptverzeichnis"
-#define SCRIPTPREFH_STR3 "Name des Quellcode-Unterverzeichnisses"
-#define SCRIPTPREFH_STR4 "Name des Daten-Unterverzeichnisses"
-#define SCRIPTPREFH_STR5 "Speichern"
-#define SCRIPTPREFH_STR6 "Abbrechen"
-#define SCRIPTPREFH_STR7 "Durchsuchen"
-#define SCRIPTPREFH_STR8 "Array-Speicher vor Script-Start löschen"
-
-#define SCRIPTPREFC_STR1 "Bitte geben Sie den Pfad vollständig an."
-#define SCRIPTPREFC_STR2 "Script-Hauptverzeichnis konnte nicht erzeugt werden."
-#define SCRIPTPREFC_STR3 "Der Pfad zum Script-Hauptverzeichnis ist ungültig"
-#define SCRIPTPREFC_STR4 "Quellcode-Unterverzeichnis konnte nicht erzeugt werden"
-#define SCRIPTPREFC_STR5 "Der Name des Quellcode-Unterverzeichnisses ist ungültig."
-#define SCRIPTPREFC_STR6 "Daten-Unterverzeichnis konnte nicht erzeugt werden"
-#define SCRIPTPREFC_STR7 "Der Name des Daten-Unterverzeichnisses ist ungültig."
-#define SCRIPTPREFC_STR8 "Verzeichnis auswählen"
-
-
-#define MATRIXWIDGETH_STR1 "Typ"
-#define MATRIXWIDGETH_STR2 "Zeilen"
-#define MATRIXWIDGETH_STR3 "Spalten"
-#define MATRIXWIDGETH_STR4 "Rechner"
-#define MATRIXWIDGETH_STR5 "Lineares Gleichungssystem"
-#define MATRIXWIDGETH_STR6 "Erstellen"
-#define MATRIXWIDGETH_STR7 "Analysieren"
-#define MATRIXWIDGETH_STR8 "Inverse Matrix"
-#define MATRIXWIDGETH_STR9 "Berechnen"
-#define MATRIXWIDGETH_STR10 "Ok"
-#define MATRIXWIDGETH_STR11 "Kein Vektor"
-#define MATRIXWIDGETH_STR12 "Einheitsmatrix"
-#define MATRIXWIDGETH_STR13 "Nullmatrix"
-#define MATRIXWIDGETH_STR14 "Nullvektor"
-#define MATRIXWIDGETH_STR15 "X-Drehmatrix"
-#define MATRIXWIDGETH_STR16 "Y-Drehmatrix"
-#define MATRIXWIDGETH_STR17 "Z-Drehmatrix"
-#define MATRIXWIDGETH_STR18 "Skalierungsmatrix"
-#define MATRIXWIDGETC_STR1 "Vektor"
-#define MATRIXWIDGETC_STR2 "Unbekannte:"
-#define MATRIXWIDGETC_STR3 "Matrix"
-#define MATRIXWIDGETC_STR4 "Matrix oder \nMatrix und Vektor auswählen"
-#define MATRIXWIDGETC_STR5 "Variable"
-#define MATRIXWIDGETC_STR6 "Erzeugen"
-#define MATRIXWIDGETC_STR7 "Gauß"
-#define MATRIXWIDGETC_STR8 "Typ: Matrix"
-#define MATRIXWIDGETC_STR9 "Größe:"
-#define MATRIXWIDGETC_STR10 "Determinante:"
-#define MATRIXWIDGETC_STR11 "Nicht möglich"
-#define MATRIXWIDGETC_STR12 "Rang:"
-#define MATRIXWIDGETC_STR13 "Typ: Vektor"
-#define MATRIXWIDGETC_STR14 "Größe:"
-#define MATRIXWIDGETC_STR15 "Betrag:"
-#define MATRIXWIDGETC_STR16 "Type: Skalar"
-#define MATRIXWIDGETC_STR17 "Variable doppelt ausgewählt!\nMatrix oder \nMatrix und Vektor auswählen"
-#define MATRIXWIDGETC_STR18 "Werte eingeben \nund Berechnen drücken"
-#define MATRIXWIDGETC_STR19 "Ok-Knopf zum Übernehmen drücken"
-#define MATRIXWIDGETC_STR20 "Werte eingeben \nund Berechnen drücken"
-#define MATRIXWIDGETC_STR21 "Ok-Knopf zum Übernehmen drücken"
-#define MATRIXWIDGETC_STR22 "x-Winkel"
-#define MATRIXWIDGETC_STR23 "y-Winkel"
-#define MATRIXWIDGETC_STR24 "z-Winkel"
-#define MATRIXWIDGETC_STR25 "x-Skalierung"
-#define MATRIXWIDGETC_STR26 "y-Skalierung"
-#define MATRIXWIDGETC_STR27 "z-Skalierung"
-#define MATRIXWIDGETC_STR28 "Mehr als ein Ergebnis gefunden\nMatrix wird angezeigt"
-#define MATRIXWIDGETC_STR29 "Kein Ergebnis gefunden\nMatrix wird angezeigt"
-#define MATRIXWIDGETC_STR30 "Ergebnisvektor"
-#define MATRIXWIDGETC_STR31 "Zeilen- und Spaltenzahl der Matrix \nmüssen gleich sein"
-#define MATRIXWIDGETC_STR32 "Inverse Matrix kann nicht berechnent werden\nDeterminante ist gleich 0."
-
-#define STATISTICSH_STR1 "Funktionstyp"
-#define STATISTICSH_STR2 "Listennummer"
-#define STATISTICSH_STR3 "Ergebnisfunktion"
-#define STATISTICSH_STR4 "Kopieren nach"
-#define STATISTICSH_STR5 "OK"
-#define STATISTICSH_STR6 "Approximation"
-#define STATISTICSH_STR7 "Interpolation"
-#define STATISTICSH_STR8 "Liniendiagramm anzeigen"
-#define STATISTICSH_STR9 "Normalverteilung"
-#define STATISTICSH_STR10 "Verteilungskurve"
-#define STATISTICSH_STR11 "Schritte"
-#define STATISTICSH_STR12 "Berechnen"
-#define STATISTICSH_STR14 "Zeichnen"
-
-#define STATISTICSC_STR2 "Funktion f"
-#define STATISTICSC_STR3 " wirklich überschreiben ?"
-#define STATISTICSC_STR4 "Datei konnte nicht geschrieben werden: "
-#define STATISTICSC_STR5 "Datei konnte nicht gelesen werden: "
-#define STATISTICSC_STR6 "Für diese Operation wird mindestens ein Punkt benötigt"
-#define STATISTICSC_STR7 "Für diese Operation werden mindestens zwei Punkte benötigt"
-#define STATISTICSC_STR8 "Für diese Operation werden mindestens drei Punkte benötigt"
-#endif
-
-
-#ifdef LANGUAGE_EN
-
-#define EXTCALCH_MSG1 tr("Error loading icon","extcalc.h")
-#define EXTCALCH_MSG2 tr("Error loading license","extcalc.h")
-#define EXTCALCH_STR1 tr("This programme ist distributed under the terms of GPL v2.\n\nFile not found.","extcalc.h")
-#define EXTCALCH_STR2 tr("This programme ist distributed under the terms of GPL v2.\n\n","extcalc.h")
-#define EXTCALCH_STR3 tr("Version","extcalc.h")
-#define EXTCALCH_STR4 tr("Authors","extcalc.h")
-#define EXTCALCH_STR5 tr("License","extcalc.h")
-#define EXTCALCH_STR6 tr("Calculator","extcalc.h")
-#define EXTCALCH_STR7 tr("Another Calculator","extcalc.h")
-#define EXTCALCH_STR8 tr("Graphics","extcalc.h")
-#define EXTCALCH_STR9 tr("Tables","extcalc.h")
-#define EXTCALCH_STR12 tr("Script Editor","extcalc.h")
-#define EXTCALCH_STR13 tr("Script Console","extcalc.h")
-#define EXTCALCH_STR14 tr("Import/Export Script","extcalc.h")
-#define EXTCALCH_STR15 tr("Import Script File","extcalc.h")
-#define EXTCALCH_STR16 tr("File name to import","extcalc.h")
-#define EXTCALCH_STR17 tr("File name to save","extcalc.h")
-#define EXTCALCH_STR18 tr("Export Script File","extcalc.h")
-#define EXTCALCH_STR19 tr("Script file to export","extcalc.h")
-#define EXTCALCH_STR20 tr("File name to save","extcalc.h")
-#define EXTCALCH_STR21 tr("Unable to read variables file: ","extcalc.h")
-#define EXTCALCH_STR22 tr("Unable to write variables file: ","extcalc.h")
-#define EXTCALCH_MENU1 tr("Degree (DEG)","extcalc.h")
-#define EXTCALCH_MENU2 tr("Radian (RAD)","extcalc.h")
-#define EXTCALCH_MENU3 tr("Grad (GRA)","extcalc.h")
-#define EXTCALCH_MENU4 tr("Fixed number of digits","extcalc.h")
-#define EXTCALCH_MENU5 tr("Variable number of digits","extcalc.h")
-#define EXTCALCH_MENU6 tr("With symbol","extcalc.h")
-#define EXTCALCH_MENU7 tr("Number of digits","extcalc.h")
-#define EXTCALCH_MENU8 tr("Angle","extcalc.h")
-#define EXTCALCH_MENU9 tr("Output Format","extcalc.h")
-#define EXTCALCH_MENU10 tr("Calculator Preferences","extcalc.h")
-#define EXTCALCH_MENU11 tr("Graphics Preferences","extcalc.h")
-#define EXTCALCH_MENU12 tr("Extcalc Help","extcalc.h")
-#define EXTCALCH_MENU13 tr("Info","extcalc.h")
-#define EXTCALCH_MENU14 tr("&File","extcalc.h")
-#define EXTCALCH_MENU15 tr("&Preferences","extcalc.h")
-#define EXTCALCH_MENU16 tr("&Calculator","extcalc.h")
-#define EXTCALCH_MENU17 tr("&Graphic","extcalc.h")
-#define EXTCALCH_MENU18 tr("&Help","extcalc.h")
-#define EXTCALCH_MENU19 tr("Set Standard Coordinates","extcalc.h")
-#define EXTCALCH_MENU20 tr("Set Trigonometric Coordinates","extcalc.h")
-#define EXTCALCH_MENU21 tr("Show Axes","extcalc.h")
-#define EXTCALCH_MENU22 tr("Show Labels","extcalc.h")
-#define EXTCALCH_MENU23 tr("Show Raster","extcalc.h")
-#define EXTCALCH_MENU24 tr("Constant Width-To-Height-Ratio","extcalc.h")
-#define EXTCALCH_MENU25 tr("Coordinate System","extcalc.h")
-#define EXTCALCH_MENU26 tr("Graph Type","extcalc.h")
-#define EXTCALCH_MENU27 tr("Binary (BIN)","extcalc.h")
-#define EXTCALCH_MENU28 tr("Octal (OCT)","extcalc.h")
-#define EXTCALCH_MENU29 tr("Decimal (DEC)","extcalc.h")
-#define EXTCALCH_MENU30 tr("Hexadecimal (HEX)","extcalc.h")
-#define EXTCALCH_MENU31 tr("Scientific Mode","extcalc.h")
-#define EXTCALCH_MENU32 tr("Base Mode","extcalc.h")
-#define EXTCALCH_MENU33 tr("Base","extcalc.h")
-#define EXTCALCH_MENU34 tr("Mode","extcalc.h")
-#define EXTCALCH_MENU35 tr("Standard","extcalc.h")
-#define EXTCALCH_MENU36 tr("Polar","extcalc.h")
-#define EXTCALCH_MENU37 tr("3D-Graph","extcalc.h")
-#define EXTCALCH_MENU38 tr("Normal","extcalc.h")
-#define EXTCALCH_MENU39 tr("Polar","extcalc.h")
-#define EXTCALCH_MENU40 tr("Parameter","extcalc.h")
-#define EXTCALCH_MENU41 tr("Inequality","extcalc.h")
-#define EXTCALCH_MENU42 tr("3D","extcalc.h")
-#define EXTCALCH_MENU43 tr("Standard Values","extcalc.h")
-#define EXTCALCH_MENU44 tr("Function Type","extcalc.h")
-#define EXTCALCH_MENU45 tr("Table Preferences","extcalc.h")
-#define EXTCALCH_MENU46 tr("Table","extcalc.h")
-#define EXTCALCH_MENU47 tr("Undo","extcalc.h")
-#define EXTCALCH_MENU48 tr("Redo","extcalc.h")
-#define EXTCALCH_MENU49 tr("Cut","extcalc.h")
-#define EXTCALCH_MENU50 tr("Copy","extcalc.h")
-#define EXTCALCH_MENU51 tr("Paste","extcalc.h")
-#define EXTCALCH_MENU52 tr("View Calculator","extcalc.h")
-#define EXTCALCH_MENU53 tr("View Second Calculator","extcalc.h")
-#define EXTCALCH_MENU54 tr("View Graph Window","extcalc.h")
-#define EXTCALCH_MENU55 tr("View Table Window","extcalc.h")
-#define EXTCALCH_MENU56 tr("View Scripting Window","extcalc.h")
-#define EXTCALCH_MENU57 tr("Quit","extcalc.h")
-#define EXTCALCH_MENU58 tr("&Edit","extcalc.h")
-#define EXTCALCH_MENU59 tr("&View","extcalc.h")
-#define EXTCALCH_MENU60 tr("Scripting Preferences","extcalc.h")
-#define EXTCALCH_MENU61 tr("View Script Console","extcalc.h")
-#define EXTCALCH_MENU62 tr("Export Script","extcalc.h")
-#define EXTCALCH_MENU63 tr("Import Script","extcalc.h")
-#define EXTCALCH_MENU64 tr("Always clear Array Memory","extcalc.h")
-#define EXTCALCH_MENU65 tr("Clear Array Memory now","extcalc.h")
-#define EXTCALCH_MENU66 tr("Script","extcalc.h")
-#define EXTCALCH_MENU67 tr("Complex","extcalc.h")
-#define EXTCALCH_MENU68 tr("Reset Input Values","extcalc.h")
-#define EXTCALCH_MENU69 tr("Clear Graphics Window","extcalc.h")
-#define EXTCALCH_MENU70 tr("Automatic Graph Clear","extcalc.h")
-#define EXTCALCH_MENU71 tr("Show Points","extcalc.h")
-#define EXTCALCH_MENU72 tr("Show Lines","extcalc.h")
-#define EXTCALCH_MENU73 tr("Matrix/Vector","extcalc.h")
-#define EXTCALCH_MENU74 tr("Statistics","extcalc.h")
-#define EXTCALCH_MENU75 tr("Welcome to Extcalc!\n\nThis seems to be the first time, you start this program.\nFor this reason, Extcalc must create directories to store scripts and data.\nSay yes, if you want to change the script configuration!","extcalc.h")
-#define EXTCALCH_MENU76 tr("Welcome to the new version of Extcalc!\n\nThis seems to be the first time, you start the new version of Extcalc.\nThe new version ships some default script programs.\nThe script directories must exist to make them usable.\nSay yes, if you want to change the script configuration!","extcalc.h")
-#define EXTCALCH_MENU77 tr("Default directories created.","extcalc.h")
-#define EXTCALCH_MENU78 tr("Complex","extcalc.h")
-
-#define EXTCALCC_MSG1 "Error writing configfile: "
-#define EXTCALCC_MSG3 "Error loading configfile: "
-#define EXTCALCC_MSG6 "File outside script code directory: "
-#define EXTCALCC_MSG8 "Really overwrite this file?\n\n"
-#define EXTCALCC_MSG9 "Choose a script file to export"
-#define EXTCALCC_MSG10 "Choose a file to import"
-#define EXTCALCC_MSG11 "open file dialog"
-#define EXTCALCC_MSG12 "save file dialog"
-#define EXTCALCC_MSG13 "Choose a filename to save under"
-
-#define GLOBALH_STR1 "Authors:\nRainer Strobel\nProgramming and development\nEugene Clement\nTranslation"
-
-#define CALCWIDGETH_STR4 "Change View"
-#define CALCWIDGETH_STR5 "Scientific/Base Mode"
-#define CALCWIDGETH_STR6 "Set Base"
-#define CALCWIDGETH_STR7 "Set Angle"
-#define CALCWIDGETH_STR8 "Function Catalog"
-
-#define CALCWIDGETC_MENU1 "&Undo\tCtrl+Z"
-#define CALCWIDGETC_MENU2 "&Redo\tCtrl+Y"
-#define CALCWIDGETC_MENU3 "Cu&t\tCtrl+X"
-#define CALCWIDGETC_MENU4 "&Copy\tCtrl+C"
-#define CALCWIDGETC_MENU5 "&Paste\tCtrl+V"
-
-#define CALCPREFH_STR1 "Save"
-#define CALCPREFH_STR2 "Cancel"
-#define CALCPREFH_STR3 "Angle"
-#define CALCPREFH_STR4 "Output Type"
-#define CALCPREFH_STR5 "Output Digits"
-#define CALCPREFH_STR6 "Mode"
-#define CALCPREFH_STR7 "Base"
-#define CALCPREFH_STR8 "Fixed Number of Digits"
-#define CALCPREFH_STR9 "Variable Number of Digits"
-#define CALCPREFH_STR10 "With Symbols"
-#define CALCPREFH_STR11 "Scientific"
-#define CALCPREFH_STR12 "Base"
-#define CALCPREFH_STR13 "Complex"
-
-#define INFOSTRING "Extcalc:\nGraphic scientific calculator\n\n"
-#define DEVVERSION "Beta version\nThis program is still in development (it may still have a few errors)  \n\n"
-
-#define GRAPHH_STR1 "Print"
-#define GRAPHH_STR3 "Analyse"
-#define GRAPHH_STR4 "Calculate Y-value"
-#define GRAPHH_STR5 "Calculate Roots"
-#define GRAPHH_STR6 "Newton's Method"
-#define GRAPHH_STR7 "Calculate X-values"
-#define GRAPHH_STR8 "Points of intersection"
-#define GRAPHH_STR9 "Maximum- and minimum values"
-#define GRAPHH_STR10 "calculate Integral"
-#define GRAPHH_STR11 "calculate Differential"
-#define GRAPHH_STR12 "Function"
-#define GRAPHH_STR13 "Color"
-#define GRAPHH_STR14 "Active"
-#define GRAPHH_STR15 "normal y(x)=x"
-#define GRAPHH_STR16 "polar r(x)=x"
-#define GRAPHH_STR17 "parameter x=T; y=T"
-#define GRAPHH_STR18 "3d y(xz)=xz"
-#define GRAPHH_STR20 "inequality y(x)>x"
-#define GRAPHH_STR21 "inequality y(x)<x"
-#define GRAPHH_STR22 "inequality y(x)>=x"
-#define GRAPHH_STR23 "inequality y(x)<=x"
-#define GRAPHH_STR24 "Type"
-#define GRAPHH_STR25 "calculate Z-values"
-#define GRAPHH_STR26 "Save and modify"
-#define GRAPHH_STR27 "Edit"
-#define GRAPHH_STR28 "Anlayse"
-#define GRAPHH_STR29 "Screenshot"
-#define GRAPHH_STR30 "Nyquist Plots"
-#define GRAPHH_COL1 "black"
-#define GRAPHH_COL2 "grey"
-#define GRAPHH_COL3 "brown"
-#define GRAPHH_COL4 "green"
-#define GRAPHH_COL5 "blue"
-#define GRAPHH_COL6 "magenta"
-#define GRAPHH_COL7 "orange"
-#define GRAPHH_COL8 "red"
-#define GRAPHH_COL9 "yellow"
-#define GRAPHH_COL10 "cyan"
-#define GRAPHH_COL11 "colored"
-
-#define GRAPHC_STR3 "Analyse"
-#define GRAPHC_STR4 "Edit Mode"
-#define GRAPHC_STR5 "Stop"
-
-#define GRAPHOUTC_STR1 "Extcalc - Draw Text"
-#define GRAPHOUTC_STR2 "Enter text to draw:"
-
-#define GRAPHPREFH_STR1 "Extcalc - Preferences"
-#define GRAPHPREFH_STR2 "Cartesian Coordinate System"
-#define GRAPHPREFH_STR3 "Raster"
-#define GRAPHPREFH_STR4 "Axes"
-#define GRAPHPREFH_STR5 "Labels"
-#define GRAPHPREFH_STR6 "constant width-to-height ratio"
-#define GRAPHPREFH_STR7 "X-Scale"
-#define GRAPHPREFH_STR8 "Y-Scale"
-#define GRAPHPREFH_STR9 "Coordinate System Format:"
-#define GRAPHPREFH_STR10 "Polar Coordinate System"
-#define GRAPHPREFH_STR11 "max angle:"
-#define GRAPHPREFH_STR12 "max radius:"
-#define GRAPHPREFH_STR13 "angle scale:"
-#define GRAPHPREFH_STR14 "radius scale:"
-#define GRAPHPREFH_STR15 "Standard"
-#define GRAPHPREFH_STR16 "Polar"
-#define GRAPHPREFH_STR17 "3D-Graph"
-#define GRAPHPREFH_STR18 "Range of Parameter T:"
-#define GRAPHPREFH_STR19 "Start:"
-#define GRAPHPREFH_STR20 "End:"
-#define GRAPHPREFH_STR21 "Z-Scale"
-#define GRAPHPREFH_STR22 "Steps"
-#define GRAPHPREFH_STR23 "Standard"
-#define GRAPHPREFH_STR24 "Preferences for Parameter A:"
-#define GRAPHPREFH_STR25 "Start:"
-#define GRAPHPREFH_STR26 "End:"
-#define GRAPHPREFH_STR27 "Steps:"
-#define GRAPHPREFH_STR28 "Delay Time (*10ms):"
-#define GRAPHPREFH_STR29 "Automatic Mode"
-#define GRAPHPREFH_STR30 "Count up only"
-#define GRAPHPREFH_STR31 "Count up and down"
-#define GRAPHPREFH_STR32 "Coordinate Systems"
-#define GRAPHPREFH_STR33 "Precision/Performance"
-#define GRAPHPREFH_STR34 "Parameter Range"
-#define GRAPHPREFH_STR35 "Calculation steps for 2D-Graphs"
-#define GRAPHPREFH_STR36 "Calculation steps for 3D-Graphs"
-#define GRAPHPREFH_STR37 "Parameter graph steps"
-#define GRAPHPREFH_STR38 "Steps for Nyquist Plot"
-#define GRAPHPREFH_STR39 "Graph Analysation Precision"
-#define GRAPHPREFH_STR40 "Low"
-#define GRAPHPREFH_STR41 "Standard"
-#define GRAPHPREFH_STR42 "High"
-#define GRAPHPREFH_STR43 "Draw 3D-Graphs as Grid"
-#define GRAPHPREFH_STR44 "Parameter Z for Nyquist plots (2D only)"
-#define GRAPHPREFH_STR45 "Start value:"
-#define GRAPHPREFH_STR46 "End value:"
-#define GRAPHPREFH_STR47 "Use logarithmic scale (10^Z)"
-
-#define GRAPHPREFH_BTN1 "Standard"
-#define GRAPHPREFH_BTN2 "Trigonometric"
-#define GRAPHPREFH_BTN3 "Save"
-#define GRAPHPREFH_BTN4 "Cancel"
-#define GRAPHPREFC_STR1 "Error\n\nThe minimal X-value must be lower than the maximal X-value"
-#define GRAPHPREFC_STR2 "Error\n\nThe minimal Y-value must be lower than the maximal Y-value"
-#define GRAPHPREFC_STR3 "Error\n\nX-Scale must be positive"
-#define GRAPHPREFC_STR4 "Error\n\nY-Scale must be positive"
-#define GRAPHPREFC_STR5 "Error\n\nPlease choose two different functions!"
-#define GRAPHPREFC_STR6 "Error\n\nToo many results!"
-#define GRAPHPREFC_STR7 "Max angle must be greater than zero"
-#define GRAPHPREFC_STR8 "Max Radius must be greater than zero"
-#define GRAPHPREFC_STR9 "Angle scale must be greater than zero"
-#define GRAPHPREFC_STR10 "Radius scale must be greater than zero"
-#define GRAPHPREFC_STR11 "Parameter start value must be less than parameter end value"
-#define GRAPHPREFC_STR12 "Error\n\nZ-scale must be positive"
-#define GRAPHPREFC_STR13 "Error\n\nThe minimal Z-value must be lower than the maximal Z-value"
-#define GRAPHPREFC_STR14 "Steps must be greather than 0"
-#define GRAPHPREFC_STR15 "Dynamic parameter end must be greather than start!"
-#define GRAPHPREFC_STR16 "Delay time must be greather than 0"
-
-#define GRAPHSOLVEH_STR1 "Calculate"
-#define GRAPHSOLVEH_STR2 "Parameter A:"
-#define GRAPHSOLVEH_STR3 "Width"
-#define GRAPHSOLVEH_STR4 "Save"
-#define GRAPHSOLVEH_STR5 "Undo"
-#define GRAPHSOLVEH_STR6 "Redo"
-#define GRAPHSOLVEH_STR7 "Clear"
-#define GRAPHSOLVEH_STR8 "Color"
-
-#define GRAPHSOLVEC_STR1 "Insert X-Value:"
-#define GRAPHSOLVEC_STR2 "Y-Values:"
-#define GRAPHSOLVEC_STR3 "Choose Function:"
-#define GRAPHSOLVEC_STR4 "Roots:"
-#define GRAPHSOLVEC_STR5 "Start Point:"
-#define GRAPHSOLVEC_STR6 "Steps:"
-#define GRAPHSOLVEC_STR7 "X-Values:"
-#define GRAPHSOLVEC_STR8 "Y-Value:"
-#define GRAPHSOLVEC_STR9 "Points of Intersection:"
-#define GRAPHSOLVEC_STR10 "1. Function"
-#define GRAPHSOLVEC_STR11 "2. Function"
-#define GRAPHSOLVEC_STR12 "Start Point:"
-#define GRAPHSOLVEC_STR13 "End Point:"
-#define GRAPHSOLVEC_STR14 "X-Value:"
-#define GRAPHSOLVEC_STR15 "Invalid start point"
-#define GRAPHSOLVEC_STR16 "Invalid end point"
-#define GRAPHSOLVEC_STR17 "Invalid X-Value"
-#define GRAPHSOLVEC_STR18 "Extreme Values"
-#define GRAPHSOLVEC_STR19 "Results"
-#define GRAPHSOLVEC_STR20 "X-value"
-#define GRAPHSOLVEC_STR21 "Y-value"
-#define GRAPHSOLVEC_STR22 "Z-value"
-#define GRAPHSOLVEC_STR23 "T-value"
-#define GRAPHSOLVEC_STR24 "z start:"
-#define GRAPHSOLVEC_STR25 "end:"
-#define GRAPHSOLVEC_STR26 "x start:"
-#define GRAPHSOLVEC_STR27 "end:"
-#define GRAPHSOLVEC_STR28 "Path:"
-#define GRAPHSOLVEC_STR29 "Resolution:"
-#define GRAPHSOLVEC_STR30 "File format:"
-#define GRAPHSOLVEC_STR31 "Please insert a valid path to save screenshot"
-#define GRAPHSOLVEC_STR32 "Really overwrite file "
-#define GRAPHSOLVEC_STR33 " is no valid file.\n Can't overwrite it!"
-#define GRAPHSOLVEC_STR34 "Screenshot saved"
-#define GRAPHSOLVEC_STR35 "Error saving screenshot"
-#define GRAPHSOLVEC_STR36 "Images (*.png *.xpm *.jpg *.bmp)"
-#define GRAPHSOLVEC_STR37 "Choose a filename to save under"
-#define GRAPHSOLVEC_STR38 "Color Dialog"
-#define GRAPHSOLVEC_STR39 "Insert real value"
-#define GRAPHSOLVEC_STR40 "Imaginary values"
-#define GRAPHSOLVEC_STR41 "Real values"
-#define GRAPHSOLVEC_STR42 "Imaginary value"
-#define GRAPHSOLVEC_STR43 "By Extension"
-#define GRAPHSOLVEC_STR44 "Unknown file format!\nAssuming png."
-
-
-
-#define TABLEH_STR1 "Calculate"
-#define TABLEH_STR3 "normal"
-#define TABLEH_STR4 "polar"
-#define TABLEH_STR5 "parameter"
-#define TABLEH_STR6 "inequality"
-#define TABLEH_STR7 "3D"
-#define TABLEH_STR8 "Minimize"
-#define TABLEH_STR9 "Complex"
-#define TABLEH_STR10 "Extcalc - Table"
-#define TABLEH_STR11 "Enter column value "
-#define TABLEH_STR12 "Enter row value "
-#define TABLEH_STR13 "Change View"
-#define TABLEH_STR14 "Choose Function Type"
-#define TABLEH_STR15 "Function Catalog"
-
-#define TABLEPREFH_STR1 "Table Preferences"
-#define TABLEPREFH_STR2 "Function Type:"
-#define TABLEPREFH_STR3 "Parameter x, T start value"
-#define TABLEPREFH_STR4 "Steps"
-#define TABLEPREFH_STR5 "End value"
-#define TABLEPREFH_STR6 "Parameter Z start value"
-#define TABLEPREFH_STR7 "End value"
-#define TABLEPREFH_STR8 "Steps"
-#define TABLEPREFH_STR9 "Save"
-#define TABLEPREFH_STR10 "Cancel"
-#define TABLEPREFH_STR11 "Table Preferences"
-#define TABLEPREFH_STR12 "Parameter X,T,complex Z"
-#define TABLEPREFH_STR13 "Parameter Z (3D)"
-#define TABLEPREFH_STR14 "Value for dynamic parameter A:"
-#define TABLEPREFH_STR15 "Start:"
-#define TABLEPREFH_STR16 "Steps:"
-#define TABLEPREFH_STR17 "End:"
-
-#define TABLEPREFC_STR1 "X-Start value invalid"
-#define TABLEPREFC_STR2 "X-End value invalid"
-#define TABLEPREFC_STR3 "Z-Start value invalid"
-#define TABLEPREFC_STR4 "Z-End value invalid"
-#define TABLEPREFC_STR5 "X-End value must be greather then X-Start value"
-#define TABLEPREFC_STR6 "Z-End value must be greather then Z-Start value"
-#define TABLEPREFC_STR7 "X-Steps must be greather than 0"
-#define TABLEPREFC_STR8 "Z-Steps must be greather than 0"
-
-#define SCRIPTIO_STR1 "Kill"
-#define SCRIPTIO_STR2 "Script could not be stopped.\nYou may press the kill button again."
-#define SCRIPTIO_STR3 "\n*** killed ***\n"
-#define SCRIPTIO_STR4 "\n*** finish ***\n"
-#define SCRIPTIO_STR5 "You are already running a script.\nKill it?"
-#define SCRIPTIO_STR6 "\n*** script ***\n"
-#define SCRIPTIO_STR7 "Run"
-#define SCRIPTIO_STR8 "\nProcessing main file ..."
-#define SCRIPTIO_STR9 "\nProcessing file "
-#define SCRIPTIO_STR10 "\nScript sucessfully loaded.\nNow you can press run.\n"
-#define SCRIPTIO_STR11 "\nProcessing script failed!\n"
-#define SCRIPTIO_STR12 "Copy\tCtrl-C"
-#define SCRIPTIO_STR13 "Paste\tCtrl-V"
-#define SCRIPTIO_STR14 "Select All\tCtrl-A"
-#define SCRIPTIO_STR15 "Clear All"
-
-
-#define SCRIPTEDITH_STR2 "Run"
-#define SCRIPTEDITH_STR3 "Save"
-#define SCRIPTEDITH_STR4 "Update View"
-#define SCRIPTEDITH_STR5 "New Code File"
-#define SCRIPTEDITH_STR6 "New Directory"
-#define SCRIPTEDITH_STR7 "Save"
-#define SCRIPTEDITH_STR8 "Save All"
-#define SCRIPTEDITH_STR9 "Rename"
-#define SCRIPTEDITH_STR10 "Delete"
-#define SCRIPTEDITH_STR11 "Files"
-#define SCRIPTEDITH_STR12 "Create new script file"
-#define SCRIPTEDITH_STR13 "Save changes of current file"
-#define SCRIPTEDITH_STR14 "Save changes of all modified files"
-#define SCRIPTEDITH_STR15 "Undo"
-#define SCRIPTEDITH_STR16 "Redo"
-#define SCRIPTEDITH_STR17 "Cut"
-#define SCRIPTEDITH_STR18 "Copy"
-#define SCRIPTEDITH_STR19 "Paste"
-#define SCRIPTEDITH_STR20 "Import script file"
-#define SCRIPTEDITH_STR21 "Export script file"
-#define SCRIPTEDITH_STR22 "Run current script"
-#define SCRIPTEDITH_STR23 "Switch to minimized view"
-#define SCRIPTEDITH_STR24 "Function Catalog"
-
-#define SCRIPTEDITC_STR4 "Do you want to save your changes?"
-#define SCRIPTEDITC_STR5 "Rename File"
-#define SCRIPTEDITC_STR6 "Insert new file name:"
-#define SCRIPTEDITC_STR7 "Invalid name for renaming!"
-#define SCRIPTEDITC_STR8 "Renaming of the following file failed:\n\n"						/**/
-#define SCRIPTEDITC_STR9 "Really delete the following file?\n\n"							/**/
-#define SCRIPTEDITC_STR10 "Removing of the following file failed:\n\n"						/**/
-#define SCRIPTEDITC_STR12 "Save current File?"
-#define SCRIPTEDITC_STR13 "Choose filename to create"
-#define SCRIPTEDITC_STR14 "Can't create file outside script directory"
-#define SCRIPTEDITC_STR15 "Really overwrite this file?\n\n "								/**/
-#define SCRIPTEDITC_STR16 "Unable to create file:\n\n"										/**/
-#define SCRIPTEDITC_STR17 "Create directory"
-#define SCRIPTEDITC_STR18 "Insert direcotry name:"
-#define SCRIPTEDITC_STR19 "Invalid directory name"
-#define SCRIPTEDITC_STR20 "Creating directory failed"
-#define SCRIPTEDITC_STR21 "Choose filename to save"
-#define SCRIPTEDITC_STR22 "Can't save file outside script directory"
-#define SCRIPTEDITC_STR23 "Unable to save file:"											/**/
-#define SCRIPTEDITC_STR24 "Some code files have been modified.\n\nDo you want to save your changes?"
-#define SCRIPTEDITC_STR25 "Error saving file "
-
-#define SCRIPTPREFH_STR1 "Scripting Preferences"
-#define SCRIPTPREFH_STR2 "Path to scripting root directory"
-#define SCRIPTPREFH_STR3 "Name of code subdirectory"
-#define SCRIPTPREFH_STR4 "Name of data subdirectory"
-#define SCRIPTPREFH_STR5 "Save"
-#define SCRIPTPREFH_STR6 "Cancel"
-#define SCRIPTPREFH_STR7 "Search"
-#define SCRIPTPREFH_STR8 "Clear array memory after script running"
-
-#define SCRIPTPREFC_STR1 "Please insert complete Path"
-#define SCRIPTPREFC_STR2 "Can't create scripting root directory"
-#define SCRIPTPREFC_STR3 "Invalid path to scripting root directory"
-#define SCRIPTPREFC_STR4 "Can't create code subdirectory"
-#define SCRIPTPREFC_STR5 "Invalid scripting subdirectory name"
-#define SCRIPTPREFC_STR6 "Can't create data subdirectory"
-#define SCRIPTPREFC_STR7 "Invalid data subdirectory name"
-#define SCRIPTPREFC_STR8 "Choose a directory"
-
-#define MATRIXWIDGETH_STR1 "Type"
-#define MATRIXWIDGETH_STR2 "Rows"
-#define MATRIXWIDGETH_STR3 "Columns"
-#define MATRIXWIDGETH_STR4 "Calculator"
-#define MATRIXWIDGETH_STR5 "Solve Equations"
-#define MATRIXWIDGETH_STR6 "Generate Matrix"
-#define MATRIXWIDGETH_STR7 "Analyse Matrix"
-#define MATRIXWIDGETH_STR8 "Inverse Matrix"
-#define MATRIXWIDGETH_STR9 "Calculate"
-#define MATRIXWIDGETH_STR10 "Set"
-#define MATRIXWIDGETH_STR11 "no vector"
-#define MATRIXWIDGETH_STR12 "Identity Matrix"
-#define MATRIXWIDGETH_STR13 "Zero Matrix"
-#define MATRIXWIDGETH_STR14 "Zero Vector"
-#define MATRIXWIDGETH_STR15 "X-Rotation Matrix"
-#define MATRIXWIDGETH_STR16 "Y-Rotation Matrix"
-#define MATRIXWIDGETH_STR17 "Z-Rotation Matrix"
-#define MATRIXWIDGETH_STR18 "Scaling Matrix"
-#define MATRIXWIDGETC_STR1 "Vector"
-#define MATRIXWIDGETC_STR2 "Unknowns:"
-#define MATRIXWIDGETC_STR3 "Matrix"
-#define MATRIXWIDGETC_STR4 "Choose a Matrix\nor a Matrix and a Vector\nto insert data\n"
-#define MATRIXWIDGETC_STR5 "Variable"
-#define MATRIXWIDGETC_STR6 "Generate"
-#define MATRIXWIDGETC_STR7 "Gauss"
-#define MATRIXWIDGETC_STR8 "Type: Matrix"
-#define MATRIXWIDGETC_STR9 "Dimensions:"
-#define MATRIXWIDGETC_STR10 "Determinant:"
-#define MATRIXWIDGETC_STR11 "not possible"
-#define MATRIXWIDGETC_STR12 "Rank:"
-#define MATRIXWIDGETC_STR13 "Type: Vector"
-#define MATRIXWIDGETC_STR14 "Size:"
-#define MATRIXWIDGETC_STR15 "Absolute:"
-#define MATRIXWIDGETC_STR16 "Type: Scalar"
-#define MATRIXWIDGETC_STR17 "Can't choose the same variable twice!\nChoose a matrix,\nor a matrix and a vector\nto insert data"
-#define MATRIXWIDGETC_STR18 "Insert data \nand press calculate button"
-#define MATRIXWIDGETC_STR19 "Press set button to adjust size"
-#define MATRIXWIDGETC_STR20 "Insert data \nand press calculate button"
-#define MATRIXWIDGETC_STR21 "Press set button to adjust size"
-#define MATRIXWIDGETC_STR22 "x angle"
-#define MATRIXWIDGETC_STR23 "y angle"
-#define MATRIXWIDGETC_STR24 "z angle"
-#define MATRIXWIDGETC_STR25 "x scale"
-#define MATRIXWIDGETC_STR26 "y scale"
-#define MATRIXWIDGETC_STR27 "z scale"
-#define MATRIXWIDGETC_STR28 "More than one result found\nShowing matrix"
-#define MATRIXWIDGETC_STR29 "No results found\nShowing matrix"
-#define MATRIXWIDGETC_STR30 "Showing result Vector"
-#define MATRIXWIDGETC_STR31 "Number of rows of matrix must \nbe equal to number of columns."
-#define MATRIXWIDGETC_STR32 "Can't calculate inverse matrix.\nDeterminant is equal 0."
-
-#define STATISTICSH_STR1 "Function Type"
-#define STATISTICSH_STR2 "Input List Number"
-#define STATISTICSH_STR3 "Result Function"
-#define STATISTICSH_STR4 "Copy to"
-#define STATISTICSH_STR5 "Copy"
-#define STATISTICSH_STR6 "Approximate"
-#define STATISTICSH_STR7 "Interpolate"
-#define STATISTICSH_STR8 "Show Line-Graph"
-#define STATISTICSH_STR9 "Normal Distribution"
-#define STATISTICSH_STR10 "Distribution Graph"
-#define STATISTICSH_STR11 "Steps"
-#define STATISTICSH_STR12 "Calculate"
-#define STATISTICSH_STR14 "Print"
-
-#define STATISTICSC_STR2 "Really overwrite function f"
-#define STATISTICSC_STR3 " ?"
-#define STATISTICSC_STR4 "Unable to write lists file: "
-#define STATISTICSC_STR5 "Unable to read lists file: "
-#define STATISTICSC_STR6 "For this approximation, at least one point is needed"
-#define STATISTICSC_STR7 "For this approximation, at least two points were needed"
-#define STATISTICSC_STR8 "For this approximation, at least three points were needed"
-#endif
-
-
-#ifdef LANGUAGE_FR
-#define EXTCALCH_MSG1 "Il y a eu un problème lors de l'installation des icônes"
-#define EXTCALCH_MSG2 "Il y a eu un problème lors de l'installation du fichier de license"
-#define EXTCALCH_STR1 "Ce programme est distribué selon les termes de la license GPL v2.\n\nLe fichier ne fut pas trouvé."
-#define EXTCALCH_STR2 "Ce programme est distribué selon les termes de la license GPL v2.\n\n"
-#define EXTCALCH_STR3 "Version"
-#define EXTCALCH_STR4 "Auteurs"											//changed to authors
-#define EXTCALCH_STR5 "License"
-#define EXTCALCH_STR6 "Calculatrice"
-#define EXTCALCH_STR7 "Une autre Calculatrice"
-#define EXTCALCH_STR8 "Graphiques"
-#define EXTCALCH_STR9 "Tables"
-#define EXTCALCH_STR12 "Editeur de script"
-#define EXTCALCH_STR13 "Console de script"
-#define EXTCALCH_STR14 "Importer/Exporter un Script"
-#define EXTCALCH_STR15 "Importer un fichier de Script"
-#define EXTCALCH_STR16 "Nom du fichier à importer"
-#define EXTCALCH_STR17 "Nom du fichier à sauvegarder"
-#define EXTCALCH_STR18 "Exporter un fichier de script"
-#define EXTCALCH_STR19 "Fichier de script à exporter"
-#define EXTCALCH_STR20 "Nom du fichier à sauvegarder"
-#define EXTCALCH_STR21 "Impossibilité de lire le fichier de variables: "
-#define EXTCALCH_STR22 "Impossibilité d'écrire le fichier de variables: "
-#define EXTCALCH_MENU1 "Degré (DEG)"
-#define EXTCALCH_MENU2 "Radian (RAD)"
-#define EXTCALCH_MENU3 "Grad (GRA)"
-#define EXTCALCH_MENU4 "Nombre fixe de décimales"
-#define EXTCALCH_MENU5 "Nombre variable de décimales"
-#define EXTCALCH_MENU6 "Avec symboles"
-#define EXTCALCH_MENU7 "Nombre de décimales"
-#define EXTCALCH_MENU8 "Angle"
-#define EXTCALCH_MENU9 "Format de sortie"
-#define EXTCALCH_MENU10 "Préférences Calculatrice"
-#define EXTCALCH_MENU11 "Préférences Graphique"
-#define EXTCALCH_MENU12 "Aide Extcalc"
-#define EXTCALCH_MENU13 "Info"
-#define EXTCALCH_MENU14 "&Fichiers"
-#define EXTCALCH_MENU15 "&Préférences"
-#define EXTCALCH_MENU16 "&Calculatrice"
-#define EXTCALCH_MENU17 "&Graphique"
-#define EXTCALCH_MENU18 "&Aide"
-#define EXTCALCH_MENU19 "Mode de Coordonnées Standard"
-#define EXTCALCH_MENU20 "Mode de Coordonnées Trigonometrique"
-#define EXTCALCH_MENU21 "Montrer les Axes"
-#define EXTCALCH_MENU22 "Montrer les Labels"
-#define EXTCALCH_MENU23 "Montrer les (Rasters)"
-#define EXTCALCH_MENU24 "Rapport Constant Largeur-Hauteur"
-#define EXTCALCH_MENU25 "Systeme de Coordonnées"
-#define EXTCALCH_MENU26 "Genre de Graphe"
-#define EXTCALCH_MENU27 "Binaire (BIN)"
-#define EXTCALCH_MENU28 "Octal (OCT)"
-#define EXTCALCH_MENU29 "Décimal (DEC)"
-#define EXTCALCH_MENU30 "Hexadécimal (HEX)"
-#define EXTCALCH_MENU31 "Mode Scientifique"
-#define EXTCALCH_MENU32 "Mode Logique"
-#define EXTCALCH_MENU33 "Base des nombres"
-#define EXTCALCH_MENU34 "Mode"
-#define EXTCALCH_MENU35 "Standard"
-#define EXTCALCH_MENU36 "Polaire"
-#define EXTCALCH_MENU37 "3D-Graphes"
-#define EXTCALCH_MENU38 "Normal"
-#define EXTCALCH_MENU39 "Polaire"
-#define EXTCALCH_MENU40 "Paramètre"
-#define EXTCALCH_MENU41 "Inegalité"
-#define EXTCALCH_MENU42 "3D"
-#define EXTCALCH_MENU43 "Valeurs Standard"
-#define EXTCALCH_MENU44 "Genre de Fonction"
-#define EXTCALCH_MENU45 "Préférences des Tables"
-#define EXTCALCH_MENU46 "Table"
-#define EXTCALCH_MENU47 "Défaire"
-#define EXTCALCH_MENU48 "Refaire"
-#define EXTCALCH_MENU49 "Couper"
-#define EXTCALCH_MENU50 "Copier"
-#define EXTCALCH_MENU51 "Coller"
-#define EXTCALCH_MENU52 "Vue Calculatrice"
-#define EXTCALCH_MENU53 "Vue Seconde Calculatrice"
-#define EXTCALCH_MENU54 "Vue fenêtre Graphique"
-#define EXTCALCH_MENU55 "Vue fenêtre de Table"
-#define EXTCALCH_MENU56 "Vue fenêtre de Script"
-#define EXTCALCH_MENU57 "Quitter"
-#define EXTCALCH_MENU58 "&Editer"
-#define EXTCALCH_MENU59 "&Voir"
-#define EXTCALCH_MENU60 "Préférences de Scripts"
-#define EXTCALCH_MENU61 "Vue Console de Scripts"
-#define EXTCALCH_MENU62 "Exporter un Script"
-#define EXTCALCH_MENU63 "Importer un Script"
-#define EXTCALCH_MENU64 "Toujours vider la mémoire des tableaux"
-#define EXTCALCH_MENU65 "Vider la Mémoire des tableaux maintenant"
-#define EXTCALCH_MENU66 "Script"
-#define EXTCALCH_MENU67 "Mode Nombres Complexes"
-#define EXTCALCH_MENU68 "Réinitialiser les Valeurs d'Entrée"
-#define EXTCALCH_MENU69 "Nettoyer la fenêtre Graphique"
-#define EXTCALCH_MENU70 "Nettoyer Automatiquement les Graphes"
-#define EXTCALCH_MENU71 "Montrer les Points"
-#define EXTCALCH_MENU72 "Montrer les Lignes"
-#define EXTCALCH_MENU73 "Matrices/Vecteurs"
-#define EXTCALCH_MENU74 "Statistiques"
-#define EXTCALCH_MENU75 "Bienvenue sur Extcalc!\n\nIl semble que c'est la première fois que le programme de calculatrice Extcalc est utilisé\nLe programme Extcalc a besoin de créer des répertoires pour les scripts et les données.\nCliquer sur Oui, Si vous désirez changer le script de configuration!"
-#define EXTCALCH_MENU76 "Bienvenue sur la nouvelle version d'Extcalc!\n\nIl semble que c'est la première fois que vous demarrez la nouvelle version du programme de calculatrice Extcalc.\nLa nouvelle version vient avec quelques scripts par défaut.\nLe répertoire de scripts doit exister pour etre capable de les utiliser.\nCliquer sur Oui, Si vous désirez changer le script de configuration!"
-#define EXTCALCH_MENU77 "Répertoire par defaut créer."
-#define EXTCALCH_MENU78 "Nombres Complexes"
-
-#define EXTCALCC_MSG1 "Impossible d'ecrire le fichier de configuration :"								//removed strings that were no longer needed
-#define EXTCALCC_MSG3 "Il y a eu une erreur lors du chargement du fichier de configuration :"
-#define EXTCALCC_MSG6 "Le fichier est à l'extérieure du répertoire des codes de script: "
-#define EXTCALCC_MSG8 "Désirez-vous vraiment écraser le fichier ?"
-#define EXTCALCC_MSG9 "Choisissez un fichier à exporter"
-#define EXTCALCC_MSG10 "Choisissez un fichier à importer"
-#define EXTCALCC_MSG11 "dialogue d'ouverture de fichier"
-#define EXTCALCC_MSG12 "dialogue de sauvegarde de fichier"
-#define EXTCALCC_MSG13 "Entrez un nom de fichier"
-
-#define GLOBALH_STR1 "Auteurs:\nRainer Strobel\nProgramming and development\nEugène Clément\nTraduction"
-
-#define CALCWIDGETH_STR4 "Changer de Vue"
-#define CALCWIDGETH_STR5 "Mode Scientifique/Logique"
-#define CALCWIDGETH_STR6 "Définir les Bases Numeriques"
-#define CALCWIDGETH_STR7 "Définir les Angles"
-#define CALCWIDGETH_STR8 "Liste de Fonctions"
-
-#define CALCWIDGETC_STR1 "Plein ecran"
-#define CALCWIDGETC_STR2 "Ecran normal"
-#define CALCWIDGETC_MENU1 "&Défaire\tCtrl+Z"
-#define CALCWIDGETC_MENU2 "&Refaire\tCtrl+Y"
-#define CALCWIDGETC_MENU3 "Cou&per\tCtrl+X"
-#define CALCWIDGETC_MENU4 "&Copier\tCtrl+C"
-#define CALCWIDGETC_MENU5 "C&oller\tCtrl+V"
-
-#define CALCPREFH_STR1 "Sauvegarder"
-#define CALCPREFH_STR2 "Annuler"
-#define CALCPREFH_STR3 "Angle"
-#define CALCPREFH_STR4 "Output Type"
-#define CALCPREFH_STR5 "Output Digits"
-#define CALCPREFH_STR6 "Mode"
-#define CALCPREFH_STR7 "Base"
-#define CALCPREFH_STR8 "Nombre fixe de décimales"
-#define CALCPREFH_STR9 "Nombre variable de décimales"
-#define CALCPREFH_STR10 "Avec Symboles"
-#define CALCPREFH_STR11 "Scientifique"
-#define CALCPREFH_STR12 "Logique"
-#define CALCPREFH_STR13 "Nombres Complexes"
-
-#define INFOSTRING "Extcalc:\nCalculatrice graphique scientifique\n\n"
-#define DEVVERSION "Ce programme est une Version Beta (c'est a dire en fin de dévelopement, elle contient peut-être encore quelques erreurs)  \n\n"
-
-#define GRAPHH_STR1 "Imprimer"
-#define GRAPHH_STR3 "Analyse"
-#define GRAPHH_STR4 "Calculer les valeurs-Y"
-#define GRAPHH_STR5 "Calculer les Racines"
-#define GRAPHH_STR6 "Methode de Newton"
-#define GRAPHH_STR7 "Calculer les valeurs-X"
-#define GRAPHH_STR8 "Points d'intersection"
-#define GRAPHH_STR9 "Valeurs Maximum- and minimum"
-#define GRAPHH_STR10 "calculer une Integrale"
-#define GRAPHH_STR11 "calcul Différentiel"
-#define GRAPHH_STR12 "Fonction"
-#define GRAPHH_STR13 "Couleur"
-#define GRAPHH_STR14 "Active"
-#define GRAPHH_STR15 "normal y(x)=x"
-#define GRAPHH_STR16 "polaire r(x)=x"
-#define GRAPHH_STR17 "parametre x=T; y=T"
-#define GRAPHH_STR18 "3d y(xz)=xz"
-#define GRAPHH_STR20 "Inegalité y(x)>x"
-#define GRAPHH_STR21 "Inegalité(x)<x"
-#define GRAPHH_STR22 "Inegalité(x)>=x"
-#define GRAPHH_STR23 "Inegalité y(x)<=x"
-#define GRAPHH_STR24 "Type"
-#define GRAPHH_STR25 "calculer la valeur-Z"
-#define GRAPHH_STR26 "Modifier et sauvegarder"
-#define GRAPHH_STR27 "Editer"
-#define GRAPHH_STR28 "Anlayse"
-#define GRAPHH_STR29 "Capture d'ecran/dessiner"
-#define GRAPHH_STR30 "Diagramme de Nyquist"
-#define GRAPHH_COL1 "noir"
-#define GRAPHH_COL2 "gris"
-#define GRAPHH_COL3 "brun"
-#define GRAPHH_COL4 "vert"
-#define GRAPHH_COL5 "bleu"
-#define GRAPHH_COL6 "magenta"
-#define GRAPHH_COL7 "orange"
-#define GRAPHH_COL8 "rouge"
-#define GRAPHH_COL9 "jaune"
-#define GRAPHH_COL10 "cyan"
-#define GRAPHH_COL11 "colorié"
-
-#define GRAPHC_STR3 "Analyse"
-#define GRAPHC_STR4 "Mode Editer"
-#define GRAPHC_STR5 "Stop"
-
-
-#define GRAPHOUTC_STR1 "Extcalc - Texte à afficher"
-#define GRAPHOUTC_STR2 "Entrez le texte à afficher:"
-
-#define GRAPHPREFH_STR1 "Extcalc - Préférences"
-#define GRAPHPREFH_STR2 "Système de Coordonnées Cartésien"
-#define GRAPHPREFH_STR3 "Raster(bitmap)"
-#define GRAPHPREFH_STR4 "Axes"
-#define GRAPHPREFH_STR5 "Labels"
-#define GRAPHPREFH_STR6 "Rapport Constant Largeur-Hauteur"
-#define GRAPHPREFH_STR7 "Echelle-X"
-#define GRAPHPREFH_STR8 "Echelle-Y"
-#define GRAPHPREFH_STR9 "Format du Système de Coordonnées:"
-#define GRAPHPREFH_STR10 "Système de Coordonnées Polaire"
-#define GRAPHPREFH_STR11 "angle max:"
-#define GRAPHPREFH_STR12 "radius max:"
-#define GRAPHPREFH_STR13 "Echelle angulaire:"
-#define GRAPHPREFH_STR14 "Echelle des rayons:"
-#define GRAPHPREFH_STR15 "Standard"
-#define GRAPHPREFH_STR16 "Polaire"
-#define GRAPHPREFH_STR17 "Graphes-3D"
-#define GRAPHPREFH_STR18 "Parametres de la plage T:"
-#define GRAPHPREFH_STR19 "Début:"
-#define GRAPHPREFH_STR20 "Fin:"
-#define GRAPHPREFH_STR21 "Echelle-Z"
-#define GRAPHPREFH_STR22 "pas"
-#define GRAPHPREFH_STR23 "Standard"
-#define GRAPHPREFH_STR24 "Préférences du Parametre A:"
-#define GRAPHPREFH_STR25 "Début:"
-#define GRAPHPREFH_STR26 "Fin:"
-#define GRAPHPREFH_STR27 "pas:"
-#define GRAPHPREFH_STR28 "Délai (*10ms):"
-#define GRAPHPREFH_STR29 "Mode Automatic"
-#define GRAPHPREFH_STR30 "Compter en avant uniquement"
-#define GRAPHPREFH_STR31 "Compter en avant et en reculant"
-#define GRAPHPREFH_STR32 "Système de Coordonnées"
-#define GRAPHPREFH_STR33 "Précision/Performance"
-#define GRAPHPREFH_STR34 "Parametres de la plage"
-#define GRAPHPREFH_STR35 "Calculation de pas pour les Graphes-2D"
-#define GRAPHPREFH_STR36 "Calculation de pas pour les Graphs-3D"
-#define GRAPHPREFH_STR37 "Parametres de pas des graphes"
-#define GRAPHPREFH_STR38 "Pas pour le Diagramme de Nyquist"
-#define GRAPHPREFH_STR39 "Analyse de la Précision des graphes"
-#define GRAPHPREFH_STR40 "bas"
-#define GRAPHPREFH_STR41 "Normal"
-#define GRAPHPREFH_STR42 "haut"
-#define GRAPHPREFH_STR43 "Dessiner les Graphes-3D, format grille"
-#define GRAPHPREFH_STR44 "Parametre Z du diagramme de Nyquist (2D uniquement)"
-#define GRAPHPREFH_STR45 "Valeur de début:"
-#define GRAPHPREFH_STR46 "Valeur de fin:"
-#define GRAPHPREFH_STR47 "Utiliser l'échelle logarithmique (10^Z)"
-
-#define GRAPHPREFH_BTN1 "Standard"
-#define GRAPHPREFH_BTN2 "Trigonometrique"
-#define GRAPHPREFH_BTN3 "Sauvegarder"
-#define GRAPHPREFH_BTN4 "Annuler"
-#define GRAPHPREFC_STR1 "Erreur\n\nLa valeur-X minimum doit être inférieur à la valeur-X maximum"
-#define GRAPHPREFC_STR2 "Erreur\n\nLa valeur-Y minimum doit être inférieur à la valeur-Y maximum"
-#define GRAPHPREFC_STR3 "Erreur\n\nL'Echelle-X doit avoir une valeur positive"
-#define GRAPHPREFC_STR4 "Erreur\n\nL'Echelle-Y doit avoir une valeur positive"
-#define GRAPHPREFC_STR5 "Erreur\n\nS'il vous plait, Choisissez deux fonctions différentes!"
-#define GRAPHPREFC_STR6 "Erreur\n\nBeaucoup trop de résultats!"
-#define GRAPHPREFC_STR7 "L'Angle maximum doit être plus grand que zéro"
-#define GRAPHPREFC_STR8 "Le Rayon maximum doit être plus grand que zéro"
-#define GRAPHPREFC_STR9 "L'Echelle des Angles doit être plus grande que zéro"
-#define GRAPHPREFC_STR10 "L'Echelle des Rayons doit être plus grande que zéro"
-#define GRAPHPREFC_STR11 "Le Parametre de départ doit avoir une valeur plus petite que le parametre d'arrivée"
-#define GRAPHPREFC_STR12 "Erreur\n\nL'Echelle-Z doit avoir une valeur positive"
-#define GRAPHPREFC_STR13 "Erreur\n\nLa valeur-Z minimum doit être plus petite que la valeur-Z maximum"
-#define GRAPHPREFC_STR14 "Les pas doivent être plus grand que zéro"
-#define GRAPHPREFC_STR15 "Le parametre dynamique de la fin doit être plus grande que celui de départ!"
-#define GRAPHPREFC_STR16 "Le temps de délai doit être plus grand que zéro"
-
-#define GRAPHSOLVEH_STR1 "Calculer"
-#define GRAPHSOLVEH_STR2 "Parametre A:"
-#define GRAPHSOLVEH_STR3 "Largeur"
-#define GRAPHSOLVEH_STR4 "Sauvegarder"
-#define GRAPHSOLVEH_STR5 "Defaire"
-#define GRAPHSOLVEH_STR6 "Refaire"
-#define GRAPHSOLVEH_STR7 "Nettoyer"
-#define GRAPHSOLVEH_STR8 "Couleur"
-
-#define GRAPHSOLVEC_STR1 "Insérer la Valeur-X:"
-#define GRAPHSOLVEC_STR2 "Valeur-Y:"
-#define GRAPHSOLVEC_STR3 "Choosir une Fonction:"
-#define GRAPHSOLVEC_STR4 "Racines:"
-#define GRAPHSOLVEC_STR5 "Point de départ:"
-#define GRAPHSOLVEC_STR6 "Pas:"
-#define GRAPHSOLVEC_STR7 "Valeurs-X:"
-#define GRAPHSOLVEC_STR8 "Valeur-Y:"
-#define GRAPHSOLVEC_STR9 "Points d'Intersection:"
-#define GRAPHSOLVEC_STR10 "1. Fonction"
-#define GRAPHSOLVEC_STR11 "2. Fonction"
-#define GRAPHSOLVEC_STR12 "Point de départ:"
-#define GRAPHSOLVEC_STR13 "Point d'arrivée:"
-#define GRAPHSOLVEC_STR14 "Valeur-X:"
-#define GRAPHSOLVEC_STR15 "Point de départ non valable"
-#define GRAPHSOLVEC_STR16 "Point d'arrivée non valable"
-#define GRAPHSOLVEC_STR17 "Valeur-X non valable"
-#define GRAPHSOLVEC_STR18 "Valeurs Extreme"
-#define GRAPHSOLVEC_STR19 "Resultats"
-#define GRAPHSOLVEC_STR20 "valeur-X"
-#define GRAPHSOLVEC_STR21 "valeur-Y"
-#define GRAPHSOLVEC_STR22 "valeur-Z"
-#define GRAPHSOLVEC_STR23 "valeur-T"
-#define GRAPHSOLVEC_STR24 "départ z:"
-#define GRAPHSOLVEC_STR25 "fin:"
-#define GRAPHSOLVEC_STR26 "départ x:"
-#define GRAPHSOLVEC_STR27 "fin:"
-#define GRAPHSOLVEC_STR28 "Chemin:"
-#define GRAPHSOLVEC_STR29 "Résolution:"
-#define GRAPHSOLVEC_STR30 "Format de fichier:"
-#define GRAPHSOLVEC_STR31 "S'il vous plait, Insérez un nom de chemin valable, ceci afin de pouvoir sauver les captures d'ecran"
-#define GRAPHSOLVEC_STR32 "Désirez-vous vraiment ecraser le fichier "
-#define GRAPHSOLVEC_STR33 " n'est pas un nom de fichier valable.\n Rien à ecraser!"
-#define GRAPHSOLVEC_STR34 "Captures d'ecran sauvegardée"
-#define GRAPHSOLVEC_STR35 "Il y a eu une erreur lors de la sauvegarde de la captures d'ecran"
-#define GRAPHSOLVEC_STR36 "Images (*.png *.xpm *.jpg *.bmp)"
-#define GRAPHSOLVEC_STR37 "Choisissez un nom de fichier, pour la sauvegarde"
-#define GRAPHSOLVEC_STR38 "Dialogue des Couleurs"
-#define GRAPHSOLVEC_STR39 "Insérez une valeur réelle"
-#define GRAPHSOLVEC_STR40 "Valeurs imaginaire"
-#define GRAPHSOLVEC_STR41 "Valeur réelle"
-#define GRAPHSOLVEC_STR42 "Valeur imaginaire"
-#define GRAPHSOLVEC_STR43 "Extension"
-#define GRAPHSOLVEC_STR44 "Nom de fichier inconnu!\nAssume png."
-
-
-
-#define TABLEH_STR1 "Calculer"
-#define TABLEH_STR3 "normal"
-#define TABLEH_STR4 "polaire"
-#define TABLEH_STR5 "parametre"
-#define TABLEH_STR6 "Inegalité"
-#define TABLEH_STR7 "3D"
-#define TABLEH_STR8 "Minimiser"
-#define TABLEH_STR9 "Nombres Complexes"
-#define TABLEH_STR10 "Extcalc - Table"
-#define TABLEH_STR11 "Entrer la valeur de la colonne "
-#define TABLEH_STR12 "Entrer la valeur de la ligne "
-#define TABLEH_STR13 "Changer de Vue"
-#define TABLEH_STR14 "Choisir un Type de Fonction"
-#define TABLEH_STR15 "Catalogue de Fonctions"
-
-#define TABLEPREFH_STR1 "Préférences de Table"
-#define TABLEPREFH_STR2 "Type de Fonction:"
-#define TABLEPREFH_STR3 "Parametre x, valeur de départ T"
-#define TABLEPREFH_STR4 "Pas"
-#define TABLEPREFH_STR5 "Valeur d'arrivée"
-#define TABLEPREFH_STR6 "Valeur de départ du Parametre Z"
-#define TABLEPREFH_STR7 "Valeur d'arrivée"
-#define TABLEPREFH_STR8 "Pas"
-#define TABLEPREFH_STR9 "Sauvegarder"
-#define TABLEPREFH_STR10 "Annuler"
-#define TABLEPREFH_STR11 "Préférences de Table"
-#define TABLEPREFH_STR12 "Parametre X,T, nombre complexe Z"
-#define TABLEPREFH_STR13 "Parametre Z (3D)"
-#define TABLEPREFH_STR14 "Valeur du Parametre dynamique A:"
-#define TABLEPREFH_STR15 "Départ:"
-#define TABLEPREFH_STR16 "Pas:"
-#define TABLEPREFH_STR17 "Arrivée:"
-
-#define TABLEPREFC_STR1 "Valeur de départ-X non valable"
-#define TABLEPREFC_STR2 "Valeur d'arrivée-X non valable"
-#define TABLEPREFC_STR3 "Valeur de départ-Z non valable"
-#define TABLEPREFC_STR4 "Valeur d'arrivée-Z non valable"
-#define TABLEPREFC_STR5 "La Valeur-X d'arrivée doit etre plus grande que la Valeur-X de départ"
-#define TABLEPREFC_STR6 "La Valeur-Z d'arrivée doit etre plus grande que la Valeur-Z de départ"
-#define TABLEPREFC_STR7 "Les Pas de X doivent etre plus grand que zéro"
-#define TABLEPREFC_STR8 "Les Pas de Z doivent etre plus grand que zéro"
-
-//this is the text for the script console
-#define SCRIPTIO_STR1 "Détruire"															
-#define SCRIPTIO_STR2 "Le Script ne fonctionne pas correctement. Il ne semble plus répondre\nIl est possible d'appuyer sur le bouton détruire encore une fois."
-#define SCRIPTIO_STR3 "\n*** Script terminé  ***\n"
-#define SCRIPTIO_STR4 "\n*** terminé ***\n"
-#define SCRIPTIO_STR5 "Il y a déja un script en fonctionnement.\nDésirez-vous le détruire?"
-#define SCRIPTIO_STR6 "\n*** script ***\n"
-#define SCRIPTIO_STR7 "Exécuter"
-#define SCRIPTIO_STR8 "\nFichier principal en préparation ..."
-#define SCRIPTIO_STR9 "\nFichier en préparation "
-#define SCRIPTIO_STR10 "\nChargement du script réussi.\nMaintenant, il est possible d'appuyer sur 'Exécuter'.\n"
-#define SCRIPTIO_STR11 "\nLa préparation du script a échoué!\n"
-#define SCRIPTIO_STR12 "Copier\tCtrl-C"
-#define SCRIPTIO_STR13 "Coller\tCtrl-V"
-#define SCRIPTIO_STR14 "Tout Sélectionner\tCtrl-A"
-#define SCRIPTIO_STR15 "Tout nettoyer"
-
-//all text of the script editor. Most of that is standard
-#define SCRIPTEDITH_STR2 "Exécuter"
-#define SCRIPTEDITH_STR3 "Sauvegarder"
-#define SCRIPTEDITH_STR4 "Mise à jour de la Vue"
-#define SCRIPTEDITH_STR5 "Nouveau Code de Fichier"
-#define SCRIPTEDITH_STR6 "Nouveau Répertoire"
-#define SCRIPTEDITH_STR7 "Sauvegarder"
-#define SCRIPTEDITH_STR8 "Tout Sauvegarder"
-#define SCRIPTEDITH_STR9 "Renommer"
-#define SCRIPTEDITH_STR10 "Effacer"
-#define SCRIPTEDITH_STR11 "Fichiers"
-#define SCRIPTEDITH_STR12 "Créer un nouveau fichier de script"
-#define SCRIPTEDITH_STR13 "Sauvegarder les modifications du fichier courant"
-#define SCRIPTEDITH_STR14 "Sauvegarder les changements de tout les fichiers modifier"
-#define SCRIPTEDITH_STR15 "Défaire"
-#define SCRIPTEDITH_STR16 "Refaire"
-#define SCRIPTEDITH_STR17 "Couper"
-#define SCRIPTEDITH_STR18 "Copier"
-#define SCRIPTEDITH_STR19 "Coller"
-#define SCRIPTEDITH_STR20 "Importer un fichier de script"
-#define SCRIPTEDITH_STR21 "Exporter un fichier de script"
-#define SCRIPTEDITH_STR22 "Exécuter le script courant"
-#define SCRIPTEDITH_STR23 "Changement de vues"
-#define SCRIPTEDITH_STR24 "Catalogues de fonctions"
-
-//Some of these texts are error messages
-//The rest is dialog text.
-//All dialogs can be shown by the klicking with the right mouse button into the files list of the script editor
-#define SCRIPTEDITC_STR4 "Désirez-vous sauvegarder les modifications effectuées?"
-#define SCRIPTEDITC_STR5 "Renommer le Fichier"
-#define SCRIPTEDITC_STR6 "Entrer un nouveau nom de fichier:"
-#define SCRIPTEDITC_STR7 "Nom de fichier non valable!"
-#define SCRIPTEDITC_STR8 "Le Changement de nom du fichier suivant à échoué:\n\n"
-#define SCRIPTEDITC_STR9 "Désirez-vous vraiment effacer le fichier suivant?\n\n"
-#define SCRIPTEDITC_STR10 "Le fichier suivant n'a pas pu etre enlevé:\n\n"
-#define SCRIPTEDITC_STR12 "Sauvegarder le fichier suivant?"
-#define SCRIPTEDITC_STR13 "Choisir un nom pour le nouveau fichier"
-#define SCRIPTEDITC_STR14 "Impossible d'ecrire le fichier en dehors du répertoire de scripts"
-#define SCRIPTEDITC_STR15 "Désirez-vous vraiment ecraser ce fichier?\n\n "
-#define SCRIPTEDITC_STR16 "Impossible de créer le fichier:\n\n"
-#define SCRIPTEDITC_STR17 "Créer un nouveau répertoire"
-#define SCRIPTEDITC_STR18 "Entrez un nom pour le nouveau répertoire:"
-#define SCRIPTEDITC_STR19 "Le nom du répertoire n'est pas valable!"
-#define SCRIPTEDITC_STR20 "La creation du répertoire à échoué"
-#define SCRIPTEDITC_STR21 "Choisir un nom pour le fichier à sauvegarder"
-#define SCRIPTEDITC_STR22 "Impossible de sauvegarder un fichier à l'extérieur du répertoire de scripts"
-#define SCRIPTEDITC_STR23 "Le fichier ne peux pas être sauvegarder:"
-#define SCRIPTEDITC_STR24 "Quelques codes de fichiers ont été modifié.\n\nDésirez-vous sauvegarder les modifications effectuées?"
-#define SCRIPTEDITC_STR25 "Il y a eu une erreur lors de la sauvegarde du fichier "
-
-//Script preferences dialog Preferences->Scripting
-#define SCRIPTPREFH_STR1 "Préférences de Scripts"
-#define SCRIPTPREFH_STR2 "Chemin du répertoire de script racine"
-#define SCRIPTPREFH_STR3 "Nom du sous-répertoire des codes"
-#define SCRIPTPREFH_STR4 "Nom du sous-répertoire des données"
-#define SCRIPTPREFH_STR5 "Sauvegarder"
-#define SCRIPTPREFH_STR6 "Annuler"
-#define SCRIPTPREFH_STR7 "Rechercher"
-#define SCRIPTPREFH_STR8 "Nettoyer la mémoire, une fois l'exécution du script terminée"
-
-#define SCRIPTPREFC_STR1 "S'il vous plait, insérez le chemin complet !"
-#define SCRIPTPREFC_STR2 "Impossible de créer le répertoire racine des scripts"
-#define SCRIPTPREFC_STR3 "Chemin du répertoire racine des scripts non valable"
-#define SCRIPTPREFC_STR4 "Impossible de créer le sous-répertoire des scripts codes"
-#define SCRIPTPREFC_STR5 "Nom du sous-répertoire des scripts non valable"
-#define SCRIPTPREFC_STR6 "Impossible de créer le sous-répertoire des données"
-#define SCRIPTPREFC_STR7 "Nom du sous-répertoire des données non valable"
-#define SCRIPTPREFC_STR8 "Sélectionnez un répertoire !"
-
-//The matrix/vector tab
-#define MATRIXWIDGETH_STR1 "Type"								//header text of the left table
-#define MATRIXWIDGETH_STR2 "Lignes"
-#define MATRIXWIDGETH_STR3 "Colonnes"
-#define MATRIXWIDGETH_STR4 "Calculatrice"							//text of the box in the toolbar
-#define MATRIXWIDGETH_STR5 "Systeme d'équations linéaire"
-#define MATRIXWIDGETH_STR6 "Generation de Matrice"
-#define MATRIXWIDGETH_STR7 "Analyse de Matrice"
-#define MATRIXWIDGETH_STR8 "Matrice Inverse"
-#define MATRIXWIDGETH_STR9 "Calculer"
-#define MATRIXWIDGETH_STR10 "Mode"
-#define MATRIXWIDGETH_STR11 "Pas de Vecteur"
-#define MATRIXWIDGETH_STR12 "Matrice Identité"
-#define MATRIXWIDGETH_STR13 "Matrice Nulle"
-#define MATRIXWIDGETH_STR14 "Vecteur Nul"
-#define MATRIXWIDGETH_STR15 "Rotation de la Matrice - X"
-#define MATRIXWIDGETH_STR16 "Rotation de la Matrice - Y"
-#define MATRIXWIDGETH_STR17 "Rotation de la Matrice - Z"
-#define MATRIXWIDGETH_STR18 "Matrice Scalaire"
-#define MATRIXWIDGETC_STR1 "Vecteur"
-#define MATRIXWIDGETC_STR2 "Inconnu:"
-#define MATRIXWIDGETC_STR3 "Matrice"
-#define MATRIXWIDGETC_STR4 "Choisir une Matrice\nou une matrice et un vecteur\nafin d'entrer des données\n"
-#define MATRIXWIDGETC_STR5 "Variable"
-#define MATRIXWIDGETC_STR6 "Générer"
-#define MATRIXWIDGETC_STR7 "Gauss"
-#define MATRIXWIDGETC_STR8 "Type: Matrice"
-#define MATRIXWIDGETC_STR9 "Dimensions:"
-#define MATRIXWIDGETC_STR10 "Déterminant:"
-#define MATRIXWIDGETC_STR11 "pas possible"
-#define MATRIXWIDGETC_STR12 "Rang:"
-#define MATRIXWIDGETC_STR13 "Type: Vecteur"
-#define MATRIXWIDGETC_STR14 "Taille:"
-#define MATRIXWIDGETC_STR15 "Absolue:"
-#define MATRIXWIDGETC_STR16 "Type: Scalaire"
-#define MATRIXWIDGETC_STR17 "Il n'est pas possible de choisir la meme variable plus d'une fois!\nChoisir une Matrice\nou une matrice et un vecteur\nafin d'entrer des données"
-#define MATRIXWIDGETC_STR18 "Entrer des données \net appuyer sur le bouton \"Calculer\" "
-#define MATRIXWIDGETC_STR19 "Appuyer sur le bouton \"mode\" afin d'ajuster la taille"
-#define MATRIXWIDGETC_STR20 "Entrer des données \net appuyer sur le bouton \"Calculer\" "
-#define MATRIXWIDGETC_STR21 "Appuyer sur le bouton \"mode\" afin d'ajuster la taille"
-#define MATRIXWIDGETC_STR22 "angle x"									//more text for the generate matrix function
-#define MATRIXWIDGETC_STR23 "angle y"
-#define MATRIXWIDGETC_STR24 "angle z"
-#define MATRIXWIDGETC_STR25 "échelle x"
-#define MATRIXWIDGETC_STR26 "échelle y"
-#define MATRIXWIDGETC_STR27 "échelle z"
-#define MATRIXWIDGETC_STR28 "Trouvé plus d'un résultat\nPrésenter la matrice"	//even more text for the solve equations function
-#define MATRIXWIDGETC_STR29 "Aucun résultat trouvé\nPrésenter la matrice"
-#define MATRIXWIDGETC_STR30 "Présenter le resultat du vecteur"
-#define MATRIXWIDGETC_STR31 "Le nombre de lignes de la matrice doit être\n égual au nombre de colonnes."		//Inverse matrix error messages
-#define MATRIXWIDGETC_STR32 "Impossible de calculer la matrice inverse.\nDéterminant est égual à 0."
-
-//finally, the statistics, approximatin, interpolation tab
-#define STATISTICSH_STR1 "Genre de Fonction"
-#define STATISTICSH_STR2 "Entrée des Listes de Nombres"
-#define STATISTICSH_STR3 "Result Function"
-#define STATISTICSH_STR4 "Copier vers"
-#define STATISTICSH_STR5 "Copier"
-#define STATISTICSH_STR6 "Approximation"
-#define STATISTICSH_STR7 "Interpolation"
-#define STATISTICSH_STR8 "Montrer Graphiques en ligne"
-#define STATISTICSH_STR9 "Distribution Normale"
-#define STATISTICSH_STR10 "Distribution Graphique"
-#define STATISTICSH_STR11 "Pas"
-#define STATISTICSH_STR12 "Calculer"
-#define STATISTICSH_STR14 "Imprimer"
-
-#define STATISTICSC_STR2 "Désirez-vous vraiment ecraser la fonction f"
-#define STATISTICSC_STR3 " ?"
-#define STATISTICSC_STR4 "Impossible d'ecrire la liste des fichiers: "
-#define STATISTICSC_STR5 "Impossible de lire la  liste des fichiers: "
-#define STATISTICSC_STR6 "Pour cette approximation, au moins un point est nécessaire"
-#define STATISTICSC_STR7 "Pour cette approximation, au moins deux points sont nécessaire"
-#define STATISTICSC_STR8 "Pour cette approximation, au moins trois points sont nécessaire"
-
-#endif
+#define EXTCALCH_MSG1 qApp->translate("001","Error loading icon")
+#define EXTCALCH_MSG2 qApp->translate("002","Error loading license")
+#define EXTCALCH_STR1 qApp->translate("003","This programme ist distributed under the terms of GPL v2.\n\nFile not found.")
+#define EXTCALCH_STR2 qApp->translate("004","This programme ist distributed under the terms of GPL v2.\n\n")
+#define EXTCALCH_STR3 qApp->translate("005","Version")
+#define EXTCALCH_STR4 qApp->translate("006","Authors")
+#define EXTCALCH_STR5 qApp->translate("007","License")
+#define EXTCALCH_STR6 qApp->translate("008","Calculator")
+#define EXTCALCH_STR7 qApp->translate("009","Another Calculator")
+#define EXTCALCH_STR8 qApp->translate("010","Graphics")
+#define EXTCALCH_STR9 qApp->translate("011","Tables")
+#define EXTCALCH_STR12 qApp->translate("012","Script Editor")
+#define EXTCALCH_STR13 qApp->translate("013","Script Console")
+#define EXTCALCH_STR14 qApp->translate("014","Import/Export Script")
+#define EXTCALCH_STR15 qApp->translate("015","Import Script File")
+#define EXTCALCH_STR16 qApp->translate("016","File name to import")
+#define EXTCALCH_STR17 qApp->translate("017","File name to save")
+#define EXTCALCH_STR18 qApp->translate("018","Export Script File")
+#define EXTCALCH_STR19 qApp->translate("019","Script file to export")
+#define EXTCALCH_STR21 qApp->translate("020","Unable to read variables file: ")
+#define EXTCALCH_STR22 qApp->translate("021","Unable to write variables file: ")
+#define EXTCALCH_MENU1 qApp->translate("022","Degree (DEG)")
+#define EXTCALCH_MENU2 qApp->translate("023","Radian (RAD)")
+#define EXTCALCH_MENU3 qApp->translate("024","Grad (GRA)")
+#define EXTCALCH_MENU4 qApp->translate("025","Fixed number of digits")
+#define EXTCALCH_MENU5 qApp->translate("026","Variable number of digits")
+#define EXTCALCH_MENU6 qApp->translate("027","With symbol")
+#define EXTCALCH_MENU7 qApp->translate("028","Number of digits")
+#define EXTCALCH_MENU8 qApp->translate("029","Angle")
+#define EXTCALCH_MENU9 qApp->translate("030","Output Format")
+#define EXTCALCH_MENU10 qApp->translate("031","Calculator Preferences")
+#define EXTCALCH_MENU11 qApp->translate("032","Graphics Preferences")
+#define EXTCALCH_MENU12 qApp->translate("033","Extcalc Help")
+#define EXTCALCH_MENU13 qApp->translate("034","Info")
+#define EXTCALCH_MENU14 qApp->translate("035","&File")
+#define EXTCALCH_MENU15 qApp->translate("036","&Preferences")
+#define EXTCALCH_MENU16 qApp->translate("037","&Calculator")
+#define EXTCALCH_MENU17 qApp->translate("038","&Graphic")
+#define EXTCALCH_MENU18 qApp->translate("039","&Help")
+#define EXTCALCH_MENU19 qApp->translate("040","Set Standard Coordinates")
+#define EXTCALCH_MENU20 qApp->translate("041","Set Trigonometric Coordinates")
+#define EXTCALCH_MENU21 qApp->translate("042","Show Axes")
+#define EXTCALCH_MENU22 qApp->translate("043","Show Labels")
+#define EXTCALCH_MENU23 qApp->translate("044","Show Raster")
+#define EXTCALCH_MENU24 qApp->translate("045","Constant Width-To-Height-Ratio")
+#define EXTCALCH_MENU25 qApp->translate("046","Coordinate System")
+#define EXTCALCH_MENU26 qApp->translate("047","Graph Type")
+#define EXTCALCH_MENU27 qApp->translate("048","Binary (BIN)")
+#define EXTCALCH_MENU28 qApp->translate("049","Octal (OCT)")
+#define EXTCALCH_MENU29 qApp->translate("050","Decimal (DEC)")
+#define EXTCALCH_MENU30 qApp->translate("051","Hexadecimal (HEX)")
+#define EXTCALCH_MENU31 qApp->translate("052","Scientific Mode")
+#define EXTCALCH_MENU32 qApp->translate("053","Base Mode")
+#define EXTCALCH_MENU33 qApp->translate("054","Base")
+#define EXTCALCH_MENU34 qApp->translate("055","Mode")
+#define EXTCALCH_MENU35 qApp->translate("056","Standard")
+#define EXTCALCH_MENU36 qApp->translate("057","Polar")
+#define EXTCALCH_MENU37 qApp->translate("058","3D-Graph")
+#define EXTCALCH_MENU38 qApp->translate("059","Normal")
+#define EXTCALCH_MENU39 qApp->translate("060","Polar")
+#define EXTCALCH_MENU40 qApp->translate("061","Parameter")
+#define EXTCALCH_MENU41 qApp->translate("062","Inequality")
+#define EXTCALCH_MENU42 qApp->translate("063","3D")
+#define EXTCALCH_MENU43 qApp->translate("064","Standard Values")
+#define EXTCALCH_MENU44 qApp->translate("065","Function Type")
+#define EXTCALCH_MENU45 qApp->translate("066","Table Preferences")
+#define EXTCALCH_MENU46 qApp->translate("067","Table")
+#define EXTCALCH_MENU47 qApp->translate("068","Undo")
+#define EXTCALCH_MENU48 qApp->translate("069","Redo")
+#define EXTCALCH_MENU49 qApp->translate("070","Cut")
+#define EXTCALCH_MENU50 qApp->translate("071","Copy")
+#define EXTCALCH_MENU51 qApp->translate("072","Paste")
+#define EXTCALCH_MENU52 qApp->translate("073","View Calculator")
+#define EXTCALCH_MENU53 qApp->translate("074","View Second Calculator")
+#define EXTCALCH_MENU54 qApp->translate("075","View Graph Window")
+#define EXTCALCH_MENU55 qApp->translate("076","View Table Window")
+#define EXTCALCH_MENU56 qApp->translate("077","View Scripting Window")
+#define EXTCALCH_MENU57 qApp->translate("078","Quit")
+#define EXTCALCH_MENU58 qApp->translate("079","&Edit")
+#define EXTCALCH_MENU59 qApp->translate("080","&View")
+#define EXTCALCH_MENU60 qApp->translate("081","Scripting Preferences")
+#define EXTCALCH_MENU61 qApp->translate("082","View Script Console")
+#define EXTCALCH_MENU62 qApp->translate("083","Export Script")
+#define EXTCALCH_MENU63 qApp->translate("084","Import Script")
+#define EXTCALCH_MENU64 qApp->translate("085","Always clear Array Memory")
+#define EXTCALCH_MENU65 qApp->translate("086","Clear Array Memory now")
+#define EXTCALCH_MENU66 qApp->translate("087","Script")
+#define EXTCALCH_MENU67 qApp->translate("088","Complex")
+#define EXTCALCH_MENU68 qApp->translate("089","Reset Input Values")
+#define EXTCALCH_MENU69 qApp->translate("090","Clear Graphics Window")
+#define EXTCALCH_MENU70 qApp->translate("091","Automatic Graph Clear")
+#define EXTCALCH_MENU71 qApp->translate("092","Show Points")
+#define EXTCALCH_MENU72 qApp->translate("093","Show Lines")
+#define EXTCALCH_MENU73 qApp->translate("094","Matrix/Vector")
+#define EXTCALCH_MENU74 qApp->translate("095","Statistics")
+#define EXTCALCH_MENU75 qApp->translate("096","Welcome to Extcalc!\n\nThis seems to be the first time, you start this program.\nFor this reason, Extcalc must create directories to store scripts and data.\nSay yes, if you want to change the script configuration!")
+#define EXTCALCH_MENU76 qApp->translate("097","Welcome to the new version of Extcalc!\n\nThis seems to be the first time, you start the new version of Extcalc.\nThe new version ships some default script programs.\nThe script directories must exist to make them usable.\nSay yes, if you want to change the script configuration!")
+#define EXTCALCH_MENU77 qApp->translate("098","Default directories created.")
+#define EXTCALCH_MENU78 qApp->translate("099","Complex")
+#define EXTCALCC_MSG1 qApp->translate("100","Error writing configfile: ")
+#define EXTCALCC_MSG3 qApp->translate("101","Error loading configfile: ")
+#define EXTCALCC_MSG6 qApp->translate("102","File outside script code directory: ")
+#define EXTCALCC_MSG8 qApp->translate("103","Really overwrite this file?\n\n")
+#define EXTCALCC_MSG9 qApp->translate("104","Choose a script file to export")
+#define EXTCALCC_MSG10 qApp->translate("105","Choose a file to import")
+#define EXTCALCC_MSG11 qApp->translate("106","open file dialog")
+#define EXTCALCC_MSG12 qApp->translate("107","save file dialog")
+#define EXTCALCC_MSG13 qApp->translate("108","Choose a filename to save under")
+#define GLOBALH_STR1 qApp->translate("109","Authors:\nRainer Strobel\nProgramming and development\nEugene Clement\nTranslation")
+#define CALCWIDGETH_STR4 qApp->translate("110","Change View")
+#define CALCWIDGETH_STR5 qApp->translate("111","Scientific/Base Mode")
+#define CALCWIDGETH_STR6 qApp->translate("112","Set Base")
+#define CALCWIDGETH_STR7 qApp->translate("113","Set Angle")
+#define CALCWIDGETH_STR8 qApp->translate("114","Function Catalog")
+#define CALCWIDGETC_MENU1 qApp->translate("115","&Undo\tCtrl+Z")
+#define CALCWIDGETC_MENU2 qApp->translate("116","&Redo\tCtrl+Y")
+#define CALCWIDGETC_MENU3 qApp->translate("117","Cu&t\tCtrl+X")
+#define CALCWIDGETC_MENU4 qApp->translate("118","&Copy\tCtrl+C")
+#define CALCWIDGETC_MENU5 qApp->translate("119","&Paste\tCtrl+V")
+#define CALCPREFH_STR1 qApp->translate("120","Save")
+#define CALCPREFH_STR2 qApp->translate("121","Cancel")
+#define CALCPREFH_STR3 qApp->translate("122","Angle")
+#define CALCPREFH_STR4 qApp->translate("123","Output Type")
+#define CALCPREFH_STR5 qApp->translate("124","Output Digits")
+#define CALCPREFH_STR6 qApp->translate("125","Mode")
+#define CALCPREFH_STR7 qApp->translate("126","Base")
+#define CALCPREFH_STR8 qApp->translate("127","Fixed Number of Digits")
+#define CALCPREFH_STR9 qApp->translate("128","Variable Number of Digits")
+#define CALCPREFH_STR10 qApp->translate("129","With Symbols")
+#define CALCPREFH_STR11 qApp->translate("130","Scientific")
+#define CALCPREFH_STR12 qApp->translate("131","Base")
+#define CALCPREFH_STR13 qApp->translate("132","Complex")
+#define INFOSTRING qApp->translate("133","Extcalc:\nGraphic scientific calculator\n\n")
+#define DEVVERSION qApp->translate("134","Beta version\nThis program is still in development\n(it may still have a few errors)  \n\n")
+#define GRAPHH_STR1 qApp->translate("135","Print")
+#define GRAPHH_STR3 qApp->translate("136","Analyse")
+#define GRAPHH_STR4 qApp->translate("137","Calculate Y-value")
+#define GRAPHH_STR5 qApp->translate("138","Calculate Roots")
+#define GRAPHH_STR6 qApp->translate("139","Newton's Method")
+#define GRAPHH_STR7 qApp->translate("140","Calculate X-values")
+#define GRAPHH_STR8 qApp->translate("141","Points of intersection")
+#define GRAPHH_STR9 qApp->translate("142","Maximum- and minimum values")
+#define GRAPHH_STR10 qApp->translate("143","calculate Integral")
+#define GRAPHH_STR11 qApp->translate("144","calculate Differential")
+#define GRAPHH_STR12 qApp->translate("145","Function")
+#define GRAPHH_STR13 qApp->translate("146","Color")
+#define GRAPHH_STR14 qApp->translate("147","Active")
+#define GRAPHH_STR15 qApp->translate("148","normal y(x)=x")
+#define GRAPHH_STR16 qApp->translate("149","polar r(x)=x")
+#define GRAPHH_STR17 qApp->translate("150","parameter x=T; y=T")
+#define GRAPHH_STR18 qApp->translate("151","3d y(xz)=xz")
+#define GRAPHH_STR20 qApp->translate("152","inequality y(x)>x")
+#define GRAPHH_STR21 qApp->translate("153","inequality y(x)<x")
+#define GRAPHH_STR22 qApp->translate("154","inequality y(x)>=x")
+#define GRAPHH_STR23 qApp->translate("155","inequality y(x)<=x")
+#define GRAPHH_STR24 qApp->translate("156","Type")
+#define GRAPHH_STR25 qApp->translate("157","calculate Z-values")
+#define GRAPHH_STR26 qApp->translate("158","Save and modify")
+#define GRAPHH_STR27 qApp->translate("159","Edit")
+#define GRAPHH_STR28 qApp->translate("160","Anlayse")
+#define GRAPHH_STR29 qApp->translate("161","Screenshot")
+#define GRAPHH_STR30 qApp->translate("162","Nyquist Plots")
+#define GRAPHH_COL1 qApp->translate("163","black")
+#define GRAPHH_COL2 qApp->translate("164","grey")
+#define GRAPHH_COL3 qApp->translate("165","brown")
+#define GRAPHH_COL4 qApp->translate("166","green")
+#define GRAPHH_COL5 qApp->translate("167","blue")
+#define GRAPHH_COL6 qApp->translate("168","magenta")
+#define GRAPHH_COL7 qApp->translate("169","orange")
+#define GRAPHH_COL8 qApp->translate("170","red")
+#define GRAPHH_COL9 qApp->translate("171","yellow")
+#define GRAPHH_COL10 qApp->translate("172","cyan")
+#define GRAPHH_COL11 qApp->translate("173","colored")
+#define GRAPHC_STR3 qApp->translate("174","Analyse")
+#define GRAPHC_STR4 qApp->translate("175","Edit Mode")
+#define GRAPHC_STR5 qApp->translate("176","Stop")
+#define GRAPHOUTC_STR1 qApp->translate("177","Extcalc - Draw Text")
+#define GRAPHOUTC_STR2 qApp->translate("178","Enter text to draw:")
+#define GRAPHPREFH_STR1 qApp->translate("179","Extcalc - Preferences")
+#define GRAPHPREFH_STR2 qApp->translate("180","Cartesian Coordinate System")
+#define GRAPHPREFH_STR3 qApp->translate("181","Raster")
+#define GRAPHPREFH_STR4 qApp->translate("182","Axes")
+#define GRAPHPREFH_STR5 qApp->translate("183","Labels")
+#define GRAPHPREFH_STR6 qApp->translate("184","constant width-to-height ratio")
+#define GRAPHPREFH_STR7 qApp->translate("185","X-Scale")
+#define GRAPHPREFH_STR8 qApp->translate("186","Y-Scale")
+#define GRAPHPREFH_STR9 qApp->translate("187","Coordinate System Format:")
+#define GRAPHPREFH_STR10 qApp->translate("188","Polar Coordinate System")
+#define GRAPHPREFH_STR11 qApp->translate("189","max angle:")
+#define GRAPHPREFH_STR12 qApp->translate("190","max radius:")
+#define GRAPHPREFH_STR13 qApp->translate("191","angle scale:")
+#define GRAPHPREFH_STR14 qApp->translate("192","radius scale:")
+#define GRAPHPREFH_STR15 qApp->translate("193","Standard")
+#define GRAPHPREFH_STR16 qApp->translate("194","Polar")
+#define GRAPHPREFH_STR17 qApp->translate("195","3D-Graph")
+#define GRAPHPREFH_STR18 qApp->translate("196","Range of Parameter T:")
+#define GRAPHPREFH_STR19 qApp->translate("197","Start:")
+#define GRAPHPREFH_STR20 qApp->translate("198","End:")
+#define GRAPHPREFH_STR21 qApp->translate("199","Z-Scale")
+#define GRAPHPREFH_STR22 qApp->translate("200","Steps")
+#define GRAPHPREFH_STR23 qApp->translate("201","Standard")
+#define GRAPHPREFH_STR24 qApp->translate("202","Preferences for Parameter A:")
+#define GRAPHPREFH_STR25 qApp->translate("203","Start:")
+#define GRAPHPREFH_STR26 qApp->translate("204","End:")
+#define GRAPHPREFH_STR27 qApp->translate("205","Steps:")
+#define GRAPHPREFH_STR28 qApp->translate("206","Delay Time (*10ms):")
+#define GRAPHPREFH_STR29 qApp->translate("207","Automatic Mode")
+#define GRAPHPREFH_STR30 qApp->translate("208","Count up only")
+#define GRAPHPREFH_STR31 qApp->translate("209","Count up and down")
+#define GRAPHPREFH_STR32 qApp->translate("210","Coordinate Systems")
+#define GRAPHPREFH_STR33 qApp->translate("211","Precision/Performance")
+#define GRAPHPREFH_STR34 qApp->translate("212","Parameter Range")
+#define GRAPHPREFH_STR35 qApp->translate("213","Calculation steps for 2D-Graphs")
+#define GRAPHPREFH_STR36 qApp->translate("214","Calculation steps for 3D-Graphs")
+#define GRAPHPREFH_STR37 qApp->translate("215","Parameter graph steps")
+#define GRAPHPREFH_STR38 qApp->translate("216","Steps for Nyquist Plot")
+#define GRAPHPREFH_STR39 qApp->translate("217","Graph Analysation Precision")
+#define GRAPHPREFH_STR40 qApp->translate("218","Low")
+#define GRAPHPREFH_STR41 qApp->translate("219","Standard")
+#define GRAPHPREFH_STR42 qApp->translate("220","High")
+#define GRAPHPREFH_STR43 qApp->translate("221","Draw 3D-Graphs as Grid")
+#define GRAPHPREFH_STR44 qApp->translate("222","Parameter Z for Nyquist plots (2D only)")
+#define GRAPHPREFH_STR45 qApp->translate("223","Start value:")
+#define GRAPHPREFH_STR46 qApp->translate("224","End value:")
+#define GRAPHPREFH_STR47 qApp->translate("225","Use logarithmic scale (10^Z)")
+#define GRAPHPREFH_BTN1 qApp->translate("226","Standard")
+#define GRAPHPREFH_BTN2 qApp->translate("227","Trigonometric")
+#define GRAPHPREFH_BTN3 qApp->translate("228","Save")
+#define GRAPHPREFH_BTN4 qApp->translate("229","Cancel")
+#define GRAPHPREFC_STR1 qApp->translate("230","Error\n\nThe minimal X-value must be lower than the maximal X-value")
+#define GRAPHPREFC_STR2 qApp->translate("231","Error\n\nThe minimal Y-value must be lower than the maximal Y-value")
+#define GRAPHPREFC_STR3 qApp->translate("232","Error\n\nX-Scale must be positive")
+#define GRAPHPREFC_STR4 qApp->translate("233","Error\n\nY-Scale must be positive")
+#define GRAPHPREFC_STR5 qApp->translate("234","Error\n\nPlease choose two different functions!")
+#define GRAPHPREFC_STR6 qApp->translate("235","Error\n\nToo many results!")
+#define GRAPHPREFC_STR7 qApp->translate("236","Max angle must be greater than zero")
+#define GRAPHPREFC_STR8 qApp->translate("237","Max Radius must be greater than zero")
+#define GRAPHPREFC_STR9 qApp->translate("238","Angle scale must be greater than zero")
+#define GRAPHPREFC_STR10 qApp->translate("239","Radius scale must be greater than zero")
+#define GRAPHPREFC_STR11 qApp->translate("240","Parameter start value must be less than parameter end value")
+#define GRAPHPREFC_STR12 qApp->translate("241","Error\n\nZ-scale must be positive")
+#define GRAPHPREFC_STR13 qApp->translate("242","Error\n\nThe minimal Z-value must be lower than the maximal Z-value")
+#define GRAPHPREFC_STR14 qApp->translate("243","Steps must be greather than 0")
+#define GRAPHPREFC_STR15 qApp->translate("244","Dynamic parameter end must be greather than start!")
+#define GRAPHPREFC_STR16 qApp->translate("245","Delay time must be greather than 0")
+#define GRAPHSOLVEH_STR1 qApp->translate("246","Calculate")
+#define GRAPHSOLVEH_STR2 qApp->translate("247","Parameter A:")
+#define GRAPHSOLVEH_STR3 qApp->translate("248","Width")
+#define GRAPHSOLVEH_STR4 qApp->translate("249","Save")
+#define GRAPHSOLVEH_STR5 qApp->translate("250","Undo")
+#define GRAPHSOLVEH_STR6 qApp->translate("251","Redo")
+#define GRAPHSOLVEH_STR7 qApp->translate("252","Clear")
+#define GRAPHSOLVEH_STR8 qApp->translate("253","Color")
+#define GRAPHSOLVEC_STR1 qApp->translate("254","Insert X-Value:")
+#define GRAPHSOLVEC_STR2 qApp->translate("255","Y-Values:")
+#define GRAPHSOLVEC_STR3 qApp->translate("256","Choose Function:")
+#define GRAPHSOLVEC_STR4 qApp->translate("257","Roots:")
+#define GRAPHSOLVEC_STR5 qApp->translate("258","Start Point:")
+#define GRAPHSOLVEC_STR6 qApp->translate("259","Steps:")
+#define GRAPHSOLVEC_STR7 qApp->translate("260","X-Values:")
+#define GRAPHSOLVEC_STR8 qApp->translate("261","Y-Value:")
+#define GRAPHSOLVEC_STR9 qApp->translate("262","Points of Intersection:")
+#define GRAPHSOLVEC_STR10 qApp->translate("263","1. Function")
+#define GRAPHSOLVEC_STR11 qApp->translate("264","2. Function")
+#define GRAPHSOLVEC_STR12 qApp->translate("265","Start Point:")
+#define GRAPHSOLVEC_STR13 qApp->translate("266","End Point:")
+#define GRAPHSOLVEC_STR14 qApp->translate("267","X-Value:")
+#define GRAPHSOLVEC_STR15 qApp->translate("268","Invalid start point")
+#define GRAPHSOLVEC_STR16 qApp->translate("269","Invalid end point")
+#define GRAPHSOLVEC_STR17 qApp->translate("270","Invalid X-Value")
+#define GRAPHSOLVEC_STR18 qApp->translate("271","Extreme Values")
+#define GRAPHSOLVEC_STR19 qApp->translate("272","Results")
+#define GRAPHSOLVEC_STR20 qApp->translate("273","X-value")
+#define GRAPHSOLVEC_STR21 qApp->translate("274","Y-value")
+#define GRAPHSOLVEC_STR22 qApp->translate("275","Z-value")
+#define GRAPHSOLVEC_STR23 qApp->translate("276","T-value")
+#define GRAPHSOLVEC_STR24 qApp->translate("277","z start:")
+#define GRAPHSOLVEC_STR25 qApp->translate("278","end:")
+#define GRAPHSOLVEC_STR26 qApp->translate("279","x start:")
+#define GRAPHSOLVEC_STR27 qApp->translate("280","end:")
+#define GRAPHSOLVEC_STR28 qApp->translate("281","Path:")
+#define GRAPHSOLVEC_STR29 qApp->translate("282","Resolution:")
+#define GRAPHSOLVEC_STR30 qApp->translate("283","File format:")
+#define GRAPHSOLVEC_STR31 qApp->translate("284","Please insert a valid path to save screenshot")
+#define GRAPHSOLVEC_STR32 qApp->translate("285","Really overwrite file ")
+#define GRAPHSOLVEC_STR33 qApp->translate("286"," is no valid file.\n Can't overwrite it!")
+#define GRAPHSOLVEC_STR34 qApp->translate("287","Screenshot saved")
+#define GRAPHSOLVEC_STR35 qApp->translate("288","Error saving screenshot")
+#define GRAPHSOLVEC_STR36 qApp->translate("289","Images (*.png *.xpm *.jpg *.bmp)")
+#define GRAPHSOLVEC_STR37 qApp->translate("290","Choose a filename to save under")
+#define GRAPHSOLVEC_STR38 qApp->translate("291","Color Dialog")
+#define GRAPHSOLVEC_STR39 qApp->translate("292","Insert real value")
+#define GRAPHSOLVEC_STR40 qApp->translate("293","Imaginary values")
+#define GRAPHSOLVEC_STR41 qApp->translate("294","Real values")
+#define GRAPHSOLVEC_STR42 qApp->translate("295","Imaginary value")
+#define GRAPHSOLVEC_STR43 qApp->translate("296","By Extension")
+#define GRAPHSOLVEC_STR44 qApp->translate("297","Unknown file format!\nAssuming png.")
+#define TABLEH_STR1 qApp->translate("298","Calculate")
+#define TABLEH_STR3 qApp->translate("299","normal")
+#define TABLEH_STR4 qApp->translate("300","polar")
+#define TABLEH_STR5 qApp->translate("301","parameter")
+#define TABLEH_STR6 qApp->translate("302","inequality")
+#define TABLEH_STR7 qApp->translate("303","3D")
+#define TABLEH_STR8 qApp->translate("304","Minimize")
+#define TABLEH_STR9 qApp->translate("305","Complex")
+#define TABLEH_STR10 qApp->translate("306","Extcalc - Table")
+#define TABLEH_STR11 qApp->translate("307","Enter column value ")
+#define TABLEH_STR12 qApp->translate("308","Enter row value ")
+#define TABLEH_STR13 qApp->translate("309","Change View")
+#define TABLEH_STR14 qApp->translate("310","Choose Function Type")
+#define TABLEH_STR15 qApp->translate("311","Function Catalog")
+#define TABLEPREFH_STR1 qApp->translate("312","Table Preferences")
+#define TABLEPREFH_STR2 qApp->translate("313","Function Type:")
+#define TABLEPREFH_STR3 qApp->translate("314","Parameter x, T start value")
+#define TABLEPREFH_STR4 qApp->translate("315","Steps")
+#define TABLEPREFH_STR5 qApp->translate("316","End value")
+#define TABLEPREFH_STR6 qApp->translate("317","Parameter Z start value")
+#define TABLEPREFH_STR7 qApp->translate("318","End value")
+#define TABLEPREFH_STR8 qApp->translate("319","Steps")
+#define TABLEPREFH_STR9 qApp->translate("320","Save")
+#define TABLEPREFH_STR10 qApp->translate("321","Cancel")
+#define TABLEPREFH_STR11 qApp->translate("322","Table Preferences")
+#define TABLEPREFH_STR12 qApp->translate("323","Parameter X,T,complex Z")
+#define TABLEPREFH_STR13 qApp->translate("324","Parameter Z (3D)")
+#define TABLEPREFH_STR14 qApp->translate("325","Value for dynamic parameter A:")
+#define TABLEPREFH_STR15 qApp->translate("326","Start:")
+#define TABLEPREFH_STR16 qApp->translate("327","Steps:")
+#define TABLEPREFH_STR17 qApp->translate("328","End:")
+#define TABLEPREFC_STR1 qApp->translate("329","X-Start value invalid")
+#define TABLEPREFC_STR2 qApp->translate("330","X-End value invalid")
+#define TABLEPREFC_STR3 qApp->translate("331","Z-Start value invalid")
+#define TABLEPREFC_STR4 qApp->translate("332","Z-End value invalid")
+#define TABLEPREFC_STR5 qApp->translate("333","X-End value must be greather then X-Start value")
+#define TABLEPREFC_STR6 qApp->translate("334","Z-End value must be greather then Z-Start value")
+#define TABLEPREFC_STR7 qApp->translate("335","X-Steps must be greather than 0")
+#define TABLEPREFC_STR8 qApp->translate("336","Z-Steps must be greather than 0")
+#define SCRIPTIO_STR1 qApp->translate("337","Kill")
+#define SCRIPTIO_STR2 qApp->translate("338","Script could not be stopped.\nYou may press the kill button again.")
+#define SCRIPTIO_STR3 qApp->translate("339","\n*** killed ***\n")
+#define SCRIPTIO_STR4 qApp->translate("340","\n*** finish ***\n")
+#define SCRIPTIO_STR5 qApp->translate("341","You are already running a script.\nKill it?")
+#define SCRIPTIO_STR6 qApp->translate("342","\n*** script ***\n")
+#define SCRIPTIO_STR7 qApp->translate("343","Run")
+#define SCRIPTIO_STR8 qApp->translate("344","\nProcessing main file ...")
+#define SCRIPTIO_STR9 qApp->translate("345","\nProcessing file ")
+#define SCRIPTIO_STR10 qApp->translate("346","\nScript sucessfully loaded.\nNow you can press run.\n")
+#define SCRIPTIO_STR11 qApp->translate("347","\nProcessing script failed!\n")
+#define SCRIPTIO_STR12 qApp->translate("348","Copy\tCtrl-C")
+#define SCRIPTIO_STR13 qApp->translate("349","Paste\tCtrl-V")
+#define SCRIPTIO_STR14 qApp->translate("350","Select All\tCtrl-A")
+#define SCRIPTIO_STR15 qApp->translate("351","Clear All")
+#define SCRIPTEDITH_STR2 qApp->translate("352","Run")
+#define SCRIPTEDITH_STR3 qApp->translate("353","Save")
+#define SCRIPTEDITH_STR4 qApp->translate("354","Update View")
+#define SCRIPTEDITH_STR5 qApp->translate("355","New Code File")
+#define SCRIPTEDITH_STR6 qApp->translate("356","New Directory")
+#define SCRIPTEDITH_STR7 qApp->translate("357","Save")
+#define SCRIPTEDITH_STR8 qApp->translate("358","Save All")
+#define SCRIPTEDITH_STR9 qApp->translate("359","Rename")
+#define SCRIPTEDITH_STR10 qApp->translate("360","Delete")
+#define SCRIPTEDITH_STR11 qApp->translate("361","Files")
+#define SCRIPTEDITH_STR12 qApp->translate("362","Create new script file")
+#define SCRIPTEDITH_STR13 qApp->translate("363","Save changes of current file")
+#define SCRIPTEDITH_STR14 qApp->translate("364","Save changes of all modified files")
+#define SCRIPTEDITH_STR15 qApp->translate("365","Undo")
+#define SCRIPTEDITH_STR16 qApp->translate("366","Redo")
+#define SCRIPTEDITH_STR17 qApp->translate("367","Cut")
+#define SCRIPTEDITH_STR18 qApp->translate("368","Copy")
+#define SCRIPTEDITH_STR19 qApp->translate("369","Paste")
+#define SCRIPTEDITH_STR20 qApp->translate("370","Import script file")
+#define SCRIPTEDITH_STR21 qApp->translate("371","Export script file")
+#define SCRIPTEDITH_STR22 qApp->translate("372","Run current script")
+#define SCRIPTEDITH_STR23 qApp->translate("373","Switch to minimized view")
+#define SCRIPTEDITH_STR24 qApp->translate("374","Function Catalog")
+#define SCRIPTEDITC_STR4 qApp->translate("375","Do you want to save your changes?")
+#define SCRIPTEDITC_STR5 qApp->translate("376","Rename File")
+#define SCRIPTEDITC_STR6 qApp->translate("377","Insert new file name:")
+#define SCRIPTEDITC_STR7 qApp->translate("378","Invalid name for renaming!")
+#define SCRIPTEDITC_STR8 qApp->translate("379","Renaming of the following file failed:\n\n")
+#define SCRIPTEDITC_STR9 qApp->translate("380","Really delete the following file?\n\n")
+#define SCRIPTEDITC_STR10 qApp->translate("381","Removing of the following file failed:\n\n")
+#define SCRIPTEDITC_STR12 qApp->translate("382","Save current File?")
+#define SCRIPTEDITC_STR13 qApp->translate("383","Choose filename to create")
+#define SCRIPTEDITC_STR14 qApp->translate("384","Can't create file outside script directory")
+#define SCRIPTEDITC_STR15 qApp->translate("385","Really overwrite this file?\n\n ")
+#define SCRIPTEDITC_STR16 qApp->translate("386","Unable to create file:\n\n")
+#define SCRIPTEDITC_STR17 qApp->translate("387","Create directory")
+#define SCRIPTEDITC_STR18 qApp->translate("388","Insert direcotry name:")
+#define SCRIPTEDITC_STR19 qApp->translate("389","Invalid directory name")
+#define SCRIPTEDITC_STR20 qApp->translate("390","Creating directory failed")
+#define SCRIPTEDITC_STR21 qApp->translate("391","Choose filename to save")
+#define SCRIPTEDITC_STR22 qApp->translate("392","Can't save file outside script directory")
+#define SCRIPTEDITC_STR23 qApp->translate("393","Unable to save file:")
+#define SCRIPTEDITC_STR24 qApp->translate("394","Some code files have been modified.\n\nDo you want to save your changes?")
+#define SCRIPTEDITC_STR25 qApp->translate("395","Error saving file ")
+#define SCRIPTPREFH_STR1 qApp->translate("396","Scripting Preferences")
+#define SCRIPTPREFH_STR2 qApp->translate("397","Path to scripting root directory")
+#define SCRIPTPREFH_STR3 qApp->translate("398","Name of code subdirectory")
+#define SCRIPTPREFH_STR4 qApp->translate("399","Name of data subdirectory")
+#define SCRIPTPREFH_STR5 qApp->translate("400","Save")
+#define SCRIPTPREFH_STR6 qApp->translate("401","Cancel")
+#define SCRIPTPREFH_STR7 qApp->translate("402","Search")
+#define SCRIPTPREFH_STR8 qApp->translate("403","Clear array memory after script running")
+#define SCRIPTPREFC_STR1 qApp->translate("404","Please insert complete Path")
+#define SCRIPTPREFC_STR2 qApp->translate("405","Can't create scripting root directory")
+#define SCRIPTPREFC_STR3 qApp->translate("406","Invalid path to scripting root directory")
+#define SCRIPTPREFC_STR4 qApp->translate("407","Can't create code subdirectory")
+#define SCRIPTPREFC_STR5 qApp->translate("408","Invalid scripting subdirectory name")
+#define SCRIPTPREFC_STR6 qApp->translate("409","Can't create data subdirectory")
+#define SCRIPTPREFC_STR7 qApp->translate("410","Invalid data subdirectory name")
+#define SCRIPTPREFC_STR8 qApp->translate("411","Choose a directory")
+#define MATRIXWIDGETH_STR1 qApp->translate("412","Type")
+#define MATRIXWIDGETH_STR2 qApp->translate("413","Rows")
+#define MATRIXWIDGETH_STR3 qApp->translate("414","Columns")
+#define MATRIXWIDGETH_STR4 qApp->translate("415","Calculator")
+#define MATRIXWIDGETH_STR5 qApp->translate("416","Solve Equations")
+#define MATRIXWIDGETH_STR6 qApp->translate("417","Generate Matrix")
+#define MATRIXWIDGETH_STR7 qApp->translate("418","Analyse Matrix")
+#define MATRIXWIDGETH_STR8 qApp->translate("419","Inverse Matrix")
+#define MATRIXWIDGETH_STR9 qApp->translate("420","Calculate")
+#define MATRIXWIDGETH_STR10 qApp->translate("421","Set")
+#define MATRIXWIDGETH_STR11 qApp->translate("422","no vector")
+#define MATRIXWIDGETH_STR12 qApp->translate("423","Identity Matrix")
+#define MATRIXWIDGETH_STR13 qApp->translate("424","Zero Matrix")
+#define MATRIXWIDGETH_STR14 qApp->translate("425","Zero Vector")
+#define MATRIXWIDGETH_STR15 qApp->translate("426","X-Rotation Matrix")
+#define MATRIXWIDGETH_STR16 qApp->translate("427","Y-Rotation Matrix")
+#define MATRIXWIDGETH_STR17 qApp->translate("428","Z-Rotation Matrix")
+#define MATRIXWIDGETH_STR18 qApp->translate("429","Scaling Matrix")
+#define MATRIXWIDGETC_STR1 qApp->translate("430","Vector")
+#define MATRIXWIDGETC_STR2 qApp->translate("431","Unknowns:")
+#define MATRIXWIDGETC_STR3 qApp->translate("432","Matrix")
+#define MATRIXWIDGETC_STR4 qApp->translate("433","Choose a Matrix\nor a Matrix and a Vector\nto insert data\n")
+#define MATRIXWIDGETC_STR5 qApp->translate("434","Variable")
+#define MATRIXWIDGETC_STR6 qApp->translate("435","Generate")
+#define MATRIXWIDGETC_STR7 qApp->translate("436","Gauss")
+#define MATRIXWIDGETC_STR8 qApp->translate("437","Type: Matrix")
+#define MATRIXWIDGETC_STR9 qApp->translate("438","Dimensions:")
+#define MATRIXWIDGETC_STR10 qApp->translate("439","Determinant:")
+#define MATRIXWIDGETC_STR11 qApp->translate("440","not possible")
+#define MATRIXWIDGETC_STR12 qApp->translate("441","Rank:")
+#define MATRIXWIDGETC_STR13 qApp->translate("442","Type: Vector")
+#define MATRIXWIDGETC_STR14 qApp->translate("443","Size:")
+#define MATRIXWIDGETC_STR15 qApp->translate("444","Absolute:")
+#define MATRIXWIDGETC_STR16 qApp->translate("445","Type: Scalar")
+#define MATRIXWIDGETC_STR17 qApp->translate("446","Can't choose the same variable twice!\nChoose a matrix,\nor a matrix and a vector\nto insert data")
+#define MATRIXWIDGETC_STR18 qApp->translate("447","Insert data \nand press calculate button")
+#define MATRIXWIDGETC_STR19 qApp->translate("448","Press set button to adjust size")
+#define MATRIXWIDGETC_STR20 qApp->translate("449","Insert data \nand press calculate button")
+#define MATRIXWIDGETC_STR21 qApp->translate("450","Press set button to adjust size")
+#define MATRIXWIDGETC_STR22 qApp->translate("451","x angle")
+#define MATRIXWIDGETC_STR23 qApp->translate("452","y angle")
+#define MATRIXWIDGETC_STR24 qApp->translate("453","z angle")
+#define MATRIXWIDGETC_STR25 qApp->translate("454","x scale")
+#define MATRIXWIDGETC_STR26 qApp->translate("455","y scale")
+#define MATRIXWIDGETC_STR27 qApp->translate("456","z scale")
+#define MATRIXWIDGETC_STR28 qApp->translate("457","More than one result found\nShowing matrix")
+#define MATRIXWIDGETC_STR29 qApp->translate("458","No results found\nShowing matrix")
+#define MATRIXWIDGETC_STR30 qApp->translate("459","Showing result Vector")
+#define MATRIXWIDGETC_STR31 qApp->translate("460","Number of rows of matrix must \nbe equal to number of columns.")
+#define MATRIXWIDGETC_STR32 qApp->translate("461","Can't calculate inverse matrix.\nDeterminant is equal 0.")
+#define STATISTICSH_STR1 qApp->translate("462","Function Type")
+#define STATISTICSH_STR2 qApp->translate("463","Input List Number")
+#define STATISTICSH_STR3 qApp->translate("464","Result Function")
+#define STATISTICSH_STR4 qApp->translate("465","Copy to")
+#define STATISTICSH_STR5 qApp->translate("466","Copy")
+#define STATISTICSH_STR6 qApp->translate("467","Approximate")
+#define STATISTICSH_STR7 qApp->translate("468","Interpolate")
+#define STATISTICSH_STR8 qApp->translate("469","Show Line-Graph")
+#define STATISTICSH_STR9 qApp->translate("470","Normal Distribution")
+#define STATISTICSH_STR10 qApp->translate("471","Distribution Graph")
+#define STATISTICSH_STR11 qApp->translate("472","Steps")
+#define STATISTICSH_STR12 qApp->translate("473","Calculate")
+#define STATISTICSH_STR14 qApp->translate("474","Print")
+#define STATISTICSC_STR2 qApp->translate("475","Really overwrite function f")
+#define STATISTICSC_STR3 qApp->translate("476"," ?")
+#define STATISTICSC_STR4 qApp->translate("477","Unable to write lists file: ")
+#define STATISTICSC_STR5 qApp->translate("478","Unable to read lists file: ")
+#define STATISTICSC_STR6 qApp->translate("479","For this approximation, at least one point is needed")
+#define STATISTICSC_STR7 qApp->translate("480","For this approximation, at least two points were needed")
+#define STATISTICSC_STR8 qApp->translate("481","For this approximation, at least three points were needed")

@@ -265,7 +265,7 @@ class MainObject :public QTabWidget
 	QMenuBar*mainMenu;
 	QPopupMenu *calcMenu,*angleMenu,*helpMenu,*outputMenu,*floatPointMenu,*prefMenu,*graphMenu;
 	QPopupMenu *coordinateMenu,*graphTypeMenu,*calcTypeMenu,*baseMenu,*tableMenu,*tableTypeMenu;
-	QPopupMenu *editMenu,*viewMenu,*fileMenu,*scriptMenu,*statisticsMenu;
+	QPopupMenu *editMenu,*viewMenu,*fileMenu,*scriptMenu,*statisticsMenu,*languageMenu;
 	QTabBar*tabBar;
 	CalcWidget *calculator,*calculator2;
 	GraphWidget * graph;
@@ -439,6 +439,7 @@ MainObject() :QTabWidget()
 	pref.showStatPoints=true;
 	pref.showWindows[0]=pref.showWindows[2]=pref.showWindows[3]=pref.showWindows[4]=pref.showWindows[6]=true;
 	pref.showWindows[1]=pref.showWindows[5]=pref.showWindows[7]=false;
+	pref.language=LANG_EN;
 
 
 	threadData=new ThreadSync;
@@ -559,11 +560,20 @@ MainObject() :QTabWidget()
 	statisticsMenu->insertItem(EXTCALCH_MENU72,STATLINES);
 	QObject::connect(statisticsMenu,SIGNAL(activated(int)),this,SLOT(statisticsMenuSlot(int)));
 	
+	languageMenu=new QPopupMenu;
+	languageMenu->insertItem(tr("English"),LANG_EN);
+	languageMenu->insertItem(tr("French"),LANG_FR);
+	languageMenu->insertItem(tr("German"),LANG_DE);
+	QObject::connect(languageMenu,SIGNAL(activated(int)),this,SLOT(languageMenuSlot(int)));
+
+	
 	prefMenu=new QPopupMenu;
 	prefMenu->insertItem(EXTCALCH_MENU10,CPREF);
 	prefMenu->insertItem(EXTCALCH_MENU11,GPREF);
 	prefMenu->insertItem(EXTCALCH_MENU45,TPREF);
 	prefMenu->insertItem(EXTCALCH_MENU60,SPREF);
+	prefMenu->insertSeparator();
+	prefMenu->insertItem(tr("Language"),languageMenu,LPREF);
 	
 	helpMenu=new QPopupMenu;
 	helpMenu->insertItem(EXTCALCH_MENU12,EXTHELP);
@@ -741,6 +751,7 @@ void calcTypeMenuSlot(int item);
 void baseMenuSlot(int item);
 void helpMenuSlot(int item);
 void prefMenuSlot(int item);
+void languageMenuSlot(int item);
 void tableMenuSlot(int item);
 void scriptMenuSlot(int item);
 void statisticsMenuSlot(int item);
@@ -860,6 +871,10 @@ void getPref(Preferences newPref)
 	baseMenu->setItemChecked(OCT,false);
 	baseMenu->setItemChecked(DEC,false);
 	baseMenu->setItemChecked(HEX,false);
+	
+	languageMenu->setItemChecked(LANG_DE,false);
+	languageMenu->setItemChecked(LANG_EN,false);
+	languageMenu->setItemChecked(LANG_FR,false);
 
 	tableTypeMenu->setItemChecked(TABLENORMAL,false);
 	tableTypeMenu->setItemChecked(TABLEPARAMETER,false);
@@ -899,6 +914,7 @@ void getPref(Preferences newPref)
 	coordinateMenu->setItemChecked(SHOWLABELS,pref.label);
 	coordinateMenu->setItemChecked(SHOWRASTER,pref.raster);
 	coordinateMenu->setItemChecked(CONSTRATIO,pref.autosize);
+	languageMenu->setItemChecked(pref.language,true);
 	viewMenu->setItemChecked(VIEWCALC1,pref.showWindows[0]);
 	viewMenu->setItemChecked(VIEWCALC2,pref.showWindows[1]);
 	viewMenu->setItemChecked(VIEWGRAPH,pref.showWindows[2]);
@@ -947,7 +963,7 @@ class ImportDialog :public QWidget
 			else {
 				mainLabel=new QLabel(EXTCALCH_STR18,this);
 				openPathLabel=new QLabel(EXTCALCH_STR19,this);
-				savePathLabel=new QLabel(EXTCALCH_STR20,this);
+				savePathLabel=new QLabel(EXTCALCH_STR17,this);
 			}
 			openPathLine=new QLineEdit(this);
 			savePathLine=new QLineEdit(this);
