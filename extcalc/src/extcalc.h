@@ -142,7 +142,8 @@ dialog, the todo list and the bug list.
 //  - precise error messages                                                            ok  //
 //  - RPN                                                                                   //
 //  - Port to QT 4                                                                          //
-//  - use QTranslator for internationalization                                              //
+//  - use QTranslator for internationalization                                          ok  //
+//  - symbolic calculation for systems of linear equations                                  //
 //                                                                                          //
 ////////////////////////////////////////beta releases/////////////////////////////////////////
 
@@ -190,6 +191,7 @@ dialog, the todo list and the bug list.
 //	- directory creation at first start does not work									ok	//
 //	- command priority in script interpreter wrong										ok	//
 //	- autosize setting leads to wrong screenshot size									ok	//
+//	- abs does not exist in standard calculator class										//
 
 
 //////////////////////////used variables//////////////////////////

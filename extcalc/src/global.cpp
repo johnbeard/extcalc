@@ -2016,6 +2016,11 @@ int Calculate::split(char* line)
 			operation=CURT;
 			vertObj=new Calculate(this,&line[4],pref,vars);
 		}
+		else if(strncmp(line,"abs",3) == 0)
+		{
+			operation=SABS;
+			vertObj=new Calculate(this,&line[3],pref,vars);
+		}
 		else{
 			operation=NONE;
 			number=NAN;
@@ -2224,6 +2229,8 @@ double Calculate::calc()
 			return log10(vertObj->calc());
 		case LN:
 			return log(vertObj->calc());
+		case SABS:
+			return fabsl(vertObj->calc());
 		case ASIN:
 			return asin(vertObj->calc())*number;
 		case ACOS:

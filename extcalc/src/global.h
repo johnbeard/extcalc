@@ -47,7 +47,7 @@ using namespace std;
 #define VARSFILE ".extcalc/vars.conf"
 #define LISTSFILE ".extcalc/lists.conf"
 
-#define VERSIONSTRING "Version: 0.9.1\n2007-10-25\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.9.1\n2007-11-17\n\n"+QString(DEVVERSION)
 
 
 #define AUTHORSTRING "Homepage:\nhttp://extcalc-linux.sourceforge.net\n\n"+QString(GLOBALH_STR1)
