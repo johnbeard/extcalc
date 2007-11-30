@@ -1682,14 +1682,16 @@ void MainObject::languageMenuSlot(int item)
 {
 	pref.language=item;
 	getPref(pref);
-	MessageBox(tr("Extcalc must be restarted to apply this changes!"));
+	int ret=YesNoCancelBox(tr("Extcalc must be restarted to apply this changes!\n\nRestart now?"));
+	if(ret==0)
+		qApp->closeAllWindows();
 }
 
 void MainObject::fileMenuSlot(int item)
 {
 	
 	if(item==QUIT)
-		qApp->quit();
+		qApp->closeAllWindows();
 }
 
 void MainObject::editMenuSlot(int item)
