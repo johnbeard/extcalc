@@ -41,6 +41,11 @@ dialog, the todo list and the bug list.
 #include <float.h>
 #include <qtranslator.h>
 #include <locale.h>
+#include <qtextbrowser.h>
+#include <qtoolbar.h>
+#include <qdockarea.h>
+#include <qiconset.h>
+#include <qtoolbutton.h>
 
 
 //Unicode characters:
@@ -137,8 +142,8 @@ dialog, the todo list and the bug list.
 //  - optimization of the split and parse methods                                           //
 //  - change structure of exec and calc methods                                             //
 //  - standardized user interface design for all tabs                                   ok  //
-//  - open help file in default browser                                                     //
-//  - integrate constants list                                                              //
+//  - open help file in default browser                                                 ok  //
+//  - mathematic constants list                                                             //
 //  - precise error messages                                                            ok  //
 //  - RPN                                                                                   //
 //  - Port to QT 4                                                                          //
@@ -261,6 +266,7 @@ dialog, the todo list and the bug list.
 ////////////////////////////////////////////////////////////////////
 
 class ImportDialog;
+class HelpBrowser;
 
 class MainObject :public QTabWidget
 {
@@ -289,6 +295,7 @@ class MainObject :public QTabWidget
 	QLabel*authorInfo;
 	QLabel*versionInfo;
 	QPixmap*appIcon;
+	HelpBrowser *helpBrowser;
 	Variable *vars;
 	Vector *vecs;
 	bool calcFocus;
@@ -299,7 +306,7 @@ Q_OBJECT
 public:
 MainObject() :QTabWidget()
 {
-
+	helpBrowser=NULL;
 	vars=new Variable [27];
 	for(int c=0; c<27;c++)
 		vars[c]=0.0;
@@ -1010,7 +1017,28 @@ class ImportDialog :public QWidget
 		void updateScriptSignal(int);
 };
 
-
+class HelpBrowser :public QWidget
+{
+	QToolBar*toolBar;
+	QDockArea*dockArea;
+	QPixmap *forwardIcon,*backIcon,*zoominIcon,*zoomoutIcon;
+	QToolButton *forwardButton,*backButton,*zoominButton,*zoomoutButton;
+	QTextBrowser *browser;
+	QString currentSource;
+	Q_OBJECT
+	
+	public:
+	HelpBrowser(QWidget*parent);
+	void setContent(QString);
+	
+	public slots:
+	void zoominSlot();
+	void zoomoutSlot();
+	void sourceSlot(const QString&);
+	
+	protected:
+	void resizeEvent(QResizeEvent*);
+};
 
 
 

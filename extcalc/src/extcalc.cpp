@@ -1455,6 +1455,19 @@ void MainObject::helpMenuSlot(int item)
 	switch(item)
 	{
 	case EXTHELP:
+		if(helpBrowser!=NULL)
+			delete helpBrowser;
+		helpBrowser=new HelpBrowser(this);
+		helpBrowser->setGeometry(50,50,750,550);
+
+		if(pref.language==LANG_DE)
+			helpBrowser->setContent(QString(INSTALLDIR)+"/doc/help_de.html");
+		else if(pref.language==LANG_FR)
+			helpBrowser->setContent(QString(INSTALLDIR)+"/doc/help_fr.html");
+		else helpBrowser->setContent(QString(INSTALLDIR)+"/doc/help_en.html");
+		helpBrowser->show();
+			
+		/*
 		helpProcess->clearArguments();
 		helpProcess->addArgument("konqueror");
 		if(pref.language==LANG_DE)
@@ -1464,6 +1477,7 @@ void MainObject::helpMenuSlot(int item)
 		else helpProcess->addArgument(QString(INSTALLDIR)+"/doc/help_en.html");
 
 		helpProcess->start();
+		*/
 		break;
 	case INFO:
 		infoDialog->exec();
@@ -1684,7 +1698,12 @@ void MainObject::languageMenuSlot(int item)
 	getPref(pref);
 	int ret=YesNoCancelBox(tr("Extcalc must be restarted to apply this changes!\n\nRestart now?"));
 	if(ret==0)
+	{
+		QProcess extcalcProcess;
+		extcalcProcess.addArgument("extcalc");
+		extcalcProcess.start();
 		qApp->closeAllWindows();
+	}
 }
 
 void MainObject::fileMenuSlot(int item)
@@ -1948,4 +1967,69 @@ void ImportDialog::saveDialogSlot()
 	if(!path.isNull())
 		savePathLine->setText(path);
 }
+
+
+HelpBrowser::HelpBrowser(QWidget*parent) :QWidget(parent,"Help Browser",Qt::WType_TopLevel)
+{
+	currentSource="";
+	toolBar=new QToolBar();
+	dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
+	dockArea->moveDockWindow(toolBar);
+	toolBar->setMovingEnabled(false);
+	
+	forwardIcon=new QPixmap(INSTALLDIR+QString("/data/forward.png"));
+	backIcon=new QPixmap(INSTALLDIR+QString("/data/back.png"));
+	zoominIcon=new QPixmap(INSTALLDIR+QString("/data/zoomin.png"));
+	zoomoutIcon=new QPixmap(INSTALLDIR+QString("/data/zoomout.png"));
+	
+	browser=new QTextBrowser(this);
+	
+	backButton=new QToolButton(*backIcon,"","",browser,SLOT(backward()),toolBar);	
+	forwardButton=new QToolButton(*forwardIcon,"","",browser,SLOT(forward()),toolBar);
+	zoominButton=new QToolButton(*zoominIcon,"","",this,SLOT(zoominSlot()),toolBar);
+	zoomoutButton=new QToolButton(*zoomoutIcon,"","",this,SLOT(zoomoutSlot()),toolBar);
+	
+	forwardButton->setOn(false);
+	backButton->setOn(false);
+
+	connect(browser,SIGNAL(forwardAvailable(bool)),forwardButton,SLOT(setOn(bool)));
+	connect(browser,SIGNAL(backwardAvailable(bool)),backButton,SLOT(setOn(bool)));
+	connect(browser,SIGNAL(sourceChanged(const QString&)),this,SLOT(sourceSlot(const QString&)));
+
+	
+}
+void HelpBrowser::setContent(QString path)
+{
+	browser->setSource(path);
+	currentSource=path;
+}
+
+void HelpBrowser::zoominSlot()
+{
+	browser->zoomIn(2);
+	browser->repaint();
+}
+
+void HelpBrowser::zoomoutSlot()
+{
+		browser->zoomOut(2);
+		browser->repaint();
+
+}
+
+void HelpBrowser::sourceSlot(const QString &source)
+{
+	if(currentSource!="" && source.find(currentSource)!=0)
+		browser->setSource(currentSource);
+}
+
+void HelpBrowser::resizeEvent(QResizeEvent*)
+{
+	dockArea->setGeometry(0,0,width(),35);
+	browser->setGeometry(0,35,width(),height()-35);
+}
+
+
+
+
 

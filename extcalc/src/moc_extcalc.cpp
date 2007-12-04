@@ -1,7 +1,7 @@
 /****************************************************************************
 ** MainObject meta object code from reading C++ file 'extcalc.h'
 **
-** Created: Sat Nov 17 20:11:57 2007
+** Created: Sun Dec 2 16:35:53 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -385,4 +385,95 @@ bool ImportDialog::qt_property( int id, int f, QVariant* v)
 }
 
 bool ImportDialog::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
+#endif // QT_NO_PROPERTIES
+
+
+const char *HelpBrowser::className() const
+{
+    return "HelpBrowser";
+}
+
+QMetaObject *HelpBrowser::metaObj = 0;
+static QMetaObjectCleanUp cleanUp_HelpBrowser( "HelpBrowser", &HelpBrowser::staticMetaObject );
+
+#ifndef QT_NO_TRANSLATION
+QString HelpBrowser::tr( const char *s, const char *c )
+{
+    if ( qApp )
+	return qApp->translate( "HelpBrowser", s, c, QApplication::DefaultCodec );
+    else
+	return QString::fromLatin1( s );
+}
+#ifndef QT_NO_TRANSLATION_UTF8
+QString HelpBrowser::trUtf8( const char *s, const char *c )
+{
+    if ( qApp )
+	return qApp->translate( "HelpBrowser", s, c, QApplication::UnicodeUTF8 );
+    else
+	return QString::fromUtf8( s );
+}
+#endif // QT_NO_TRANSLATION_UTF8
+
+#endif // QT_NO_TRANSLATION
+
+QMetaObject* HelpBrowser::staticMetaObject()
+{
+    if ( metaObj )
+	return metaObj;
+    QMetaObject* parentObject = QWidget::staticMetaObject();
+    static const QUMethod slot_0 = {"zoominSlot", 0, 0 };
+    static const QUMethod slot_1 = {"zoomoutSlot", 0, 0 };
+    static const QUParameter param_slot_2[] = {
+	{ 0, &static_QUType_QString, 0, QUParameter::In }
+    };
+    static const QUMethod slot_2 = {"sourceSlot", 1, param_slot_2 };
+    static const QMetaData slot_tbl[] = {
+	{ "zoominSlot()", &slot_0, QMetaData::Public },
+	{ "zoomoutSlot()", &slot_1, QMetaData::Public },
+	{ "sourceSlot(const QString&)", &slot_2, QMetaData::Public }
+    };
+    metaObj = QMetaObject::new_metaobject(
+	"HelpBrowser", parentObject,
+	slot_tbl, 3,
+	0, 0,
+#ifndef QT_NO_PROPERTIES
+	0, 0,
+	0, 0,
+#endif // QT_NO_PROPERTIES
+	0, 0 );
+    cleanUp_HelpBrowser.setMetaObject( metaObj );
+    return metaObj;
+}
+
+void* HelpBrowser::qt_cast( const char* clname )
+{
+    if ( !qstrcmp( clname, "HelpBrowser" ) )
+	return this;
+    return QWidget::qt_cast( clname );
+}
+
+bool HelpBrowser::qt_invoke( int _id, QUObject* _o )
+{
+    switch ( _id - staticMetaObject()->slotOffset() ) {
+    case 0: zoominSlot(); break;
+    case 1: zoomoutSlot(); break;
+    case 2: sourceSlot((const QString&)static_QUType_QString.get(_o+1)); break;
+    default:
+	return QWidget::qt_invoke( _id, _o );
+    }
+    return TRUE;
+}
+
+bool HelpBrowser::qt_emit( int _id, QUObject* _o )
+{
+    return QWidget::qt_emit(_id,_o);
+}
+#ifndef QT_NO_PROPERTIES
+
+bool HelpBrowser::qt_property( int id, int f, QVariant* v)
+{
+    return QWidget::qt_property( id, f, v);
+}
+
+bool HelpBrowser::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
 #endif // QT_NO_PROPERTIES
