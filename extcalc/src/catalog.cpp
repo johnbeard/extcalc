@@ -392,6 +392,57 @@ void Catalog::scriptFileSlot(int id)
 }
 
 
+void Catalog::constantsMathSlot(int id)
+{
+	switch(id)
+	{
+		case 1:
+			emit menuSignal("c_pi");
+			break;
+		case 2:
+			emit menuSignal("c_e");
+			break;
+	}
+}
+void Catalog::constantsPhysicsSlot(int id)
+{
+	switch(id)
+	{
+		case 1:
+			emit menuSignal("c_my0");
+			break;
+		case 2:
+			emit menuSignal("c_e0");
+			break;
+	}
+}
+void Catalog::constantsConvSlot(int id)
+{
+	switch(id)
+	{
+		case 1:
+			emit menuSignal("c_kmmile");
+			break;
+		case 2:
+			emit menuSignal("c_milekm");
+			break;
+	}
+}
+void Catalog::constantsUserSlot(int id)
+{
+	switch(id)
+	{
+		case 1:
+			MessageBox("Not active");
+			break;
+	}
+}
+
+
+
+
+
+
 
 
 

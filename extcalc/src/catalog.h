@@ -23,7 +23,8 @@ This is a overloaded popup menu that serves a complete function catalog.
 
 class Catalog :public QPopupMenu
 {
-	QPopupMenu *mathStandard,*mathTrigonometric,*mathExtended,*mathLogic,*matrix,*scriptStandard,*scriptText,*scriptGraphics,*scriptGL,*scriptFile;
+	QPopupMenu *mathStandard,*mathTrigonometric,*mathExtended,*mathLogic,*matrix,*scriptStandard,*scriptText,*scriptGraphics,*scriptGL,*scriptFile,
+ 	*constantsMath,*constantsPhysics,*constantsConv,*constantsUser;
 	Q_OBJECT
 
 
@@ -41,7 +42,31 @@ class Catalog :public QPopupMenu
 		scriptGraphics=new QPopupMenu(this);
 		scriptGL=new QPopupMenu(this);
 		scriptFile=new QPopupMenu(this);
+		
+		constantsMath=new QPopupMenu(this);
+		constantsPhysics=new QPopupMenu(this);
+		constantsConv=new QPopupMenu(this);
+		constantsUser=new QPopupMenu(this);
+		
+		if(state&CATCONSTANTS)
+		{
+			constantsMath->insertItem(tr("pi "+getUnicode(PISTRING)),1);
+			constantsMath->insertItem(tr("euler constant e"),2);
 
+			
+			constantsPhysics->insertItem("e0",1);
+			constantsPhysics->insertItem("my0",2);
+			
+			constantsConv->insertItem("km -> mile",1);
+			constantsConv->insertItem("mile -> km",2);
+			
+			constantsUser->insertItem("add",1);
+			
+			insertItem(tr("Mathematics Constants"),constantsMath);
+			insertItem(tr("Physics Constants"),constantsPhysics);
+			insertItem(tr("Conversation Constants"),constantsConv);
+			insertItem(tr("Userdefined Constants"),constantsUser);
+		}
 		if(state&CATMATHSTD)
 		{
 			mathStandard->insertItem("+",1);
@@ -200,6 +225,10 @@ class Catalog :public QPopupMenu
 		QObject::connect(scriptGraphics,SIGNAL(activated(int)),this,SLOT(scriptGraphicsSlot(int)));
 		QObject::connect(scriptGL,SIGNAL(activated(int)),this,SLOT(scriptGLSlot(int)));
 		QObject::connect(scriptFile,SIGNAL(activated(int)),this,SLOT(scriptFileSlot(int)));
+		QObject::connect(constantsPhysics,SIGNAL(activated(int)),this,SLOT(constantsPhysicsSlot(int)));
+		QObject::connect(constantsMath,SIGNAL(activated(int)),this,SLOT(constantsMathSlot(int)));
+		QObject::connect(constantsConv,SIGNAL(activated(int)),this,SLOT(constantsConvSlot(int)));
+		QObject::connect(constantsUser,SIGNAL(activated(int)),this,SLOT(constantsUserSlot(int)));
 
 	}
 	
@@ -217,6 +246,11 @@ class Catalog :public QPopupMenu
 	void scriptGraphicsSlot(int);
 	void scriptGLSlot(int);
 	void scriptFileSlot(int);
+	
+	void constantsMathSlot(int);
+	void constantsPhysicsSlot(int);
+	void constantsConvSlot(int);
+	void constantsUserSlot(int);
 	
 	signals:
 	

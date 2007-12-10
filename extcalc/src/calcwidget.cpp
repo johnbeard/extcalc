@@ -154,6 +154,10 @@ void CalcWidget::catalogSlot()
 	catalog->exec(toolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));
 }
 
+void CalcWidget::constantsSlot()
+{
+	constants->exec(toolBar->mapToGlobal(QPoint(constantsButton->x(),constantsButton->y()+constantsButton->height())));
+}
 
 void CalcWidget::dockWindowSlot()
 {

@@ -1,0 +1,152 @@
+EXTCALC LISEZ-MOI
+
+1. Introduction
+
+2. Installation
+
+3. Sommaire
+
+4. Version
+
+5. Important
+
+
+
+
+1. INTRODUCTION
+Extcalc est programme de calculatrice scientifique fonctionnant sous le systeme d'exploitation Linux.
+Il est capable d'executer des operations mathematiques difficile, de dessiner des graphiques et de travailler avec de nombreuses fonctions.
+Il est egalement possible de faire des calculs avec des tables a partir de fonctions.
+Un interpreteur de script est egalement inclut avec Extcalc. Il est ecrit dans un langage proche du "C".
+Cet interpreteur permet a l'utilisateur de creer ces propres fonctions.
+
+
+
+
+2. INSTALLATION
+- decompresser le fichier . . . . . . . . . . . : tar -xzf extcalc-0.9.1.tar.gz
+- ce deplacer dans le nouveau repertoire cree . : cd extcalc-0.9.0
+
+Choisir l'une des trois options :
+- Pour une installation en Francais, executer . : ./configure --enable-language_fr
+- Pour une installation en Allemand, executer . : ./configure --enable-language_de
+- Pour une installation en Anglais,  executer . : ./configure
+
+- Compiler le programme . . . . . . . . . . . . : make
+- Devenir utilisateur racine (root) . . . . . . : su
+- Terminer l'installation . . . . . . . . . . . : make install
+
+
+
+
+3. SOMMAIRE
+Les documents suivant devraient etre inclut avec cette version :
+
+README                       lisez-moi en Anglais
+LIESMICH                     lisez-moi en Allemand
+LISEZ-MOI                    lisez-moi en Francais
+configure                    script de configuration
+...                          autres fichiers pour automake
+src/                         le source code complet
+    ...
+share/                       fichiers necessaires pour l'installation
+      ...                    icones, licence
+doc/                         documentation
+    help_en.html             documentation en langue Anglaise
+    help_de.html             documentation en langue Allemande
+    ...                      images
+
+
+
+
+4. VERSION
+Version 0.9.1
+
+Ceci est une version Beta.
+Merci de reporter tout problemes eventuel constate avec ce programme (car il est encore en developement) a l'adresse suivante :
+http://extcalc-linux.sourceforge.net/
+
+Accomplit:
+----------
+User Interface for Calculator
+User Interface for Graphics
+parser for calculations
+drawing graphs (cartesian an polar coordinate system)
+working with graphs
+integration, differentiation
+base-n calculations
+logic functions
+3D-graphs
+dynamic graphs
+tables
+scripting functions
+script editor
+script console
+script debug messages
+zooming and moving graphs
+draw into graphics window
+save screenshots of graphics window
+complex numbers
+matrix calculation
+vector calculation
+script commands for file usage and graphics
+window for matrix- and vector-operations
+statistic functions
+
+Reste a faire:
+--------------
+beta test
+
+
+
+
+5. IMPORTANT
+
+Ce program est une version Beta, il peux encore avoir des erreurs.
+
+Extcalc a ete teste sur les distributions suivantes:
+Suse Linux 8.2         ok
+Suse Linux 9.2         ok
+Suse Linux 10.2        ok
+Suse Linux 10.0        ok
+Debian 3.1 Sarge       update needed
+Debian Etch            ok
+Mandriva 2007          ok
+Fedora Core 2          ok
+Fedora Core 3 (64Bit)  ok
+Fedora Core 4          update needed
+Fedora Core 5          ok
+Ubuntu Linux 5.10      ok
+Ubuntu Linux 6.06      ok
+Mepis Linux 6.0        ok
+
+Debian 3.1 Sarge
+	     Le program ce compile sans erreur, cependant la fenetre graphique est noir, ne permettant pas l'utilisation du mode graphique.
+	     Pour remedier a ce probleme, installer la mise a jour pour "X" ainsi que "OpenGL".
+
+Fedora Core 4
+	     L'installation ce passe sans erreur, mais le programme s'interrompt par un "segmentation fault".
+	     Le "linker" de la version standard de FC4 ne genere pas d'entete "ELF" (header) pour ce programme.
+	     Pour remedier a ce probleme, il est necessaire d'installer une mise a jour ou une version plus recente de "gcc" et de "g++".
+
+Software Requirements:
+Linux
+GCC 3 ou GCC 4 (nme fonctionne pas avec gcc 2.xx)
+QT3.1 ou plus recent
+OpenGL
+
+Hardware Requirements:
+Microprocesseur (CPU) a une frequence d'environ 1GHz (32Bit or 64Bit)
+Suffisament de memoire vive (RAM) pour executer "X"
+Pour une visualisation en graphique 3D (3D-graphics), une carte 3D-graphiques est recommendee.
+Une souris avec une roulette (mousewheel) est necessaire pour faire des rotations, deplacer ainsi qu'agrandir et diminuer de taille les graphes (zoom).
+
+
+Precision:
+La precision maximale de "Extcalc" sur un ordinateur de 32 octet (CPU), est de 18 unites, ceci en raison de l'emploi de variables longues et doubles (long double-variables) pour les calculs.
+La precision des integrations est d'environ 9 unites.
+La precision des differentiations est d'environ 8 unites.
+Par l'utilisation de functions trigonometriques et logarithmique, elle est d'environ 17 unites.
+
+
++++

@@ -48,8 +48,8 @@ class CalcWidget :public QWidget
 	QDockArea*dockArea;
 	QComboBox *angleBox,*baseBox,*typeBox;
 	QPixmap *minimizeIcon,*angleIcon,*maximizeIcon,*scientificIcon,*baseIcon,*catalogIcon;
-	Catalog *catalog;
-	QPushButton* catalogButton,*viewButton;
+	Catalog *catalog,*constants;
+	QPushButton* catalogButton,*viewButton,*constantsButton;
 
 	Q_OBJECT
 
@@ -108,20 +108,22 @@ class CalcWidget :public QWidget
 		else baseBox->setCurrentItem(2);
 		
 		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX | CATMATRIX | CATMATHLOGIC,toolBar);
-
 		catalog->show();
 		catalogButton=new QPushButton(*catalogIcon,"",toolBar);
 		catalogButton->setFixedWidth(30);
+		
+		constants=new Catalog(CATCONSTANTS,toolBar);
+		constants->show();
+		constantsButton=new QPushButton("C",toolBar);
+		constantsButton->setFixedWidth(30);
+		
 		
 		QToolTip::add(viewButton,CALCWIDGETH_STR4);
 		QToolTip::add(typeBox,CALCWIDGETH_STR5);
 		QToolTip::add(baseBox,CALCWIDGETH_STR6);
 		QToolTip::add(angleBox,CALCWIDGETH_STR7);
 		QToolTip::add(catalogButton,CALCWIDGETH_STR8);
-
-
-
-		
+		QToolTip::add(constantsButton,tr("Constants and conversation"));
 
 
 		
@@ -152,7 +154,10 @@ class CalcWidget :public QWidget
 		QObject::connect(angleBox,SIGNAL(activated(int)),this,SLOT(angleSlot(int)));
 		QObject::connect(typeBox,SIGNAL(activated(int)),this,SLOT(typeSlot(int)));
 		QObject::connect(catalogButton,SIGNAL(clicked()),this,SLOT(catalogSlot()));
+		QObject::connect(constantsButton,SIGNAL(clicked()),this,SLOT(constantsSlot()));
 		QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(processText(QString)));
+		QObject::connect(constants,SIGNAL(menuSignal(QString)),this,SLOT(processText(QString)));
+		
 		
 	}
 	
@@ -174,6 +179,7 @@ public slots:
 	void typeSlot(int);
 	void editSlot(int);
 	void catalogSlot();
+	void constantsSlot();
 	void dockWindowSlot();
 
 	

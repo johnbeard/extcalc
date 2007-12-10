@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Catalog meta object code from reading C++ file 'catalog.h'
 **
-** Created: Tue Nov 6 10:43:01 2007
+** Created: Sun Dec 9 19:59:33 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -92,6 +92,22 @@ QMetaObject* Catalog::staticMetaObject()
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
     static const QUMethod slot_9 = {"scriptFileSlot", 1, param_slot_9 };
+    static const QUParameter param_slot_10[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_10 = {"constantsMathSlot", 1, param_slot_10 };
+    static const QUParameter param_slot_11[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_11 = {"constantsPhysicsSlot", 1, param_slot_11 };
+    static const QUParameter param_slot_12[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_12 = {"constantsConvSlot", 1, param_slot_12 };
+    static const QUParameter param_slot_13[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_13 = {"constantsUserSlot", 1, param_slot_13 };
     static const QMetaData slot_tbl[] = {
 	{ "mathStandardSlot(int)", &slot_0, QMetaData::Public },
 	{ "mathTrigonometricSlot(int)", &slot_1, QMetaData::Public },
@@ -102,7 +118,11 @@ QMetaObject* Catalog::staticMetaObject()
 	{ "scriptTextSlot(int)", &slot_6, QMetaData::Public },
 	{ "scriptGraphicsSlot(int)", &slot_7, QMetaData::Public },
 	{ "scriptGLSlot(int)", &slot_8, QMetaData::Public },
-	{ "scriptFileSlot(int)", &slot_9, QMetaData::Public }
+	{ "scriptFileSlot(int)", &slot_9, QMetaData::Public },
+	{ "constantsMathSlot(int)", &slot_10, QMetaData::Public },
+	{ "constantsPhysicsSlot(int)", &slot_11, QMetaData::Public },
+	{ "constantsConvSlot(int)", &slot_12, QMetaData::Public },
+	{ "constantsUserSlot(int)", &slot_13, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_QString, 0, QUParameter::In }
@@ -113,7 +133,7 @@ QMetaObject* Catalog::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"Catalog", parentObject,
-	slot_tbl, 10,
+	slot_tbl, 14,
 	signal_tbl, 1,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -150,6 +170,10 @@ bool Catalog::qt_invoke( int _id, QUObject* _o )
     case 7: scriptGraphicsSlot((int)static_QUType_int.get(_o+1)); break;
     case 8: scriptGLSlot((int)static_QUType_int.get(_o+1)); break;
     case 9: scriptFileSlot((int)static_QUType_int.get(_o+1)); break;
+    case 10: constantsMathSlot((int)static_QUType_int.get(_o+1)); break;
+    case 11: constantsPhysicsSlot((int)static_QUType_int.get(_o+1)); break;
+    case 12: constantsConvSlot((int)static_QUType_int.get(_o+1)); break;
+    case 13: constantsUserSlot((int)static_QUType_int.get(_o+1)); break;
     default:
 	return QPopupMenu::qt_invoke( _id, _o );
     }
