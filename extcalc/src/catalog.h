@@ -18,20 +18,165 @@ This is a overloaded popup menu that serves a complete function catalog.
 #define CATALOGH
 
 #include <qpopupmenu.h>
+#include <qlabel.h>
+#include <qpushbutton.h>
+#include <qcombobox.h>
+#include <qlineedit.h>
+#include <qdialog.h>
 #include "global.h"
+
+
+/*
+math
+pi											3,14159 26535 89793 23846 26433 83279 50288
+euler										2,71828 18284 59045 23536 02874 71352 66249
+(C)gamma (Euler-Mascheroni-Konstante)			0,57721 56649 01532 86060 65120 90082 40243
+
+physics
+c0	vacuum light speed						299 792 458						m/s
+my0 magnetic field							12.566 370 614...x10^7			N/A^2
+epsilon0 electric field						8.854 187 817...x10^12			F/m
+Z0	Wellenwiderstand						376.730 313 461					Ohm
+G (Gravitation)								6.6742x10^11					m^3/(kg s^2)
+h (plancksches Wirkungsquantum				6.626 069 3x10^-34
+
+e (Elementraladung)							1.602 176 53x10^-19				C
+alpha (Feinstrukturkonstante)				7.297 352 568x10^-3
+
+m_e Elektronenmasse							9.109 381 88(72)x10^-31			kg
+m_p Protonenmasse							1.672 621 58(13)x10^-27			kg
+m_n Neutronenmasse							1.674 927 16(13)x10^-27			kg
+
+conversation
+*/
+
+class ConstantDialog :public QDialog
+{
+	QLabel *constLabel,*descriptionLabel,*valueLabel;
+	QLineEdit *descriptionLine,*valueLine;
+	QPushButton *okButton,*cancelButton,*applyButton;
+	QComboBox *variablesBox;
+	Preferences pref;
+	Q_OBJECT
+	
+	
+	public:
+	ConstantDialog(QWidget*parent,QString name,Preferences p) :QDialog(parent,name,true)
+	{
+		pref=p;
+		setCaption(tr("Change Constants"));
+		
+		constLabel=new QLabel(tr("Choose Constant"),this);
+		descriptionLabel=new QLabel(tr("Description"),this);
+		valueLabel=new QLabel(tr("Value"),this);
+		
+		descriptionLine=new QLineEdit(this);
+		valueLine=new QLineEdit(this);
+		
+		variablesBox=new QComboBox(this);
+		
+		okButton=new QPushButton(tr("OK"),this);
+		cancelButton=new QPushButton(tr("Cancel"),this);
+		applyButton=new QPushButton(tr("Apply"),this);
+		
+		setGeometry(0,0,300,280);
+		constLabel->setGeometry(20,20,260,20);
+		variablesBox->setGeometry(20,50,200,30);
+		
+		descriptionLabel->setGeometry(20,100,260,20);
+		descriptionLine->setGeometry(20,125,260,20);
+		
+		valueLabel->setGeometry(20,160,260,20);
+		valueLine->setGeometry(20,185,260,20);
+		
+		okButton->setGeometry(25,230,75,30);
+		applyButton->setGeometry(110,230,75,30);
+		cancelButton->setGeometry(205,230,75,30);
+
+		connect(cancelButton,SIGNAL(clicked()),this,SLOT(reject()));
+		connect(okButton,SIGNAL(clicked()),this,SLOT(applySlot()));
+		connect(applyButton,SIGNAL(clicked()),this,SLOT(applySlot()));
+		connect(okButton,SIGNAL(clicked()),this,SLOT(accept()));
+		connect(variablesBox,SIGNAL(activated(int)),this,SLOT(boxSlot(int)));
+		
+		setPref(pref);
+	}
+	
+	public slots:
+		
+	void boxSlot(int i)
+	{
+		if(i==0)
+		{
+			descriptionLine->setText("");
+			valueLine->setText("");
+		}
+		else 
+		{
+			descriptionLine->setText(*(pref.constList[i-1+pref.constLen-pref.userConstLen].description));
+			valueLine->setText(*(pref.constList[i-1+pref.constLen-pref.userConstLen].value));
+		}
+	}
+	
+	
+	void applySlot()
+	{
+		if(variablesBox->currentItem()==0 && descriptionLine->text().length()>0)
+		{
+			pref.constList=(Constant*)realloc(pref.constList,sizeof(Constant)*(pref.constLen+1));
+			pref.constLen++;
+			pref.userConstLen++;
+			pref.constList[pref.constLen-1].description=new QString(descriptionLine->text());
+			pref.constList[pref.constLen-1].value=new QString(valueLine->text());
+			pref.constList[pref.constLen-1].value=new QString("c_usr"+QString::number(pref.userConstLen));
+			
+		}
+		else
+		{
+			int i=variablesBox->currentItem()-1;
+			*(pref.constList[pref.constLen-pref.userConstLen+i].description)=descriptionLine->text();
+			*(pref.constList[pref.constLen-pref.userConstLen+i].value)=valueLine->text();
+		}
+		emit prefChange(pref);
+	}
+	
+	void setPref(Preferences newPref)
+	{
+		pref=newPref;
+		variablesBox->clear();
+		variablesBox->insertItem(tr("New"));
+		for(int c=pref.constLen-pref.userConstLen; c<pref.constLen; c++)
+			variablesBox->insertItem(*(pref.constList[c].description));
+	}
+	
+	signals:
+		void prefChange(Preferences);
+	
+};
 
 
 class Catalog :public QPopupMenu
 {
 	QPopupMenu *mathStandard,*mathTrigonometric,*mathExtended,*mathLogic,*matrix,*scriptStandard,*scriptText,*scriptGraphics,*scriptGL,*scriptFile,
  	*constantsMath,*constantsPhysics,*constantsConv,*constantsUser;
+	Preferences pref;
+	int mathConstLen,physicsConstLen,convConstLen;
+	int state;
+	ConstantDialog*cDialog;
 	Q_OBJECT
 
 
 	public:
 	
-	Catalog(int state, QWidget*parent) :QPopupMenu(parent)
+	Catalog(int st, QWidget*parent,Preferences *p=NULL) :QPopupMenu(parent)
 	{
+		state=st;
+		if(p==NULL)
+		{
+			if(state&CATCONSTANTS)
+				state&=~CATCONSTANTS;
+		}
+		else pref=*p;
 		mathStandard=new QPopupMenu(this);
 		mathTrigonometric=new QPopupMenu(this);
 		mathExtended=new QPopupMenu(this);
@@ -42,26 +187,16 @@ class Catalog :public QPopupMenu
 		scriptGraphics=new QPopupMenu(this);
 		scriptGL=new QPopupMenu(this);
 		scriptFile=new QPopupMenu(this);
-		
+
 		constantsMath=new QPopupMenu(this);
 		constantsPhysics=new QPopupMenu(this);
 		constantsConv=new QPopupMenu(this);
 		constantsUser=new QPopupMenu(this);
 		
+		cDialog=new ConstantDialog(parent,"Mofify Constants",pref);
+
 		if(state&CATCONSTANTS)
 		{
-			constantsMath->insertItem(tr("pi "+getUnicode(PISTRING)),1);
-			constantsMath->insertItem(tr("euler constant e"),2);
-
-			
-			constantsPhysics->insertItem("e0",1);
-			constantsPhysics->insertItem("my0",2);
-			
-			constantsConv->insertItem("km -> mile",1);
-			constantsConv->insertItem("mile -> km",2);
-			
-			constantsUser->insertItem("add",1);
-			
 			insertItem(tr("Mathematics Constants"),constantsMath);
 			insertItem(tr("Physics Constants"),constantsPhysics);
 			insertItem(tr("Conversation Constants"),constantsConv);
@@ -225,12 +360,19 @@ class Catalog :public QPopupMenu
 		QObject::connect(scriptGraphics,SIGNAL(activated(int)),this,SLOT(scriptGraphicsSlot(int)));
 		QObject::connect(scriptGL,SIGNAL(activated(int)),this,SLOT(scriptGLSlot(int)));
 		QObject::connect(scriptFile,SIGNAL(activated(int)),this,SLOT(scriptFileSlot(int)));
-		QObject::connect(constantsPhysics,SIGNAL(activated(int)),this,SLOT(constantsPhysicsSlot(int)));
-		QObject::connect(constantsMath,SIGNAL(activated(int)),this,SLOT(constantsMathSlot(int)));
-		QObject::connect(constantsConv,SIGNAL(activated(int)),this,SLOT(constantsConvSlot(int)));
-		QObject::connect(constantsUser,SIGNAL(activated(int)),this,SLOT(constantsUserSlot(int)));
+		QObject::connect(constantsPhysics,SIGNAL(activated(int)),this,SLOT(constantsSlot(int)));
+		QObject::connect(constantsMath,SIGNAL(activated(int)),this,SLOT(constantsSlot(int)));
+		QObject::connect(constantsConv,SIGNAL(activated(int)),this,SLOT(constantsSlot(int)));
+		QObject::connect(constantsUser,SIGNAL(activated(int)),this,SLOT(constantsSlot(int)));
+		QObject::connect(cDialog,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+		
 
 	}
+	
+	void setPref(Preferences newPref);
+	
+
+
 	
 	public slots:
 		
@@ -247,14 +389,16 @@ class Catalog :public QPopupMenu
 	void scriptGLSlot(int);
 	void scriptFileSlot(int);
 	
-	void constantsMathSlot(int);
-	void constantsPhysicsSlot(int);
-	void constantsConvSlot(int);
-	void constantsUserSlot(int);
+	void constantsSlot(int);
+	
+	void getPref(Preferences pref)
+	{emit prefChange(pref);}
+
 	
 	signals:
 	
 	void menuSignal(QString);
+	void prefChange(Preferences);
 	
 	
 };

@@ -15,6 +15,9 @@ any later version.
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "catalog.h"
 
+
+
+
 void Catalog::mathStandardSlot(int id)
 {
 	switch(id)
@@ -392,55 +395,52 @@ void Catalog::scriptFileSlot(int id)
 }
 
 
-void Catalog::constantsMathSlot(int id)
+void Catalog::constantsSlot(int id)
 {
-	switch(id)
+	if(id<pref.constLen)
+		emit menuSignal(*(pref.constList[id].identifier));
+	else 
 	{
-		case 1:
-			emit menuSignal("c_pi");
-			break;
-		case 2:
-			emit menuSignal("c_e");
-			break;
-	}
-}
-void Catalog::constantsPhysicsSlot(int id)
-{
-	switch(id)
-	{
-		case 1:
-			emit menuSignal("c_my0");
-			break;
-		case 2:
-			emit menuSignal("c_e0");
-			break;
-	}
-}
-void Catalog::constantsConvSlot(int id)
-{
-	switch(id)
-	{
-		case 1:
-			emit menuSignal("c_kmmile");
-			break;
-		case 2:
-			emit menuSignal("c_milekm");
-			break;
-	}
-}
-void Catalog::constantsUserSlot(int id)
-{
-	switch(id)
-	{
-		case 1:
-			MessageBox("Not active");
-			break;
+		cDialog->exec();
+		
 	}
 }
 
 
+void Catalog::setPref(Preferences newPref)
+{
+	pref=newPref;
+	cDialog->setPref(pref);
+	if(state&CATCONSTANTS)
+	{
+		constantsMath->clear();
+		constantsPhysics->clear();
+		constantsConv->clear();
+		constantsUser->clear();
+		
+		mathConstLen=3;
+		physicsConstLen=3;
+		convConstLen=2;
 
+				
+		for(int c=0; c<mathConstLen && c<pref.constLen; c++)
+			constantsMath->insertItem(*(pref.constList[c].description),c);
+				
+		for(int c=0; c<physicsConstLen && c+mathConstLen<pref.constLen; c++)
+			constantsPhysics->insertItem(*(pref.constList[c+mathConstLen].description),c+mathConstLen);
+				
+		for(int c=0; c<convConstLen && c+mathConstLen+physicsConstLen<pref.constLen; c++)
+			constantsConv->insertItem(*(pref.constList[c+mathConstLen+physicsConstLen].description),c+mathConstLen+physicsConstLen);
+		
+		constantsUser->insertItem("add",pref.constLen);
+		
+		for(int c=0; c<pref.userConstLen; c++)
+			constantsConv->insertItem(*(pref.constList[c+pref.constLen-pref.userConstLen].description),c+pref.constLen-pref.userConstLen);
 
+			
+			
+	}
+}
 
 
 

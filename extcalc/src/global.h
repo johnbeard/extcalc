@@ -46,6 +46,7 @@ using namespace std;
 #define CONFIGFILE ".extcalc/extcalc.conf"
 #define VARSFILE ".extcalc/vars.conf"
 #define LISTSFILE ".extcalc/lists.conf"
+#define CONSTFILE ".extcalc/constants.conf"
 
 #define VERSIONSTRING "Version: 0.9.1\n2007-12-02\n\n"+QString(DEVVERSION)
 
@@ -406,6 +407,13 @@ class Math;
 
 typedef long double Variable;
 
+struct Constant
+{
+	QString *identifier;
+	QString *description;
+	QString *value;
+};
+
 
 struct Preferences
 {
@@ -461,6 +469,8 @@ struct Preferences
 	QColor*functionColors;
 	QString drawText;
 	int language;
+	Constant*constList;
+	int constLen,userConstLen;
 };
 
 struct Number
@@ -522,6 +532,7 @@ char* macroPreprocessor(char*);
 char* cleanString(char*,Preferences*);
 char* removeUnicode(QString*);
 char* removeComments(char*);
+void replaceConstants(QString*,Preferences*);
 QString getConfigString(QString*,QString);
 QString cleanConfigString(QString,QString);
 QString getUnicode(int code);

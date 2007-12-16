@@ -1,7 +1,7 @@
 /****************************************************************************
-** Catalog meta object code from reading C++ file 'catalog.h'
+** ConstantDialog meta object code from reading C++ file 'catalog.h'
 **
-** Created: Sun Dec 9 19:59:33 2007
+** Created: Sun Dec 16 20:34:45 2007
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -18,6 +18,128 @@
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
+
+const char *ConstantDialog::className() const
+{
+    return "ConstantDialog";
+}
+
+QMetaObject *ConstantDialog::metaObj = 0;
+static QMetaObjectCleanUp cleanUp_ConstantDialog( "ConstantDialog", &ConstantDialog::staticMetaObject );
+
+#ifndef QT_NO_TRANSLATION
+QString ConstantDialog::tr( const char *s, const char *c )
+{
+    if ( qApp )
+	return qApp->translate( "ConstantDialog", s, c, QApplication::DefaultCodec );
+    else
+	return QString::fromLatin1( s );
+}
+#ifndef QT_NO_TRANSLATION_UTF8
+QString ConstantDialog::trUtf8( const char *s, const char *c )
+{
+    if ( qApp )
+	return qApp->translate( "ConstantDialog", s, c, QApplication::UnicodeUTF8 );
+    else
+	return QString::fromUtf8( s );
+}
+#endif // QT_NO_TRANSLATION_UTF8
+
+#endif // QT_NO_TRANSLATION
+
+QMetaObject* ConstantDialog::staticMetaObject()
+{
+    if ( metaObj )
+	return metaObj;
+    QMetaObject* parentObject = QDialog::staticMetaObject();
+    static const QUParameter param_slot_0[] = {
+	{ "i", &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_0 = {"boxSlot", 1, param_slot_0 };
+    static const QUMethod slot_1 = {"applySlot", 0, 0 };
+    static const QUParameter param_slot_2[] = {
+	{ "newPref", &static_QUType_ptr, "Preferences", QUParameter::In }
+    };
+    static const QUMethod slot_2 = {"setPref", 1, param_slot_2 };
+    static const QMetaData slot_tbl[] = {
+	{ "boxSlot(int)", &slot_0, QMetaData::Public },
+	{ "applySlot()", &slot_1, QMetaData::Public },
+	{ "setPref(Preferences)", &slot_2, QMetaData::Public }
+    };
+    static const QUParameter param_signal_0[] = {
+	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
+    };
+    static const QUMethod signal_0 = {"prefChange", 1, param_signal_0 };
+    static const QMetaData signal_tbl[] = {
+	{ "prefChange(Preferences)", &signal_0, QMetaData::Public }
+    };
+    metaObj = QMetaObject::new_metaobject(
+	"ConstantDialog", parentObject,
+	slot_tbl, 3,
+	signal_tbl, 1,
+#ifndef QT_NO_PROPERTIES
+	0, 0,
+	0, 0,
+#endif // QT_NO_PROPERTIES
+	0, 0 );
+    cleanUp_ConstantDialog.setMetaObject( metaObj );
+    return metaObj;
+}
+
+void* ConstantDialog::qt_cast( const char* clname )
+{
+    if ( !qstrcmp( clname, "ConstantDialog" ) )
+	return this;
+    return QDialog::qt_cast( clname );
+}
+
+#include <qobjectdefs.h>
+#include <qsignalslotimp.h>
+
+// SIGNAL prefChange
+void ConstantDialog::prefChange( Preferences t0 )
+{
+    if ( signalsBlocked() )
+	return;
+    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 0 );
+    if ( !clist )
+	return;
+    QUObject o[2];
+    static_QUType_ptr.set(o+1,&t0);
+    activate_signal( clist, o );
+}
+
+bool ConstantDialog::qt_invoke( int _id, QUObject* _o )
+{
+    switch ( _id - staticMetaObject()->slotOffset() ) {
+    case 0: boxSlot((int)static_QUType_int.get(_o+1)); break;
+    case 1: applySlot(); break;
+    case 2: setPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
+    default:
+	return QDialog::qt_invoke( _id, _o );
+    }
+    return TRUE;
+}
+
+bool ConstantDialog::qt_emit( int _id, QUObject* _o )
+{
+    switch ( _id - staticMetaObject()->signalOffset() ) {
+    case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
+    default:
+	return QDialog::qt_emit(_id,_o);
+    }
+    return TRUE;
+}
+#ifndef QT_NO_PROPERTIES
+
+bool ConstantDialog::qt_property( int id, int f, QVariant* v)
+{
+    return QDialog::qt_property( id, f, v);
+}
+
+bool ConstantDialog::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
+#endif // QT_NO_PROPERTIES
+
 
 const char *Catalog::className() const
 {
@@ -95,19 +217,11 @@ QMetaObject* Catalog::staticMetaObject()
     static const QUParameter param_slot_10[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_10 = {"constantsMathSlot", 1, param_slot_10 };
+    static const QUMethod slot_10 = {"constantsSlot", 1, param_slot_10 };
     static const QUParameter param_slot_11[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
+	{ "pref", &static_QUType_ptr, "Preferences", QUParameter::In }
     };
-    static const QUMethod slot_11 = {"constantsPhysicsSlot", 1, param_slot_11 };
-    static const QUParameter param_slot_12[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_12 = {"constantsConvSlot", 1, param_slot_12 };
-    static const QUParameter param_slot_13[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_13 = {"constantsUserSlot", 1, param_slot_13 };
+    static const QUMethod slot_11 = {"getPref", 1, param_slot_11 };
     static const QMetaData slot_tbl[] = {
 	{ "mathStandardSlot(int)", &slot_0, QMetaData::Public },
 	{ "mathTrigonometricSlot(int)", &slot_1, QMetaData::Public },
@@ -119,22 +233,25 @@ QMetaObject* Catalog::staticMetaObject()
 	{ "scriptGraphicsSlot(int)", &slot_7, QMetaData::Public },
 	{ "scriptGLSlot(int)", &slot_8, QMetaData::Public },
 	{ "scriptFileSlot(int)", &slot_9, QMetaData::Public },
-	{ "constantsMathSlot(int)", &slot_10, QMetaData::Public },
-	{ "constantsPhysicsSlot(int)", &slot_11, QMetaData::Public },
-	{ "constantsConvSlot(int)", &slot_12, QMetaData::Public },
-	{ "constantsUserSlot(int)", &slot_13, QMetaData::Public }
+	{ "constantsSlot(int)", &slot_10, QMetaData::Public },
+	{ "getPref(Preferences)", &slot_11, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_QString, 0, QUParameter::In }
     };
     static const QUMethod signal_0 = {"menuSignal", 1, param_signal_0 };
+    static const QUParameter param_signal_1[] = {
+	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
+    };
+    static const QUMethod signal_1 = {"prefChange", 1, param_signal_1 };
     static const QMetaData signal_tbl[] = {
-	{ "menuSignal(QString)", &signal_0, QMetaData::Public }
+	{ "menuSignal(QString)", &signal_0, QMetaData::Public },
+	{ "prefChange(Preferences)", &signal_1, QMetaData::Public }
     };
     metaObj = QMetaObject::new_metaobject(
 	"Catalog", parentObject,
-	slot_tbl, 14,
-	signal_tbl, 1,
+	slot_tbl, 12,
+	signal_tbl, 2,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
 	0, 0,
@@ -157,6 +274,19 @@ void Catalog::menuSignal( QString t0 )
     activate_signal( staticMetaObject()->signalOffset() + 0, t0 );
 }
 
+// SIGNAL prefChange
+void Catalog::prefChange( Preferences t0 )
+{
+    if ( signalsBlocked() )
+	return;
+    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 1 );
+    if ( !clist )
+	return;
+    QUObject o[2];
+    static_QUType_ptr.set(o+1,&t0);
+    activate_signal( clist, o );
+}
+
 bool Catalog::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
@@ -170,10 +300,8 @@ bool Catalog::qt_invoke( int _id, QUObject* _o )
     case 7: scriptGraphicsSlot((int)static_QUType_int.get(_o+1)); break;
     case 8: scriptGLSlot((int)static_QUType_int.get(_o+1)); break;
     case 9: scriptFileSlot((int)static_QUType_int.get(_o+1)); break;
-    case 10: constantsMathSlot((int)static_QUType_int.get(_o+1)); break;
-    case 11: constantsPhysicsSlot((int)static_QUType_int.get(_o+1)); break;
-    case 12: constantsConvSlot((int)static_QUType_int.get(_o+1)); break;
-    case 13: constantsUserSlot((int)static_QUType_int.get(_o+1)); break;
+    case 10: constantsSlot((int)static_QUType_int.get(_o+1)); break;
+    case 11: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
     default:
 	return QPopupMenu::qt_invoke( _id, _o );
     }
@@ -184,6 +312,7 @@ bool Catalog::qt_emit( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->signalOffset() ) {
     case 0: menuSignal((QString)static_QUType_QString.get(_o+1)); break;
+    case 1: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
     default:
 	return QPopupMenu::qt_emit(_id,_o);
     }

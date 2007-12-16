@@ -449,6 +449,8 @@ MainObject() :QTabWidget()
 	pref.showWindows[0]=pref.showWindows[2]=pref.showWindows[3]=pref.showWindows[4]=pref.showWindows[6]=true;
 	pref.showWindows[1]=pref.showWindows[5]=pref.showWindows[7]=false;
 	pref.language=LANG_EN;
+	pref.constList=NULL;
+	pref.constLen=pref.userConstLen=0;
 
 
 	threadData=new ThreadSync;
@@ -725,6 +727,7 @@ MainObject() :QTabWidget()
 			MessageBox(EXTCALCH_MENU77);
 		}
 	}
+	initConstants();
 	readVarFile();
 
 
@@ -738,6 +741,7 @@ int readConfigFile();
 void readVarFile();
 void writeConfigFile();
 void writeVarFile();
+void initConstants();
 
 
 

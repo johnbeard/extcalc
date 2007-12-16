@@ -112,7 +112,7 @@ class CalcWidget :public QWidget
 		catalogButton=new QPushButton(*catalogIcon,"",toolBar);
 		catalogButton->setFixedWidth(30);
 		
-		constants=new Catalog(CATCONSTANTS,toolBar);
+		constants=new Catalog(CATCONSTANTS,toolBar,&pref);
 		constants->show();
 		constantsButton=new QPushButton("C",toolBar);
 		constantsButton->setFixedWidth(30);
@@ -148,6 +148,7 @@ class CalcWidget :public QWidget
 		QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
 		QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+		QObject::connect(constants,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(textEdit,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(viewButton,SIGNAL(clicked()),this,SLOT(viewSlot()));
 		QObject::connect(baseBox,SIGNAL(activated(int)),this,SLOT(baseSlot(int)));

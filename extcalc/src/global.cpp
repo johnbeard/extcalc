@@ -524,6 +524,8 @@ char* preprocessor(char*input,Preferences*pref,bool script)
 }
 char* preprocessor(QString *input,Preferences*pref,bool script)
 {
+	if(!script)
+		replaceConstants(input,pref);
 	char*ret=removeUnicode(input);
 	if(ret==NULL)
 		return NULL;
@@ -558,6 +560,12 @@ char* removeUnicode(QString*input)
 	memcpy(output,tmp,strlen(tmp)+1);
 
 	return output;
+}
+
+void replaceConstants(QString *input,Preferences*pref)
+{
+	for(int c=0; c<pref->constLen; c++)
+		input->replace(*(pref->constList[c].identifier),"("+*(pref->constList[c].value)+")");
 }
 
 char* removeComments(char*input)

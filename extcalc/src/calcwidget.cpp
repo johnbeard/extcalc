@@ -211,5 +211,6 @@ void CalcWidget::setPref(Preferences newPref)
 	calcButtons->setPref(pref);
 	extButtons->setPref(pref);
 	textEdit->setPref(pref);
+	constants->setPref(pref);
 }
 

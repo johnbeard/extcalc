@@ -1320,6 +1320,63 @@ void MainObject::writeVarFile()
 	fclose(configFile);
 }
 
+
+
+void MainObject::initConstants()
+{
+	if(pref.constList!=NULL)
+	{
+		for(int c=0; c<pref.constLen; c++)
+		{
+			delete pref.constList[c].description;
+			delete pref.constList[c].identifier;
+			delete pref.constList[c].value;
+		}
+			
+		free(pref.constList);
+	}
+	pref.constList=(Constant*)malloc(8*sizeof(Constant));
+	pref.constLen=8;
+
+	
+	pref.constList[0].identifier=new QString("c_pi");
+	pref.constList[0].description=new QString(tr("pi ")+getUnicode(PISTRING));
+	pref.constList[0].value=new QString("3.14159265358979323846264338327950288");
+	
+	pref.constList[1].identifier=new QString("c_eu");
+	pref.constList[1].description=new QString(tr("euler number e"));
+	pref.constList[1].value=new QString("2.71828182845904523536028747135266249");
+	
+	pref.constList[2].identifier=new QString("c_C");
+	pref.constList[2].description=new QString(tr("euler constant C"));
+	pref.constList[2].value=new QString("0.57721566490153286060651209008240243");
+
+	
+	pref.constList[3].identifier=new QString("c_c0");
+	pref.constList[3].description=new QString(tr("vacuum light speed c0 [m/s]"));
+	pref.constList[3].value=new QString("299792458");
+	
+	pref.constList[4].identifier=new QString("c_e0");
+	pref.constList[4].description=new QString(tr("electric field constant e0 [F/m]"));
+	pref.constList[4].value=new QString("8.854187817e-12");
+	
+	pref.constList[5].identifier=new QString("c_my0");
+	pref.constList[5].description=new QString(tr("magnetic field constant my0 [N/A^2]"));
+	pref.constList[5].value=new QString("12.566370614e-7");
+
+	
+	pref.constList[6].identifier=new QString("c_kmmile");
+	pref.constList[6].description=new QString(tr("km -> mile"));
+	pref.constList[6].value=new QString("0.621371192");
+	
+	pref.constList[7].identifier=new QString("c_milekm");
+	pref.constList[7].description=new QString(tr("mile -> km"));
+	pref.constList[7].value=new QString("1.609334");
+
+	getPref(pref);
+
+}
+
 void MainObject::tabChangeSlot(QWidget*activeWidget)
 {
 	calculator->dockWindowSlot();
