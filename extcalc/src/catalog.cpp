@@ -419,8 +419,8 @@ void Catalog::setPref(Preferences newPref)
 		constantsUser->clear();
 		
 		mathConstLen=3;
-		physicsConstLen=3;
-		convConstLen=2;
+		physicsConstLen=20;
+		convConstLen=8;
 
 				
 		for(int c=0; c<mathConstLen && c<pref.constLen; c++)
@@ -435,13 +435,131 @@ void Catalog::setPref(Preferences newPref)
 		constantsUser->insertItem("add",pref.constLen);
 		
 		for(int c=0; c<pref.userConstLen; c++)
-			constantsConv->insertItem(*(pref.constList[c+pref.constLen-pref.userConstLen].description),c+pref.constLen-pref.userConstLen);
+			constantsUser->insertItem(*(pref.constList[c+pref.constLen-pref.userConstLen].description),c+pref.constLen-pref.userConstLen);
 
-			
-			
 	}
 }
 
+ConstantDialog::ConstantDialog(QWidget*parent,QString name,Preferences p) :QDialog(parent,name,true)
+{
+	pref=p;
+	setCaption(tr("Change Constants"));
+		
+		
+	constLabel=new QLabel(tr("Choose Constant"),this);
+	descriptionLabel=new QLabel(tr("Description"),this);
+	valueLabel=new QLabel(tr("Value"),this);
+	identifierLabel=new QLabel(tr("Identifier"),this);
+		
+	descriptionLine=new QLineEdit(this);
+	valueLine=new QLineEdit(this);
+	identifierLine=new QLineEdit(this);
+	identifierLine->setReadOnly(true);
+		
+	variablesBox=new QListBox(this);
+		
+	okButton=new QPushButton(tr("OK"),this);
+	cancelButton=new QPushButton(tr("Cancel"),this);
+	addButton=new QPushButton(tr("Apply"),this);
+	removeButton=new QPushButton(tr("Remove"),this);
+		
+	setGeometry(0,0,400,400);
+	constLabel->setGeometry(20,20,260,20);
+	variablesBox->setGeometry(20,50,160,280);
+		
+	identifierLabel->setGeometry(200,50,180,20);
+	identifierLine->setGeometry(200,80,180,20);
+		
+	descriptionLabel->setGeometry(200,125,180,20);
+	descriptionLine->setGeometry(200,155,180,20);
+		
+		
+	valueLabel->setGeometry(200,200,180,20);
+	valueLine->setGeometry(200,230,180,20);
+		
+	addButton->setGeometry(220,260,75,20);
+	removeButton->setGeometry(305,260,75,20);
+		
+	okButton->setGeometry(210,350,80,30);
+	cancelButton->setGeometry(300,350,80,30);
+
+	connect(cancelButton,SIGNAL(clicked()),this,SLOT(reject()));
+	connect(removeButton,SIGNAL(clicked()),this,SLOT(removeSlot()));
+	connect(addButton,SIGNAL(clicked()),this,SLOT(applySlot()));
+	connect(okButton,SIGNAL(clicked()),this,SLOT(accept()));
+	connect(variablesBox,SIGNAL(currentChanged(QListBoxItem*)),this,SLOT(boxSlot()));
+
+	setPref(pref);
+}
+
+void ConstantDialog::boxSlot()
+{
+	int i = variablesBox->currentItem();
+	if(i==0)
+	{
+		descriptionLine->setText("");
+		valueLine->setText("");
+		identifierLine->setText("c_usr"+QString::number(pref.userConstLen+1));
+	}
+	else 
+	{
+		identifierLine->setText("c_usr"+QString::number(i));
+		descriptionLine->setText(*(pref.constList[i-1+pref.constLen-pref.userConstLen].description));
+		valueLine->setText(*(pref.constList[i-1+pref.constLen-pref.userConstLen].value));
+	}
+}
+
+void ConstantDialog::applySlot()
+{
+	if(variablesBox->currentItem()==0 && descriptionLine->text().length()>0)
+	{
+		pref.constList=(Constant*)realloc(pref.constList,sizeof(Constant)*(pref.constLen+1));
+		pref.constLen++;
+		pref.userConstLen++;
+		pref.constList[pref.constLen-1].description=new QString(descriptionLine->text());
+		pref.constList[pref.constLen-1].value=new QString(valueLine->text());
+		pref.constList[pref.constLen-1].identifier=new QString("c_usr"+QString::number(pref.userConstLen));
+			
+	}
+	else if(variablesBox->currentItem()>0)
+	{
+		int i=variablesBox->currentItem()-1;
+		*(pref.constList[pref.constLen-pref.userConstLen+i].description)=descriptionLine->text();
+		*(pref.constList[pref.constLen-pref.userConstLen+i].value)=valueLine->text();
+	}
+	else if(variablesBox->currentItem()==-1)
+	{
+		variablesBox->setCurrentItem(0);
+	}
+	emit prefChange(pref);
+}
+
+void ConstantDialog::removeSlot()
+{
+	if(variablesBox->currentItem()!=0)
+	{
+		int i=variablesBox->currentItem()-1;
+		delete pref.constList[pref.constLen-pref.userConstLen+i].description;
+		delete pref.constList[pref.constLen-pref.userConstLen+i].identifier;
+		delete pref.constList[pref.constLen-pref.userConstLen+i].value;
+		for(int c=i+pref.constLen-pref.userConstLen+1; c<pref.constLen; c++)
+			pref.constList[c-1]=pref.constList[c];
+		pref.constLen--;
+		pref.userConstLen--;
+		pref.constList=(Constant*)realloc(pref.constList,sizeof(Constant)*(pref.constLen));
+	}
+	emit prefChange(pref);
+}
+
+
+void ConstantDialog::setPref(Preferences newPref)
+{
+	pref=newPref;
+	variablesBox->clear();
+	variablesBox->insertItem(tr("New"));
+	for(int c=pref.constLen-pref.userConstLen; c<pref.constLen; c++)
+		variablesBox->insertItem(*(pref.constList[c].description));
+}
 
 
 

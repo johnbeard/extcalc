@@ -1,7 +1,7 @@
 /****************************************************************************
 ** ConstantDialog meta object code from reading C++ file 'catalog.h'
 **
-** Created: Sun Dec 16 20:34:45 2007
+** Created: Tue Jan 1 18:35:56 2008
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -52,19 +52,18 @@ QMetaObject* ConstantDialog::staticMetaObject()
     if ( metaObj )
 	return metaObj;
     QMetaObject* parentObject = QDialog::staticMetaObject();
-    static const QUParameter param_slot_0[] = {
-	{ "i", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_0 = {"boxSlot", 1, param_slot_0 };
+    static const QUMethod slot_0 = {"boxSlot", 0, 0 };
     static const QUMethod slot_1 = {"applySlot", 0, 0 };
-    static const QUParameter param_slot_2[] = {
+    static const QUMethod slot_2 = {"removeSlot", 0, 0 };
+    static const QUParameter param_slot_3[] = {
 	{ "newPref", &static_QUType_ptr, "Preferences", QUParameter::In }
     };
-    static const QUMethod slot_2 = {"setPref", 1, param_slot_2 };
+    static const QUMethod slot_3 = {"setPref", 1, param_slot_3 };
     static const QMetaData slot_tbl[] = {
-	{ "boxSlot(int)", &slot_0, QMetaData::Public },
+	{ "boxSlot()", &slot_0, QMetaData::Public },
 	{ "applySlot()", &slot_1, QMetaData::Public },
-	{ "setPref(Preferences)", &slot_2, QMetaData::Public }
+	{ "removeSlot()", &slot_2, QMetaData::Public },
+	{ "setPref(Preferences)", &slot_3, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -75,7 +74,7 @@ QMetaObject* ConstantDialog::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"ConstantDialog", parentObject,
-	slot_tbl, 3,
+	slot_tbl, 4,
 	signal_tbl, 1,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -112,9 +111,10 @@ void ConstantDialog::prefChange( Preferences t0 )
 bool ConstantDialog::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: boxSlot((int)static_QUType_int.get(_o+1)); break;
+    case 0: boxSlot(); break;
     case 1: applySlot(); break;
-    case 2: setPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
+    case 2: removeSlot(); break;
+    case 3: setPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
     default:
 	return QDialog::qt_invoke( _id, _o );
     }

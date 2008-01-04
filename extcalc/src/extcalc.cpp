@@ -103,6 +103,7 @@ void MainObject::closeEvent(QCloseEvent*e)
 {
 	writeConfigFile();
 	writeVarFile();
+	writeConstants();
 	statistics->writeListsFile();
 	if(scripting->quitProgram())
 	{
@@ -1335,8 +1336,9 @@ void MainObject::initConstants()
 			
 		free(pref.constList);
 	}
-	pref.constList=(Constant*)malloc(8*sizeof(Constant));
-	pref.constLen=8;
+	pref.constList=(Constant*)malloc(31*sizeof(Constant));
+	pref.constLen=31;
+	pref.userConstLen=0;
 
 	
 	pref.constList[0].identifier=new QString("c_pi");
@@ -1355,26 +1357,192 @@ void MainObject::initConstants()
 	pref.constList[3].identifier=new QString("c_c0");
 	pref.constList[3].description=new QString(tr("vacuum light speed c0 [m/s]"));
 	pref.constList[3].value=new QString("299792458");
+		
+	pref.constList[4].identifier=new QString("c_g");
+	pref.constList[4].description=new QString(tr("standard acceleration of gravity g [m/s^2]"));
+	pref.constList[4].value=new QString("9.80665");
+			
+	pref.constList[5].identifier=new QString("c_G");
+	pref.constList[5].description=new QString(tr("Newtonian constant of gravitation G [m^3/(kg s^2)]"));
+	pref.constList[5].value=new QString("6.674 28e-11");	
 	
-	pref.constList[4].identifier=new QString("c_e0");
-	pref.constList[4].description=new QString(tr("electric field constant e0 [F/m]"));
-	pref.constList[4].value=new QString("8.854187817e-12");
+	pref.constList[6].identifier=new QString("c_e0");
+	pref.constList[6].description=new QString(tr("electric field constant e0 [F/m]"));
+	pref.constList[6].value=new QString("8.854187817e-12");
 	
-	pref.constList[5].identifier=new QString("c_my0");
-	pref.constList[5].description=new QString(tr("magnetic field constant my0 [N/A^2]"));
-	pref.constList[5].value=new QString("12.566370614e-7");
+	pref.constList[7].identifier=new QString("c_my0");
+	pref.constList[7].description=new QString(tr("magnetic field constant my0 [N/A^2]"));
+	pref.constList[7].value=new QString("12.566370614e-7");
+
+	pref.constList[8].identifier=new QString("c_hj");
+	pref.constList[8].description=new QString(tr("Planck constant h [Js]"));
+	pref.constList[8].value=new QString("6.62606896e-34");
+	
+	pref.constList[9].identifier=new QString("c_hev");
+	pref.constList[9].description=new QString(tr("Planck constant h [eVs]"));
+	pref.constList[9].value=new QString("4.13566733e-15");
+
+	pref.constList[10].identifier=new QString("c_Z0");
+	pref.constList[10].description=new QString(tr("characteristic impedance of vacuum Z0 [V/A]"));
+	pref.constList[10].value=new QString("376.730313461");
+	
+	pref.constList[11].identifier=new QString("c_F");
+	pref.constList[11].description=new QString(tr("Faraday constant F [C/mol]"));
+	pref.constList[11].value=new QString("96485.3399");	
+	
+	pref.constList[12].identifier=new QString("c_e");
+	pref.constList[12].description=new QString(tr("atomic unit of charge e [C]"));
+	pref.constList[12].value=new QString("1.602176487e-19");
+	
+	pref.constList[13].identifier=new QString("c_alpha");
+	pref.constList[13].description=new QString(tr("fine-structure constant alpha"));
+	pref.constList[13].value=new QString("7.2973525376e-3");
+
+	pref.constList[14].identifier=new QString("c_mu");
+	pref.constList[14].description=new QString(tr("atomic mass constant mu [kg]"));
+	pref.constList[14].value=new QString("1.660 538 782 e-27");	
+
+	pref.constList[15].identifier=new QString("c_me");
+	pref.constList[15].description=new QString(tr("electron mass me [kg]"));
+	pref.constList[15].value=new QString("9.10938215e-31");
+
+	pref.constList[16].identifier=new QString("c_mn");
+	pref.constList[16].description=new QString(tr("neutron mass mn [kg]"));
+	pref.constList[16].value=new QString("1.674927211e-27");
+
+	pref.constList[17].identifier=new QString("c_mp");
+	pref.constList[17].description=new QString(tr("proton mass mp [kg]"));
+	pref.constList[17].value=new QString("1.672621637e-27");
+	
+	pref.constList[18].identifier=new QString("c_NA");
+	pref.constList[18].description=new QString(tr("Avogadro constant [1/mol]"));
+	pref.constList[18].value=new QString("6.02214179 e23");	
+	
+	pref.constList[19].identifier=new QString("c_k");
+	pref.constList[19].description=new QString(tr("Boltzmann constant k [J/K]"));
+	pref.constList[19].value=new QString("1.3806504e-23");	
+	
+	pref.constList[20].identifier=new QString("c_R0");
+	pref.constList[20].description=new QString(tr("molar gas constant R0 [J/(mol K)]"));
+	pref.constList[20].value=new QString("8.314472");	
+	
+	pref.constList[21].identifier=new QString("c_sigma");
+	pref.constList[21].description=new QString(tr("Stefan-Boltzmann constant sigma [W/(M^2 K^4)]"));
+	pref.constList[21].value=new QString("5.670400e-8");	
+	
+	pref.constList[22].identifier=new QString("c_b");
+	pref.constList[22].description=new QString(tr("Wien wavelength displacement law constant b [m K]"));
+	pref.constList[22].value=new QString("2.8977685e-3");	
+
 
 	
-	pref.constList[6].identifier=new QString("c_kmmile");
-	pref.constList[6].description=new QString(tr("km -> mile"));
-	pref.constList[6].value=new QString("0.621371192");
+	pref.constList[23].identifier=new QString("c_kmmile");
+	pref.constList[23].description=new QString(tr("km -> mile"));
+	pref.constList[23].value=new QString("0.621371192");
 	
-	pref.constList[7].identifier=new QString("c_milekm");
-	pref.constList[7].description=new QString(tr("mile -> km"));
-	pref.constList[7].value=new QString("1.609334");
+	pref.constList[24].identifier=new QString("c_milekm");
+	pref.constList[24].description=new QString(tr("mile -> km"));
+	pref.constList[24].value=new QString("1.609334");
+	
+	pref.constList[25].identifier=new QString("c_cminch");
+	pref.constList[25].description=new QString(tr("cm -> inch"));
+	pref.constList[25].value=new QString("0.393700787");
+	
+	pref.constList[26].identifier=new QString("c_inchcm");
+	pref.constList[26].description=new QString(tr("inch -> cm"));
+	pref.constList[26].value=new QString("2.54");
+	
+	pref.constList[27].identifier=new QString("c_goz");
+	pref.constList[27].description=new QString(tr("g -> oz"));
+	pref.constList[27].value=new QString("0.035273965");
+	
+	pref.constList[28].identifier=new QString("c_ozg");
+	pref.constList[28].description=new QString(tr("oz -> g"));
+	pref.constList[28].value=new QString("28.34962");
+		
+	pref.constList[29].identifier=new QString("c_Jcal");
+	pref.constList[29].description=new QString(tr("J -> calorie"));
+	pref.constList[29].value=new QString("0.238902957");
+	
+	pref.constList[30].identifier=new QString("c_calJ");
+	pref.constList[30].description=new QString(tr("calorie -> J"));
+	pref.constList[30].value=new QString("4.1858");
+	
+	
+	FILE*configFile;
+
+	chdir(getenv("HOME"));
+	
+	int fileLen;
+	struct stat fileStat;
+
+	if(lstat(CONSTFILE,&fileStat) != 0)
+	{
+		getPref(pref);
+		return;
+	}
+	else fileLen=fileStat.st_size;
+	
+	configFile = fopen(CONSTFILE,"r");
+	if(configFile == NULL)
+	{
+		ErrorBox(tr("Can't read constants file %1.\n\n").arg(CONSTFILE)+getErrorMessage());
+		getPref(pref);
+		return;
+	}
+	char*buffer=new char[fileLen+1];
+	buffer[fileLen]=(char)0;
+	fread((void*)buffer,fileLen,1,configFile);
+	QString constData(buffer),desc,val;
+	int pos1=0,pos2=0;
+	
+	int c=1;
+	while((pos1=constData.find("\n",pos2))!=-1)
+	{
+		desc=constData.mid(pos2,pos1-pos2);
+		pos2=pos1+1;
+		pos1=constData.find("\n",pos2);
+		if(pos1==-1)
+			break;
+		val=constData.mid(pos2,pos1-pos2);
+		pos2=pos1+1;
+		
+		pref.constLen++;
+		pref.userConstLen++;
+		pref.constList=(Constant*)realloc((void*)pref.constList,sizeof(Constant)*pref.constLen);
+		pref.constList[pref.constLen-1].description=new QString(desc);
+		pref.constList[pref.constLen-1].value=new QString(val);
+		pref.constList[pref.constLen-1].identifier=new QString("c_usr"+QString::number(c));
+		c++;
+	}
+	fclose(configFile);
+	delete[] buffer;
 
 	getPref(pref);
+}
 
+void MainObject::writeConstants()
+{
+	FILE*configFile;
+
+	chdir(getenv("HOME"));
+	configFile = fopen(CONSTFILE,"w");
+	if(configFile == NULL)
+	{
+		ErrorBox(tr("Constants file %1 could not be written.\n\n").arg(CONSTFILE)+getErrorMessage());
+		return;
+	}
+	QString constData("");
+	for(int c=pref.constLen-pref.userConstLen; c<pref.constLen; c++)
+	{
+		constData+=*pref.constList[c].description;
+		constData+="\n";
+		constData+=*pref.constList[c].value;
+		constData+="\n";
+	}
+	
+	fwrite(constData.latin1(),constData.length(),1,configFile);
+	fclose(configFile);
 }
 
 void MainObject::tabChangeSlot(QWidget*activeWidget)

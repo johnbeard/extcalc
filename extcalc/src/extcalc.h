@@ -742,6 +742,7 @@ void readVarFile();
 void writeConfigFile();
 void writeVarFile();
 void initConstants();
+void writeConstants();
 
 
 

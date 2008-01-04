@@ -20,7 +20,7 @@ This is a overloaded popup menu that serves a complete function catalog.
 #include <qpopupmenu.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
-#include <qcombobox.h>
+#include <qlistbox.h>
 #include <qlineedit.h>
 #include <qdialog.h>
 #include "global.h"
@@ -52,102 +52,23 @@ conversation
 
 class ConstantDialog :public QDialog
 {
-	QLabel *constLabel,*descriptionLabel,*valueLabel;
-	QLineEdit *descriptionLine,*valueLine;
-	QPushButton *okButton,*cancelButton,*applyButton;
-	QComboBox *variablesBox;
+	QLabel *constLabel,*descriptionLabel,*valueLabel,*identifierLabel;
+	QLineEdit *descriptionLine,*valueLine,*identifierLine;
+	QPushButton *okButton,*cancelButton,*addButton,*removeButton;
+	QListBox *variablesBox;
 	Preferences pref;
 	Q_OBJECT
 	
 	
 	public:
-	ConstantDialog(QWidget*parent,QString name,Preferences p) :QDialog(parent,name,true)
-	{
-		pref=p;
-		setCaption(tr("Change Constants"));
-		
-		constLabel=new QLabel(tr("Choose Constant"),this);
-		descriptionLabel=new QLabel(tr("Description"),this);
-		valueLabel=new QLabel(tr("Value"),this);
-		
-		descriptionLine=new QLineEdit(this);
-		valueLine=new QLineEdit(this);
-		
-		variablesBox=new QComboBox(this);
-		
-		okButton=new QPushButton(tr("OK"),this);
-		cancelButton=new QPushButton(tr("Cancel"),this);
-		applyButton=new QPushButton(tr("Apply"),this);
-		
-		setGeometry(0,0,300,280);
-		constLabel->setGeometry(20,20,260,20);
-		variablesBox->setGeometry(20,50,200,30);
-		
-		descriptionLabel->setGeometry(20,100,260,20);
-		descriptionLine->setGeometry(20,125,260,20);
-		
-		valueLabel->setGeometry(20,160,260,20);
-		valueLine->setGeometry(20,185,260,20);
-		
-		okButton->setGeometry(25,230,75,30);
-		applyButton->setGeometry(110,230,75,30);
-		cancelButton->setGeometry(205,230,75,30);
-
-		connect(cancelButton,SIGNAL(clicked()),this,SLOT(reject()));
-		connect(okButton,SIGNAL(clicked()),this,SLOT(applySlot()));
-		connect(applyButton,SIGNAL(clicked()),this,SLOT(applySlot()));
-		connect(okButton,SIGNAL(clicked()),this,SLOT(accept()));
-		connect(variablesBox,SIGNAL(activated(int)),this,SLOT(boxSlot(int)));
-		
-		setPref(pref);
-	}
+	ConstantDialog(QWidget*parent,QString name,Preferences p);
 	
 	public slots:
 		
-	void boxSlot(int i)
-	{
-		if(i==0)
-		{
-			descriptionLine->setText("");
-			valueLine->setText("");
-		}
-		else 
-		{
-			descriptionLine->setText(*(pref.constList[i-1+pref.constLen-pref.userConstLen].description));
-			valueLine->setText(*(pref.constList[i-1+pref.constLen-pref.userConstLen].value));
-		}
-	}
-	
-	
-	void applySlot()
-	{
-		if(variablesBox->currentItem()==0 && descriptionLine->text().length()>0)
-		{
-			pref.constList=(Constant*)realloc(pref.constList,sizeof(Constant)*(pref.constLen+1));
-			pref.constLen++;
-			pref.userConstLen++;
-			pref.constList[pref.constLen-1].description=new QString(descriptionLine->text());
-			pref.constList[pref.constLen-1].value=new QString(valueLine->text());
-			pref.constList[pref.constLen-1].value=new QString("c_usr"+QString::number(pref.userConstLen));
-			
-		}
-		else
-		{
-			int i=variablesBox->currentItem()-1;
-			*(pref.constList[pref.constLen-pref.userConstLen+i].description)=descriptionLine->text();
-			*(pref.constList[pref.constLen-pref.userConstLen+i].value)=valueLine->text();
-		}
-		emit prefChange(pref);
-	}
-	
-	void setPref(Preferences newPref)
-	{
-		pref=newPref;
-		variablesBox->clear();
-		variablesBox->insertItem(tr("New"));
-		for(int c=pref.constLen-pref.userConstLen; c<pref.constLen; c++)
-			variablesBox->insertItem(*(pref.constList[c].description));
-	}
+	void boxSlot();
+	void applySlot();
+	void removeSlot();
+	void setPref(Preferences newPref);
 	
 	signals:
 		void prefChange(Preferences);
