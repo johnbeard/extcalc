@@ -466,6 +466,7 @@ struct Preferences
 	bool*activeFunctions;
 	int*functionTypes;
 	bool*dynamicFunctions;
+	bool*logicFunctions;
 	QColor*functionColors;
 	QString drawText;
 	int language;

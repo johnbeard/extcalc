@@ -48,7 +48,6 @@ void GraphOutput::initializeGL()
 	if(drawState!=DRAWNONE)
 		generateTexture();
 	
-	
 	glDisable(GL_TEXTURE_2D);
 	if(drawScreenshot)
 	{
@@ -761,13 +760,16 @@ void GraphOutput::processStdFunction(QString function)
 {
 	char*func;
 	func = preprocessor(&function,&pref,false);
+	
 
 	double xStart,xStep;
+	Number result;
 	xStart=pref.xmin;
 	xStep=(pref.xmax-pref.xmin)/PRECISION2D;
 
 	QString num,num2;
-	Calculate ca1(NULL,func,&pref,vars);
+
+
 
 	struct timeval t1,t2;
 	
@@ -776,15 +778,38 @@ void GraphOutput::processStdFunction(QString function)
 	int index=objectCoordinates.GetLen()-1;
 	objectInfo[index].length=PRECISION2D;
 	objectInfo[index].function=func;
-
-	gettimeofday(&t1,NULL);
-	for(int c=0; c<PRECISION2D; c++)
+	if(objectInfo[index].logic)
 	{
-		vars[23]=xStart+(double)c*xStep;
-		objectCoordinates[index][2*c]  =vars[23];
-		objectCoordinates[index][2*c+1]=ca1.calc();
+		Script ca1(NULL,func,&pref,vars,threadData);
+		gettimeofday(&t1,NULL);
+		
+		
+		for(int c=0; c<PRECISION2D; c++)
+		{
+			threadData->vars[23][0].type=NFLOAT;
+			threadData->vars[23][0].fval=xStart+(double)c*xStep;
+			objectCoordinates[index][2*c]  =threadData->vars[23][0].fval.real();
+			result=ca1.exec();
+			convertToFloat(&result);
+			objectCoordinates[index][2*c+1]=result.fval.real();
+		}
+		gettimeofday(&t2,NULL);
 	}
-	gettimeofday(&t2,NULL);
+	else 
+	{
+		Calculate ca1(NULL,func,&pref,vars);
+		gettimeofday(&t1,NULL);
+		
+		for(int c=0; c<PRECISION2D; c++)
+		{
+			vars[23]=xStart+(double)c*xStep;
+			objectCoordinates[index][2*c]  =vars[23];
+			objectCoordinates[index][2*c+1]=ca1.calc();
+		}
+		gettimeofday(&t2,NULL);
+	}
+
+
 
 	int seconds,usecs;
 	seconds=t2.tv_sec-t1.tv_sec;
@@ -794,6 +819,7 @@ void GraphOutput::processStdFunction(QString function)
 		seconds--;
 		usecs=1000000+usecs;
 	}
+
 
 	objects.NewItem(generateGLList(index));
 }
@@ -825,17 +851,41 @@ void GraphOutput::processPolarFunction(QString function)
 
 	float r;
 	QString num,num2;
-	Calculate ca1(NULL,func,&pref,vars);
 	struct timeval t1,t2;
-	gettimeofday(&t1,NULL);
-	for(int c=0; c<=PRECISION2D; c++)
+	if(objectInfo[index].logic)
 	{
-		vars[23]=xStart+(double)c*xStep;
-		r=ca1.calc();
-		objectCoordinates[index][c*2]=cos(vars[23]*multiplier)*r;
-		objectCoordinates[index][c*2+1]=sin(vars[23]*multiplier)*r;
+		Number r;
+		long double x;
+		Script ca1(NULL,func,&pref,vars,threadData);
+		
+		gettimeofday(&t1,NULL);
+		
+		for(int c=0; c<=PRECISION2D; c++)
+		{
+			x=xStart+(double)c*xStep;
+			threadData->vars[23][0].type=NFLOAT;
+			threadData->vars[23][0].fval=x;
+
+			r=ca1.exec();
+			convertToFloat(&r);
+			objectCoordinates[index][2*c]  =cos(x*multiplier)*r.fval.real();
+			objectCoordinates[index][2*c+1]=sin(x*multiplier)*r.fval.real();
+			
+		}
+		gettimeofday(&t2,NULL);
 	}
-	gettimeofday(&t2,NULL);
+	else {
+		Calculate ca1(NULL,func,&pref,vars);
+		gettimeofday(&t1,NULL);
+		for(int c=0; c<=PRECISION2D; c++)
+		{
+			vars[23]=xStart+(double)c*xStep;
+			r=ca1.calc();
+			objectCoordinates[index][c*2]=cos(vars[23]*multiplier)*r;
+			objectCoordinates[index][c*2+1]=sin(vars[23]*multiplier)*r;
+		}
+		gettimeofday(&t2,NULL);
+	}
 
 	int seconds,usecs;
 	seconds=t2.tv_sec-t1.tv_sec;
@@ -869,7 +919,7 @@ void GraphOutput::processParameterFunction(QString function)
 	double xStart,xStep;
 	xStart=pref.parameterStart;
 	xStep=(pref.parameterEnd-pref.parameterStart)/(double)pref.parameterSteps;
-	
+
 	double* coordinates=new double[pref.parameterSteps*2];
 	objectCoordinates.NewItem(coordinates);
 	int index=objectCoordinates.GetLen()-1;
@@ -1433,25 +1483,47 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 
 	for(int c=0; c<objectInfo.GetLen(); c++)
 	{
-		vars[0]=objectInfo[c].dynamicParameter;
+		if(objectInfo[c].logic)
+		{
+			threadData->vars[0][0].type=NFLOAT;
+			threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
+		}
+		else vars[0]=objectInfo[c].dynamicParameter;
+		
 		if(!ret);
 		else if(objectInfo[c].type == GRAPHSTD)
 		{
 //			perror("xStart: "+QString::number(xStart)+" xStep: "+QString::number(xStep)+" shiftRight: "+QString::number(shiftRight)+" function: "+QString(objectInfo[c].function)); 
 
-			Calculate ca(NULL,objectInfo[c].function,&pref,vars);
+			
 
 			if(shiftRight)
 				for(int c1=steps*2; c1<PRECISION2D*2; c1++)
 					objectCoordinates[c][c1-steps*2]=objectCoordinates[c][c1];
 			else for(int c1=(PRECISION2D)*2+1; c1>=0; c1--)
 						objectCoordinates[c][c1]=objectCoordinates[c][c1-steps*2];
-
-			for(int c1=0; c1<steps; c1++)
+			if(objectInfo[c].logic)
 			{
-				vars[23]=xStart+c1*xStep;
-				objectCoordinates[c][(startStep+c1)*2]=vars[23];
-				objectCoordinates[c][(startStep+c1)*2+1]=ca.calc();
+				Number result;
+				Script ca(NULL,objectInfo[c].function,&pref,vars,threadData);
+				for(int c1=0; c1<steps; c1++)
+				{
+					threadData->vars[23][0].type=NFLOAT;
+					threadData->vars[23][0].fval=xStart+c1*xStep;
+					objectCoordinates[c][(startStep+c1)*2]  =threadData->vars[23][0].fval.real();
+					result=ca.exec();
+					convertToFloat(&result);
+					objectCoordinates[c][(startStep+c1)*2+1]=result.fval.real();
+				}
+			}
+			else {
+				Calculate ca(NULL,objectInfo[c].function,&pref,vars);
+				for(int c1=0; c1<steps; c1++)
+				{
+					vars[23]=xStart+c1*xStep;
+					objectCoordinates[c][(startStep+c1)*2]=vars[23];
+					objectCoordinates[c][(startStep+c1)*2+1]=ca.calc();
+				}
 			}
 		}
 		else if(objectInfo[c].type == GRAPHIEG || objectInfo[c].type == GRAPHIEL || objectInfo[c].type == GRAPHIEGE || objectInfo[c].type == GRAPHIELE)
@@ -1547,6 +1619,7 @@ void GraphOutput::processFunction(int index)
 		info.type=pref.functionTypes[index];
 		info.color=pref.functionColors[index];
 		info.dynamic=false;
+		info.logic=pref.logicFunctions[index];
 		objectInfo.NewItem(info);
 		
 		drawRules.NewItem(new int[2]);
@@ -1638,6 +1711,7 @@ void GraphOutput::processFunction(int index)
 					info.type=GRAPHSTD;
 					info.color=QColor(0,0,0);
 					info.dynamic=false;
+					info.logic=pref.logicFunctions[index];
 					objectInfo.NewItem(info);
 					drawRules.NewItem(new int[2]);
 					drawRules[ruleIndex+1][0]=1;
@@ -1827,7 +1901,12 @@ void GraphOutput::processFunction(int index)
 			default:
 				for(int c=0; c<=dynamicSteps; c++)
 				{
-					vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
+					if(pref.logicFunctions[index])
+					{
+						threadData->vars[0][0].type=NFLOAT;
+						threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
+					}
+					else vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
 					info.dynamicParameter=vars[0];
 					objectInfo.NewItem(info);
 					processStdFunction(pref.functions[index]);

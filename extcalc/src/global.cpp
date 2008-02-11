@@ -2129,7 +2129,7 @@ int Calculate::split(char* line)
 	}
 	else if(line[0]>='A' && line[0]<='Z')
 	{
-		
+		operation=NONE;
 		number=NAN;
 		vertObj=NULL;
 		var=((int)line[0])-65;
@@ -2178,13 +2178,9 @@ double Calculate::calc()
 			{
 				return vars[var];
 			}
-			else if(number!=NAN)
-			{
-				return number;
-			}
 			else 
 			{
-				return NAN;
+				return number;
 			}
 		}
 		case PLUS:
@@ -2414,10 +2410,10 @@ char* Script::parse(char* line)
 	
 	if(line[0]== '{' && bracketFind(line,"}")==len-1 || line[0]== '(' && bracketFind(line,")")==len-1)
 	{
-		line[len-1]=(char)0;
-		line++;
-		len-=2;
-		split(line);
+		char*recString=new char[len-1];
+		strcopy(recString,&line[1],len-2);
+		split(recString);
+		delete[] recString;
 		return NULL;
 	}
 //	static int commands=0;
@@ -5250,13 +5246,13 @@ Number Script::exec()
 			value=vertObj->exec();
 			if(value.type==NBOOL)
 				if(value.bval)
-					vertObj2->exec();
+					value=vertObj2->exec();
 			else if(value.type==NINT)
 				if(value.ival)
-					vertObj2->exec();
+					value=vertObj2->exec();
 			else if(value.type==NFLOAT)
 				if(value.fval.real()!=0.0)
-					vertObj2->exec();
+					value=vertObj2->exec();
 			if(nextObj==NULL)
 				return value;
 			else return nextObj->exec();
@@ -5266,17 +5262,17 @@ Number Script::exec()
 			value=vertObj->exec();
 			if(value.type==NBOOL)
 				if(value.bval)
-					vertObj2->exec();
-				else vertObj3->exec();
+					value=vertObj2->exec();
+				else value=vertObj3->exec();
 			else if(value.type==NINT)
 				if(value.ival)
-					vertObj2->exec();
-				else vertObj3->exec();
+					value=vertObj2->exec();
+				else value=vertObj3->exec();
 			else if(value.type==NFLOAT)
 				if(value.fval.real()!=0.0)
-					vertObj2->exec();
-				else vertObj3->exec();
-			else vertObj3->exec();
+					value=vertObj2->exec();
+				else value=vertObj3->exec();
+			else value=vertObj3->exec();
 			
 			if(nextObj==NULL)
 				return value;

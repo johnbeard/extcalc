@@ -143,7 +143,7 @@ dialog, the todo list and the bug list.
 //  - change structure of exec and calc methods                                             //
 //  - standardized user interface design for all tabs                                   ok  //
 //  - open help file in default browser                                                 ok  //
-//  - mathematic constants list                                                             //
+//  - mathematic constants list                                                         ok  //
 //  - precise error messages                                                            ok  //
 //  - RPN                                                                                   //
 //  - Port to QT 4                                                                          //
@@ -196,7 +196,7 @@ dialog, the todo list and the bug list.
 //	- directory creation at first start does not work									ok	//
 //	- command priority in script interpreter wrong										ok	//
 //	- autosize setting leads to wrong screenshot size									ok	//
-//	- abs does not exist in standard calculator class										//
+//	- abs does not exist in standard calculator class									ok	//
 
 
 //////////////////////////used variables//////////////////////////
@@ -412,6 +412,9 @@ MainObject() :QTabWidget()
 	pref.dynamicFunctions=new bool[20];
 	for(int c=0; c<20; c++)
 		pref.dynamicFunctions[c]=false;
+	pref.logicFunctions=new bool[20];
+	for(int c=0; c<20; c++)
+		pref.logicFunctions[c]=false;
 	pref.xmin=pref.ymin=pref.zmin=-10.0;
 	pref.xmax=pref.ymax=pref.zmax=10.0;
 	pref.rasterSizeX=pref.rasterSizeY=pref.rasterSizeZ=1.0;

@@ -302,6 +302,10 @@ int MainObject::readConfigFile()
 				fwrite("F"+QString::number(c+1)+"DYNAMIC=false\n",16,1,configFile);
 			for(int c=9; c<20; c++)
 				fwrite("F"+QString::number(c+1)+"DYNAMIC=false\n",17,1,configFile);
+			for(int c=0; c<9; c++)
+				fwrite("F"+QString::number(c+1)+"LOGIC=false\n",14,1,configFile);
+			for(int c=9; c<20; c++)
+				fwrite("F"+QString::number(c+1)+"LOGIC=false\n",15,1,configFile);
 			fclose(configFile);
 			
 			if(lstat(CONFIGFILE,&fileStat) != 0)
@@ -833,6 +837,18 @@ int MainObject::readConfigFile()
 	if(pref.dynamicFunctions!=NULL)
 		delete[]pref.dynamicFunctions;
 	pref.dynamicFunctions=dynamicFunctions;
+	
+	bool*logicFunctions=new bool[20];
+	for(int c=0; c<20; c++)
+	{
+		QString logicString=getConfigString(&confFile,"F"+QString::number(c+1)+"LOGIC");
+		if(logicString.lower() =="true" &&logicString.length()>0)
+			logicFunctions[c]=true;
+		else logicFunctions[c]=false;
+	}
+	if(pref.logicFunctions!=NULL)
+		delete[]pref.logicFunctions;
+	pref.logicFunctions=logicFunctions;
 
 	QString scriptPath=getConfigString(&confFile,"SCRIPTROOT");
 	if(scriptPath.length()<=0)
@@ -1115,6 +1131,15 @@ void MainObject::writeConfigFile()
 		configuration+=QString::number(c+1);
 		configuration+="DYNAMIC=";
 		if(pref.dynamicFunctions[c])
+			configuration+="true\n";
+		else configuration+="false\n";
+	}
+	for(int c=0; c<20;c++)
+	{
+		configuration+="F";
+		configuration+=QString::number(c+1);
+		configuration+="LOGIC=";
+		if(pref.logicFunctions[c])
 			configuration+="true\n";
 		else configuration+="false\n";
 	}

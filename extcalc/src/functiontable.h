@@ -64,7 +64,7 @@ public:
 		}
 		
 		setNumRows(tableFunctionMap.GetLen());
-		setNumCols(5);
+		setNumCols(6);
 		
 		setRowLabels(rowLabels);
 		
@@ -72,7 +72,8 @@ public:
 		colLabels +=GRAPHH_STR13;
 		colLabels +=GRAPHH_STR14;
 		colLabels +=GRAPHH_STR24;
-		colLabels +="dynamic";
+		colLabels +=tr("dynamic");
+		colLabels +=tr("logic expressions");
 		setColumnLabels(colLabels);
 
 		for(int c=0; c<tableFunctionMap.GetLen(); c++)
@@ -110,6 +111,8 @@ public:
 		for(int c=0; c<tableFunctionMap.GetLen(); c++)
 			setItem(c,4,new QCheckTableItem(this,""));
 
+		for(int c=0; c<tableFunctionMap.GetLen(); c++)
+			setItem(c,5,new QCheckTableItem(this,""));
 
 		for(int c=0; c<tableFunctionMap.GetLen(); c++)
 			setRowHeight(c,25);

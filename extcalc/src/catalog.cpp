@@ -557,8 +557,11 @@ void ConstantDialog::setPref(Preferences newPref)
 	pref=newPref;
 	variablesBox->clear();
 	variablesBox->insertItem(tr("New"));
+	if(pref.constList!=NULL)
+	{
 	for(int c=pref.constLen-pref.userConstLen; c<pref.constLen; c++)
 		variablesBox->insertItem(*(pref.constList[c].description));
+	}
 }
 
 

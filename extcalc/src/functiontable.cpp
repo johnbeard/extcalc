@@ -24,9 +24,11 @@ void FunctionTable::cellChangedSlot(int row,int)
 	QCheckTableItem*activeItem=(QCheckTableItem*)item(row,2);
 	QComboTableItem *typeItem=(QComboTableItem*)item(row,3);
 	QCheckTableItem*dynamicItem=(QCheckTableItem*)item(row,4);
+	QCheckTableItem*logicItem=(QCheckTableItem*)item(row,5);
 		
 	pref.activeFunctions[tableFunctionMap[row]]=activeItem->isChecked();
 	pref.dynamicFunctions[tableFunctionMap[row]]=dynamicItem->isChecked();
+	pref.logicFunctions[tableFunctionMap[row]]=logicItem->isChecked();
 	pref.functionColors[tableFunctionMap[row]]=getColor(colorItem->text());
 
 	if(typeItem->currentText() == GRAPHH_STR17)
@@ -88,6 +90,7 @@ void FunctionTable::setPref(Preferences newPref)
 			insertRows(c,1);
 			setItem(c,2,new QCheckTableItem(this,""));
 			setItem(c,4,new QCheckTableItem(this,""));
+			setItem(c,5,new QCheckTableItem(this,""));
 			setItem(c,1,new QComboTableItem(this,colorList));
 			setItem(c,3,new QComboTableItem(this,graphTypeList));
 			verticalHeader()->setLabel(c,"x"+QString::number(tableFunctionMap[c]+1)+"(T)");
@@ -203,6 +206,9 @@ void FunctionTable::setPref(Preferences newPref)
 		checkItem=(QCheckTableItem*)item(c,4);
 		if(checkItem!=NULL)
 			checkItem->setChecked(pref.dynamicFunctions[tableFunctionMap[c]]);
+		checkItem=(QCheckTableItem*)item(c,5);
+		if(checkItem!=NULL)
+			checkItem->setChecked(pref.logicFunctions[tableFunctionMap[c]]);
 	}
 	for(int c=0;c<tableFunctionMap.GetLen(); c++)
 	{
@@ -220,8 +226,7 @@ void FunctionTable::setPref(Preferences newPref)
 	adjustColumn(0);
 	adjustColumn(1);
 	adjustColumn(2);
-	adjustColumn(3);	
-	
+	adjustColumn(3);
 }
 
 

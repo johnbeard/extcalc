@@ -65,6 +65,7 @@ struct ObjectInfo
 {
 	int type;
 	bool dynamic;
+	bool logic;
 	double dynamicParameter;
 	int length;
 	char* function;
