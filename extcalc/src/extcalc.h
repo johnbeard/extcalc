@@ -149,6 +149,10 @@ dialog, the todo list and the bug list.
 //  - Port to QT 4                                                                          //
 //  - use QTranslator for internationalization                                          ok  //
 //  - symbolic calculation for systems of linear equations                                  //
+//  - logic operations for graph drawing (analysis, input, multithreading)                  //
+//  - graph analysis for functions with logic operations                                    //
+//  - multi-line edit for functions in graphics window                                      //
+//  - usage of multithreading for graph calculation                                         //
 //                                                                                          //
 ////////////////////////////////////////beta releases/////////////////////////////////////////
 

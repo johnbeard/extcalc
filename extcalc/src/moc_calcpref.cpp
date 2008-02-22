@@ -1,7 +1,7 @@
 /****************************************************************************
 ** CalcPreferences meta object code from reading C++ file 'calcpref.h'
 **
-** Created: Thu Nov 1 13:24:56 2007
+** Created: Tue Feb 19 19:15:07 2008
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.7   edited Oct 19 16:22 $)
 **
 ** WARNING! All changes made in this file will be lost!

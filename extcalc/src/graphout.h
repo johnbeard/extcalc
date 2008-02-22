@@ -165,7 +165,7 @@ public:
 	void processPolarFunction(QString);
 	void processParameterFunction(QString);
 	void process3dFunction(QString);
-	void processInequaityFunction(QString,QString,int);
+	void processInequalityFunction(QString,QString,int);
 	void processComplexFunction(QString,bool);
 	void processFunction(int);
 	bool updateFunctions(double,double);

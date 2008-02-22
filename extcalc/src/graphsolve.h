@@ -169,9 +169,10 @@ public:
 //	void updateFunctions(QString*,int);
 	void setPref(Preferences newPref);
 	void calculateYVal(QString);
-	int calculateRoots(QString,long double, long double,long double**,int varIndex,bool forceScript);
+	int calculateRoots(QString,long double, long double,long double**,int varIndex,long double,bool forceScript);
+	long double calculateValue(QString,long double,int varIndex,bool forceScript);
 	void showRoots(QString,QColor color);
-	void calculateNewton(QString);
+	void calculateNewton(QString,bool forceScript);
 	void setFunctionBox(QComboBox*fBox);
 	
 protected:

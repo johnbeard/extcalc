@@ -523,6 +523,14 @@ int MainObject::readConfigFile()
 			dynDelay=1;
 		pref.dynamicDelay=dynDelay;
 	}
+	QString paraStartStr=getConfigString(&confFile,"PARAMETERSTART");
+	if(paraStartStr.length()>0)
+	{
+		double paraStart=paraStartStr.toDouble();
+		if(paraStart == NAN)
+			paraStart=0.0;
+		pref.parameterStart=paraStart;
+	}	
 	QString paraEndStr=getConfigString(&confFile,"PARAMETEREND");
 	if(paraEndStr.length()>0)
 	{

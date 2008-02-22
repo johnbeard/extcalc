@@ -926,9 +926,33 @@ void GraphOutput::processParameterFunction(QString function)
 	objectInfo[index].length=pref.parameterSteps;
 
 	QString num,num2;
+	struct timeval t1,t2;
+	
+	if(objectInfo[index].logic)
+	{
+		Number result;
+		Script ca1(NULL,func1,&pref,vars,threadData);
+		Script ca2(NULL,func2,&pref,vars,threadData);
+		gettimeofday(&t1,NULL);
+		
+		
+		for(int c=0; c<pref.parameterSteps; c++)
+		{
+			threadData->vars[19][0].type=NFLOAT;
+			threadData->vars[19][0].fval=xStart+(double)c*xStep;
+			result=ca1.exec();
+			convertToFloat(&result);
+			objectCoordinates[index][2*c]=result.fval.real();
+			threadData->vars[19][0].type=NFLOAT;
+			threadData->vars[19][0].fval=xStart+(double)c*xStep;
+			result=ca2.exec();
+			convertToFloat(&result);
+			objectCoordinates[index][2*c+1]=result.fval.real();
+		}
+	}
+	else {
 	Calculate ca1(NULL,func1,&pref,vars);
 	Calculate ca2(NULL,func2,&pref,vars);
-	struct timeval t1,t2;
 
 	gettimeofday(&t1,NULL);
 	for(int c=0; c<pref.parameterSteps; c++)
@@ -938,6 +962,7 @@ void GraphOutput::processParameterFunction(QString function)
 		objectCoordinates[index][2*c+1]=ca2.calc();
 	}
 	gettimeofday(&t2,NULL);
+	}
 
 	int seconds,usecs;
 	seconds=t2.tv_sec-t1.tv_sec;
@@ -1012,18 +1037,40 @@ void GraphOutput::process3dFunction(QString function)
 	objectInfo[index].length=PRECISION3D;
 
 	QString num,num2;
-	Calculate ca1(NULL,func,&pref,vars);
 	struct timeval t1,t2;
-
-	gettimeofday(&t1,NULL);
-
-	for(int c=0; c<PRECISION3D; c++)
+	if(objectInfo[index].logic)
 	{
-		vars[25]=zStart+c*zStep;
-		for(int c1=0; c1<PRECISION3D; c1++)
+		Number result;
+		Script ca1(NULL,func,&pref,vars,threadData);
+		gettimeofday(&t1,NULL);
+		
+		for(int c=0; c<PRECISION3D; c++)
 		{
-			vars[23]=xStart+c1*xStep;
-			coordinates[PRECISION3D*c+c1]=ca1.calc();
+			threadData->vars[25][0].type=NFLOAT;
+			threadData->vars[25][0].fval=zStart+c*zStep;
+			for(int c1=0; c1<PRECISION3D; c1++)
+			{
+				threadData->vars[23][0].type=NFLOAT;
+				threadData->vars[23][0].fval=xStart+c1*xStep;
+				result=ca1.exec();
+				convertToFloat(&result);
+				coordinates[PRECISION3D*c+c1]=result.fval.real();
+			}
+		}
+	}
+	else {
+		Calculate ca1(NULL,func,&pref,vars);
+	
+		gettimeofday(&t1,NULL);
+	
+		for(int c=0; c<PRECISION3D; c++)
+		{
+			vars[25]=zStart+c*zStep;
+			for(int c1=0; c1<PRECISION3D; c1++)
+			{
+				vars[23]=xStart+c1*xStep;
+				coordinates[PRECISION3D*c+c1]=ca1.calc();
+			}
 		}
 	}
 
@@ -1050,7 +1097,7 @@ void GraphOutput::process3dFunction(QString function)
 }
 
 
-void GraphOutput::processInequaityFunction(QString function1,QString function2,int type)
+void GraphOutput::processInequalityFunction(QString function1,QString function2,int type)
 {
 	//types:
 	//GRAPHIEG: both greather
@@ -1085,19 +1132,42 @@ void GraphOutput::processInequaityFunction(QString function1,QString function2,i
 	objectInfo[index].length=PRECISION2D+1;
 	objectInfo[index].function=func;
 	objectInfo[index].function2=func2;
-	
+
 	float x,y1,y2;
 	QString num,num2;
-	Calculate ca1(NULL,func,&pref,vars);
-	Calculate ca2(NULL,func2,&pref,vars);
-	
+	Calculate *ca1=NULL,*ca2=NULL;
+	Script*s1=NULL,*s2=NULL;
+	Number result;
+	if(objectInfo[index].logic)
+	{
+		
+		s1=new Script(NULL,func,&pref,vars,threadData);	
+		s2=new Script(NULL,func2,&pref,vars,threadData);	
+	}
+	else {
+		ca1=new Calculate(NULL,func,&pref,vars);
+		ca2=new Calculate(NULL,func2,&pref,vars);
+	}
 	for(int c=0; c<=PRECISION2D; c++)
 	{
 		x=xStart+(double)c*xStep;
-		vars[23]=x;
-		y1=ca1.calc();
-		y2=ca2.calc();
-		
+
+		if(objectInfo[index].logic)
+		{
+			threadData->vars[23][0].type=NFLOAT;
+			threadData->vars[23][0].fval=x;
+			result=s1->exec();
+			y1=result.fval.real();
+			threadData->vars[23][0].type=NFLOAT;
+			threadData->vars[23][0].fval=x;
+			result=s2->exec();
+			y2=result.fval.real();
+		}
+		else {
+			vars[23]=x;
+			y1=ca1->calc();
+			y2=ca2->calc();
+		}
 		if(type==GRAPHIEG)
 		{
 			objectCoordinates[index][2*c]=x;
@@ -1137,6 +1207,15 @@ void GraphOutput::processInequaityFunction(QString function1,QString function2,i
 //	MessageBox(  "Sekunden:      "+QString::number(seconds)+
 //			   "\nMicrosekunden: "+QString::number(usecs));
 	objects.NewItem(generateGLList(index));
+	if(objectInfo[index].logic)
+	{
+		delete s1;
+		delete s2;	
+	}
+	else {
+		delete ca1;
+		delete ca2;
+	}
 }
 
 void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
@@ -1165,8 +1244,6 @@ void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
 	pref.complex=oldcpref;
 	struct timeval t1,t2;
 	Number result;
-	
-	
 
 	objectCoordinates.NewItem(coordinates);
 	int index=objectCoordinates.GetLen()-1;
@@ -1179,7 +1256,6 @@ void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
 	{
 		for(int c=0; c<=pref.nyquistSteps; c++)
 		{
-			
 			threadData->vars[25][0].fval=Complex(zStart+(double)c*zStep,0.0);
 			result=ca1.exec();
 			objectCoordinates[index][3*c+2]  =threadData->vars[25][0].fval.real();
@@ -1198,7 +1274,7 @@ void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
 			objectCoordinates[index][2*c+1]=result.fval.imag();
 		}
 	}
-	
+
 	gettimeofday(&t2,NULL);
 
 	int seconds,usecs;
@@ -1530,9 +1606,19 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 		{
 //			perror("xStart: "+QString::number(xStart)+" xStep: "+QString::number(xStep)+" shiftRight: "+QString::number(shiftRight)+" function: "+QString(objectInfo[c].function)); 
 
-					
-			Calculate ca(NULL,objectInfo[c].function,&pref,vars);
-			Calculate ca2(NULL,objectInfo[c].function2,&pref,vars);
+			Calculate *ca1=NULL,*ca2=NULL;
+			Script*s1=NULL,*s2=NULL;
+			Number result;
+			if(objectInfo[c].logic)
+			{
+				
+				s1=new Script(NULL,objectInfo[c].function,&pref,vars,threadData);	
+				s2=new Script(NULL,objectInfo[c].function2,&pref,vars,threadData);	
+			}
+			else {
+				ca1=new Calculate(NULL,objectInfo[c].function,&pref,vars);
+				ca2=new Calculate(NULL,objectInfo[c].function2,&pref,vars);
+			}
 			
 			if(objectInfo[c].type == GRAPHIEG || objectInfo[c].type == GRAPHIEL)
 			{
@@ -1557,9 +1643,22 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 			for(int c1=0; c1<steps; c1++)
 			{
 				x=xStart+(double)c1*xStep;
-				vars[23]=x;
-				y1=ca.calc();
-				y2=ca2.calc();
+				if(objectInfo[c].logic)
+				{
+					threadData->vars[23][0].type=NFLOAT;
+					threadData->vars[23][0].fval=x;
+					result=s1->exec();
+					y1=result.fval.real();
+					threadData->vars[23][0].type=NFLOAT;
+					threadData->vars[23][0].fval=x;
+					result=s2->exec();
+					y2=result.fval.real();
+				}
+				else {
+					vars[23]=x;
+					y1=ca1->calc();
+					y2=ca2->calc();
+				}
 		
 				if(objectInfo[c].type==GRAPHIEG)
 				{
@@ -1585,6 +1684,15 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 					}
 					else objectCoordinates[c][3*(startStep+c1)+1]=objectCoordinates[c][3*(startStep+c1)+2]=0.0;
 				}
+			}
+			if(objectInfo[c].logic)
+			{
+				delete s1;
+				delete s2;	
+			}
+			else {
+				delete ca1;
+				delete ca2;
 			}
 			if(shiftRight)
 				steps--;
@@ -1652,7 +1760,7 @@ void GraphOutput::processFunction(int index)
 					{
 						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEG;
 						objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-						processInequaityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEG);
+						processInequalityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEG);
 						
 					}
 					else if((pref.functionTypes[ineq1]==GRAPHIEL || pref.functionTypes[ineq1]==GRAPHIELE) &&
@@ -1660,26 +1768,27 @@ void GraphOutput::processFunction(int index)
 					{
 						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEL;
 						objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-						processInequaityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEL);
+						processInequalityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEL);
 					}
 					else if((pref.functionTypes[ineq1]==GRAPHIEL || pref.functionTypes[ineq1]==GRAPHIELE) &&
 						(pref.functionTypes[ineq2]==GRAPHIEG || pref.functionTypes[ineq2]==GRAPHIEGE))
 					{
 						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEGE;
 						objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-						processInequaityFunction(pref.functions[ineq2],pref.functions[ineq1],GRAPHIEGE);
+						processInequalityFunction(pref.functions[ineq2],pref.functions[ineq1],GRAPHIEGE);
 					}
 					else
 					{
 						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEGE;
 						objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-						processInequaityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEGE);
+						processInequalityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEGE);
 					}
 					drawRules[ruleIndex][1]=objects.GetLen()-1;
 					
 					info.type=GRAPHSTD;
 					info.color=pref.functionColors[ineq1];
 					info.dynamic=false;
+					info.logic=pref.logicFunctions[ineq1]|pref.logicFunctions[ineq2];
 					objectInfo.NewItem(info);
 					drawRules.NewItem(new int[2]);
 					drawRules[ruleIndex+1][0]=1;
@@ -1688,6 +1797,7 @@ void GraphOutput::processFunction(int index)
 					
 					info.type=GRAPHSTD;
 					info.color=pref.functionColors[ineq2];
+					info.logic=pref.logicFunctions[ineq2];
 					info.dynamic=false;
 					objectInfo.NewItem(info);
 					drawRules.NewItem(new int[2]);
@@ -1700,11 +1810,11 @@ void GraphOutput::processFunction(int index)
 					if(pref.functionTypes[index]==GRAPHIEG ||pref.functionTypes[index]==GRAPHIEGE)
 					{
 						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEG;
-						processInequaityFunction(pref.functions[index],pref.functions[index],GRAPHIEG);
+						processInequalityFunction(pref.functions[index],pref.functions[index],GRAPHIEG);
 					}
 					else {
 						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEL;
-						processInequaityFunction(pref.functions[index],pref.functions[index],GRAPHIEL);
+						processInequalityFunction(pref.functions[index],pref.functions[index],GRAPHIEL);
 					}
 					drawRules[ruleIndex][1]=objects.GetLen()-1;
 
@@ -1740,6 +1850,7 @@ void GraphOutput::processFunction(int index)
 		ObjectInfo info;
 		info.type=pref.functionTypes[index];
 		info.color=pref.functionColors[index];
+		info.logic=pref.logicFunctions[index];
 		info.dynamic=true;
 
 		
@@ -1752,8 +1863,13 @@ void GraphOutput::processFunction(int index)
 			case GRAPHPOLAR:
 				for(int c=0; c<=dynamicSteps; c++)
 				{
-					vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=vars[0];
+					if(pref.logicFunctions[index])
+					{
+						threadData->vars[0][0].type=NFLOAT;
+						threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
+					}
+					else vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
+					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
 					objectInfo.NewItem(info);
 					processPolarFunction(pref.functions[index]);
 					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
@@ -1762,8 +1878,13 @@ void GraphOutput::processFunction(int index)
 			case GRAPHPARAMETER:
 				for(int c=0; c<=dynamicSteps; c++)
 				{
-					vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=vars[0];
+					if(pref.logicFunctions[index])
+					{
+						threadData->vars[0][0].type=NFLOAT;
+						threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
+					}
+					else vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
+					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
 					objectInfo.NewItem(info);
 					processParameterFunction(pref.functions[index]);
 					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
@@ -1794,8 +1915,13 @@ void GraphOutput::processFunction(int index)
 			case GRAPH3D:
 				for(int c=0; c<=dynamicSteps; c++)
 				{
-					vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=vars[0];
+					if(pref.logicFunctions[index])
+					{
+						threadData->vars[0][0].type=NFLOAT;
+						threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
+					}
+					else vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
+					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
 					objectInfo.NewItem(info);
 					process3dFunction(pref.functions[index]);
 					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
@@ -1808,10 +1934,16 @@ void GraphOutput::processFunction(int index)
 				
 				for(int c=0; c<=dynamicSteps; c++)
 				{
-					vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=vars[0];
+					if(pref.logicFunctions[index])
+					{
+						threadData->vars[0][0].type=NFLOAT;
+						threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
+					}
+					else vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
+					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
 					info.type=pref.functionTypes[index];
 					info.color=pref.functionColors[index];
+					info.logic=pref.logicFunctions[index];
 					info.dynamic=true;
 					objectInfo.NewItem(info);
 
@@ -1822,7 +1954,7 @@ void GraphOutput::processFunction(int index)
 						{
 							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEG;
 							objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-							processInequaityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEG);
+							processInequalityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEG);
 					
 						}
 						else if((pref.functionTypes[ineq1]==GRAPHIEL || pref.functionTypes[ineq1]==GRAPHIELE) &&
@@ -1830,26 +1962,27 @@ void GraphOutput::processFunction(int index)
 						{
 							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEL;
 							objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-							processInequaityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEL);
+							processInequalityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEL);
 						}
 						else if((pref.functionTypes[ineq1]==GRAPHIEL || pref.functionTypes[ineq1]==GRAPHIELE) &&
 														(pref.functionTypes[ineq2]==GRAPHIEG || pref.functionTypes[ineq2]==GRAPHIEGE))
 						{
 							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEGE;
 							objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-							processInequaityFunction(pref.functions[ineq2],pref.functions[ineq1],GRAPHIEGE);
+							processInequalityFunction(pref.functions[ineq2],pref.functions[ineq1],GRAPHIEGE);
 						}
 						else
 						{
 							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEGE;
 							objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-							processInequaityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEGE);
+							processInequalityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEGE);
 						}
 						drawRules[ruleIndex][c+1]=objects.GetLen()-1;
 				
 						info.type=GRAPHSTD;
 						info.color=pref.functionColors[ineq1];
-						info.dynamic=false;
+						info.dynamic=true;
+						info.logic=pref.logicFunctions[ineq1]|pref.logicFunctions[ineq2];
 						objectInfo.NewItem(info);
 						if(c==0)
 						{
@@ -1861,7 +1994,8 @@ void GraphOutput::processFunction(int index)
 				
 						info.type=GRAPHSTD;
 						info.color=pref.functionColors[ineq2];
-						info.dynamic=false;
+						info.dynamic=true;
+						info.logic=pref.logicFunctions[ineq2];
 						objectInfo.NewItem(info);
 						if(c==0)
 						{
@@ -1876,17 +2010,18 @@ void GraphOutput::processFunction(int index)
 						if(pref.functionTypes[index]==GRAPHIEG ||pref.functionTypes[index]==GRAPHIEGE)
 						{
 							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEG;
-							processInequaityFunction(pref.functions[index],pref.functions[index],GRAPHIEG);
+							processInequalityFunction(pref.functions[index],pref.functions[index],GRAPHIEG);
 						}
 						else {
 							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEL;
-							processInequaityFunction(pref.functions[index],pref.functions[index],GRAPHIEL);
+							processInequalityFunction(pref.functions[index],pref.functions[index],GRAPHIEL);
 						}
 						drawRules[ruleIndex][c+1]=objects.GetLen()-1;
 
 						info.type=GRAPHSTD;
 						info.color=QColor(0,0,0);
-						info.dynamic=false;
+						info.dynamic=true;
+						info.logic=pref.logicFunctions[index];
 						objectInfo.NewItem(info);
 						if(c==0)
 						{
@@ -1907,7 +2042,7 @@ void GraphOutput::processFunction(int index)
 						threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
 					}
 					else vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=vars[0];
+					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
 					objectInfo.NewItem(info);
 					processStdFunction(pref.functions[index]);
 					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
