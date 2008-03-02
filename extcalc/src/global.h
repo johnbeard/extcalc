@@ -47,8 +47,9 @@ using namespace std;
 #define VARSFILE ".extcalc/vars.conf"
 #define LISTSFILE ".extcalc/lists.conf"
 #define CONSTFILE ".extcalc/constants.conf"
+#define UIFILE ".extcalc/ui.conf"
 
-#define VERSIONSTRING "Version: 0.9.1\n2008-02-22\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.9.1\n2008-03-03\n\n"+QString(DEVVERSION)
 
 
 #define AUTHORSTRING "Homepage:\nhttp://extcalc-linux.sourceforge.net\n\n"+QString(GLOBALH_STR1)
@@ -123,6 +124,8 @@ using namespace std;
 #define TABLETYPE			56
 #define STANDARDTABLE		57
 #define RESETTABLE			184
+#define GRAPHIMPORT			212
+#define GRAPHEXPORT			213
 
 #define EXPORTSCRIPT		171
 #define IMPORTSCRIPT		172
@@ -536,6 +539,7 @@ char* removeComments(char*);
 void replaceConstants(QString*,Preferences*);
 QString getConfigString(QString*,QString);
 QString cleanConfigString(QString,QString);
+QString resetConfigString(QString);
 QString getUnicode(int code);
 QString formatOutput(long double num,Preferences*pref);
 QString formatOutput(Number num,Preferences*pref,ThreadSync*varData=NULL);

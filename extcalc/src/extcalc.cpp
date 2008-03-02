@@ -104,6 +104,7 @@ void MainObject::closeEvent(QCloseEvent*e)
 	writeConfigFile();
 	writeVarFile();
 	writeConstants();
+	writeUIState();
 	statistics->writeListsFile();
 	if(scripting->quitProgram())
 	{
@@ -1834,6 +1835,27 @@ void MainObject::graphTypeMenuSlot(int item)
 	pref.graphType=item;
 	getPref(pref);
 }
+void MainObject::graphMenuSlot(int item)
+{
+	if(item==GRAPHIMPORT)
+	{
+		if(functionDialog!=NULL)
+		{
+			QObject::disconnect(SIGNAL(prefChange(Preferences)),this);
+			delete functionDialog;
+		}
+		functionDialog=new ImportDialog(pref,this,true,true);
+		QObject::connect(functionDialog,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+		functionDialog->show();
+	}
+	else if(item==GRAPHEXPORT)
+	{
+		if(functionDialog!=NULL)
+			delete functionDialog;
+		functionDialog=new ImportDialog(pref,this,false,true);	
+		functionDialog->show();
+	}
+}
 
 void MainObject::tableMenuSlot(int item)
 {
@@ -2143,88 +2165,53 @@ void MainObject::changeTabSlot(int num)
 	}
 }
 
-
-
-
-void ImportDialog::windowActivationChange(bool)
+void MainObject::writeUIState()
 {
-	if(!isActiveWindow()&&!dialog)
-		setActiveWindow();
+	FILE*configFile;
+	chdir(getenv("HOME"));
+	configFile = fopen(UIFILE,"w");
+	if(configFile == NULL)
+		return;
+	//0             1              2..7
+	//window width, window height, function table column 1-6
+	int buffer[8];
+	buffer[0]=width();
+	buffer[1]=height();
+	graph->getUIState(&buffer[2]);
+	
+	fwrite(buffer,8*sizeof(int),1,configFile);
 
+	fclose(configFile);
 }
 
-void ImportDialog::saveSlot()
+void MainObject::readUIState()
 {
-	QString savePath=savePathLine->text(),openPath=openPathLine->text();
+	chdir(getenv("HOME"));
+	int fileLen;
+	struct stat fileStat;
+
+	if(lstat(UIFILE,&fileStat) != 0)
+		return;
+	else fileLen=fileStat.st_size;
 	
-	if(savePath.find("/") <0 && importFile)
-		savePath=pref.scriptPath+"/"+pref.scriptDirName+"/"+savePath;
+	if(fileLen!=8*sizeof(int))
+		return;
 	
-	if(openPath.find("/") <0 && !importFile)
-		openPath=pref.scriptPath+"/"+pref.scriptDirName+"/"+openPath;
+	FILE*configFile = fopen(UIFILE,"r");
+	if(configFile == NULL)
+		return;
 	
-	if((savePath.find(pref.scriptPath+"/"+pref.scriptDirName) !=0 && importFile) || 
-		  (openPath.find(pref.scriptPath+"/"+pref.scriptDirName) !=0 && !importFile))
-	{
-		ErrorBox(EXTCALCC_MSG6+savePath);
-	}
-	else
-	{
-		struct stat testStat;
-		
-		if(lstat(savePath,&testStat)==0)
-		{
-			if(YesNoBox(EXTCALCC_MSG8+savePath)==1)
-				return;
-		}
-		system("cp -f "+openPath+" "+savePath);
-		emit updateScriptSignal(FILEUPDATE);
-		close();
-	}
+	
+	int buffer[8];
+	fread(buffer,8*sizeof(int),1,configFile);
+	
+	resize(buffer[0],buffer[1]);
+	graph->setUIState(&buffer[2]);
+
+	fclose(configFile);
 }
 
 
-void ImportDialog::openDialogSlot()
-{
-	QString startPath,dialogText;
-	dialog=true;
-	if(!importFile) {
-		startPath=pref.scriptPath+"/"+pref.scriptDirName;
-		dialogText=QString(EXTCALCC_MSG9);
-	}
-	else {
-		dialogText=QString(EXTCALCC_MSG10);
-		startPath=QString(getenv("HOME"));
-	}
-	
-	QString path = QFileDialog::getOpenFileName(
-			startPath,
-	QString::null,
-	this,
-	EXTCALCC_MSG11,
-	dialogText);
-	dialog=false;
-	if(!path.isNull())
-		openPathLine->setText(path);
-}
-
-void ImportDialog::saveDialogSlot()
-{
-	dialog=true;
-	QString startPath;
-	if(importFile)
-		startPath=pref.scriptPath+"/"+pref.scriptDirName;
-	else startPath=QString(getenv("HOME"));
-	QString path = QFileDialog::getSaveFileName(
-			startPath,
-	QString::null,
-	this,
-	EXTCALCC_MSG12,
-	EXTCALCC_MSG13 );
-	dialog=false;
-	if(!path.isNull())
-		savePathLine->setText(path);
-}
 
 
 HelpBrowser::HelpBrowser(QWidget*parent) :QWidget(parent,"Help Browser",Qt::WType_TopLevel)

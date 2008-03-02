@@ -35,10 +35,33 @@ QString cleanConfigString(QString prefName,QString par)
 	parameter.replace(sign,"giga");
 	sign=(QChar((unsigned short)TERASTRING));
 	parameter.replace(sign,"tera");
-	return prefName+"="+parameter+"\n";
+	if(prefName.length() <=0)
+		return parameter;
+	else return prefName+"="+parameter+"\n";
 }
 
-
+QString resetConfigString(QString str)
+{
+	QString retObject=str;
+	QString sign(QChar((unsigned short)ROOTSTRING));
+	retObject.replace("root",sign);
+	sign=(QChar((unsigned short)PISTRING));
+	retObject.replace("pi",sign);
+	sign=(QChar((unsigned short)EULERSTRING));
+	retObject.replace("euler",sign);
+	sign=(QChar((unsigned short)INTEGRALSTRING));
+	retObject.replace("integral",sign);
+	sign=(QChar((unsigned short)DELTASTRING));
+	retObject.replace("differential",sign);
+	sign=(QChar((unsigned short)MEGASTRING));
+	retObject.replace("mega",sign);
+	sign=(QChar((unsigned short)GIGASTRING));
+	retObject.replace("giga",sign);
+	sign=(QChar((unsigned short)TERASTRING));
+	retObject.replace("tera",sign);
+	
+	return retObject;
+}
 
 QString getConfigString(QString * configFile,QString objectName)
 {
@@ -58,22 +81,7 @@ QString getConfigString(QString * configFile,QString objectName)
 			return QString("");
 	}
 	
-	QString sign(QChar((unsigned short)ROOTSTRING));
-	retObject.replace("root",sign);
-	sign=(QChar((unsigned short)PISTRING));
-	retObject.replace("pi",sign);
-	sign=(QChar((unsigned short)EULERSTRING));
-	retObject.replace("euler",sign);
-	sign=(QChar((unsigned short)INTEGRALSTRING));
-	retObject.replace("integral",sign);
-	sign=(QChar((unsigned short)DELTASTRING));
-	retObject.replace("differential",sign);
-	sign=(QChar((unsigned short)MEGASTRING));
-	retObject.replace("mega",sign);
-	sign=(QChar((unsigned short)GIGASTRING));
-	retObject.replace("giga",sign);
-	sign=(QChar((unsigned short)TERASTRING));
-	retObject.replace("tera",sign);
+	retObject=resetConfigString(retObject);
 	
 	return retObject;
 }

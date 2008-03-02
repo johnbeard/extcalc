@@ -32,6 +32,7 @@ dialog, the todo list and the bug list.
 #include "matrixwidget.h"
 #include "statistics.h"
 #include "global.h"
+#include "importdialog.h"
 #include <qtabwidget.h>
 #include <qtabbar.h>
 #include <qstring.h>
@@ -149,10 +150,11 @@ dialog, the todo list and the bug list.
 //  - Port to QT 4                                                                          //
 //  - use QTranslator for internationalization                                          ok  //
 //  - symbolic calculation for systems of linear equations                                  //
-//  - logic operations for graph drawing (analysis, input, multithreading)                  //
+//  - logic operations for graph drawing                                                ok  //
 //  - graph analysis for functions with logic operations                                    //
 //  - multi-line edit for functions in graphics window                                      //
 //  - usage of multithreading for graph calculation                                         //
+//  - import/export function for graphs                                                     //
 //                                                                                          //
 ////////////////////////////////////////beta releases/////////////////////////////////////////
 
@@ -287,6 +289,7 @@ class MainObject :public QTabWidget
 	ScriptPreferences*scriptPref;
 	ImportDialog*importDialog;
 	ImportDialog*exportDialog;
+	ImportDialog*functionDialog;
 	TableWidget*table;
 	ScriptWidget*scripting;
 	ScriptIOWidget*scriptIO;
@@ -377,6 +380,7 @@ MainObject() :QTabWidget()
 	scriptPref=NULL;
 	importDialog=NULL;
 	exportDialog=NULL;
+	functionDialog=NULL;
 	
 	tabBar = new QTabBar(this);
 	
@@ -545,6 +549,10 @@ MainObject() :QTabWidget()
 	graphMenu=new QPopupMenu;
 	graphMenu->insertItem(EXTCALCH_MENU25,coordinateMenu,COORDINATE);
 	graphMenu->insertItem(EXTCALCH_MENU26,graphTypeMenu,GRAPHTYPE);
+	graphMenu->insertSeparator();
+	graphMenu->insertItem(tr("Import Graphs"),GRAPHIMPORT);
+	graphMenu->insertItem(tr("Export Graphs"),GRAPHEXPORT);
+	QObject::connect(graphMenu,SIGNAL(activated(int)),this,SLOT(graphMenuSlot(int)));
 	
 	tableTypeMenu=new QPopupMenu;
 	tableTypeMenu->insertItem(EXTCALCH_MENU38,TABLENORMAL);
@@ -673,6 +681,7 @@ MainObject() :QTabWidget()
 	QObject::connect(scriptIO,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 	QObject::connect(matrix,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 	QObject::connect(statistics,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+
 //	QObject::connect(statistics,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 	QObject::connect(this,SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChangeSlot(QWidget*)));
 	QObject::connect(this,SIGNAL(editSignal(int)),calculator,SLOT(editSlot(int)));
@@ -736,6 +745,7 @@ MainObject() :QTabWidget()
 	}
 	initConstants();
 	readVarFile();
+	readUIState();
 
 
 }
@@ -750,6 +760,8 @@ void writeConfigFile();
 void writeVarFile();
 void initConstants();
 void writeConstants();
+void writeUIState();
+void readUIState();
 
 
 
@@ -767,6 +779,7 @@ void tabChangeSlot(QWidget*);
 void outputMenuSlot(int item);
 void coordinateMenuSlot(int item);
 void graphTypeMenuSlot(int item);
+void graphMenuSlot(int item);
 void floatPointMenuSlot(int item);
 void calcTypeMenuSlot(int item);
 void baseMenuSlot(int item);
@@ -956,78 +969,6 @@ signals:
 
 
 
-class ImportDialog :public QWidget
-{
-	QPushButton*saveButton,*cancelButton,*openDialogButton,*saveDialogButton;
-	QLabel *mainLabel,*openPathLabel,*savePathLabel;
-	QLineEdit *openPathLine,*savePathLine;
-	Preferences pref;
-	bool dialog;
-	bool importFile;
-	
-	
-	Q_OBJECT
-	public:
-		ImportDialog(Preferences p,QWidget*parent,bool importF) 
-	:QWidget(parent,EXTCALCH_STR14,Qt::WStyle_Dialog | Qt::WType_Dialog)
-		{
-			pref=p;
-			dialog=false;
-			importFile=importF;
-			
-			if(importFile)
-			{
-				mainLabel=new QLabel(EXTCALCH_STR15,this);
-				openPathLabel=new QLabel(EXTCALCH_STR16,this);
-				savePathLabel=new QLabel(EXTCALCH_STR17,this);
-			}
-			else {
-				mainLabel=new QLabel(EXTCALCH_STR18,this);
-				openPathLabel=new QLabel(EXTCALCH_STR19,this);
-				savePathLabel=new QLabel(EXTCALCH_STR17,this);
-			}
-			openPathLine=new QLineEdit(this);
-			savePathLine=new QLineEdit(this);
-
-			saveButton=new QPushButton(SCRIPTPREFH_STR5,this);
-			cancelButton=new QPushButton(SCRIPTPREFH_STR6,this);
-			openDialogButton=new QPushButton(SCRIPTPREFH_STR7,this);
-			saveDialogButton=new QPushButton(SCRIPTPREFH_STR7,this);
-
-			setGeometry(0,0,410,260);
-			setFixedWidth(410);
-			setFixedHeight(260);
-		
-			mainLabel->setGeometry(20,10,380,20);
-			openPathLabel->setGeometry(20,60,380,20);
-			savePathLabel->setGeometry(20,130,380,20);
-		
-			openPathLine->setGeometry(20,90,280,20);
-			savePathLine->setGeometry(20,160,280,20);
-		
-			saveButton->setGeometry(40,210,100,30);
-			cancelButton->setGeometry(180,210,100,30);
-			openDialogButton->setGeometry(310,90,80,20);
-			saveDialogButton->setGeometry(310,160,80,20);
-		
-			QObject::connect(saveButton,SIGNAL(clicked()),this,SLOT(saveSlot()));
-			QObject::connect(openDialogButton,SIGNAL(clicked()),this,SLOT(openDialogSlot()));
-			QObject::connect(saveDialogButton,SIGNAL(clicked()),this,SLOT(saveDialogSlot()));
-			QObject::connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
-		}
-	
-	protected:
-		virtual void windowActivationChange(bool);
-
-	public slots:
-
-		void saveSlot();
-		void openDialogSlot();
-		void saveDialogSlot();
-		
-	signals:
-		void updateScriptSignal(int);
-};
 
 class HelpBrowser :public QWidget
 {

@@ -223,10 +223,10 @@ void FunctionTable::setPref(Preferences newPref)
 
 	repaint();
 //	resizeEvent(NULL);
-	adjustColumn(0);
-	adjustColumn(1);
-	adjustColumn(2);
-	adjustColumn(3);
+//	adjustColumn(0);
+//	adjustColumn(1);
+//	adjustColumn(2);
+//	adjustColumn(3);
 }
 
 

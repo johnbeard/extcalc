@@ -2694,7 +2694,7 @@ void GraphOutput::draw3dXLine(double y,double z)
 
 void GraphOutput::draw3dYLine(double x,double z)
 {
-	if(x<pref.ymin || x>pref.ymax || z<pref.zmin || z>pref.zmax)
+	if(x<pref.xmin || x>pref.xmax || z<pref.zmin || z>pref.zmax)
 		return;
 	GLuint list;
 	list = glGenLists( 1 );
@@ -2711,7 +2711,7 @@ void GraphOutput::draw3dYLine(double x,double z)
 }
 void GraphOutput::draw3dZLine(double x,double y)
 {
-	if(x<pref.ymin || x>pref.ymax || y<pref.zmin || y>pref.zmax)
+	if(x<pref.xmin || x>pref.xmax || y<pref.ymin || y>pref.ymax)
 		return;
 	GLuint list;
 	list = glGenLists( 1 );
@@ -2756,7 +2756,6 @@ void GraphOutput::drawPoints(long double *coordinates,int num,bool con)
 	if(!drawScreenshot)
 		repaint();
 	hasStatisticsObjects=true;
-	
 }
 
 

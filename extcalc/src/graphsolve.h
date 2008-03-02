@@ -171,7 +171,7 @@ public:
 	void calculateYVal(QString);
 	int calculateRoots(QString,long double, long double,long double**,int varIndex,long double,bool forceScript);
 	long double calculateValue(QString,long double,int varIndex,bool forceScript);
-	void showRoots(QString,QColor color);
+	void showRoots(QString,long double,QColor color,bool forceScript=false);
 	void calculateNewton(QString,bool forceScript);
 	void setFunctionBox(QComboBox*fBox);
 	

@@ -271,7 +271,16 @@ void setPref(Preferences newPref)
 	graphSizeSlot();
 
 }
-
+void getUIState(int*sizes)
+{
+	for(int c=0; c<6; c++)
+		sizes[c]=functionTable->columnWidth(c);
+}
+void setUIState(int*sizes)
+{
+	for(int c=0; c<6; c++)
+		functionTable->setColumnWidth(c,sizes[c]);
+}
 
 QGLWidget*getShareContext()
 {
