@@ -272,7 +272,7 @@ int MainObject::readConfigFile()
 			fwrite("SHOWWIN4=true\n",14,1,configFile);
 			fwrite("SHOWWIN5=true\n",14,1,configFile);
 			fwrite("SHOWWIN6=false\n",15,1,configFile);
-			fwrite("SHOWWIN7=true\n",15,1,configFile);
+			fwrite("SHOWWIN7=true\n",14,1,configFile);
 			fwrite("SHOWWIN8=false\n",15,1,configFile);
 			fwrite("SCRIPTROOT=",11,1,configFile);
 			fwrite(getenv("HOME"),strlen(getenv("HOME")),1,configFile);
@@ -286,6 +286,10 @@ int MainObject::readConfigFile()
 				fwrite("F"+QString::number(c+1)+"=\n",4,1,configFile);
 			for(int c=9; c<20; c++)
 				fwrite("F"+QString::number(c+1)+"=\n",5,1,configFile);
+			for(int c=0; c<9; c++)
+				fwrite("COMMENT"+QString::number(c+1)+"=\n",10,1,configFile);
+			for(int c=9; c<20; c++)
+				fwrite("COMMENT"+QString::number(c+1)+"=\n",11,1,configFile);
 			fwrite("F1ACTIVE=true\n",14,1,configFile);
 			for(int c=1; c<9; c++)
 				fwrite("F"+QString::number(c+1)+"ACTIVE=false\n",15,1,configFile);
@@ -822,6 +826,18 @@ int MainObject::readConfigFile()
 		delete[]pref.functions;
 	pref.functions=functionStrings;
 	
+	QString*commentStrings=new QString[20];
+	
+	for(int c=0; c<20; c++)
+	{
+		commentStrings[c]=getConfigString(&confFile,"COMMENT"+QString::number(c+1));
+		if(commentStrings[c].length()<=0)
+			commentStrings[c]="";
+	}
+	if(pref.functionComments!=NULL)
+		delete[]pref.functionComments;
+	pref.functionComments=commentStrings;
+	
 	bool*activeFunctions=new bool[20];
 	
 	for(int c=0; c<20; c++)
@@ -1124,6 +1140,10 @@ void MainObject::writeConfigFile()
 	for(int c=0; c<20;c++)
 	{
 		configuration+=cleanConfigString("F"+QString::number(c+1),pref.functions[c]);
+	}
+	for(int c=0; c<20;c++)
+	{
+		configuration+="COMMENT"+QString::number(c+1)+"="+pref.functionComments[c]+"\n";
 	}
 	for(int c=0; c<20;c++)
 	{

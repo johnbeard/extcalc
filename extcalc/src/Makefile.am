@@ -23,6 +23,7 @@ extcalc_SOURCES = extcalc.h \
 				  matrixwidget.h \
 				  statistics.h \
 				  catalog.h \
+				  importdialog.h \
 				  extcalc.cpp \
 				  buttons.cpp \
 				  calctable.cpp \
@@ -44,6 +45,7 @@ extcalc_SOURCES = extcalc.h \
 				  matrixwidget.cpp \
 				  statistics.cpp \
 				  catalog.cpp \
+				  importdialog.cpp \
 				  moc_extcalc.cpp \
 				  moc_buttons.cpp \
 				  moc_calctable.cpp \
@@ -62,4 +64,5 @@ extcalc_SOURCES = extcalc.h \
 				  moc_scriptio.cpp \
 				  moc_matrixwidget.cpp \
 				  moc_statistics.cpp \
-				  moc_catalog.cpp
+				  moc_catalog.cpp \
+				  moc_importdialog.cpp

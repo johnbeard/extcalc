@@ -16,7 +16,7 @@ any later version.
 #include "functiontable.h"
 
 
-void FunctionTable::cellChangedSlot(int row,int)
+void FunctionTable::cellChangedSlot(int row,int col)
 {
 	
 	
@@ -67,10 +67,18 @@ void FunctionTable::cellChangedSlot(int row,int)
 				else functionStrings[tableFunctionMap[c]]="";
 			}
 	}
-	
 	if(pref.functions != NULL)
 		delete[]pref.functions;
 	pref.functions=functionStrings;
+	
+	
+
+	if(row>0 && tableFunctionMap[row]==tableFunctionMap[row-1])
+		setText(row,col,"");
+	else pref.functionComments[tableFunctionMap[row]]=text(row,col);
+	
+	
+
 	emit(prefChange(pref));
 }
 
@@ -219,6 +227,15 @@ void FunctionTable::setPref(Preferences newPref)
 			changeColor(c,pref.functionColors[tableFunctionMap[c]]);
 		}
 	}
+	if(pref.functionComments!=NULL)
+	{
+		for(int c=0;c<tableFunctionMap.GetLen(); c++)
+		{
+			if(c==0 || tableFunctionMap[c-1] != tableFunctionMap[c])
+				setText(c,6,pref.functionComments[tableFunctionMap[c]]);
+	
+		}
+	}
 
 
 	repaint();
@@ -226,7 +243,7 @@ void FunctionTable::setPref(Preferences newPref)
 //	adjustColumn(0);
 //	adjustColumn(1);
 //	adjustColumn(2);
-//	adjustColumn(3);
+	adjustColumn(6);
 }
 
 

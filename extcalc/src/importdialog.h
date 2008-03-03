@@ -4,11 +4,11 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qlineedit.h>
-#include <qtable.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
 #include <qfiledialog.h>
 #include "global.h"
+#include "calctable.h"
 
 
 //functions:
@@ -24,7 +24,7 @@ class ImportDialog :public QWidget
 	QPushButton*saveButton,*cancelButton,*openDialogButton,*saveDialogButton;
 	QLabel *mainLabel,*openPathLabel,*savePathLabel;
 	QLineEdit *openPathLine,*savePathLine;
-	QTable *table;
+	CalcTable *table;
 	Preferences pref,tmpPref;
 	bool dialog;
 	bool importFile;

@@ -408,6 +408,7 @@ MainObject() :QTabWidget()
 	pref.complex=false;
 	pref.clearScriptMemory=true;
 	pref.functions=NULL;
+	pref.functionComments=NULL;
 	pref.activeFunctions=new bool[20];
 	for(int c=0; c<20;c++)
 		pref.activeFunctions[c]=false;

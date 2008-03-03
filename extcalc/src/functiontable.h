@@ -64,7 +64,7 @@ public:
 		}
 		
 		setNumRows(tableFunctionMap.GetLen());
-		setNumCols(6);
+		setNumCols(7);
 		
 		setRowLabels(rowLabels);
 		
@@ -74,6 +74,7 @@ public:
 		colLabels +=GRAPHH_STR24;
 		colLabels +=tr("dynamic");
 		colLabels +=tr("logic expressions");
+		colLabels +=tr("comment");
 		setColumnLabels(colLabels);
 
 		for(int c=0; c<tableFunctionMap.GetLen(); c++)

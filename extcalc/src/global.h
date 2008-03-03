@@ -466,6 +466,7 @@ struct Preferences
 	QString scriptDirName;
 	QString dataDirName;
 	QString*functions;
+	QString*functionComments;
 	bool*activeFunctions;
 	int*functionTypes;
 	bool*dynamicFunctions;

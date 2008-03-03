@@ -54,16 +54,17 @@ am_extcalc_OBJECTS = extcalc.$(OBJEXT) buttons.$(OBJEXT) \
 	calcpref.$(OBJEXT) functiontable.$(OBJEXT) table.$(OBJEXT) \
 	tablepref.$(OBJEXT) scriptedit.$(OBJEXT) scriptpref.$(OBJEXT) \
 	scriptio.$(OBJEXT) matrixwidget.$(OBJEXT) statistics.$(OBJEXT) \
-	catalog.$(OBJEXT) moc_extcalc.$(OBJEXT) moc_buttons.$(OBJEXT) \
-	moc_calctable.$(OBJEXT) moc_calcwidget.$(OBJEXT) \
-	moc_calcinput.$(OBJEXT) moc_graph.$(OBJEXT) \
-	moc_graphout.$(OBJEXT) moc_graphpref.$(OBJEXT) \
-	moc_graphsolve.$(OBJEXT) moc_calcpref.$(OBJEXT) \
-	moc_table.$(OBJEXT) moc_functiontable.$(OBJEXT) \
-	moc_tablepref.$(OBJEXT) moc_scriptedit.$(OBJEXT) \
-	moc_scriptpref.$(OBJEXT) moc_scriptio.$(OBJEXT) \
-	moc_matrixwidget.$(OBJEXT) moc_statistics.$(OBJEXT) \
-	moc_catalog.$(OBJEXT)
+	catalog.$(OBJEXT) importdialog.$(OBJEXT) moc_extcalc.$(OBJEXT) \
+	moc_buttons.$(OBJEXT) moc_calctable.$(OBJEXT) \
+	moc_calcwidget.$(OBJEXT) moc_calcinput.$(OBJEXT) \
+	moc_graph.$(OBJEXT) moc_graphout.$(OBJEXT) \
+	moc_graphpref.$(OBJEXT) moc_graphsolve.$(OBJEXT) \
+	moc_calcpref.$(OBJEXT) moc_table.$(OBJEXT) \
+	moc_functiontable.$(OBJEXT) moc_tablepref.$(OBJEXT) \
+	moc_scriptedit.$(OBJEXT) moc_scriptpref.$(OBJEXT) \
+	moc_scriptio.$(OBJEXT) moc_matrixwidget.$(OBJEXT) \
+	moc_statistics.$(OBJEXT) moc_catalog.$(OBJEXT) \
+	moc_importdialog.$(OBJEXT)
 extcalc_OBJECTS = $(am_extcalc_OBJECTS)
 extcalc_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -192,6 +193,7 @@ extcalc_SOURCES = extcalc.h \
 				  matrixwidget.h \
 				  statistics.h \
 				  catalog.h \
+				  importdialog.h \
 				  extcalc.cpp \
 				  buttons.cpp \
 				  calctable.cpp \
@@ -213,6 +215,7 @@ extcalc_SOURCES = extcalc.h \
 				  matrixwidget.cpp \
 				  statistics.cpp \
 				  catalog.cpp \
+				  importdialog.cpp \
 				  moc_extcalc.cpp \
 				  moc_buttons.cpp \
 				  moc_calctable.cpp \
@@ -231,7 +234,8 @@ extcalc_SOURCES = extcalc.h \
 				  moc_scriptio.cpp \
 				  moc_matrixwidget.cpp \
 				  moc_statistics.cpp \
-				  moc_catalog.cpp
+				  moc_catalog.cpp \
+				  moc_importdialog.cpp
 
 all: all-am
 
@@ -313,6 +317,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/graphout.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/graphpref.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/graphsolve.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/importdialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrixwidget.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_buttons.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_calcinput.Po@am__quote@
@@ -326,6 +331,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_graphout.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_graphpref.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_graphsolve.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_importdialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_matrixwidget.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_scriptedit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_scriptio.Po@am__quote@

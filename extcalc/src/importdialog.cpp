@@ -27,7 +27,8 @@ ImportDialog::ImportDialog(Preferences p,QWidget*parent,bool importF,bool func)
 	saveButton=new QPushButton(SCRIPTPREFH_STR5,this);
 	cancelButton=new QPushButton(SCRIPTPREFH_STR6,this);
 	
-	table=new QTable(20,2,this);
+	table=new CalcTable(this,0,false);
+	table->setNumCols(3);
 	
 	if(function)
 	{
@@ -42,17 +43,20 @@ ImportDialog::ImportDialog(Preferences p,QWidget*parent,bool importF,bool func)
 		}
 		else 
 		{
+			table->setNumRows(20);
 			header.append(tr("Export"));
 			for(int c=0; c<20; c++)
 			{
 				table->setText(c,0,pref.functions[c]);
 				table->setItem(c,1,new QCheckTableItem(table,""));
+				table->changeColor(c,pref.functionColors[c]);
+				table->setText(c,2,pref.functionComments[c]);
 			}
-				
 			openPathLabel->hide();
 			openPathLine->hide();
 			openDialogButton->hide();
 		}
+		header.append(tr("Comment"));
 		table->setColumnLabels(header);
 		table->adjustColumn(0);
 		table->adjustColumn(1);
@@ -151,6 +155,7 @@ void ImportDialog::saveSlot()
 		if(function && !importFile)
 		{
 			tmpPref.functions=pref.functions;
+			tmpPref.functionComments=pref.functionComments;
 			tmpPref.functionColors=pref.functionColors;
 			tmpPref.logicFunctions=pref.logicFunctions;
 			tmpPref.functionTypes=pref.functionTypes;
@@ -190,6 +195,7 @@ void ImportDialog::saveSlot()
 					if(ret==0)
 					{
 						pref.functions[num]=tmpPref.functions[c];
+						pref.functionComments[num]=tmpPref.functionComments[c];
 						pref.functionColors[num]=tmpPref.functionColors[c];
 						pref.dynamicFunctions[num]=tmpPref.dynamicFunctions[c];
 						pref.logicFunctions[num]=tmpPref.logicFunctions[c];
@@ -265,6 +271,7 @@ void ImportDialog::openTextChangedSlot()
 			delete [] tmpPref.logicFunctions;
 			delete [] tmpPref.dynamicFunctions;
 			delete [] tmpPref.functions;
+			delete [] tmpPref.functionComments;
 			delete [] tmpPref.functionColors;
 		}
 		tmpPref=readFunctionFile(functionFile);
@@ -301,13 +308,14 @@ Preferences ImportDialog::readFunctionFile(QString file)
 {
 	Preferences p;
 	p.functions=new QString[20];
+	p.functionComments=new QString[20];
 	p.functionColors=new QColor[20];
 	p.logicFunctions=new bool[20];
 	p.functionTypes=new int[20];
 	p.dynamicFunctions=new bool[20];
 	p.activeFunctions=new bool[20];
 	int pos1=0,pos2=0,functionCount=0;
-	QString config[4],func;
+	QString config[4],func,comment;
 	for(int c=0; c<20; c++)
 		p.activeFunctions[c]=false;
 
@@ -332,10 +340,15 @@ Preferences ImportDialog::readFunctionFile(QString file)
 		pos1=file.find("\n",pos2);
 		if(pos1==-1 || pos2==-1)
 			break;
+		comment=file.mid(pos2+2,pos1-pos2-2);
+		pos2=pos1+1;
+		pos1=file.find("\n",pos2);
+		if(pos1==-1 || pos2==-1)
+			break;
 		func=file.mid(pos2,pos1-pos2);
 		pos2=pos1+1;
-		qDebug("func: "+func);
-		qDebug("index: "+QString::number(pos2));
+
+
 		
 		
 		pos1=config[0].find("color");
@@ -390,7 +403,8 @@ Preferences ImportDialog::readFunctionFile(QString file)
 			p.logicFunctions[functionCount]=true;
 		else p.logicFunctions[functionCount]=false;
 
-		p.functions[functionCount]=func;
+		p.functions[functionCount]=resetConfigString(func);
+		p.functionComments[functionCount]=comment;
 		p.activeFunctions[functionCount]=true;
 		functionCount++;
 	}
@@ -438,6 +452,7 @@ QString ImportDialog::writeFunctionFile(Preferences p)
 			if(p.logicFunctions[c])
 				expFile+="on\n";
 			else expFile+="off\n";
+			expFile+="//"+p.functionComments[c]+"\n";
 			expFile+=cleanConfigString("",p.functions[c])+"\n";
 		}
 	}
@@ -465,6 +480,8 @@ void ImportDialog::updateTable()
 
 		table->setItem(index,1,new QComboTableItem(table,boxContent,false));
 		table->setText(index,0,tmpPref.functions[c]);
+		table->setText(index,2,tmpPref.functionComments[c]);
+		table->changeColor(index,tmpPref.functionColors[c]);
 		index++;
 	}
 	table->adjustColumn(0);
