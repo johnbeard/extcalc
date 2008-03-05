@@ -60,6 +60,8 @@ ImportDialog::ImportDialog(Preferences p,QWidget*parent,bool importF,bool func)
 		table->setColumnLabels(header);
 		table->adjustColumn(0);
 		table->adjustColumn(1);
+		table->setColumnReadOnly(0,true);
+		table->setColumnReadOnly(2,true);
 	}
 	else {
 		table->hide();

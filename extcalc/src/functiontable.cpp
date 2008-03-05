@@ -73,9 +73,12 @@ void FunctionTable::cellChangedSlot(int row,int col)
 	
 	
 
-	if(row>0 && tableFunctionMap[row]==tableFunctionMap[row-1])
-		setText(row,col,"");
-	else pref.functionComments[tableFunctionMap[row]]=text(row,col);
+	if(col==6)
+	{
+		if(row>0 && tableFunctionMap[row]==tableFunctionMap[row-1])
+			setText(row,col,"");
+		else pref.functionComments[tableFunctionMap[row]]=text(row,col);
+	}
 	
 	
 

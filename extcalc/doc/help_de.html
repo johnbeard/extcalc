@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - wissenschaftlicher Taschenrechner </h1>
-  Version 0.9.0
+  Version 0.9.1
   <br>
   <br>
   <h3>Inhalt</h3>
@@ -35,15 +35,15 @@
   <a name="introduction"><h2>1. Einleitung</h2></a>
   Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner. Extcalc kann zum berechen komplizierter mathematischer Ausdr&uuml;cke,
   zum Zeichnen von Funktionsgraphen, und zum Auswerten von Funktionen benutzt werden. Es enth&auml;lt auch eine C-&auml;hnliche Script-Sprache.<br>
-  Diese Hilfe wurde f&uuml;r die Version 0.9.0 von Extcalc geschrieben.
+  Diese Hilfe wurde f&uuml;r die Version 0.9.1 von Extcalc geschrieben.
   <br>
   <br>
   <br>
   <a name="install"><h2>2. Installation</h2></a>
   Dies ist die Beschreibung zur Installation von Extcalc aus dem Quellcode-Paket. Vorkompilierte Pakete m&uuml;ssen mit dem Paketmanager der jeweiligen
   Distribution installiert werden.<br><br>
-  - Paket auspacken (tar -xzf extcalc-0.9.0.tar.gz)<br>
-  - ins Verzeichnis wechseln (cd extcalc-0.9.0)<br>
+  - Paket auspacken (tar -xzf extcalc-0.9.1.tar.gz)<br>
+  - ins Verzeichnis wechseln (cd extcalc-0.9.1)<br>
   - konfigurieren (./configure --enable-language_de)<br>
   - kompilieren (make)<br>
   - root-rechte erlangen (su)<br>
@@ -54,7 +54,7 @@
   F&uumlr die Installation in franz&ouml;sischer Spracher muss "./configure --enable-language_fr" aufgerufen werden.<br>
   <a name="use"><h2>3. Bedienung</h2></a>
   Da dies noch eine Enticklungsversion von Extcalc ist, kann sich die Bedienoberfl&auml;che noch
-  stark &auml;ndern. Diese Informationen beziehen sich auf die Version 0.9.0. Mit dem Reiter unter der
+  stark &auml;ndern. Diese Informationen beziehen sich auf die Version 0.9.1. Mit dem Reiter unter der
   Men&uuml;leiste kann man zwischen den einzelnen Komponenten umschalten.Dies sind  ein Taschenrechner, ein Grafik-Fenster
   zum Zeichnen und analysieren verschiedner Typen von Graphen, ein Tabellen-Fenster, ein Script-Editor und eine Script-Konsole zum
   Ausf&uuml;hren von Scripten.
@@ -96,6 +96,10 @@
   Durch drücken des Katalog-Knopfes <img src="catalogbutton.jpg"></img> erhält man eine Liste aller in Extcalc
   verfügbaren Operationen und Befehle. Die Befehle sind zur Übersicht in Gruppen gegliedert. Beim Auswählen eines
   Befehls oder einer Operation wird der entsprechende Text in das Eingabefenster kopiert.<br>
+  <h5>3. Konstanten und Umrechnung</h5>
+  Durch Drücken des Konstanten-Knopfes erhält man ein Menü, in dem aus einer Liste von verschiedenen mathematischen
+  und physikalischen Konstanten Einträge ausgewählt werden können. Außerdem können eigene Konstanten zur Liste 
+  hinzugefügt werden können.
   <br>
   <h5>Besondere Tasten:</h5>
   DEL<br>
@@ -278,6 +282,10 @@
   f&uuml;r dynamische Graphen k&ouml;nnen im Grafik-Einstellungsdialog beliebig angepasst werden. Diese Art der Darstellung von 
   Graphen ist allerdings sehr rechenintensiv. F&uuml;r dynamische 3D-Graphik ist eine 3D-Graphikkarte ist n&ouml;tig.
   <br>
+  <h5>Logikfunktionen</h5>
+  Wenn diese Option aktiviert ist, ist es möglich, in den Funktionen logische Ausdrücke wie z. B. X&gt;0 oder Script-Befehle
+  wie z. B. if else zu verwenden. Diese Option sollte nur ausgewählt werden, wenn auch Script-Befehle oder logische Ausdrücke verwendet
+  werden, weil die Berechnung wesentlich mehr Zeit erfordert.<br>
   <h4>Koordinatensysteme</h4>
   <h5>Standard-Koordinatensystem</h5>
   Das Standard-Koordinatensystem ist ein zweidimensionales kartesisches Koordinatensystem mit y- und x-Achse.
@@ -319,7 +327,36 @@
   Es k&ouml;nnen auch Graphen mit verschiedenen Typen in ein Koordinatensystem eingezeichnet werden. Die 
   Art des Koordinatensystems muss aber zus&auml;tzlich im Grafik-Men&uuml; oder in den Grafik-Einstellungen ausgew&auml;hlt
   werden.<br> 
-  
+<h5>Beispiele</h5>
+<table border>
+<tr><th>Typ</th><th>Funktion</th><th>Beschreibung</th></tr>
+<tr><td rowspan=3>Normal</td>                      <td>sinX</td>                                     <td>Sinusfunktion<br>Koordinatensystem: Standard<br>Größe: Standard trigonometrisch</td></tr>
+<tr>                                               <td>(X+5)^2-4</td>                                <td>Parabel<br>Koordinatensystem: Standard, Standardgröße</td></tr>
+<tr>                                               <td>if(A<=10) (1-A/5)*x^2; else if(A<=20) -(x+5*(A-10)/10)^2; else -(x+5)^2-4*(A-20)/10;</td>                                <td>Animierte Parabel<br>Koordinatensystem: Standard, Standardgröße<br>dynamsisch an mit A von 0 bis 30<br>Logikfunctionen an</td></tr>
+<tr><td rowspan=3>Polar</td>                       <td>X+2</td>                                      <td>Archimedische Spirale<br>Koordinatensystem: Polar, Standardgröße</td></tr>
+<tr>                                               <td>5*sin(4X)</td>                                <td>Sinusfunktion<br>Koordinatensystem: Polar, Standardgröße</td></tr>
+<tr>                                               <td>2/(1+0.7cosX)</td>                            <td>Ellipse<br>Koordinatensystem: Standard</td></tr>
+<tr><td rowspan=10>Parameter</td>                  <td>T</td>                                        <td rowspan=2>Parabel<br>Koordinatensystem: Standard, Standardgröße<br>T von -10 bis 10</td></tr>
+<tr>                                               <td>T^2</td>                                      </tr>
+<tr>                                               <td>sinT*(exp(cosT)-2*cos(4T)-(sin(T/12))^5)</td> <td rowspan=2>Butterfly Kurve<br>Koordinatensystem: Polar, max. Radius=5<br> T von 0 bis 20</td></tr>
+<tr>                                               <td>cosT*(exp(cosT)-2*cos(4T)-(sin(T/12))^5)</td> </tr>
+<tr>                                               <td>F=.01*T^3+1;U=1-A/15;((1+U)*T+(1-U)*F)/2</td> <td rowspan=2>Inverse Funktion<br>Koordinatensystem: Standard, Standardgröße, T von -10 bis 10<br> dynamisch an mit A von 0 bis 30<br>Logikfunktionen an</td></tr>
+<tr>                                               <td>((1-U)*T+(1+U)*F)/2</td>                      </tr>
+<tr>                                               <td>(1-A/15)*T</td>                               <td rowspan=2>Spiegelung<br>Koordinatensystem: Standard, Standardgröße, T von -10 bis 10<br> dynamisch an mit A von 0 bis 30<br>Logikfunktionen an</td></tr>
+<tr>                                               <td>T^3-5*T^2+5*T-2</td>                          </tr>
+<tr>                                               <td>F=.05*T^3;U=atan(F/T);R=sqrt(T^2+F^2);cos(pi/30*A+U)*R</td> <td rowspan=2>Punktsymmestrische Funktion<br>Koordinatensystem: Standard, Standardgröße, T von 0 bis 10<br> dynamisch an mit A von 0 bis 30<br>Logikfunktionen an</td></tr>
+<tr>                                               <td>sin(pi/30*A+U)*R</td>                         </tr>
+<tr><td rowspan=3>3D</td>                          <td>sin(X²)*cos(Z²)</td>                          <td>Koordinatensystem: 3D, X, Y und Z von -3 bis 3</td></tr>
+<tr>                                               <td>L=0.01;U=2;K=1e-3;if(X&lt;U)0;else{if(Z&gt;0 &amp;&amp; Z&lt;X-U)K*Z*(X-U-Z/2)*(1+L*Z);else if (Z>0) K/2*(X-U)²*(1+L*Z); else 0;}</td>         <td>MOSFET-Kollektorstrom<br>Koordinatensystem: 3D, X und Z von 0 bis 10,Y von -0.01 bis 0.04<br>Logikfunktionen an</td></tr>
+<tr>                                               <td>abs(arg(((X+Zi)^2-1)*((X+Zi)^2-2-i)^2/((X+Zi)^2+2+2i)))</td>         <td>Komplexer Graph in 3D (X=Realteil,Z=Imaginärteil)<br>Koordinatensystem: 3D, X und Z von -2 bis 2,Y von 0 bis 5<br>Logikfunktionen an, Komplexe Rechnung im Rechner eingeschaltet</td></tr>
+<tr><td>Komplexer Graph</td>                         <td>exp(Z*i)</td>                                 <td>Koordinatensystem: 3D, Standardgröße</td></tr>
+<tr><td>Ortskurve</td>                          <td>10/(1+Z*i)</td>                               <td>Koordinatensystem: Standard, Standardgröße</td></tr>
+</table>
+<h5>Import und Export von Graphen</h5>
+Es ist möglich, die Funktionen der Graphen zu Exportieren oder Importieren. Dazu werden die Funktionen in einer Datei abgespeichert.<br>
+Die vom Export erzeugten Dateien können ausgetauscht oder archiviert werden. Mit der Import-Funktion können die Funktionen wieder
+in Extcalc geladen werden.<br>
+Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bzw. Grafik -> Graphen exportieren aufgerufen werden.<br>
   <br>
   <a name="graphsolve"><h3>3.2.2 Graphen auswerten</h3></a>
   <img src="analyse.jpg"></img>
@@ -508,7 +545,7 @@
   m&ouml;glich, dass das Abbrechen-Signal nicht rechtzeitig vom Script empfangen wird. Man muss dann den Abbrechen-Knopf noch einmal dr&uuml;cken, um
   das Programm korrekt zu Beenden.<br>
   <a name="scriptsyntax"><h3>3.4.3 Die Script-Sprache</h3></a>
-  In Version 0.9.0 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. N&auml;here Informationen zu den geplaten
+  In Version 0.9.1 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. N&auml;here Informationen zu den geplaten
   Funktionen finden Sie im <a href="#else">Kapitel 4</a>.<br>
   <h5>Probleme:</h5>
   In der folgenden Liste sind Probleme aufgef&uuml;hrt, die im Script-Interpreter noch vorhanden sind.<br><br>
@@ -1634,7 +1671,7 @@ while(1)
   <br>
   <a name="else"><h2>4. Sonstiges</h2></a>
   <h5> Version</h5>
-  Extcalc Version 0.9.0<br>
+  Extcalc Version 0.9.1<br>
   Dies ist eine Betaversion von Extcalc!<br>
   Im Programm können noch einige Fehler enthalten sein, weil die zahlreichen neuen Features, die in den letzten Versionen
   integriert wurden, noch ausreichend getestet werden müssen.<br>

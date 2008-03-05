@@ -81,8 +81,6 @@ QString getConfigString(QString * configFile,QString objectName)
 			return QString("");
 	}
 	
-	retObject=resetConfigString(retObject);
-	
 	return retObject;
 }
 

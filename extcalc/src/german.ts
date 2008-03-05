@@ -3532,69 +3532,354 @@ Determinante ist gleich 0.</translation>
     </message>
 </context>
 <context>
+    <name>CalcWidget</name>
+    <message>
+        <source>Constants and conversation</source>
+        <translation>Konstanten und Umrechnungsfaktoren</translation>
+    </message>
+</context>
+<context>
     <name>Catalog</name>
     <message>
+        <source>Mathematics Constants</source>
+        <translation>Mathematische Konstanten
+</translation>
+    </message>
+    <message>
+        <source>Physics Constants</source>
+        <translation>Physikalische Konstanten</translation>
+    </message>
+    <message>
+        <source>Conversation Constants</source>
+        <translation>Umrechnungsfaktoren</translation>
+    </message>
+    <message>
+        <source>Userdefined Constants</source>
+        <translation>Benutzerdefinierte Konstanten</translation>
+    </message>
+    <message>
         <source>Math Standard</source>
-        <translation type="unfinished"></translation>
+        <translation>Mathematik standard</translation>
     </message>
     <message>
         <source>Math Trigonometric</source>
-        <translation type="unfinished"></translation>
+        <translation>Mathematik trigonometrisch</translation>
     </message>
     <message>
         <source>Math Extended</source>
-        <translation type="unfinished"></translation>
+        <translation>Mathematik erweitert</translation>
     </message>
     <message>
         <source>Math Logic</source>
-        <translation type="unfinished"></translation>
+        <translation>Mathematik Logik</translation>
     </message>
     <message>
         <source>Matrix/Vector</source>
-        <translation type="unfinished">Matrix/Vektor</translation>
+        <translation>Matrix/Vektor</translation>
     </message>
     <message>
         <source>Script Standard</source>
-        <translation type="unfinished"></translation>
+        <translation>Script Standard</translation>
     </message>
     <message>
         <source>Script Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Script Text</translation>
     </message>
     <message>
         <source>Script Graphics</source>
-        <translation type="unfinished"></translation>
+        <translation>Script Grafik</translation>
     </message>
     <message>
         <source>Script GL</source>
-        <translation type="unfinished"></translation>
+        <translation>Script GL</translation>
     </message>
     <message>
         <source>Script File</source>
-        <translation type="unfinished"></translation>
+        <translation>Script Dateien</translation>
+    </message>
+</context>
+<context>
+    <name>ConstantDialog</name>
+    <message>
+        <source>Change Constants</source>
+        <translation>Konstanten ändern</translation>
+    </message>
+    <message>
+        <source>Choose Constant</source>
+        <translation>Konstanten</translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation>Beschreibung</translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation>Wert</translation>
+    </message>
+    <message>
+        <source>Identifier</source>
+        <translation>ID</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation>OK</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation>Übernehmen</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation>Löschen</translation>
+    </message>
+    <message>
+        <source>New</source>
+        <translation>Neu</translation>
+    </message>
+</context>
+<context>
+    <name>FunctionTable</name>
+    <message>
+        <source>dynamic</source>
+        <translation>dynamisch</translation>
+    </message>
+    <message>
+        <source>logic expressions</source>
+        <translation>Logikfunktionen</translation>
+    </message>
+    <message>
+        <source>comment</source>
+        <translation>Kommentar</translation>
+    </message>
+</context>
+<context>
+    <name>GraphSolveWidget</name>
+    <message>
+        <source>This operation can&apos;t be executed for graphs that use logic expressions!</source>
+        <translation>Diese Operation ist bei Graphen, die Logikfunktionen enthalten, nicht erlaubt!</translation>
+    </message>
+</context>
+<context>
+    <name>ImportDialog</name>
+    <message>
+        <source>Function</source>
+        <translation>Funktion</translation>
+    </message>
+    <message>
+        <source>Import to</source>
+        <translation>Ziel</translation>
+    </message>
+    <message>
+        <source>Export</source>
+        <translation>Export</translation>
+    </message>
+    <message>
+        <source>Comment</source>
+        <translation>Kommentar</translation>
+    </message>
+    <message>
+        <source>Error
+
+No functions marked for export!</source>
+        <translation>Fehler
+
+Keine Funktionen zum Export ausgewählt!</translation>
+    </message>
+    <message>
+        <source>Unable to write file: </source>
+        <translation>Die Datei konnte nicht geschrieben werden: </translation>
+    </message>
+    <message>
+        <source>Really overwrite F%1?</source>
+        <translation>Soll F%1 wirklich überschrieben werden?</translation>
+    </message>
+    <message>
+        <source>Unable to open file: </source>
+        <translation>Die Datei konnte nicht geöffnet werden: </translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation>Keine
+</translation>
     </message>
 </context>
 <context>
     <name>MainObject</name>
     <message>
+        <source>Import Graphs</source>
+        <translation>Graphen importieren</translation>
+    </message>
+    <message>
+        <source>Export Graphs</source>
+        <translation>Graphen exportieren</translation>
+    </message>
+    <message>
         <source>English</source>
-        <translation type="unfinished"></translation>
+        <translation>Englisch</translation>
     </message>
     <message>
         <source>French</source>
-        <translation type="unfinished"></translation>
+        <translation>Französisch</translation>
     </message>
     <message>
         <source>German</source>
-        <translation type="unfinished"></translation>
+        <translation>Deutsch</translation>
     </message>
     <message>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Sprache</translation>
     </message>
     <message>
-        <source>Extcalc must be restarted to apply this changes!</source>
-        <translation type="unfinished"></translation>
+        <source>pi </source>
+        <translation>pi </translation>
+    </message>
+    <message>
+        <source>euler number e</source>
+        <translation>Eulerzahl e</translation>
+    </message>
+    <message>
+        <source>euler constant C</source>
+        <translation>Eulersche Konstante C</translation>
+    </message>
+    <message>
+        <source>vacuum light speed c0 [m/s]</source>
+        <translation>Vakuumlichtgeschwindigkeit c0 [m/s]</translation>
+    </message>
+    <message>
+        <source>standard acceleration of gravity g [m/s^2]</source>
+        <translation>Fallbeschläunigung g [m/s^2]</translation>
+    </message>
+    <message>
+        <source>Newtonian constant of gravitation G [m^3/(kg s^2)]</source>
+        <translation>Newtonsche Gravitationskonstante G [m^3/(kg s^2)]</translation>
+    </message>
+    <message>
+        <source>electric field constant e0 [F/m]</source>
+        <translation>Permittivität des Vakuums e0 [F/m]</translation>
+    </message>
+    <message>
+        <source>magnetic field constant my0 [N/A^2]</source>
+        <translation>Permeabilität des Vakuums my0 [N/A^2]</translation>
+    </message>
+    <message>
+        <source>Planck constant h [Js]</source>
+        <translation>Plancksches Wirkungsquantum h [Js]</translation>
+    </message>
+    <message>
+        <source>Planck constant h [eVs]</source>
+        <translation>Plancksches Wirkungsquantum h [eVs]</translation>
+    </message>
+    <message>
+        <source>characteristic impedance of vacuum Z0 [V/A]</source>
+        <translation>Wellenwiderstand des Vakuums Z0 [V/A]</translation>
+    </message>
+    <message>
+        <source>Faraday constant F [C/mol]</source>
+        <translation>Faraday Konstante F [C/mol]</translation>
+    </message>
+    <message>
+        <source>atomic unit of charge e [C]</source>
+        <translation>Elementraladung e [C]</translation>
+    </message>
+    <message>
+        <source>fine-structure constant alpha</source>
+        <translation>Feinstrukturkonstante alpha</translation>
+    </message>
+    <message>
+        <source>atomic mass constant mu [kg]</source>
+        <translation>Atomare Masseneinheit mu [kg]</translation>
+    </message>
+    <message>
+        <source>electron mass me [kg]</source>
+        <translation>Masse Elektron me [kg]</translation>
+    </message>
+    <message>
+        <source>neutron mass mn [kg]</source>
+        <translation>Masse Neutron mn [kg]</translation>
+    </message>
+    <message>
+        <source>proton mass mp [kg]</source>
+        <translation>Masse Proton mp [kg]</translation>
+    </message>
+    <message>
+        <source>Avogadro constant [1/mol]</source>
+        <translation>Avogadrokonstante [1/mol]</translation>
+    </message>
+    <message>
+        <source>Boltzmann constant k [J/K]</source>
+        <translation>Moltzmann Konstante k [J/K]</translation>
+    </message>
+    <message>
+        <source>molar gas constant R0 [J/(mol K)]</source>
+        <translation>Allgemeine Gaskonstante R0 [J/(mol K)]</translation>
+    </message>
+    <message>
+        <source>Stefan-Boltzmann constant sigma [W/(M^2 K^4)]</source>
+        <translation>Sefan-Boltzmann Konstante sigma [W/(M^2 K^4)]</translation>
+    </message>
+    <message>
+        <source>Wien wavelength displacement law constant b [m K]</source>
+        <translation>Wiensche Verschiebungskonstante b [m K]</translation>
+    </message>
+    <message>
+        <source>km -&gt; mile</source>
+        <translation>km -&gt; Meile</translation>
+    </message>
+    <message>
+        <source>mile -&gt; km</source>
+        <translation>Meile -&gt; km</translation>
+    </message>
+    <message>
+        <source>cm -&gt; inch</source>
+        <translation>cm -&gt; inch</translation>
+    </message>
+    <message>
+        <source>inch -&gt; cm</source>
+        <translation>inch -&gt; cm</translation>
+    </message>
+    <message>
+        <source>g -&gt; oz</source>
+        <translation>g -&gt; oz</translation>
+    </message>
+    <message>
+        <source>oz -&gt; g</source>
+        <translation>oz -&gt; g</translation>
+    </message>
+    <message>
+        <source>J -&gt; calorie</source>
+        <translation>J -&gt; Kalorie</translation>
+    </message>
+    <message>
+        <source>calorie -&gt; J</source>
+        <translation>Kalorie -&gt; J</translation>
+    </message>
+    <message>
+        <source>Can&apos;t read constants file %1.
+
+</source>
+        <translation>Konstantenverzeichnis %1 konnte nicht geladen werden.
+
+</translation>
+    </message>
+    <message>
+        <source>Constants file %1 could not be written.
+
+</source>
+        <translation>Konstantenverzeichnis %1 konnte nicht gespeichert werden.
+
+</translation>
+    </message>
+    <message>
+        <source>Extcalc must be restarted to apply this changes!
+
+Restart now?</source>
+        <translation>Um die Änderungen zu übernehmen, muss Extcalc neu gestartet werden.
+
+Jetzt neu starten?</translation>
     </message>
 </context>
 </TS>

@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - Scientific Calculator </h1>
-  Version 0.9.0
+  Version 0.9.1
   <br>
   <br>
   <h3>Contents</h3>
@@ -35,7 +35,7 @@
   <a name="introduction"><h2>1. Introduction</h2></a>
   Extcalc is a scientific graphic calculator for Linux. Extcalc is able to process difficult
   mathematical functions, to draw graph and to work with them. It includes a C-like script language.<br>
-  This is the documentation for version 0.9.0 beta. 
+  This is the documentation for version 0.9.1 beta. 
   <br>
   <br>
   <br>
@@ -43,8 +43,8 @@
   This description is only for the installation of the source code package (.tar.gz). If you install a binary package, you have to use the
   packet manager of your distribution.<br><br>
   <UL>
-  <LI> extract packet (tar -xzf extcalc-0.9.0.tar.gz)<br>
-  <LI> switch to directory (cd extcalc-0.9.0)<br>
+  <LI> extract packet (tar -xzf extcalc-0.9.1.tar.gz)<br>
+  <LI> switch to directory (cd extcalc-0.9.1)<br>
   <LI> configure (./configure)<br>
   <LI> compile (make)<br>
   <LI> become root (su)<br>
@@ -82,6 +82,9 @@
   a list of all operations and commands that are supported by the calculator. The list is seperated 
   into groups of operations and commands. When you choose an operation from the menu, the text is
   copied into the calculator window.
+  <h5> 4. Constants and Conversation</h5>
+  This button shows you a menu with a list of mathematics and physics constants. You can choose a
+  constant and add it to your calculaton. You may also add your own user defined constants to the list.
   <br>
   <h5>Special keys:</h5>
   <DL>
@@ -337,6 +340,9 @@ These functions return only true or false as a result.
   All above described types of graphs can be used in a dynamic mode. For this dynamic graphs, an extra parameter A must
   exist in your function. This parameter depends on the time. So you can show moving graphs.
   This type of graphs needs much graphics performance, so you may need a 3D-Card for using this type of graphs.
+  <h5> Logic expressions</h5>
+  If this is enabled for a function, logic expressions like X&gt;0 and script commands like if else can be used.
+  It should only be enabled when logic expressions or scripte commands are needed.
   <h4>Coordinate Systems</h4>
   It is possible to draw every type of graph in every coordinate system, but some combinations don't make sense.<br>
   <h5>Standard Coordinate System</h5>
@@ -380,6 +386,35 @@ In the last column, you can switch the function to a dynamic function.<br>
 If you press the print button, the graphs of all active functions will be drawn at the output window.
 You can choose one type of coordinate system for your output window at the graphics menu or at the graphic preferences dialog.<br>
 
+<h5>Examples</h5>
+<table border>
+<tr><th>Graph type</th><th>Function</th><th>Description</th></tr>
+<tr><td rowspan=3>normal</td>                      <td>sinX</td>                                     <td>Sine wave<br>Coordinate system: standard, trigonometric standard size</td></tr>
+<tr>                                               <td>(X+5)^2-4</td>                                <td>Parabola<br>Coordinate system: standard, standard size</td></tr>
+<tr>                                               <td>if(A<=10) (1-A/5)*x^2; else if(A<=20) -(x+5*(A-10)/10)^2; else -(x+5)^2-4*(A-20)/10;</td>                                <td>Animated parabola<br>Coordinate system: standard, standard size<br>dynamic enabled with A from 0 to 30<br>logic enabled</td></tr>
+<tr><td rowspan=3>polar</td>                       <td>X+2</td>                                      <td>Archimedian spiral<br>Coordinate system: polar, standard size</td></tr>
+<tr>                                               <td>5*sin(4X)</td>                                <td>Polar rose<br>Coordinate system: polar, standard</td></tr>
+<tr>                                               <td>2/(1+0.7cosX)</td>                            <td>Ellipse<br>Coordinate system: standard</td></tr>
+<tr><td rowspan=10>parameter</td>                  <td>T</td>                                        <td rowspan=2>Parabola<br>Coordinate system: standard, standard size<br>T from -10 to 10</td></tr>
+<tr>                                               <td>T^2</td>                                      </tr>
+<tr>                                               <td>sinT*(exp(cosT)-2*cos(4T)-(sin(T/12))^5)</td> <td rowspan=2>Butterfly curve<br>Coordinate system: polar, max. radius=5<br> T from 0 to 20</td></tr>
+<tr>                                               <td>cosT*(exp(cosT)-2*cos(4T)-(sin(T/12))^5)</td> </tr>
+<tr>                                               <td>F=.01*T^3+1;U=1-A/15;((1+U)*T+(1-U)*F)/2</td> <td rowspan=2>Inverse function<br>Coordinate system: standard, standard size, T from -10 to 10<br> dynamic enabled with A from 0 to 30<br>logic enabled</td></tr>
+<tr>                                               <td>((1-U)*T+(1+U)*F)/2</td>                      </tr>
+<tr>                                               <td>(1-A/15)*T</td>                               <td rowspan=2>Reflection<br>Coordinate system: standard, standard size, T from -10 to 10<br> dynamic enabled with A from 0 to 30<br>logic enabled</td></tr>
+<tr>                                               <td>T^3-5*T^2+5*T-2</td>                          </tr>
+<tr>                                               <td>F=.05*T^3;U=atan(F/T);R=sqrt(T^2+F^2);cos(pi/30*A+U)*R</td> <td rowspan=2>Odd function<br>Coordinate system: standard, standard size, T from 0 to 10<br> dynamic enabled with A from 0 to 30<br>logic enabled</td></tr>
+<tr>                                               <td>sin(pi/30*A+U)*R</td>                         </tr>
+<tr><td rowspan=3>3D</td>                          <td>sin(X²)*cos(Z²)</td>                          <td>Coordinate system: 3D, X, Y and Z from -3 to 3</td></tr>
+<tr>                                               <td>L=0.01;U=2;K=1e-3;if(X&lt;U)0;else{if(Z&gt;0 &amp;&amp; Z&lt;X-U)K*Z*(X-U-Z/2)*(1+L*Z);else if (Z>0) K/2*(X-U)²*(1+L*Z); else 0;}</td>         <td>MOSFET transistor current<br>Coordinate system: 3D, X and Z from 0 to 10,Y from -0.01 to 0.04<br>logic expressions enabled</td></tr>
+<tr>                                               <td>abs(arg(((X+Zi)^2-1)*((X+Zi)^2-2-i)^2/((X+Zi)^2+2+2i)))</td>         <td>Complex graph in 3D (X=Re,Z=Im)<br>Coordinate system: 3D, X and Z from -2 to 2,Y from 0 to 5<br>logic expressions enabled, complex enabled (Calculator)</td></tr>
+<tr><td>Complex graph</td>                         <td>exp(Z*i)</td>                                 <td>Coordinate system: 3D, standard size</td></tr>
+<tr><td>Nyquist plot</td>                          <td>10/(1+Z*i)</td>                               <td>Coordinate system: standard, standard size</td></tr>
+</table>
+<h5>Import and export graphs</h5>
+  It is possible to export functions from Extcalc and store them into a file. This files may also be imported into Extcalc.<br>
+  This option can be used to share graphs with others or to archive them.<br>
+  The import and export dialogs are in the menu at Graphic -> Import Graphs and Graphic -> Export Graphs.<br>
   <br>
   <a name="graphsolve"><h3>3.2.2 Analyze Graphs </h3></a>
 <img src="analyse.jpg"></img>
@@ -607,7 +642,7 @@ Rubber: If you want to erase a part of the drawn things, you can use this tool. 
   not in the calculator.
   The scripts programs run in a separate console, and you may use the other extcalc functions while running a script.
   Scripts can be managed, edited and started from the integrated script editor.<br>
-  In this version 0.9.0 are not all planned features included.<br><br>
+  In this version 0.9.1 are not all planned features included.<br><br>
 
   <a name="scriptedit"><h3>3.4.2 The Script-Editor</h3></a>
   <img src="scriptedit.jpg"></img>
@@ -655,10 +690,10 @@ If is running while you change something, you can press the right mouse button a
   You can always stop a running script by pressing the "Kill"-Button at the script console window.<br>
   If the script does not stop before the timeout, an error message is displayed. You have to press the kill-button again to stop the script correctly.<br>
   <a name="scriptsyntax"><h3>3.4.3 Scripting Language</h3></a>
-  In version 0.9.0 of Extcalc, not all features are included. You can read more about the planned features 
+  In version 0.9.1 of Extcalc, not all features are included. You can read more about the planned features 
   at <a href="#else">Chapter 4</a>.<br>
   <h5>Problems:</h5>
-  This is a list of the current problems of the 0.9.0 version of the Extcalc Script Interpreter<br><br>
+  This is a list of the current problems of the 0.9.1 version of the Extcalc Script Interpreter<br><br>
   <OL>
   <LI>Speed<br>
   The extcalc scripts were ran by an Interpreter and so they run not as fast as compiled programms, but it will be optimized in later versions.<br><br>
@@ -1777,7 +1812,7 @@ while(1)
   <br>
   <a name="else"><h2>4. Other</h2></a>
   <h5> Version</h5>
-  Extcalc version 0.9.0<br>
+  Extcalc version 0.9.1<br>
   This is a beta-version of Extcalc.<br>
   This means, that there may be some bugs in this program, because the new features from the earlier version have to be tested.<br>
   Further information to the beta version can be found on the <a href="http://extcalc-linux.sourceforge.net">projekt homepage</a>.

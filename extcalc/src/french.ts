@@ -3530,7 +3530,30 @@ Déterminant est égual à 0.</translation>
     </message>
 </context>
 <context>
+    <name>CalcWidget</name>
+    <message>
+        <source>Constants and conversation</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Catalog</name>
+    <message>
+        <source>Mathematics Constants</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Physics Constants</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Conversation Constants</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Userdefined Constants</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Math Standard</source>
         <translation type="unfinished"></translation>
@@ -3573,7 +3596,121 @@ Déterminant est égual à 0.</translation>
     </message>
 </context>
 <context>
+    <name>ConstantDialog</name>
+    <message>
+        <source>Change Constants</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose Constant</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Identifier</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">Annuler</translation>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FunctionTable</name>
+    <message>
+        <source>dynamic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>logic expressions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>comment</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GraphSolveWidget</name>
+    <message>
+        <source>This operation can&apos;t be executed for graphs that use logic expressions!</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ImportDialog</name>
+    <message>
+        <source>Function</source>
+        <translation type="unfinished">Fonction</translation>
+    </message>
+    <message>
+        <source>Import to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Export</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Comment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error
+
+No functions marked for export!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to write file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Really overwrite F%1?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to open file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainObject</name>
+    <message>
+        <source>Import Graphs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Export Graphs</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>English</source>
         <translation type="unfinished"></translation>
@@ -3591,7 +3728,145 @@ Déterminant est égual à 0.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Extcalc must be restarted to apply this changes!</source>
+        <source>pi </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>euler number e</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>euler constant C</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>vacuum light speed c0 [m/s]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>standard acceleration of gravity g [m/s^2]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Newtonian constant of gravitation G [m^3/(kg s^2)]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>electric field constant e0 [F/m]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>magnetic field constant my0 [N/A^2]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Planck constant h [Js]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Planck constant h [eVs]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>characteristic impedance of vacuum Z0 [V/A]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Faraday constant F [C/mol]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>atomic unit of charge e [C]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>fine-structure constant alpha</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>atomic mass constant mu [kg]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>electron mass me [kg]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>neutron mass mn [kg]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>proton mass mp [kg]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Avogadro constant [1/mol]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Boltzmann constant k [J/K]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>molar gas constant R0 [J/(mol K)]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stefan-Boltzmann constant sigma [W/(M^2 K^4)]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Wien wavelength displacement law constant b [m K]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>km -&gt; mile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>mile -&gt; km</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>cm -&gt; inch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>inch -&gt; cm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>g -&gt; oz</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>oz -&gt; g</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>J -&gt; calorie</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>calorie -&gt; J</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t read constants file %1.
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Constants file %1 could not be written.
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extcalc must be restarted to apply this changes!
+
+Restart now?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
