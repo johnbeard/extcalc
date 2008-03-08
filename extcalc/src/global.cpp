@@ -671,8 +671,10 @@ char* preferencesPreprocessor(char*code,Preferences*pref)
 				pref->calcType=BASE;
 			else if(strncmp(configString,"modescientific",14)==0)
 				pref->calcType=SCIENTIFIC;
+#ifndef CONSOLE
 			else if(strncmp(configString,"clearmemory",11)==0)
 				pref->clearScriptMemory=true;
+#endif
 			else if(strncmp(configString,"outputlength",12)==0)
 			{
 				int num=atoi(configString+12);
@@ -680,6 +682,7 @@ char* preferencesPreprocessor(char*code,Preferences*pref)
 					pref->outputLength=num;
 				else return NULL;
 			}
+#ifndef CONSOLE
 			else if(strncmp(configString,"gl",2)==0)
 				pref->scriptGraphicsMode=SCRIPT3D;
 			else if(strncmp(configString,"graphics",8)==0)
@@ -700,6 +703,7 @@ char* preferencesPreprocessor(char*code,Preferences*pref)
 				pref->autosize=true;
 			else if(strncmp(configString,"autoscaleoff",12)==0)
 				pref->autosize=false;
+#endif
 			else return NULL;
 			
 			memmove(&code[startPos],&code[endPos],len-endPos+1);
@@ -1746,10 +1750,24 @@ int Calculate::split(char* line)
 {
 
 	if(line==NULL)
+	{
+		operation=NONE;
+		number=NAN;
+		var=-1;
+		horzObj=NULL;
+		vertObj=NULL;
 		return -1;
+	}
 	int len=strlen(line);
 	if(len <=0)
+	{
+		operation=NONE;
+		number=NAN;
+		var=-1;
+		horzObj=NULL;
+		vertObj=NULL;
 		return -1;
+	}
 //	perror("split: "+QString(line));
 
 	if(bracketFind(line," ") != -1)	//none operation
@@ -2432,7 +2450,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,")");
 		if(pos2<3 || len<pos2+2)
 		{
-			printError("No closing bracket for if found",semicolonCount,eventReciver->eventReciver);
+			printError("No closing bracket for if found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -2472,7 +2490,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,")");
 		if(pos2<7)
 		{
-			printError("No closing bracket for while found",semicolonCount,eventReciver->eventReciver);
+			printError("No closing bracket for while found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -2480,7 +2498,7 @@ char* Script::parse(char* line)
 		}
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -2508,13 +2526,13 @@ char* Script::parse(char* line)
 		int pos4=bracketFind(line,")",3);
 		if(pos2<4 || pos3<5 || pos4<6)
 		{
-			printError("Invalid usage of for",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid usage of for",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -2542,7 +2560,7 @@ char* Script::parse(char* line)
 		
 		if(len-pos4<2)
 		{
-			printError("For-loop has no body",semicolonCount,eventReciver->eventReciver);
+			printError("For-loop has no body",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -2562,7 +2580,7 @@ char* Script::parse(char* line)
 		int pos1=bracketFind(line,"}");
 		if(pos1<1)
 		{
-			printError("No closing bracket for { found",semicolonCount,eventReciver->eventReciver);
+			printError("No closing bracket for { found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -2594,7 +2612,7 @@ char* Script::parse(char* line)
 			vertObj=new Script(this,recString1,pref,vars,eventReciver);
 		else vertObj=NULL;
 		delete[]recString1;
-	//	printError("Strichpunkt gefunden",semicolonCount,eventReciver->eventReciver);
+	//	printError("Strichpunkt gefunden",semicolonCount,eventReciver);
 		semicolonCount++;
 		
 		
@@ -2649,7 +2667,7 @@ char* Script::parse(char* line)
 				{
 					if(line[pos2-1]!=']')
 					{
-						printError("No closing brace for set operation found",semicolonCount,eventReciver->eventReciver);
+						printError("No closing brace for set operation found",semicolonCount,eventReciver);
 						operation=SFAIL;
 						return NULL;
 					}
@@ -2673,7 +2691,7 @@ char* Script::parse(char* line)
 				}
 			}
 			else {
-				printError("Right operand of set operation invalid",semicolonCount,eventReciver->eventReciver);
+				printError("Right operand of set operation invalid",semicolonCount,eventReciver);
 				operation=SFAIL;
 				return NULL;
 			}
@@ -2686,7 +2704,7 @@ char* Script::parse(char* line)
 		var=line[pos1+2]-65;
 		if(var<0 || var>25)
 		{
-			printError("Invalid variable for set operation",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid variable for set operation",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -2796,7 +2814,7 @@ char* Script::parse(char* line)
 				{
 					if(line[pos2+1]!='[')
 					{
-						printError("Closing brace for set operation not found",semicolonCount,eventReciver->eventReciver);
+						printError("Closing brace for set operation not found",semicolonCount,eventReciver);
 						operation=SFAIL;
 						return NULL;
 					}
@@ -2819,7 +2837,7 @@ char* Script::parse(char* line)
 				}
 			}
 			else {
-				printError("Left operand of set operation invalid",semicolonCount,eventReciver->eventReciver);
+				printError("Left operand of set operation invalid",semicolonCount,eventReciver);
 				operation=SFAIL;
 				return NULL;
 			}
@@ -2828,7 +2846,7 @@ char* Script::parse(char* line)
 		var=line[0]-65;
 		if(var<0 || var>25)
 		{
-			printError("Invalid variable for set operation",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid variable for set operation",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -2849,9 +2867,9 @@ char* Script::parse(char* line)
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1];
 		if(pos1<1)
-			printError("First operand of + invalid",semicolonCount,eventReciver->eventReciver);
+			printError("First operand of + invalid",semicolonCount,eventReciver);
 		else if(len-pos1<2)
-			printError("Second operand of + invalid",semicolonCount,eventReciver->eventReciver);
+			printError("Second operand of + invalid",semicolonCount,eventReciver);
 		else operation=PLUS;
 		strcopy(recString1,line,pos1);
 		strcopy(recString2,&line[pos1+1],len-pos1-1);
@@ -2887,9 +2905,9 @@ char* Script::parse(char* line)
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1];
 		if(pos1<1)
-			printError("First operand of * invalid",semicolonCount,eventReciver->eventReciver);
+			printError("First operand of * invalid",semicolonCount,eventReciver);
 		else if(len-pos1<2)
-			printError("Second operand of * invalid",semicolonCount,eventReciver->eventReciver);
+			printError("Second operand of * invalid",semicolonCount,eventReciver);
 		else operation=MULT;
 		strcopy(recString1,line,pos1);
 		strcopy(recString2,&line[pos1+1],len-pos1-1);
@@ -2906,9 +2924,9 @@ char* Script::parse(char* line)
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1];
 		if(pos1<1)
-			printError("First operand of / invalid",semicolonCount,eventReciver->eventReciver);
+			printError("First operand of / invalid",semicolonCount,eventReciver);
 		else if(len-pos1<2)
-			printError("Second operand of / invalid",semicolonCount,eventReciver->eventReciver);
+			printError("Second operand of / invalid",semicolonCount,eventReciver);
 		else {
 			if(pref->complex)
 				operation=CDIVIDE;
@@ -2928,9 +2946,9 @@ char* Script::parse(char* line)
 		pos1=bracketFindRev(line,"$s")-1;
 		operation=SFAIL;
 		if(pos1<1)
-			printError("First operand of root invalid",semicolonCount,eventReciver->eventReciver);
+			printError("First operand of root invalid",semicolonCount,eventReciver);
 		else if(len-pos1<3)
-			printError("Second operand of root invalid",semicolonCount,eventReciver->eventReciver);
+			printError("Second operand of root invalid",semicolonCount,eventReciver);
 		else {
 			operation=SCALARPROD;
 		}
@@ -2952,9 +2970,9 @@ char* Script::parse(char* line)
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1];
 		if(pos1<1)
-			printError("First operand of % invalid",semicolonCount,eventReciver->eventReciver);
+			printError("First operand of % invalid",semicolonCount,eventReciver);
 		else if(len-pos1<2)
-			printError("Second operand of % invalid",semicolonCount,eventReciver->eventReciver);
+			printError("Second operand of % invalid",semicolonCount,eventReciver);
 		else operation=MODULO;
 		strcopy(recString1,line,pos1);
 		strcopy(recString2,&line[pos1+1],len-pos1-1);
@@ -2972,9 +2990,9 @@ char* Script::parse(char* line)
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1-1];
 		if(pos1<1)
-			printError("First operand of >> invalid",semicolonCount,eventReciver->eventReciver);
+			printError("First operand of >> invalid",semicolonCount,eventReciver);
 		else if(len-pos1<3)
-			printError("Second operand of >> invalid",semicolonCount,eventReciver->eventReciver);
+			printError("Second operand of >> invalid",semicolonCount,eventReciver);
 		else operation=RSHIFT;
 		strcopy(recString1,line,pos1);
 		strcopy(recString2,&line[pos1+2],len-pos1-2);
@@ -2991,9 +3009,9 @@ char* Script::parse(char* line)
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1-1];
 		if(pos1<1)
-			printError("First operand of << invalid",semicolonCount,eventReciver->eventReciver);
+			printError("First operand of << invalid",semicolonCount,eventReciver);
 		else if(len-pos1<3)
-			printError("Second operand of << invalid",semicolonCount,eventReciver->eventReciver);
+			printError("Second operand of << invalid",semicolonCount,eventReciver);
 		else operation=LSHIFT;
 		strcopy(recString1,line,pos1);
 		strcopy(recString2,&line[pos1+2],len-pos1-2);
@@ -3009,9 +3027,9 @@ char* Script::parse(char* line)
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1];
 		if(pos1<1)
-			printError("First operand of x invalid",semicolonCount,eventReciver->eventReciver);
+			printError("First operand of x invalid",semicolonCount,eventReciver);
 		else if(len-pos1<2)
-			printError("Second operand of x invalid",semicolonCount,eventReciver->eventReciver);
+			printError("Second operand of x invalid",semicolonCount,eventReciver);
 		else operation=XOR;
 		strcopy(recString1,line,pos1);
 		strcopy(recString2,&line[pos1+1],len-pos1-1);
@@ -3028,9 +3046,9 @@ char* Script::parse(char* line)
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1];
 		if(pos1<1)
-			printError("First operand of & invalid",semicolonCount,eventReciver->eventReciver);
+			printError("First operand of & invalid",semicolonCount,eventReciver);
 		else if(len-pos1<2)
-			printError("Second operand of & invalid",semicolonCount,eventReciver->eventReciver);
+			printError("Second operand of & invalid",semicolonCount,eventReciver);
 		else operation=SBAND;
 		strcopy(recString1,line,pos1);
 		strcopy(recString2,&line[pos1+1],len-pos1-1);
@@ -3047,9 +3065,9 @@ char* Script::parse(char* line)
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1];
 		if(pos1<1)
-			printError("First operand of | invalid",semicolonCount,eventReciver->eventReciver);
+			printError("First operand of | invalid",semicolonCount,eventReciver);
 		else if(len-pos1<2)
-			printError("Second operand of | invalid",semicolonCount,eventReciver->eventReciver);
+			printError("Second operand of | invalid",semicolonCount,eventReciver);
 		else operation=SBOR;
 		strcopy(recString1,line,pos1);
 		strcopy(recString2,&line[pos1+1],len-pos1-1);
@@ -3073,7 +3091,7 @@ char* Script::parse(char* line)
 			}
 			else {
 				operation=SFAIL;
-				printError("No argument for ! set",semicolonCount,eventReciver->eventReciver);
+				printError("No argument for ! set",semicolonCount,eventReciver);
 			}
 		}
 		else {
@@ -3091,9 +3109,9 @@ char* Script::parse(char* line)
 		char*recString1=new char[pos1+1];
 		char*recString2=new char[len-pos1];
 		if(pos1<1)
-			printError("First operand of ^ invalid",semicolonCount,eventReciver->eventReciver);
+			printError("First operand of ^ invalid",semicolonCount,eventReciver);
 		else if(len-pos1<2)
-			printError("Second operand of ^ invalid",semicolonCount,eventReciver->eventReciver);
+			printError("Second operand of ^ invalid",semicolonCount,eventReciver);
 		else 
 		{
 			if(pref->complex)
@@ -3119,9 +3137,9 @@ char* Script::parse(char* line)
 		pos1=bracketFindRev(line,"$r")-1;
 		operation=SFAIL;
 		if(pos1<1)
-			printError("First operand of root invalid",semicolonCount,eventReciver->eventReciver);
+			printError("First operand of root invalid",semicolonCount,eventReciver);
 		else if(len-pos1<3)
-			printError("Second operand of root invalid",semicolonCount,eventReciver->eventReciver);
+			printError("Second operand of root invalid",semicolonCount,eventReciver);
 		else {
 			if(pref->complex)
 				operation=CROOT;
@@ -3146,7 +3164,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,")");
 		if(pos2<7)
 		{
-			printError("Closing bracket for print not found",semicolonCount,eventReciver->eventReciver);
+			printError("Closing bracket for print not found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3171,7 +3189,7 @@ char* Script::parse(char* line)
 		int pos3=bracketFindRev(line,")");
 		if(pos2<11 || pos3<12 || pos3<pos2)
 		{
-			printError("Invalid use of setcursor",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of setcursor",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3191,7 +3209,7 @@ char* Script::parse(char* line)
 //		perror("sleep");
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3201,7 +3219,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,")");
 		if(pos2<7)
 		{
-			printError("No closing bracket for sleep found",semicolonCount,eventReciver->eventReciver);
+			printError("No closing bracket for sleep found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3217,7 +3235,7 @@ char* Script::parse(char* line)
 		value.type=NFLOAT;
 		if(line[len-1]!=')')
 		{
-			printError("No closing bracket for rnd found",semicolonCount,eventReciver->eventReciver);
+			printError("No closing bracket for rnd found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3231,7 +3249,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3241,7 +3259,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,")");
 		if(pos2<10)
 		{
-			printError("Closing bracket for readfile not found",semicolonCount,eventReciver->eventReciver);
+			printError("Closing bracket for readfile not found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3256,7 +3274,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3267,7 +3285,7 @@ char* Script::parse(char* line)
 		int pos1=bracketFind(line,",",10);
 		if(pos1<11 || pos1>len-2)
 		{
-			printError("Invalid use of writefile",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of writefile",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3287,7 +3305,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3297,7 +3315,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,")");
 		if(pos2<12)
 		{
-			printError("Closing bracket for removefile not found",semicolonCount,eventReciver->eventReciver);
+			printError("Closing bracket for removefile not found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3312,7 +3330,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3323,7 +3341,7 @@ char* Script::parse(char* line)
 		int pos1=bracketFind(line,",",11);
 		if(pos1<12 || pos1>len-2)
 		{
-			printError("Invalid use of appendfile",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of appendfile",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3342,7 +3360,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3352,7 +3370,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,")");
 		if(pos2<9)
 		{
-			printError("Closing bracket for glbegin not found",semicolonCount,eventReciver->eventReciver);
+			printError("Closing bracket for glbegin not found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3379,7 +3397,7 @@ char* Script::parse(char* line)
 		else if(strcmp(recString1,"polygon")==0)
 			value.ival=9;
 		else{
-			printError("Invalid argument in glbegin",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid argument in glbegin",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3391,7 +3409,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3405,7 +3423,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3419,7 +3437,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3433,7 +3451,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3448,7 +3466,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3462,7 +3480,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3477,7 +3495,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3488,7 +3506,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,")");
 		if(pos2<12)
 		{
-			printError("Closing bracket for glcalllist not found",semicolonCount,eventReciver->eventReciver);
+			printError("Closing bracket for glcalllist not found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3503,7 +3521,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3515,7 +3533,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,",",pos1+1);
 		if(pos1==-1 || pos2==-1)
 		{
-			printError("Invalid use of glpoint",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of glpoint",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3539,7 +3557,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3552,7 +3570,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,",",pos1+1);
 		if(pos1==-1 || pos2==-1)
 		{
-			printError("Invalid use of glscale",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of glscale",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3576,7 +3594,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3589,7 +3607,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,",",pos1+1);
 		if(pos1==-1 || pos2==-1)
 		{
-			printError("Invalid use of glmove",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of glmove",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3613,7 +3631,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3627,7 +3645,7 @@ char* Script::parse(char* line)
 		int pos3=bracketFind(line,",",pos2+1);
 		if(pos1==-1 || pos2==-1 || pos3==-1)
 		{
-			printError("Invalid use if glrotate",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use if glrotate",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3655,7 +3673,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3667,7 +3685,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,",",pos1+1);
 		if(pos1==-1 || pos2==-1)
 		{
-			printError("Invalid use of glcolor",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of glcolor",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3691,7 +3709,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3704,7 +3722,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,",",pos1+1);
 		if(pos1==-1 || pos2==-1)
 		{
-			printError("Invalid use of glstring",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of glstring",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3728,7 +3746,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3742,7 +3760,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3753,7 +3771,7 @@ char* Script::parse(char* line)
 		int pos1=bracketFind(line,",",10);
 		if(pos1<0 || pos1>len-2)
 		{
-			printError("Invalid use of drawpoint",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of drawpoint",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3773,7 +3791,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3786,7 +3804,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,",",pos1+1);
 		if(pos1==-1 || pos2==-1)
 		{
-			printError("Invalid use of drawcolor",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of drawcolor",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3810,7 +3828,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3823,7 +3841,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,",",pos1+1);
 		if(pos1==-1 || pos2==-1)
 		{
-			printError("Invalid use of drawstring",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of drawstring",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3847,7 +3865,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3861,7 +3879,7 @@ char* Script::parse(char* line)
 		int pos3=bracketFind(line,",",pos2+1);
 		if(pos1==-1 || pos2==-1 || pos3==-1)
 		{
-			printError("Invalid use of drawline",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of drawline",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3889,7 +3907,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3903,7 +3921,7 @@ char* Script::parse(char* line)
 		int pos3=bracketFind(line,",",pos2+1);
 		if(pos1==-1 || pos2==-1 || pos3==-1)
 		{
-			printError("Invalid use of drawrect",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of drawrect",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3931,7 +3949,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3945,7 +3963,7 @@ char* Script::parse(char* line)
 		int pos3=bracketFind(line,",",pos2+1);
 		if(pos1==-1 || pos2==-1 || pos3==-1)
 		{
-			printError("Invalid use of drawline",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of drawline",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -3973,7 +3991,7 @@ char* Script::parse(char* line)
 	{
 		if(eventReciver->calcMode)
 		{
-			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver->eventReciver);
+			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
 			horzObj=vertObj=NULL;
 			number=NAN;
@@ -3983,13 +4001,13 @@ char* Script::parse(char* line)
 		
 		if(line[len-1]!=')')
 		{
-			printError("No closing bracket for run found",semicolonCount,eventReciver->eventReciver);
+			printError("No closing bracket for run found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
 		if(line[len-2]!='\"' || line[4]!='\"')
 		{
-			printError("Filename in run must be quoted",semicolonCount,eventReciver->eventReciver);
+			printError("Filename in run must be quoted",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -4004,7 +4022,7 @@ char* Script::parse(char* line)
 			}
 		if(var==-1)
 		{
-			printError("File for run does not exist",semicolonCount,eventReciver->eventReciver);
+			printError("File for run does not exist",semicolonCount,eventReciver);
 			delete[]recString1;
 			operation=SFAIL;
 			return NULL;
@@ -4019,7 +4037,7 @@ char* Script::parse(char* line)
 		int pos1=bracketFind(line,",",3);
 		if(pos1<0 || pos1>len-2)
 		{
-			printError("Invalid use if d/dx",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use if d/dx",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -4044,7 +4062,7 @@ char* Script::parse(char* line)
 		int pos2=bracketFind(line,",",pos1+1);
 		if(pos1==-1 || pos2==-1)
 		{
-			printError("Invalid use of integ",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid use of integ",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -4068,7 +4086,7 @@ char* Script::parse(char* line)
 	{
 		if(len>7)
 		{
-			printError("Invalid operation after getline",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid operation after getline",semicolonCount,eventReciver);
 			operation=SFAIL;
 		}
 		else operation=SGETLINE;
@@ -4080,7 +4098,7 @@ char* Script::parse(char* line)
 	{
 		if(len>6)
 		{
-			printError("Invalid operation after getkey",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid operation after getkey",semicolonCount,eventReciver);
 			operation=SFAIL;
 		}
 		else operation=SGETKEY;
@@ -4094,7 +4112,7 @@ char* Script::parse(char* line)
 	{
 		if(len>8)
 		{
-			printError("Invalid operation after keystate",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid operation after keystate",semicolonCount,eventReciver);
 			operation=SFAIL;
 		}
 		else operation=SKEYSTATE;
@@ -4108,7 +4126,7 @@ char* Script::parse(char* line)
 	{
 		if(len>5)
 		{
-			printError("Invalid operation after break",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid operation after break",semicolonCount,eventReciver);
 			operation=SFAIL;
 		}
 		else operation=SBREAK;
@@ -4120,7 +4138,7 @@ char* Script::parse(char* line)
 	{
 		if(len>8)
 		{
-			printError("Invalid operation after getkey",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid operation after getkey",semicolonCount,eventReciver);
 			operation=SFAIL;
 		}
 		else operation=SCONTINUE;
@@ -4132,7 +4150,7 @@ char* Script::parse(char* line)
 	{
 		if(len>4)
 		{
-			printError("Invalid operation after stop",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid operation after stop",semicolonCount,eventReciver);
 			operation=SFAIL;
 		}
 		else operation=SSTOP;
@@ -4295,7 +4313,7 @@ char* Script::parse(char* line)
 			return NULL;
 		}
 		else{
-			printError("Unknown command",semicolonCount,eventReciver->eventReciver);
+			printError("Unknown command",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -4308,7 +4326,7 @@ char* Script::parse(char* line)
 		if(len<2)
 		{
 				operation=SFAIL;
-				printError("No argument for ~ set",semicolonCount,eventReciver->eventReciver);
+				printError("No argument for ~ set",semicolonCount,eventReciver);
 		}
 		else operation=SBNOT;
 		
@@ -4324,7 +4342,7 @@ char* Script::parse(char* line)
 		int pos1=bracketFind(line,")");
 		if(pos1<1)
 		{
-			printError("Closing bracket for ( not found",semicolonCount,eventReciver->eventReciver);
+			printError("Closing bracket for ( not found",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -4414,7 +4432,7 @@ char* Script::parse(char* line)
 		{
 			if(line[pos1-1] !=']')
 			{
-				printError("Closing brace for variable not found",semicolonCount,eventReciver->eventReciver);
+				printError("Closing brace for variable not found",semicolonCount,eventReciver);
 				operation=SFAIL;
 				return NULL;
 			}
@@ -4453,7 +4471,7 @@ char* Script::parse(char* line)
 
 		if(var>26 || var < 0)
 		{
-			printError("Invalid variable",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid variable",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -4464,7 +4482,7 @@ char* Script::parse(char* line)
 	{
 		if(line[len-1]!='\"' || len <=1)
 		{
-			printError("Invalid String",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid String",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -4479,7 +4497,7 @@ char* Script::parse(char* line)
 		char*err;
 		if(len<3)
 		{
-			printError("Invalid number",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid number",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -4496,13 +4514,13 @@ char* Script::parse(char* line)
 		else if(line[1] == 'h')
 			value.ival=strtoll(&line[2],&err,16);
 		else {
-			printError("Invalid number",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid number",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
 		if(*err!=(char)0)
 		{
-			printError("Invalid number",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid number",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -4540,7 +4558,7 @@ char* Script::parse(char* line)
 		}
 		if(*err!=(char)0)
 		{
-			printError("Invalid number",semicolonCount,eventReciver->eventReciver);
+			printError("Invalid number",semicolonCount,eventReciver);
 			operation=SFAIL;
 			return NULL;
 		}
@@ -7777,14 +7795,14 @@ bool invertMatrix(int size,long double*matrix)
 
 
 
-void printError(const char*text,int num,QObject*eventReciver)
+void printError(const char*text,int num,ThreadSync*eventReciver)
 {
 		QCustomEvent*debugEvent=new QCustomEvent(SIGDEBUG);
 		char*debugData=(char*)malloc(strlen(text)+5);
 		memcpy(debugData,&num,4);
 		memcpy(&debugData[4],text,strlen(text)+1);
 		debugEvent->setData(debugData);
-		QApplication::postEvent(eventReciver,debugEvent);
+		QApplication::postEvent(eventReciver->eventReciver,debugEvent);
 }
 
 

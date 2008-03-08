@@ -3735,7 +3735,7 @@ Keine Funktionen zum Export ausgewählt!</translation>
     </message>
     <message>
         <source>pi </source>
-        <translation>pi </translation>
+        <translation>Pi </translation>
     </message>
     <message>
         <source>euler number e</source>
@@ -3751,7 +3751,7 @@ Keine Funktionen zum Export ausgewählt!</translation>
     </message>
     <message>
         <source>standard acceleration of gravity g [m/s^2]</source>
-        <translation>Fallbeschläunigung g [m/s^2]</translation>
+        <translation>Fallbeschleunigung g [m/s^2]</translation>
     </message>
     <message>
         <source>Newtonian constant of gravitation G [m^3/(kg s^2)]</source>
@@ -3783,7 +3783,7 @@ Keine Funktionen zum Export ausgewählt!</translation>
     </message>
     <message>
         <source>atomic unit of charge e [C]</source>
-        <translation>Elementraladung e [C]</translation>
+        <translation>Elementrladung e [C]</translation>
     </message>
     <message>
         <source>fine-structure constant alpha</source>
@@ -3811,7 +3811,7 @@ Keine Funktionen zum Export ausgewählt!</translation>
     </message>
     <message>
         <source>Boltzmann constant k [J/K]</source>
-        <translation>Moltzmann Konstante k [J/K]</translation>
+        <translation>Boltzmann Konstante k [J/K]</translation>
     </message>
     <message>
         <source>molar gas constant R0 [J/(mol K)]</source>

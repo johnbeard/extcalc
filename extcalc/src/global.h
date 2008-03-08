@@ -49,7 +49,7 @@ using namespace std;
 #define CONSTFILE ".extcalc/constants.conf"
 #define UIFILE ".extcalc/ui.conf"
 
-#define VERSIONSTRING "Version: 0.9.1\n2008-03-03\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.9.1\n2008-03-08\n\n"+QString(DEVVERSION)
 
 
 #define AUTHORSTRING "Homepage:\nhttp://extcalc-linux.sourceforge.net\n\n"+QString(GLOBALH_STR1)
@@ -551,7 +551,7 @@ long double runCalc(QString,Preferences*,Variable*);
 long double determinant(int,long double*);
 long double gauss(int sizex,int sizey,long double*matrix);
 bool invertMatrix(int size,long double*matrix);
-void printError(const char*,int,QObject*);
+void printError(const char*,int,ThreadSync*);
 void convertToFloat(Number*num);
 inline void convertToInt(Number*num);
 inline void convertToBool(Number*num);
