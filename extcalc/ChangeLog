@@ -145,3 +145,8 @@ graphs
 - updated user interface
 - added french translation
 
+0.9.1
+- added constants and conversation list
+- dialogs for import and export of graphs
+- added support of logic operations and script commands in graphs
+- program language can be changed after installation
