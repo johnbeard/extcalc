@@ -96,6 +96,7 @@ class Catalog :public QPopupMenu
 		{
 			if(state&CATCONSTANTS)
 				state&=~CATCONSTANTS;
+			pref.constList=NULL;
 		}
 		else pref=*p;
 		mathStandard=new QPopupMenu(this);
