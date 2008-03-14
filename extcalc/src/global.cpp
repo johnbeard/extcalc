@@ -358,7 +358,7 @@ long double runCalc(QString line,Preferences*pref,Variable*vars)
 		return NAN;
 	else 
 	{
-		Calculate ca(NULL,cleanString,pref,vars);
+		Calculate ca(NULL,cleanString,0,strlen(cleanString),pref,vars);
 		double result= ca.calc();
 		free(cleanString);
 		return (long double)result;
@@ -1033,13 +1033,15 @@ char* cleanString(char*code,Preferences*pref)
 	return code;
 }
 
-int bracketFind(char* string,char* searchString, int start)
+int bracketFind(char* string,char* searchString, int start,int end)
 {
 
 	int searchLen=strlen(searchString);
 	int bracket=0,brace=0,sqbracket=0;
 	bool quote=false;
-	for(int c=start; c<(int)strlen(string); c++)
+	if(end==-1)
+		end=(int)strlen(string);
+	for(int c=start; c<end; c++)
 	{
 		if(bracket == 0 && brace == 0  && sqbracket==0 && !quote)
 		{
@@ -1102,7 +1104,7 @@ int bracketFind(char* string,char* searchString, int start)
 }
 
 
-int bracketFindRev(char* string,char* searchString, int start)
+int bracketFindRev(char* string,char* searchString, int start, int end)
 {
 	if(start==-1)
 		start=strlen(string)-1;
@@ -1110,7 +1112,7 @@ int bracketFindRev(char* string,char* searchString, int start)
 	int searchLen=strlen(searchString);
 	int bracket=0,brace=0,sqbracket=0;
 	bool quote=false;
-	for(int c=start; c>=0; c--)
+	for(int c=start; c>=end; c--)
 	{
 
 		if(bracket == 0 && brace == 0 && sqbracket==0 && !quote)
@@ -1746,63 +1748,46 @@ void convertToBool(Number*num)
 
 
 
-int Calculate::split(char* line)
+int Calculate::split(char* line, int start, int end)
 {
-
+	int pos;
+	operation=NONE;
+	number=NAN;
+	var=-1;
+	horzObj=NULL;
+	vertObj=NULL;
+	
 	if(line==NULL)
-	{
-		operation=NONE;
-		number=NAN;
-		var=-1;
-		horzObj=NULL;
-		vertObj=NULL;
 		return -1;
-	}
-	int len=strlen(line);
-	if(len <=0)
-	{
-		operation=NONE;
-		number=NAN;
-		var=-1;
-		horzObj=NULL;
-		vertObj=NULL;
-		return -1;
-	}
-//	perror("split: "+QString(line));
 
-	if(bracketFind(line," ") != -1)	//none operation
+	int len=strlen(line);
+	if(len <=0 || start>=end)
+		return -1;
+
+
+	if((pos=bracketFind(line," ",start,end)) != -1)	//none operation
 	{
-		operation=NONE;
-		var=-1;
-		number=NAN;
-		int pos=bracketFind(line," ");
-		char* recString1=new char[pos+1];
-		char* recString2=new char[len-pos];
-		strcopy(recString1,line,pos);
-		strcopy(recString2,&line[pos+1],len-pos-1);
-		horzObj=new Calculate(this,recString1,pref,vars);
-		vertObj=new Calculate(this,recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
+		horzObj=new Calculate(this,line,0,pos,pref,vars);
+		vertObj=new Calculate(this,line,pos+1,end,pref,vars);
 		return 0;
 	}
-	else if(bracketFind(line,"+") != -1 || bracketFind(line,"-") != -1)
+	else if(bracketFindRev(line,"+",end-1,start) != -1 || bracketFindRev(line,"-",end-1,start) != -1)
 	{
-		int pos1,pos2,pos=-1;
+		int pos1,pos2,pos=end-1;
 		while(true)
 		{
-			pos1=bracketFindRev(line,"+",pos);
-			if(pos1<=0)
+			pos1=bracketFindRev(line,"+",pos,start);
+			if(pos1<=start)
 				break;
 			if(line[pos1-1]=='e')
 				pos=pos1-1;
 			else break;
 		}
-		pos=-1;
+		pos=end-1;
 		while(true)
 		{
-			pos2=bracketFindRev(line,"-",pos);
-			if(pos2<=0)
+			pos2=bracketFindRev(line,"-",pos,start);
+			if(pos2<=start)
 				break;
 			if(line[pos2-1]=='e')
 				pos=pos2-1;
@@ -1811,371 +1796,240 @@ int Calculate::split(char* line)
 		
 		if(pos2>pos1)
 		{
-			if(pos2>0 && (line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
+			if(pos2>start && (line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
 			   || line[pos2-1]>='0' && line[pos2-1]<='9'
 			   || line[pos2-1]=='.' || line[pos2-1]==')'|| line[pos2-1]==']'))
 			{
 				pos=pos2;
-				number=NAN;
-				var=-1;
 				operation=MINUS;
-				char*recString2=new char[len-pos];
-				strcopy(recString2,&line[pos+1],len-pos-1);
-				horzObj=new Calculate(this,recString2,pref,vars);
-				delete[]recString2;
-				char*recString1=new char[pos+1];
-				strcopy(recString1,line,pos);
-				vertObj=new Calculate(this,recString1,pref,vars);
-				delete[]recString1;
+				horzObj=new Calculate(this,line,pos+1,end,pref,vars);
+				vertObj=new Calculate(this,line,start,pos,pref,vars);
 				return 0;
 			}
-			else if(pos2==0)										//unary - operator
+			else if(pos2==start)										//unary - operator
 			{
 				operation=MINUS;
-				var=-1;
-				number=NAN;
-				vertObj=NULL;
-				horzObj=new Calculate(this,&line[1],pref,vars);
+				horzObj=new Calculate(this,line,start+1,end,pref,vars);
 				return 0;
 			}
 		}
 		else if(pos1>pos2)
 		{
-			if(pos1>0 && (line[pos1-1] >='A' && line[pos1-1]<='Z'					//binary + operator
+			if(pos1>start && (line[pos1-1] >='A' && line[pos1-1]<='Z'					//binary + operator
 						 || line[pos1-1]>='0' && line[pos1-1]<='9'
 						 || line[pos1-1]=='.' || line[pos1-1]==')' || line[pos1-1]==']'))
 			{
 				pos=pos1;
-				number=NAN;
-				var=-1;
 				operation=PLUS;
-				char*recString2=new char[len-pos];
-				strcopy(recString2,&line[pos+1],len-pos-1);
-				horzObj=new Calculate(this,recString2,pref,vars);
-				delete[]recString2;
-				char*recString1=new char[pos+1];
-				strcopy(recString1,line,pos);
-				vertObj=new Calculate(this,recString1,pref,vars);
-				delete[]recString1;
+				horzObj=new Calculate(this,line,pos+1,end,pref,vars);
+				vertObj=new Calculate(this,line,start,pos,pref,vars);
 				return 0;
 			}
-			else if(pos1==0)										//unary + operator
+			else if(pos1==start)										//unary + operator
 			{
 				operation=PLUS;
-				var=-1;
-				number=NAN;
-				vertObj=NULL;
-				horzObj=new Calculate(this,&line[1],pref,vars);
+				horzObj=new Calculate(this,line,start+1,end,pref,vars);
 				return 0;
 			}
-
 		}
 	}
-	if(bracketFind(line,"*") != -1 || bracketFind(line,"/") != -1)
+	if(bracketFind(line,"*",start,end) != -1 || bracketFind(line,"/",start,end) != -1)
 	{
-		int pos1=bracketFindRev(line,"*");
-		int pos2=bracketFindRev(line,"/");
-		if(pos1==-1 && pos2==-1)
-			return -1;
-		int pos;
+		int pos1=bracketFindRev(line,"*",end-1,start);
+		int pos2=bracketFindRev(line,"/",end-1,start);
 		if((pos2>pos1 && pos2 != -1) || pos1==-1)
 		{
 			pos=pos2;
-			var=-1;
 			operation=DIVIDE;
-			char*recString1=new char[pos+1];
-			char*recString2=new char[len-pos];
-			strcopy(recString1,line,pos);
-			strcopy(recString2,&line[pos+1],len-pos-1);
-			horzObj=new Calculate(this,recString2,pref,vars);
-			vertObj=new Calculate(this,recString1,pref,vars);
-			delete[]recString1;
-			delete[]recString2;
+			horzObj=new Calculate(this,line,pos+1,end,pref,vars);
+			vertObj=new Calculate(this,line,start,pos,pref,vars);
 			return 0;
 		}
 		else
 		{
 			pos=pos1;
-			var=-1;
 			operation=MULT;
-			char*recString1=new char[pos+1];
-			char*recString2=new char[len-pos];
-			strcopy(recString1,line,pos);
-			strcopy(recString2,&line[pos+1],len-pos-1);
-			horzObj=new Calculate(this,recString2,pref,vars);
-			vertObj=new Calculate(this,recString1,pref,vars);
-			delete[]recString1;
-			delete[]recString2;
+			horzObj=new Calculate(this,line,pos+1,end,pref,vars);
+			vertObj=new Calculate(this,line,start,pos,pref,vars);
 			return 0;
 		}
 	}
-	else if(bracketFind(line,"%") != -1)
+	else if((pos=bracketFind(line,"%")) != -1)
 	{
-		number=NAN;
 		operation=MODULO;
-		var=-1;
-		int pos=bracketFind(line,"%");
-		char*recString1=new char[pos+1];
-		strcopy(recString1,line,pos);
-		char*recString2=new char[len-pos];
-		strcopy(recString2,&line[pos+1],len-pos-1);
-		vertObj=new Calculate(this,recString1,pref,vars);
-		horzObj=new Calculate(this,recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
+		vertObj=new Calculate(this,line,start,pos,pref,vars);
+		horzObj=new Calculate(this,line,pos+1,end,pref,vars);
 		return 0;
 		
 		
 	}
-	else if(bracketFind(line,"^") != -1)
+	else if((pos=bracketFindRev(line,"^",end-1,start)) != -1)
 	{
-		int pos1=bracketFindRev(line,"^");
-		number=NAN;
 		operation=POW;
-		var=-1;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Calculate(this,recString1,pref,vars);
-		horzObj=new Calculate(this,recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
+		vertObj=new Calculate(this,line,start,pos,pref,vars);
+		horzObj=new Calculate(this,line,pos+1,end,pref,vars);
 		return 0;
 	}
-	else if(bracketFind(line,"$r") != -1)	//	root operation for extcalc (binary operator)
+	else if((pos=bracketFind(line,"$r",end-1,start)) != -1)	//	root operation for extcalc (binary operator)
 	{
 		operation=ROOT;
-		var=-1;
-		number=NAN;
-		int pos=bracketFind(line,"$r");
-		char* recString1=new char[pos+1];
-		char* recString2=new char[len-pos-1];
-		strcopy(recString1,line,pos);
-		strcopy(recString2,&line[pos+2],len-pos-2);
-		vertObj=new Calculate(this,recString1,pref,vars);
-		horzObj=new Calculate(this,recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
+		vertObj=new Calculate(this,line,start,pos,pref,vars);
+		horzObj=new Calculate(this,line,pos+2,end,pref,vars);
 		return 0;
 	}
-	else if(line[0]>='a' && line[0]<='z') 
+	else if(line[start]>='a' && line[start]<='z') 
 	{
-		horzObj=NULL;
-		var=-1;
 		if(pref->angle==DEG)
 			number=180.0/(long double)PI;
 		else if(pref->angle==RAD)
 			number=1.0;
 		else number=200.0/(long double)PI;
-		if(strncmp("asinh",line,5) == 0)
+		if(strncmp("asinh",line+start,5) == 0)
 		{
 			operation=ASINH;
-			vertObj=new Calculate(this,&line[5],pref,vars);
+			vertObj=new Calculate(this,line,start+5,end,pref,vars);
 		}
-		else if(strncmp("acosh",line,5) == 0)
+		else if(strncmp("acosh",line+start,5) == 0)
 		{
 			operation=ACOSH;
-			vertObj=new Calculate(this,&line[5],pref,vars);
+			vertObj=new Calculate(this,line,start+5,end,pref,vars);
 		}
-			else if(strncmp("atanh",line,5) == 0)
+			else if(strncmp("atanh",line+start,5) == 0)
 		{
 			operation=ATANH;
-			vertObj=new Calculate(this,&line[5],pref,vars);
+			vertObj=new Calculate(this,line,start+5,end,pref,vars);
 		}
-		else if(strncmp("asin",line,4) == 0)
+		else if(strncmp("asin",line+start,4) == 0)
 		{
 			operation=ASIN;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp("acos",line,4) == 0)
+		else if(strncmp("acos",line+start,4) == 0)
 		{
 			operation=ACOS;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp("atan",line,4) == 0)
+		else if(strncmp("atan",line+start,4) == 0)
 		{
 			operation=ATAN;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp("sinh",line,4) == 0)
+		else if(strncmp("sinh",line+start,4) == 0)
 		{
 			operation=SINH;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp("cosh",line,4) == 0)
+		else if(strncmp("cosh",line+start,4) == 0)
 		{
 			operation=COSH;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp("tanh",line,4) == 0)
+		else if(strncmp("tanh",line+start,4) == 0)
 		{
 			operation=TANH;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp("sin",line,3) == 0)
+		else if(strncmp("sin",line+start,3) == 0)
 		{
 			operation=SIN;
-			vertObj=new Calculate(this,&line[3],pref,vars);
+			vertObj=new Calculate(this,line,start+3,end,pref,vars);
 		}
-		else if(strncmp("cos",line,3) == 0)
+		else if(strncmp("cos",line+start,3) == 0)
 		{
 			operation=COS;
-			vertObj=new Calculate(this,&line[3],pref,vars);
+			vertObj=new Calculate(this,line,start+3,end,pref,vars);
 		}
-		else if(strncmp("tan",line,3) == 0)
+		else if(strncmp("tan",line+start,3) == 0)
 		{
 			operation=TAN;
-			vertObj=new Calculate(this,&line[3],pref,vars);
+			vertObj=new Calculate(this,line,start+3,end,pref,vars);
 		}
-		else if(strncmp("log",line,3) == 0)
+		else if(strncmp("log",line+start,3) == 0)
 		{
 			operation=LG;
-			vertObj=new Calculate(this,&line[3],pref,vars);
+			vertObj=new Calculate(this,line,start+3,end,pref,vars);
 		}
-		else if(strncmp("ln",line,2) == 0)
+		else if(strncmp(line+start,"ln",2) == 0)
 		{
 			operation=LN;
-			vertObj=new Calculate(this,&line[2],pref,vars);
+			vertObj=new Calculate(this,line,start+2,end,pref,vars);
 		}
-		else if(strncmp(line,"sqrt",4) == 0)
+		else if(strncmp(line+start,"sqrt",4) == 0)
 		{
 			operation=SQRT;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp(line,"curt",4) == 0)
+		else if(strncmp(line+start,"curt",4) == 0)
 		{
 			operation=CURT;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp(line,"abs",3) == 0)
+		else if(strncmp(line+start,"abs",3) == 0)
 		{
 			operation=SABS;
-			vertObj=new Calculate(this,&line[3],pref,vars);
+			vertObj=new Calculate(this,line,start+3,end,pref,vars);
 		}
 		else{
-			operation=NONE;
 			number=NAN;
 			return -1;
 		}
-
 		return 0;
 	}
-	/*	else if(bracketFind(line,"$r(") != -1)		//root operation for calc (operator with arguments)
+	else if(strncmp(line+start,"\\d(",3) == 0)
 	{
-		// syntax: fourth root of nine: root(4,9)
-		operation=ROOT;
-		var=-1;
-		number=NAN;
-		int pos1=bracketFind(line,"$r(");
-		pos1+=3;
-		int pos2=bracketFind(line,",",pos1);
-		if(pos1==-1 || pos2 == -1 || line[len-1]!=')')
-		return (NAN);
-			
-		char* recString1=new char[pos2-pos1+1];
-		char* recString2=new char[len-pos2-1];
-		strcopy(recString1,&line[pos1],pos2-pos1);
-		strcopy(recString2,&line[pos2+1],len-pos2-2);
-			
-		vertObj=new Calculate(this,recString1,pref,vars);
-		horzObj=new Calculate(this,recString2,pref,vars);
-		
-		delete[]recString1;
-		delete[]recString2;
-		return 0;
-	}*/
-	else if(bracketFind(line,"\\d(") != -1)
-	{
-		operation=DIFF;
-		number=NAN;
-		var=-1;
-		int pos1=bracketFind(line,",",3);
-		if(pos1<0 || pos1>len-2)
+		pos=bracketFind(line,",",start+3,end);
+		if(pos<0 || pos>len-2)
 			return -1;
-		char* function=new char[pos1-2];
-		char* startStr=new char[len-pos1-1];
-		strcopy(function,&line[3],pos1-3);
-		strcopy(startStr,&line[pos1+1],len-pos1-2);
+		operation=DIFF;
 
-
-		horzObj=new Calculate(this,function,pref,vars);
-		vertObj=new Calculate(this,startStr,pref,vars);
-		delete[]function;
-		delete[]startStr;
+		horzObj=new Calculate(this,line,start+3,pos,pref,vars);
+		vertObj=new Calculate(this,line,pos+1,end-1,pref,vars);
 		return 0;
 	}
-	else if(bracketFind(line,"\\i(") != -1)
+	else if(strncmp(line+start,"\\i(",3) == 0)
 	{
-		operation=INTEGRAL;
-		number=NAN;
-		var=-1;
-		int pos1=bracketFind(line,",",3);
+		int pos1=bracketFind(line,",",3,end);
 		if(pos1==-1)
 			return-1;
-		int pos2=bracketFind(line,",",pos1+1);
+		int pos2=bracketFind(line,",",pos1+1,end);
 		if(pos2==-1)
 			return -1;
-		char *function=new char[pos1-2];
+		operation=INTEGRAL;
+		
 		char *parStr=new char[len-pos1+2];
-
-		strcopy(function,&line[3],pos1-3);
 		strcopy(parStr,&line[pos1+1],pos2-pos1-1);
 		parStr[pos2-pos1-1]=' ';
 		strcopy(&parStr[pos2-pos1],&line[pos2+1],len-pos2-2);
-		horzObj=new Calculate(this,function,pref,vars);
-		vertObj=new Calculate(this,parStr,pref,vars);
-		delete[]function;
+		horzObj=new Calculate(this,line,start+3,pos1,pref,vars);
+		vertObj=new Calculate(this,parStr,0,strlen(parStr),pref,vars);
 		delete[]parStr;
 		return 0;
 	}
-	else if(line[0]=='(')
+	else if(line[start]=='(')
 	{
-		number=NAN;
-		operation=NONE;
-		var=-1;
-		char*recString1;
-		if(len>0 && line[len-1] == ')')
-		{
-			recString1=new char[len-1];
-			strcopy(recString1,&line[1],len-2);
-		}
-		else 
-		{
-			recString1=new char[len];
-			strcopy(recString1,&line[1],len-1);
-		}
-		horzObj=new Calculate(this,recString1,pref,vars);
-		delete[]recString1;
-		vertObj=NULL;
-		
+		if(end-start && line[end-1] == ')')
+			horzObj=new Calculate(this,line,start+1,end-1,pref,vars);
+		else horzObj=new Calculate(this,line,start+1,end,pref,vars);
+
 		return 0;
 	}
-	else if(line[0]>='A' && line[0]<='Z')
+	else if(line[start]>='A' && line[start]<='Z')
 	{
-		operation=NONE;
-		number=NAN;
-		vertObj=NULL;
-		var=((int)line[0])-65;
-		
-		if(len>1)
+		var=((int)line[start])-65;
+		if(end-start>1)
 			var=-1;
-		else 
-		{
-			operation=NONE;
-			horzObj=NULL;
-		}
+		return 0;
 	}
 	else{
-		operation=NONE;
-		number=strtod(line,NULL);
-		var=-1;
-		horzObj=NULL;
-		vertObj=NULL;
+		char*tmp=new char[end-start+1];
+		tmp[end-start]=(char)0;
+		memcpy(tmp,&line[start],end-start);
+		number=strtod(tmp,NULL);
+		delete[] tmp;
+		
 		if(number==NAN)
 			return -1;
 		else return 0;
-//		 line.toDouble();
 	}
 	return -1;
 }

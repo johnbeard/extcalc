@@ -49,7 +49,7 @@ using namespace std;
 #define CONSTFILE ".extcalc/constants.conf"
 #define UIFILE ".extcalc/ui.conf"
 
-#define VERSIONSTRING "Version: 0.9.1\n2008-03-08\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.9.2\n2008-03-14\n\n"+QString(DEVVERSION)
 
 
 #define AUTHORSTRING "Homepage:\nhttp://extcalc-linux.sourceforge.net\n\n"+QString(GLOBALH_STR1)
@@ -516,8 +516,8 @@ struct ThreadSync
 
 
 //Standard Calculator functions
-int bracketFind(char* string,char* searchString, int start=0);
-int bracketFindRev(char* string,char* searchString, int start=-1);
+int bracketFind(char* string,char* searchString, int start=0,int end=-1);
+int bracketFindRev(char* string,char* searchString, int start=-1, int end=0);
 char*strcut(char*src,int index,int len=1);
 char*strins(char*dest,const char*src,int index);
 int strcopy(char*dest,char*src,int len);
@@ -643,14 +643,19 @@ public:
 class Calculate :public Math
 {
 	
-	virtual int split(char* line);
+	virtual int split(char* line,int,int);
 
 public:
 	
+	Calculate(Math *par,char* line,int start, int end,Preferences*pr,Variable*va) :Math((Math*)par,pr,va)
+	{
+		horzObj=vertObj=NULL;
+		split(line,start,end);
+	}
 	Calculate(Math *par,char* line,Preferences*pr,Variable*va) :Math((Math*)par,pr,va)
 	{
 		horzObj=vertObj=NULL;
-		split(line);
+		split(line,0,strlen(line));
 	}
 	~Calculate()
 	{

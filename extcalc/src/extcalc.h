@@ -151,10 +151,10 @@ dialog, the todo list and the bug list.
 //  - use QTranslator for internationalization                                          ok  //
 //  - symbolic calculation for systems of linear equations                                  //
 //  - logic operations for graph drawing                                                ok  //
-//  - graph analysis for functions with logic operations                                    //
+//  - graph analysis for functions with logic operations                                ok  //
 //  - multi-line edit for functions in graphics window                                      //
 //  - usage of multithreading for graph calculation                                         //
-//  - import/export function for graphs                                                     //
+//  - import/export function for graphs                                                 ok  //
 //                                                                                          //
 ////////////////////////////////////////beta releases/////////////////////////////////////////
 
