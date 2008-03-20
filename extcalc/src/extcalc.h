@@ -33,6 +33,7 @@ dialog, the todo list and the bug list.
 #include "statistics.h"
 #include "global.h"
 #include "importdialog.h"
+#include "graphsetdialog.h"
 #include <qtabwidget.h>
 #include <qtabbar.h>
 #include <qstring.h>
@@ -41,12 +42,14 @@ dialog, the todo list and the bug list.
 #include <qtabdialog.h>
 #include <float.h>
 #include <qtranslator.h>
+#include <qinputdialog.h>
 #include <locale.h>
 #include <qtextbrowser.h>
 #include <qtoolbar.h>
 #include <qdockarea.h>
 #include <qiconset.h>
 #include <qtoolbutton.h>
+#include <qdir.h>
 
 
 //Unicode characters:
@@ -155,6 +158,7 @@ dialog, the todo list and the bug list.
 //  - multi-line edit for functions in graphics window                                      //
 //  - usage of multithreading for graph calculation                                         //
 //  - import/export function for graphs                                                 ok  //
+//  - organize graphs in graph sets with equal settings                                     //
 //                                                                                          //
 ////////////////////////////////////////beta releases/////////////////////////////////////////
 
@@ -279,7 +283,7 @@ class MainObject :public QTabWidget
 	QMenuBar*mainMenu;
 	QPopupMenu *calcMenu,*angleMenu,*helpMenu,*outputMenu,*floatPointMenu,*prefMenu,*graphMenu;
 	QPopupMenu *coordinateMenu,*graphTypeMenu,*calcTypeMenu,*baseMenu,*tableMenu,*tableTypeMenu;
-	QPopupMenu *editMenu,*viewMenu,*fileMenu,*scriptMenu,*statisticsMenu,*languageMenu;
+	QPopupMenu *editMenu,*viewMenu,*fileMenu,*scriptMenu,*statisticsMenu,*languageMenu,*graphSetMenu;
 	QTabBar*tabBar;
 	CalcWidget *calculator,*calculator2;
 	GraphWidget * graph;
@@ -290,6 +294,7 @@ class MainObject :public QTabWidget
 	ImportDialog*importDialog;
 	ImportDialog*exportDialog;
 	ImportDialog*functionDialog;
+	GraphSetDialog*graphSetDialog;
 	TableWidget*table;
 	ScriptWidget*scripting;
 	ScriptIOWidget*scriptIO;
@@ -302,6 +307,7 @@ class MainObject :public QTabWidget
 	QLabel*authorInfo;
 	QLabel*versionInfo;
 	QPixmap*appIcon;
+	QDir*graphsDir;
 	HelpBrowser *helpBrowser;
 	Variable *vars;
 	Vector *vecs;
@@ -314,6 +320,7 @@ public:
 MainObject() :QTabWidget()
 {
 	helpBrowser=NULL;
+	graphsDir=NULL;
 	vars=new Variable [27];
 	for(int c=0; c<27;c++)
 		vars[c]=0.0;
@@ -381,6 +388,7 @@ MainObject() :QTabWidget()
 	importDialog=NULL;
 	exportDialog=NULL;
 	functionDialog=NULL;
+	graphSetDialog=NULL;
 	
 	tabBar = new QTabBar(this);
 	
@@ -547,10 +555,17 @@ MainObject() :QTabWidget()
 	graphTypeMenu->insertItem(EXTCALCH_MENU37,GRAPH3D);
 	QObject::connect(graphTypeMenu,SIGNAL(activated(int)),this,SLOT(graphTypeMenuSlot(int)));
 	
+	graphSetMenu=new QPopupMenu;
+	QObject::connect(graphSetMenu,SIGNAL(activated(int)),this,SLOT(graphSetMenuSlot(int)));	
+	
 	graphMenu=new QPopupMenu;
 	graphMenu->insertItem(EXTCALCH_MENU25,coordinateMenu,COORDINATE);
 	graphMenu->insertItem(EXTCALCH_MENU26,graphTypeMenu,GRAPHTYPE);
 	graphMenu->insertSeparator();
+	graphMenu->insertItem(tr("Choose Current Set"),graphSetMenu,GRAPHSETCH);
+	graphMenu->insertItem(tr("Manage Sets"),GRAPHSETMANAGE);
+	graphMenu->insertItem(tr("Save Current Set As"),GRAPHSAVECURR);
+	graphMenu->insertItem(tr("Create New Set"),GRAPHCREATESET);
 	graphMenu->insertItem(tr("Import Graphs"),GRAPHIMPORT);
 	graphMenu->insertItem(tr("Export Graphs"),GRAPHEXPORT);
 	QObject::connect(graphMenu,SIGNAL(activated(int)),this,SLOT(graphMenuSlot(int)));
@@ -705,6 +720,7 @@ MainObject() :QTabWidget()
 	QObject::connect(statistics,SIGNAL(removeLinesSignal()),graph,SIGNAL(removeLinesSignal()));
 	QObject::connect(graph,SIGNAL(statisticsRedrawSignal()),statistics,SLOT(redrawGraphSlot()));
 	QObject::connect(this,SIGNAL(removeGraphicsLinesSignal()),graph,SIGNAL(removeLinesSignal()));
+	QObject::connect(graphSetMenu,SIGNAL(aboutToShow()),this,SLOT(updateGraphSetMenuSlot()));
 
 	
 
@@ -747,7 +763,7 @@ MainObject() :QTabWidget()
 	initConstants();
 	readVarFile();
 	readUIState();
-
+	readGraphsDir();
 
 }
 
@@ -763,7 +779,9 @@ void initConstants();
 void writeConstants();
 void writeUIState();
 void readUIState();
-
+void readGraphsDir();
+void readFunctionFile(QString);
+void writeFunctionFile(QString);
 
 
 protected:
@@ -781,6 +799,8 @@ void outputMenuSlot(int item);
 void coordinateMenuSlot(int item);
 void graphTypeMenuSlot(int item);
 void graphMenuSlot(int item);
+void graphSetMenuSlot(int item);
+void updateGraphSetMenuSlot();
 void floatPointMenuSlot(int item);
 void calcTypeMenuSlot(int item);
 void baseMenuSlot(int item);

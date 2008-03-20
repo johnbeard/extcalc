@@ -48,8 +48,9 @@ using namespace std;
 #define LISTSFILE ".extcalc/lists.conf"
 #define CONSTFILE ".extcalc/constants.conf"
 #define UIFILE ".extcalc/ui.conf"
+#define GRAPHSDIR ".extcalc/graphs/"
 
-#define VERSIONSTRING "Version: 0.9.2\n2008-03-14\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.9.2\n2008-03-20\n\n"+QString(DEVVERSION)
 
 
 #define AUTHORSTRING "Homepage:\nhttp://extcalc-linux.sourceforge.net\n\n"+QString(GLOBALH_STR1)
@@ -126,6 +127,10 @@ using namespace std;
 #define RESETTABLE			184
 #define GRAPHIMPORT			212
 #define GRAPHEXPORT			213
+#define GRAPHSETCH			214
+#define GRAPHSETMANAGE		215
+#define GRAPHSAVECURR		216
+#define GRAPHCREATESET		217
 
 #define EXPORTSCRIPT		171
 #define IMPORTSCRIPT		172
@@ -465,6 +470,7 @@ struct Preferences
 	QString scriptPath;
 	QString scriptDirName;
 	QString dataDirName;
+	QString currentSet;
 	QString*functions;
 	QString*functionComments;
 	bool*activeFunctions;

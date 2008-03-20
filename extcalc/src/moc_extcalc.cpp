@@ -1,7 +1,7 @@
 /****************************************************************************
 ** MainObject meta object code from reading C++ file 'extcalc.h'
 **
-** Created: Thu Mar 13 19:20:41 2008
+** Created: Thu Mar 20 18:06:42 2008
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -91,55 +91,60 @@ QMetaObject* MainObject::staticMetaObject()
     static const QUParameter param_slot_9[] = {
 	{ "item", &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_9 = {"floatPointMenuSlot", 1, param_slot_9 };
-    static const QUParameter param_slot_10[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_10 = {"calcTypeMenuSlot", 1, param_slot_10 };
+    static const QUMethod slot_9 = {"graphSetMenuSlot", 1, param_slot_9 };
+    static const QUMethod slot_10 = {"updateGraphSetMenuSlot", 0, 0 };
     static const QUParameter param_slot_11[] = {
 	{ "item", &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_11 = {"baseMenuSlot", 1, param_slot_11 };
+    static const QUMethod slot_11 = {"floatPointMenuSlot", 1, param_slot_11 };
     static const QUParameter param_slot_12[] = {
 	{ "item", &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_12 = {"helpMenuSlot", 1, param_slot_12 };
+    static const QUMethod slot_12 = {"calcTypeMenuSlot", 1, param_slot_12 };
     static const QUParameter param_slot_13[] = {
 	{ "item", &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_13 = {"prefMenuSlot", 1, param_slot_13 };
+    static const QUMethod slot_13 = {"baseMenuSlot", 1, param_slot_13 };
     static const QUParameter param_slot_14[] = {
 	{ "item", &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_14 = {"languageMenuSlot", 1, param_slot_14 };
+    static const QUMethod slot_14 = {"helpMenuSlot", 1, param_slot_14 };
     static const QUParameter param_slot_15[] = {
 	{ "item", &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_15 = {"tableMenuSlot", 1, param_slot_15 };
+    static const QUMethod slot_15 = {"prefMenuSlot", 1, param_slot_15 };
     static const QUParameter param_slot_16[] = {
 	{ "item", &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_16 = {"scriptMenuSlot", 1, param_slot_16 };
+    static const QUMethod slot_16 = {"languageMenuSlot", 1, param_slot_16 };
     static const QUParameter param_slot_17[] = {
 	{ "item", &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_17 = {"statisticsMenuSlot", 1, param_slot_17 };
+    static const QUMethod slot_17 = {"tableMenuSlot", 1, param_slot_17 };
     static const QUParameter param_slot_18[] = {
 	{ "item", &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_18 = {"tableTypeMenuSlot", 1, param_slot_18 };
+    static const QUMethod slot_18 = {"scriptMenuSlot", 1, param_slot_18 };
     static const QUParameter param_slot_19[] = {
+	{ "item", &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_19 = {"statisticsMenuSlot", 1, param_slot_19 };
+    static const QUParameter param_slot_20[] = {
+	{ "item", &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_20 = {"tableTypeMenuSlot", 1, param_slot_20 };
+    static const QUParameter param_slot_21[] = {
 	{ 0, &static_QUType_varptr, "\x03", QUParameter::In }
     };
-    static const QUMethod slot_19 = {"runScriptSlot", 1, param_slot_19 };
-    static const QUParameter param_slot_20[] = {
+    static const QUMethod slot_21 = {"runScriptSlot", 1, param_slot_21 };
+    static const QUParameter param_slot_22[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_20 = {"changeTabSlot", 1, param_slot_20 };
-    static const QUParameter param_slot_21[] = {
+    static const QUMethod slot_22 = {"changeTabSlot", 1, param_slot_22 };
+    static const QUParameter param_slot_23[] = {
 	{ "newPref", &static_QUType_ptr, "Preferences", QUParameter::In }
     };
-    static const QUMethod slot_21 = {"getPref", 1, param_slot_21 };
+    static const QUMethod slot_23 = {"getPref", 1, param_slot_23 };
     static const QMetaData slot_tbl[] = {
 	{ "fileMenuSlot(int)", &slot_0, QMetaData::Public },
 	{ "editMenuSlot(int)", &slot_1, QMetaData::Public },
@@ -150,19 +155,21 @@ QMetaObject* MainObject::staticMetaObject()
 	{ "coordinateMenuSlot(int)", &slot_6, QMetaData::Public },
 	{ "graphTypeMenuSlot(int)", &slot_7, QMetaData::Public },
 	{ "graphMenuSlot(int)", &slot_8, QMetaData::Public },
-	{ "floatPointMenuSlot(int)", &slot_9, QMetaData::Public },
-	{ "calcTypeMenuSlot(int)", &slot_10, QMetaData::Public },
-	{ "baseMenuSlot(int)", &slot_11, QMetaData::Public },
-	{ "helpMenuSlot(int)", &slot_12, QMetaData::Public },
-	{ "prefMenuSlot(int)", &slot_13, QMetaData::Public },
-	{ "languageMenuSlot(int)", &slot_14, QMetaData::Public },
-	{ "tableMenuSlot(int)", &slot_15, QMetaData::Public },
-	{ "scriptMenuSlot(int)", &slot_16, QMetaData::Public },
-	{ "statisticsMenuSlot(int)", &slot_17, QMetaData::Public },
-	{ "tableTypeMenuSlot(int)", &slot_18, QMetaData::Public },
-	{ "runScriptSlot(QString*)", &slot_19, QMetaData::Public },
-	{ "changeTabSlot(int)", &slot_20, QMetaData::Public },
-	{ "getPref(Preferences)", &slot_21, QMetaData::Public }
+	{ "graphSetMenuSlot(int)", &slot_9, QMetaData::Public },
+	{ "updateGraphSetMenuSlot()", &slot_10, QMetaData::Public },
+	{ "floatPointMenuSlot(int)", &slot_11, QMetaData::Public },
+	{ "calcTypeMenuSlot(int)", &slot_12, QMetaData::Public },
+	{ "baseMenuSlot(int)", &slot_13, QMetaData::Public },
+	{ "helpMenuSlot(int)", &slot_14, QMetaData::Public },
+	{ "prefMenuSlot(int)", &slot_15, QMetaData::Public },
+	{ "languageMenuSlot(int)", &slot_16, QMetaData::Public },
+	{ "tableMenuSlot(int)", &slot_17, QMetaData::Public },
+	{ "scriptMenuSlot(int)", &slot_18, QMetaData::Public },
+	{ "statisticsMenuSlot(int)", &slot_19, QMetaData::Public },
+	{ "tableTypeMenuSlot(int)", &slot_20, QMetaData::Public },
+	{ "runScriptSlot(QString*)", &slot_21, QMetaData::Public },
+	{ "changeTabSlot(int)", &slot_22, QMetaData::Public },
+	{ "getPref(Preferences)", &slot_23, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In }
@@ -182,7 +189,7 @@ QMetaObject* MainObject::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"MainObject", parentObject,
-	slot_tbl, 22,
+	slot_tbl, 24,
 	signal_tbl, 4,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -246,19 +253,21 @@ bool MainObject::qt_invoke( int _id, QUObject* _o )
     case 6: coordinateMenuSlot((int)static_QUType_int.get(_o+1)); break;
     case 7: graphTypeMenuSlot((int)static_QUType_int.get(_o+1)); break;
     case 8: graphMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 9: floatPointMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 10: calcTypeMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 11: baseMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 12: helpMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 13: prefMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 14: languageMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 15: tableMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 16: scriptMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 17: statisticsMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 18: tableTypeMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 19: runScriptSlot((QString*)static_QUType_varptr.get(_o+1)); break;
-    case 20: changeTabSlot((int)static_QUType_int.get(_o+1)); break;
-    case 21: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
+    case 9: graphSetMenuSlot((int)static_QUType_int.get(_o+1)); break;
+    case 10: updateGraphSetMenuSlot(); break;
+    case 11: floatPointMenuSlot((int)static_QUType_int.get(_o+1)); break;
+    case 12: calcTypeMenuSlot((int)static_QUType_int.get(_o+1)); break;
+    case 13: baseMenuSlot((int)static_QUType_int.get(_o+1)); break;
+    case 14: helpMenuSlot((int)static_QUType_int.get(_o+1)); break;
+    case 15: prefMenuSlot((int)static_QUType_int.get(_o+1)); break;
+    case 16: languageMenuSlot((int)static_QUType_int.get(_o+1)); break;
+    case 17: tableMenuSlot((int)static_QUType_int.get(_o+1)); break;
+    case 18: scriptMenuSlot((int)static_QUType_int.get(_o+1)); break;
+    case 19: statisticsMenuSlot((int)static_QUType_int.get(_o+1)); break;
+    case 20: tableTypeMenuSlot((int)static_QUType_int.get(_o+1)); break;
+    case 21: runScriptSlot((QString*)static_QUType_varptr.get(_o+1)); break;
+    case 22: changeTabSlot((int)static_QUType_int.get(_o+1)); break;
+    case 23: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
     default:
 	return QTabWidget::qt_invoke( _id, _o );
     }

@@ -278,6 +278,7 @@ SHOWWIN5=true\n\
 SHOWWIN6=true\n\
 SHOWWIN7=true\n\
 SHOWWIN8=false\n\
+CURRENTSET=std\n\
 F1=sinX\n\
 F2=(X+5)^2-4\n\
 F3=if(A<=10) (1-A/5)*x^2; else if(A<=20) -(x+5*(A-10)/10)^2; else -(x+5)^2-4*(A-20)/10;\n\
@@ -925,6 +926,10 @@ F20TYPE=nyquist2d\n");
 		else pref.showWindows[c]=true;
 	}
 	
+	QString currentSet=getConfigString(&confFile,"CURRENTSET");
+	if(currentSet.length()>0)
+		pref.currentSet=currentSet;
+	
 	QString*functionStrings=new QString[20];
 	
 	for(int c=0; c<20; c++)
@@ -1237,7 +1242,9 @@ void MainObject::writeConfigFile()
 	else if(pref.language == LANG_FR)
 		configuration+="fr\n";
 	else configuration+="en\n";
-
+	configuration+="\nCURRENTSET=";
+	configuration+=pref.currentSet;
+	configuration+="\n";
 
 	for(int c=0; c<8;c++)
 	{
@@ -1967,6 +1974,22 @@ void MainObject::graphTypeMenuSlot(int item)
 	pref.graphType=item;
 	getPref(pref);
 }
+
+void MainObject::graphSetMenuSlot(int item)
+{
+	readFunctionFile(QString(getenv("HOME"))+"/"+QString(GRAPHSDIR)+graphSetMenu->text(item));
+	int id;
+	for(int c=0; ;c++)
+	{
+		id=graphSetMenu->idAt(c);
+		if(id==-1)
+			break;
+		else graphSetMenu->setItemChecked(id,false);
+	}
+	graphSetMenu->setItemChecked(item,true);
+	pref.currentSet=graphSetMenu->text(item);
+}
+
 void MainObject::graphMenuSlot(int item)
 {
 	if(item==GRAPHIMPORT)
@@ -1987,11 +2010,103 @@ void MainObject::graphMenuSlot(int item)
 		functionDialog=new ImportDialog(pref,this,false,true);	
 		functionDialog->show();
 	}
+	else if(item==GRAPHSETMANAGE)
+	{
+		if(graphSetDialog!=NULL)
+			delete graphSetDialog;
+
+		graphSetDialog=new GraphSetDialog(pref,this);
+		graphSetDialog->show();
+	}
+	else if(item==GRAPHCREATESET)
+	{
+		bool ok;
+		QString newString=QInputDialog::getText(tr("Create New Graph Set"),tr("Insert name of new graph set:"),QLineEdit::Normal,QString::null,&ok);
+		
+		if(newString.find("/")!=-1 || newString.find("\\")!=-1)
+		{
+			ErrorBox(tr("Invalid graph set name %1").arg(newString));
+			return;
+		}
+		
+		if(ok && newString.length()>0)
+		{
+			bool exist=false;
+			QStringList dir=graphsDir->entryList(QDir::Files);
+			for(int c=0; c<(signed)dir.count(); c++)
+			{
+				if(dir[c]==newString)
+				{
+					exist=true;
+					break;
+				}
+			}
+			if(exist)
+			{
+				int ret=YesNoCancelBox(tr("%1 already exists!\n\nOverwrite it?").arg(newString));
+				if(ret!=0)
+					return;
+			}
+			 writeFunctionFile(pref.currentSet);
+			 for(int c=0; c<20; c++)
+			 {
+				 pref.functions[c]=QString();
+				 pref.functionComments[c]=QString();
+				 pref.activeFunctions[c]=false;
+				 pref.functionColors[c]=QColor(0,0,0);
+				 pref.logicFunctions[c]=false;
+				 pref.functionTypes[c]=GRAPHSTD;
+				 pref.dynamicFunctions[c]=false;
+			 }
+			 pref.currentSet=newString;
+			 writeFunctionFile(pref.currentSet);
+			 getPref(pref);
+		}
+	}
+	else if(item==GRAPHSAVECURR)
+	{
+		bool ok;
+		QString newString=QInputDialog::getText(tr("Save Curren Graph Set As"),tr("Insert new name of graph set:"),QLineEdit::Normal,QString(),&ok);
+		
+		if(newString.find("/")!=-1 || newString.find("\\")!=-1)
+		{
+			ErrorBox(tr("Invalid graph set name %1").arg(newString));
+			return;
+		}
+		
+		if(ok && newString.length()>0)
+		{
+			bool exist=false;
+			QStringList dir=graphsDir->entryList(QDir::Files);
+			for(int c=0; c<(signed)dir.count(); c++)
+			{
+				if(dir[c]==newString)
+				{
+					exist=true;
+					break;
+				}
+			}
+			if(exist)
+			{
+				int ret=YesNoCancelBox(tr("%1 already exists!\n\nOverwrite it?").arg(newString));
+				if(ret!=0)
+					return;
+			}
+			writeFunctionFile(pref.currentSet);
+			pref.currentSet=newString;
+			writeFunctionFile(pref.currentSet);
+			getPref(pref);
+		}
+	}
+}
+
+void MainObject::updateGraphSetMenuSlot()
+{
+	readGraphsDir();
 }
 
 void MainObject::tableMenuSlot(int item)
 {
-	
 	if(item==STANDARDTABLE)
 	{
 		pref.tableXStart=0;
@@ -2343,6 +2458,234 @@ void MainObject::readUIState()
 	fclose(configFile);
 }
 
+//#config color...
+//#config type...
+//#config dynamicon/off
+//#config logicon/off
+//function
+void MainObject::readFunctionFile(QString name)
+{
+	chdir(getenv("HOME"));
+	int fileLen;
+	struct stat fileStat;
+
+	if(lstat(name,&fileStat) != 0)
+	{
+		ErrorBox(tr("Unable to write read file %1\n\n1").arg(name));
+		return;
+	}
+	else fileLen=fileStat.st_size;
+	
+	
+	FILE*configFile = fopen(name,"r");
+	if(configFile == NULL)
+	{
+		ErrorBox(tr("Unable to read graphs file %1\n\n3").arg(name));
+		return;
+	}
+	
+	int pos1=0,pos2=0,functionCount=0;
+	QString config[5],func,comment;
+	
+	char* buffer=new char[fileLen+1];
+	buffer[fileLen]=(char)0;
+	fread(buffer,fileLen,1,configFile);
+
+	QString file(buffer);
+	delete[] buffer;
+	fclose(configFile);
+	if(file.find("#config active")==-1)	//compatibility with v0.9.1 export format
+		file.replace("#config color","#config activeoff\n#config color");
+
+	while(1)
+	{
+		qDebug("function read");
+		for(int c=0; c<5; c++)
+		{
+			pos1=file.find("#config ",pos2);
+			if(pos1==-1)
+				break;
+			pos1+=8;
+			pos2=file.find("\n",pos1);
+			if(pos2==-1)
+				break;
+			config[c]=file.mid(pos1,pos2-pos1);
+			pos2++;
+		}
+		if(pos1==-1 || pos2==-1)
+			break;
+		pos1=file.find("\n",pos2);
+		if(pos1==-1 || pos2==-1)
+			break;
+		comment=file.mid(pos2+2,pos1-pos2-2);
+		pos2=pos1+1;
+		pos1=file.find("\n",pos2);
+		if(pos1==-1 || pos2==-1)
+			break;
+		func=file.mid(pos2,pos1-pos2);
+		pos2=pos1+1;
+
+
+		pos1=config[0].find("active");
+		if(pos1==-1)
+			break;
+		config[0]=config[0].right(config[0].length()-7-pos1);
+		if(config[0]=="on")
+			pref.activeFunctions[functionCount]=true;
+		else pref.activeFunctions[functionCount]=false;
+		
+		pos1=config[1].find("color");
+		if(pos1==-1)
+			break;
+		config[1]=config[1].right(config[1].length()-pos1-5);
+		pref.functionColors[functionCount]=getColor(config[1]);
+		
+		
+		pos1=config[2].find("type");
+		if(pos1==-1)
+			break;
+		config[2]=config[2].right(config[2].length()-4-pos1);
+		
+
+		if(config[2].lower() == "nyquist3d")
+			pref.functionTypes[functionCount]=GRAPHCOMP3D;
+		else if(config[2].lower() == "parameter")
+			pref.functionTypes[functionCount]=GRAPHPARAMETER;
+		else if(config[2].lower() == "polar")
+			pref.functionTypes[functionCount]=GRAPHPOLAR;
+		else if(config[2].lower() == "3d")
+			pref.functionTypes[functionCount]=GRAPH3D;
+		else if(config[2].lower() == "iel")
+			pref.functionTypes[functionCount]=GRAPHIEL;
+		else if(config[2].lower() == "iele")
+			pref.functionTypes[functionCount]=GRAPHIELE;
+		else if(config[2].lower() == "ieg")
+			pref.functionTypes[functionCount]=GRAPHIEG;
+		else if(config[2].lower() == "iege")
+			pref.functionTypes[functionCount]=GRAPHIEGE;
+		else if(config[2].lower() == "nyquist2d")
+			pref.functionTypes[functionCount]=GRAPHCOMPLEX;
+		else pref.functionTypes[functionCount]=GRAPHSTD;
+		
+		pos1=config[3].find("dynamic");
+		if(pos1==-1)
+			break;
+		config[3]=config[3].right(config[3].length()-7-pos1);
+		if(config[3]=="on")
+			pref.dynamicFunctions[functionCount]=true;
+		else pref.dynamicFunctions[functionCount]=false;
+		
+		pos1=config[4].find("logic");
+		if(pos1==-1)
+			break;
+		config[4]=config[4].right(config[4].length()-5-pos1);
+		if(config[4]=="on")
+			pref.logicFunctions[functionCount]=true;
+		else pref.logicFunctions[functionCount]=false;
+
+		pref.functions[functionCount]=resetConfigString(func);
+		pref.functionComments[functionCount]=comment;
+		pref.activeFunctions[functionCount]=true;
+		functionCount++;
+	}
+	getPref(pref);
+}
+
+void MainObject::writeFunctionFile(QString name)
+{
+	FILE*configFile;
+	chdir(getenv("HOME"));
+	configFile = fopen(GRAPHSDIR+name,"w");
+	if(configFile == NULL)
+	{
+		ErrorBox(tr("Unable to write graphs file %1\n\n").arg(GRAPHSDIR+name));
+		return;
+	}
+	qDebug("write file: "+QString(GRAPHSDIR+name));
+
+	
+
+	QString expFile("");
+	for(int c=0; c<20; c++)
+	{
+		expFile+="#config active";
+		if(pref.activeFunctions[c])
+			expFile+="on\n";
+		else expFile+="off\n";
+		expFile+="#config color"+getColorName(pref.functionColors[c])+"\n";
+		expFile+="#config type";
+		switch(pref.functionTypes[c])
+		{
+			case GRAPHPOLAR:
+				expFile+="polar";break;
+			case GRAPHPARAMETER:
+				expFile+="parameter";break;
+			case GRAPH3D:
+				expFile+="3d";break;
+			case GRAPHIEL:
+				expFile+="iel";break;
+			case GRAPHIELE:
+				expFile+="iele";break;
+			case GRAPHIEG:
+				expFile+="ieg";break;
+			case GRAPHIEGE:
+				expFile+="iege";break;
+			case GRAPHCOMPLEX:
+				expFile+="nyquist2d";break;
+			case GRAPHCOMP3D:
+				expFile+="nyquist3d";break;
+			default:
+				expFile+="std";
+		}
+		expFile+="\n";
+		expFile+="#config dynamic";
+		if(pref.dynamicFunctions[c])
+			expFile+="on\n";
+		else expFile+="off\n";
+		expFile+="#config logic";
+		if(pref.logicFunctions[c])
+			expFile+="on\n";
+		else expFile+="off\n";
+		expFile+="//"+pref.functionComments[c]+"\n";
+		expFile+=cleanConfigString("",pref.functions[c])+"\n";
+		
+	}
+	fwrite(expFile.latin1(),expFile.length(),1,configFile);
+
+	fclose(configFile);
+}
+
+void MainObject::readGraphsDir()
+{
+	if(graphsDir==NULL)
+	{
+		graphsDir=new QDir(QString(getenv("HOME"))+"/"+QString(GRAPHSDIR));
+		if(!graphsDir->exists())
+		{
+			graphsDir->mkdir(QString(getenv("HOME"))+"/"+QString(GRAPHSDIR));
+			if(!graphsDir->exists())
+			{
+				ErrorBox(tr("Unable to create graphs directory %1\n\n").arg(QString(getenv("HOME"))+"/"+QString(GRAPHSDIR)));
+				return;
+			}
+		}
+	}
+	QStringList dirEntries=graphsDir->entryList(QDir::Files);
+	if(dirEntries.empty())
+	{
+		writeFunctionFile(QString(getenv("HOME"))+"/"+QString(GRAPHSDIR)+"std");
+		dirEntries=graphsDir->entryList(QDir::Files);
+		pref.currentSet="std";
+	}
+	graphSetMenu->clear();
+	
+	for(int c=0; c<dirEntries.count(); c++)
+	{
+		int id=graphSetMenu->insertItem(dirEntries[c]);
+		if(dirEntries[c]==pref.currentSet)
+			graphSetMenu->setItemChecked(id,true);
+	}
+}
 
 
 

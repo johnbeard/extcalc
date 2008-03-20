@@ -1,7 +1,7 @@
 /****************************************************************************
 ** ConstantDialog meta object code from reading C++ file 'catalog.h'
 **
-** Created: Sun Mar 9 07:45:43 2008
+** Created: Mon Mar 17 19:11:30 2008
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
 **
 ** WARNING! All changes made in this file will be lost!

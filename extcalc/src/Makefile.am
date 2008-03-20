@@ -24,6 +24,7 @@ extcalc_SOURCES = extcalc.h \
 				  statistics.h \
 				  catalog.h \
 				  importdialog.h \
+				  graphsetdialog.h \
 				  extcalc.cpp \
 				  buttons.cpp \
 				  calctable.cpp \
@@ -46,6 +47,7 @@ extcalc_SOURCES = extcalc.h \
 				  statistics.cpp \
 				  catalog.cpp \
 				  importdialog.cpp \
+				  graphsetdialog.cpp \
 				  moc_extcalc.cpp \
 				  moc_buttons.cpp \
 				  moc_calctable.cpp \
@@ -65,4 +67,5 @@ extcalc_SOURCES = extcalc.h \
 				  moc_matrixwidget.cpp \
 				  moc_statistics.cpp \
 				  moc_catalog.cpp \
+				  moc_graphsetdialog.cpp \
 				  moc_importdialog.cpp
