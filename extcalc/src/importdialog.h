@@ -24,11 +24,11 @@ class ImportDialog :public QWidget
 	QPushButton*saveButton,*cancelButton,*openDialogButton,*saveDialogButton;
 	QLabel *mainLabel,*openPathLabel,*savePathLabel;
 	QLineEdit *openPathLine,*savePathLine;
-	CalcTable *table;
-	Preferences pref,tmpPref;
 	bool dialog;
 	bool importFile;
 	bool function;
+	Preferences pref;
+	QString directory;
 	
 	
 	Q_OBJECT
@@ -37,18 +37,12 @@ class ImportDialog :public QWidget
 	
 	protected:
 		virtual void windowActivationChange(bool);
-		
-	private:
-		Preferences readFunctionFile(QString);
-		QString writeFunctionFile(Preferences);
-		void updateTable();
 
 	public slots:
 
 		void saveSlot();
 		void openDialogSlot();
 		void saveDialogSlot();
-		void openTextChangedSlot();
 		
 	signals:
 		void updateScriptSignal(int);

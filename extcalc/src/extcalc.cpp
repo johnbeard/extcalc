@@ -106,6 +106,8 @@ void MainObject::closeEvent(QCloseEvent*e)
 	writeConstants();
 	writeUIState();
 	statistics->writeListsFile();
+	if(pref.currentSet.length()>0)
+		writeFunctionFile(pref.currentSet);
 	if(scripting->quitProgram())
 	{
 		e->accept();
@@ -1977,7 +1979,9 @@ void MainObject::graphTypeMenuSlot(int item)
 
 void MainObject::graphSetMenuSlot(int item)
 {
-	readFunctionFile(QString(getenv("HOME"))+"/"+QString(GRAPHSDIR)+graphSetMenu->text(item));
+	writeFunctionFile(pref.currentSet);
+	pref.currentSet=graphSetMenu->text(item);
+	readFunctionFile(QString(getenv("HOME"))+"/"+QString(GRAPHSDIR)+pref.currentSet);
 	int id;
 	for(int c=0; ;c++)
 	{
@@ -1987,7 +1991,7 @@ void MainObject::graphSetMenuSlot(int item)
 		else graphSetMenu->setItemChecked(id,false);
 	}
 	graphSetMenu->setItemChecked(item,true);
-	pref.currentSet=graphSetMenu->text(item);
+
 }
 
 void MainObject::graphMenuSlot(int item)
@@ -2496,6 +2500,134 @@ void MainObject::readFunctionFile(QString name)
 	fclose(configFile);
 	if(file.find("#config active")==-1)	//compatibility with v0.9.1 export format
 		file.replace("#config color","#config activeoff\n#config color");
+	
+	if(file.find("#config coordinates")!=-1)
+	{
+		int pos1=file.find("#config coordinates");
+		pos1+=20;
+		int pos2=file.find("\n",pos1);
+		
+		QString coordinates=file.mid(pos1,pos2-pos1);
+		file=file.right(file.length()-pos2-1);
+		QStringList coordinatesList=QStringList::split(" ",coordinates);
+		if(coordinatesList.count()>22)
+		{
+			qDebug("coordinates ok");
+			pref.xmin=coordinatesList[0].toDouble();
+			pref.xmax=coordinatesList[1].toDouble();
+			pref.ymin=coordinatesList[2].toDouble();
+			pref.ymax=coordinatesList[3].toDouble();
+			pref.zmin=coordinatesList[4].toDouble();
+			pref.zmax=coordinatesList[5].toDouble();
+			pref.rasterSizeX=coordinatesList[6].toDouble();
+			pref.rasterSizeY=coordinatesList[7].toDouble();
+			pref.rasterSizeZ=coordinatesList[8].toDouble();
+			pref.radiusMax=coordinatesList[9].toDouble();
+			pref.angleMax=coordinatesList[10].toDouble();
+			pref.rasterSizeRadius=coordinatesList[11].toDouble();
+			pref.rasterSizeAngle=coordinatesList[12].toDouble();
+			pref.parameterStart=coordinatesList[13].toDouble();
+			pref.parameterEnd=coordinatesList[14].toDouble();
+			pref.dynamicStart=coordinatesList[15].toDouble();
+			pref.dynamicEnd=coordinatesList[16].toDouble();
+			pref.nyquistStart=coordinatesList[17].toDouble();
+			pref.nyquistEnd=coordinatesList[18].toDouble();
+			pref.tableXStart=coordinatesList[19].toDouble();
+			pref.tableXEnd=coordinatesList[20].toDouble();
+			pref.tableZStart=coordinatesList[21].toDouble();
+			pref.tableZEnd=coordinatesList[22].toDouble();
+			
+			if(pref.xmin>=pref.xmax || pref.ymin>=pref.ymax || pref.zmin>=pref.zmax)
+			{
+				pref.xmin=pref.ymin=pref.zmin=-10.0;
+				pref.xmax=pref.ymax=pref.zmax=10.0;
+			}
+			if(pref.rasterSizeX <=0 || pref.rasterSizeY<=0 || pref.rasterSizeZ<=0 || pref.rasterSizeAngle<=0 || pref.rasterSizeRadius)
+				pref.rasterSizeX=pref.rasterSizeY=pref.rasterSizeZ=pref.rasterSizeAngle=pref.rasterSizeRadius=1.0;
+			if(pref.angleMax<=0)
+				pref.angleMax=2*PI;
+			if(pref.radiusMax<=0)
+				pref.radiusMax=10.0;
+			if(pref.parameterStart>=pref.parameterEnd || pref.dynamicStart>=pref.dynamicEnd || pref.nyquistStart>=pref.nyquistEnd || pref.tableXStart>=pref.tableXEnd || pref.tableZStart>=pref.tableZEnd)
+			{
+				pref.parameterStart=pref.dynamicStart=pref.nyquistStart=pref.tableXStart=pref.tableZStart=0.0;
+				pref.parameterEnd=pref.dynamicEnd=pref.nyquistEnd=pref.tableXEnd=pref.tableZEnd=10.0;
+			}
+		}
+	}
+	if(file.find("#config steps")!=-1)
+	{
+		int pos1=file.find("#config steps");
+		pos1+=14;
+		int pos2=file.find("\n",pos1);
+		
+		QString coordinates=file.mid(pos1,pos2-pos1);
+		file=file.right(file.length()-pos2-1);
+		QStringList coordinatesList=QStringList::split(" ",coordinates);
+		if(coordinatesList.count()>7)
+		{
+			qDebug("steps ok");
+			pref.parameterSteps=coordinatesList[0].toInt();
+			pref.dynamicSteps=coordinatesList[1].toInt();
+			pref.dynamicDelay=coordinatesList[2].toInt();
+			pref.nyquistSteps=coordinatesList[3].toInt();
+			pref.prec2dSteps=coordinatesList[4].toInt();
+			pref.prec3dSteps=coordinatesList[5].toInt();
+			pref.tableXSteps=coordinatesList[6].toInt();
+			pref.tableZSteps=coordinatesList[7].toInt();
+			
+			if(pref.parameterSteps<=0 || pref.nyquistSteps<=0 || pref.prec2dSteps<=0)
+				pref.parameterSteps=pref.nyquistSteps=pref.prec2dSteps=200;
+			if(pref.dynamicSteps<=0)
+				pref.dynamicSteps=30;
+			if(pref.tableXSteps<=0 || pref.tableZSteps <=0 || pref.dynamicDelay<=0)
+				pref.tableXSteps=pref.tableZSteps=pref.dynamicDelay=10;
+			if(pref.prec3dSteps<=0)
+				pref.prec3dSteps=50;
+		}
+	}
+	
+	if(file.find("#config flags")!=-1)
+	{
+		int pos1=file.find("#config flags");
+		pos1+=14;
+		int pos2=file.find("\n",pos1);
+		
+		QString coordinates=file.mid(pos1,pos2-pos1);
+		file=file.right(file.length()-pos2-1);
+		QStringList coordinatesList=QStringList::split(" ",coordinates);
+		if(coordinatesList.count()>2)
+		{
+			qDebug("flags ok");
+			pref.moveUpDown=(bool)coordinatesList[0].toInt();
+			pref.show3dGrid=(bool)coordinatesList[1].toInt();
+			pref.logNyquistSteps=(bool)coordinatesList[2].toInt();
+
+		}
+	}
+	if(file.find("#config types")!=-1)
+	{
+		int pos1=file.find("#config types");
+		pos1+=14;
+		int pos2=file.find("\n",pos1);
+		
+		QString coordinates=file.mid(pos1,pos2-pos1);
+		file=file.right(file.length()-pos2-1);
+		QStringList coordinatesList=QStringList::split(" ",coordinates);
+		if(coordinatesList.count()>1)
+		{
+			qDebug("types ok");
+			pref.graphType=coordinatesList[0].toInt();
+			pref.tableType=coordinatesList[1].toInt();
+			
+			if(pref.graphType!=GRAPHSTD && pref.graphType !=GRAPHPOLAR && pref.graphType!=GRAPH3D)
+				pref.graphType=GRAPHSTD;
+			if(pref.tableType!=TABLENORMAL && pref.tableType !=TABLEPOLAR && pref.tableType!=TABLE3D && pref.tableType!=TABLEPARAMETER && pref.tableType !=TABLECOMPLEX && pref.tableType!=TABLEINEQUAITY)
+				pref.tableType=TABLENORMAL;
+
+		}
+	}
+
 
 	while(1)
 	{
@@ -2529,7 +2661,7 @@ void MainObject::readFunctionFile(QString name)
 		pos1=config[0].find("active");
 		if(pos1==-1)
 			break;
-		config[0]=config[0].right(config[0].length()-7-pos1);
+		config[0]=config[0].right(config[0].length()-6-pos1);
 		if(config[0]=="on")
 			pref.activeFunctions[functionCount]=true;
 		else pref.activeFunctions[functionCount]=false;
@@ -2585,7 +2717,6 @@ void MainObject::readFunctionFile(QString name)
 
 		pref.functions[functionCount]=resetConfigString(func);
 		pref.functionComments[functionCount]=comment;
-		pref.activeFunctions[functionCount]=true;
 		functionCount++;
 	}
 	getPref(pref);
@@ -2601,11 +2732,55 @@ void MainObject::writeFunctionFile(QString name)
 		ErrorBox(tr("Unable to write graphs file %1\n\n").arg(GRAPHSDIR+name));
 		return;
 	}
-	qDebug("write file: "+QString(GRAPHSDIR+name));
-
-	
-
 	QString expFile("");
+	
+	//write preferences
+	expFile+="#config coordinates ";
+	expFile+=QString::number(pref.xmin)+" ";
+	expFile+=QString::number(pref.xmax)+" ";
+	expFile+=QString::number(pref.ymin)+" ";
+	expFile+=QString::number(pref.ymax)+" ";
+	expFile+=QString::number(pref.zmin)+" ";
+	expFile+=QString::number(pref.zmax)+" ";
+	expFile+=QString::number(pref.rasterSizeX)+" ";
+	expFile+=QString::number(pref.rasterSizeY)+" ";
+	expFile+=QString::number(pref.rasterSizeZ)+" ";
+	expFile+=QString::number(pref.radiusMax)+" ";
+	expFile+=QString::number(pref.angleMax)+" ";
+	expFile+=QString::number(pref.rasterSizeRadius)+" ";
+	expFile+=QString::number(pref.rasterSizeAngle)+" ";
+	expFile+=QString::number(pref.parameterStart)+" ";
+	expFile+=QString::number(pref.parameterEnd)+" ";
+	expFile+=QString::number(pref.dynamicStart)+" ";
+	expFile+=QString::number(pref.dynamicEnd)+" ";
+	expFile+=QString::number(pref.nyquistStart)+" ";
+	expFile+=QString::number(pref.nyquistEnd)+" ";
+	expFile+=QString::number(pref.tableXStart)+" ";
+	expFile+=QString::number(pref.tableXEnd)+" ";
+	expFile+=QString::number(pref.tableZStart)+" ";
+	expFile+=QString::number(pref.tableZEnd)+"\n";
+
+	expFile+="#config steps ";
+	expFile+=QString::number(pref.parameterSteps)+" ";
+	expFile+=QString::number(pref.dynamicSteps)+" ";
+	expFile+=QString::number(pref.dynamicDelay)+" ";
+	expFile+=QString::number(pref.nyquistSteps)+" ";
+	expFile+=QString::number(pref.prec2dSteps)+" ";
+	expFile+=QString::number(pref.prec3dSteps)+" ";
+	expFile+=QString::number(pref.tableXSteps)+" ";
+	expFile+=QString::number(pref.tableZSteps)+"\n";
+
+	expFile+="#config flags ";
+	expFile+=QString::number(pref.moveUpDown)+" ";
+	expFile+=QString::number(pref.show3dGrid)+" ";
+	expFile+=QString::number(pref.logNyquistSteps)+"\n";
+	
+	expFile+="#config types ";
+	expFile+=QString::number(pref.graphType)+" ";
+	expFile+=QString::number(pref.tableType)+"\n";
+
+
+
 	for(int c=0; c<20; c++)
 	{
 		expFile+="#config active";

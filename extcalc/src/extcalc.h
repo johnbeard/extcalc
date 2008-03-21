@@ -158,7 +158,7 @@ dialog, the todo list and the bug list.
 //  - multi-line edit for functions in graphics window                                      //
 //  - usage of multithreading for graph calculation                                         //
 //  - import/export function for graphs                                                 ok  //
-//  - organize graphs in graph sets with equal settings                                     //
+//  - organize graphs in graph sets with equal settings                                 ok  //
 //                                                                                          //
 ////////////////////////////////////////beta releases/////////////////////////////////////////
 

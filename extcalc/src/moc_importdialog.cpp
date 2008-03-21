@@ -1,7 +1,7 @@
 /****************************************************************************
 ** ImportDialog meta object code from reading C++ file 'importdialog.h'
 **
-** Created: Mon Mar 17 19:11:30 2008
+** Created: Fri Mar 21 13:16:26 2008
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -55,12 +55,10 @@ QMetaObject* ImportDialog::staticMetaObject()
     static const QUMethod slot_0 = {"saveSlot", 0, 0 };
     static const QUMethod slot_1 = {"openDialogSlot", 0, 0 };
     static const QUMethod slot_2 = {"saveDialogSlot", 0, 0 };
-    static const QUMethod slot_3 = {"openTextChangedSlot", 0, 0 };
     static const QMetaData slot_tbl[] = {
 	{ "saveSlot()", &slot_0, QMetaData::Public },
 	{ "openDialogSlot()", &slot_1, QMetaData::Public },
-	{ "saveDialogSlot()", &slot_2, QMetaData::Public },
-	{ "openTextChangedSlot()", &slot_3, QMetaData::Public }
+	{ "saveDialogSlot()", &slot_2, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In }
@@ -76,7 +74,7 @@ QMetaObject* ImportDialog::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"ImportDialog", parentObject,
-	slot_tbl, 4,
+	slot_tbl, 3,
 	signal_tbl, 2,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -122,7 +120,6 @@ bool ImportDialog::qt_invoke( int _id, QUObject* _o )
     case 0: saveSlot(); break;
     case 1: openDialogSlot(); break;
     case 2: saveDialogSlot(); break;
-    case 3: openTextChangedSlot(); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }

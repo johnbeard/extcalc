@@ -50,7 +50,7 @@ using namespace std;
 #define UIFILE ".extcalc/ui.conf"
 #define GRAPHSDIR ".extcalc/graphs/"
 
-#define VERSIONSTRING "Version: 0.9.2\n2008-03-20\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.9.2\n2008-03-21\n\n"+QString(DEVVERSION)
 
 
 #define AUTHORSTRING "Homepage:\nhttp://extcalc-linux.sourceforge.net\n\n"+QString(GLOBALH_STR1)
@@ -661,7 +661,13 @@ public:
 	Calculate(Math *par,char* line,Preferences*pr,Variable*va) :Math((Math*)par,pr,va)
 	{
 		horzObj=vertObj=NULL;
-		split(line,0,strlen(line));
+		if(line==NULL)
+		{
+			operation=NONE;
+			number=NAN;
+			var=-1;
+		}
+		else split(line,0,strlen(line));
 	}
 	~Calculate()
 	{
