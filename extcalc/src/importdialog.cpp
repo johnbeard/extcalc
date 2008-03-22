@@ -13,10 +13,14 @@ ImportDialog::ImportDialog(Preferences p,QWidget*parent,bool importF,bool func)
 	else directory=pref.scriptPath+"/"+pref.scriptDirName+"/";
 	if(importFile)
 	{
-		mainLabel=new QLabel(EXTCALCH_STR15,this);
+		if(function)
+			mainLabel=new QLabel(tr("Import Graph File"),this);
+		else mainLabel=new QLabel(EXTCALCH_STR15,this);
 		openPathLabel=new QLabel(EXTCALCH_STR16,this);
 	}
 	else {
+		if(function)
+			mainLabel=new QLabel(tr("Export Graph File"),this);
 		mainLabel=new QLabel(EXTCALCH_STR18,this);
 		openPathLabel=new QLabel(EXTCALCH_STR19,this);
 	}

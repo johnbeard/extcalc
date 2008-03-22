@@ -764,7 +764,9 @@ MainObject() :QTabWidget()
 	readVarFile();
 	readUIState();
 	readGraphsDir();
-
+	if(pref.currentSet.length()>0)
+		readFunctionFile(QString(getenv("HOME"))+"/"+QString(GRAPHSDIR)+pref.currentSet);
+	
 }
 
 ~MainObject()

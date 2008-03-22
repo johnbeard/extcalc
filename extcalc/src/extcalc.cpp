@@ -2096,7 +2096,7 @@ void MainObject::graphMenuSlot(int item)
 				if(ret!=0)
 					return;
 			}
-			writeFunctionFile(pref.currentSet);
+//			writeFunctionFile(pref.currentSet);
 			pref.currentSet=newString;
 			writeFunctionFile(pref.currentSet);
 			getPref(pref);
@@ -2475,7 +2475,7 @@ void MainObject::readFunctionFile(QString name)
 
 	if(lstat(name,&fileStat) != 0)
 	{
-		ErrorBox(tr("Unable to write read file %1\n\n1").arg(name));
+		ErrorBox(tr("Unable to read file %1\n\n").arg(name));
 		return;
 	}
 	else fileLen=fileStat.st_size;
@@ -2484,7 +2484,7 @@ void MainObject::readFunctionFile(QString name)
 	FILE*configFile = fopen(name,"r");
 	if(configFile == NULL)
 	{
-		ErrorBox(tr("Unable to read graphs file %1\n\n3").arg(name));
+		ErrorBox(tr("Unable to read graphs file %1\n\n").arg(name));
 		return;
 	}
 	
@@ -2498,10 +2498,14 @@ void MainObject::readFunctionFile(QString name)
 	QString file(buffer);
 	delete[] buffer;
 	fclose(configFile);
+	
+
+	
 	if(file.find("#config active")==-1)	//compatibility with v0.9.1 export format
 		file.replace("#config color","#config activeoff\n#config color");
+
 	
-	if(file.find("#config coordinates")!=-1)
+	if(file.find("#config coordinates")==0)
 	{
 		int pos1=file.find("#config coordinates");
 		pos1+=20;
@@ -2512,7 +2516,6 @@ void MainObject::readFunctionFile(QString name)
 		QStringList coordinatesList=QStringList::split(" ",coordinates);
 		if(coordinatesList.count()>22)
 		{
-			qDebug("coordinates ok");
 			pref.xmin=coordinatesList[0].toDouble();
 			pref.xmax=coordinatesList[1].toDouble();
 			pref.ymin=coordinatesList[2].toDouble();
@@ -2555,7 +2558,7 @@ void MainObject::readFunctionFile(QString name)
 			}
 		}
 	}
-	if(file.find("#config steps")!=-1)
+	if(file.find("#config steps")==0)
 	{
 		int pos1=file.find("#config steps");
 		pos1+=14;
@@ -2566,7 +2569,6 @@ void MainObject::readFunctionFile(QString name)
 		QStringList coordinatesList=QStringList::split(" ",coordinates);
 		if(coordinatesList.count()>7)
 		{
-			qDebug("steps ok");
 			pref.parameterSteps=coordinatesList[0].toInt();
 			pref.dynamicSteps=coordinatesList[1].toInt();
 			pref.dynamicDelay=coordinatesList[2].toInt();
@@ -2587,7 +2589,7 @@ void MainObject::readFunctionFile(QString name)
 		}
 	}
 	
-	if(file.find("#config flags")!=-1)
+	if(file.find("#config flags")==0)
 	{
 		int pos1=file.find("#config flags");
 		pos1+=14;
@@ -2598,14 +2600,13 @@ void MainObject::readFunctionFile(QString name)
 		QStringList coordinatesList=QStringList::split(" ",coordinates);
 		if(coordinatesList.count()>2)
 		{
-			qDebug("flags ok");
 			pref.moveUpDown=(bool)coordinatesList[0].toInt();
 			pref.show3dGrid=(bool)coordinatesList[1].toInt();
 			pref.logNyquistSteps=(bool)coordinatesList[2].toInt();
 
 		}
 	}
-	if(file.find("#config types")!=-1)
+	if(file.find("#config types")==0)
 	{
 		int pos1=file.find("#config types");
 		pos1+=14;
@@ -2616,7 +2617,6 @@ void MainObject::readFunctionFile(QString name)
 		QStringList coordinatesList=QStringList::split(" ",coordinates);
 		if(coordinatesList.count()>1)
 		{
-			qDebug("types ok");
 			pref.graphType=coordinatesList[0].toInt();
 			pref.tableType=coordinatesList[1].toInt();
 			
@@ -2628,10 +2628,9 @@ void MainObject::readFunctionFile(QString name)
 		}
 	}
 
-
+	pos1=pos2=0;
 	while(1)
 	{
-		qDebug("function read");
 		for(int c=0; c<5; c++)
 		{
 			pos1=file.find("#config ",pos2);
@@ -2718,6 +2717,16 @@ void MainObject::readFunctionFile(QString name)
 		pref.functions[functionCount]=resetConfigString(func);
 		pref.functionComments[functionCount]=comment;
 		functionCount++;
+	}
+	for(int c=functionCount; c<20; c++)
+	{
+		pref.functions[c]=QString();
+		pref.functionComments[c]=QString();
+		pref.activeFunctions[c]=false;
+		pref.functionColors[c]=QColor(0,0,0);
+		pref.logicFunctions[c]=false;
+		pref.functionTypes[c]=GRAPHSTD;
+		pref.dynamicFunctions[c]=false;
 	}
 	getPref(pref);
 }
