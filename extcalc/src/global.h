@@ -50,7 +50,7 @@ using namespace std;
 #define UIFILE ".extcalc/ui.conf"
 #define GRAPHSDIR ".extcalc/graphs/"
 
-#define VERSIONSTRING "Version: 0.9.2\n2008-03-22\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.9.2\n2008-03-29\n\n"+QString(DEVVERSION)
 
 
 #define AUTHORSTRING "Homepage:\nhttp://extcalc-linux.sourceforge.net\n\n"+QString(GLOBALH_STR1)
@@ -602,11 +602,11 @@ class Math
 	Math *vertObj,*horzObj;
 	double number;
 	int var;
-	int operation;
+
 	
 	
 public:
-		
+			int operation;
 	Math(Math*par,Preferences*pr,Variable*va)
 	{
 		parent=par;
@@ -640,8 +640,8 @@ public:
 	virtual Number execVertObj() {Number r;r.type=NNONE;return r;}
 	virtual Number execHorzObj() {Number r;r.type=NNONE;return r;}
 
-	virtual int split(char*){return 0;}
-	virtual char* parse(char*){return 0;}
+	virtual int split(char*,int,int){return 0;}
+	virtual int parse(char*,int,int){return 0;}
 	
 };
 
@@ -692,7 +692,7 @@ public:
 class Script :public Math
 {
 	Number value;
-	Math*nextObj,*vertObj2,*vertObj3;
+	Math *vertObj2,*vertObj3,*vertObj4;
 	ThreadSync*eventReciver;
 		
 private:
@@ -703,19 +703,46 @@ public:
 
 	Script(Script*par,char*line,Preferences*pr,Variable*va,ThreadSync*evrec) :Math((Math*)par,pr,va)
 	{
-		horzObj=vertObj=vertObj2=vertObj3=nextObj=NULL;
+		parent=par;
+		horzObj=vertObj=vertObj2=vertObj3=vertObj4=NULL;
 		value.type=NNONE;
+		operation=SFAIL;
+		number=NAN;
 		eventReciver=evrec;
 		value.cval=NULL;
-		if(par==NULL)
-			split(line);
-		else if(line!=NULL)
+		if(line!=NULL)
 		{
-			char*rest=parse(line);
-			if(rest!=NULL)
+			if(par==NULL)
 			{
-				operation=SFAIL;
-				delete[]rest;
+				split(line,0,strlen(line));
+			}
+			else
+			{
+				int rest=parse(line,0,strlen(line));
+				if(rest!=-1)
+					operation=SFAIL;
+			}
+		}
+	}
+	
+	Script(Script*par,char*line,int start,int end,Preferences*pr,Variable*va,ThreadSync*evrec) :Math((Math*)par,pr,va)
+	{
+		horzObj=vertObj=vertObj2=vertObj3=vertObj4=NULL;
+		value.type=NNONE;
+		operation=SFAIL;
+		eventReciver=evrec;
+		value.cval=NULL;
+		if(line!=NULL)
+		{
+			if(par==NULL)
+			{
+				split(line,start,end);
+			}
+			else if(line!=NULL)
+			{
+				int rest=parse(line,start,end);
+				if(rest!=-1)
+					operation=SFAIL;
 			}
 		}
 	}
@@ -746,14 +773,14 @@ public:
 			delete vertObj3;
 			vertObj3=NULL;
 		}
-		if(nextObj!=NULL)
+		if(vertObj4!=NULL)
 		{
-			delete nextObj;
-			nextObj=NULL;
+			delete vertObj4;
+			vertObj4=NULL;
 		}
 	}
-	char*parse(char*line);
-	virtual int split(char* line);
+	virtual int parse(char*line,int start,int end);
+	virtual int split(char* line,int start,int end);
 
 
 	virtual double calc();

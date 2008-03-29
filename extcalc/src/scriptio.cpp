@@ -1344,7 +1344,7 @@ void ScriptIOWidget::loadSubScripts()
 				else 
 				{
 					subScript=new Script(scriptObject,NULL,&pref,vars,threadData);
-					subScript->split(cleanSubFileContent);
+					subScript->split(cleanSubFileContent,0,strlen(cleanSubFileContent));
 				}
 				delete[]subFileContent;
 				threadData->subprograms.NewItem(subScript);

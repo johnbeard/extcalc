@@ -477,6 +477,7 @@ MainObject() :QTabWidget()
 	threadData->mutex=NULL;
 	threadData->eventReciver=this;
 	threadData->status=0;
+	threadData->eventCount=0;
 	threadData->exit=false;
 	threadData->usleep=false;
 	threadData->bbreak=false;
