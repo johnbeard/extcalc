@@ -27,6 +27,7 @@ It also includes the interfaces for screenshot generation, drawing functions and
 #include <qimage.h>
 #include <qpainter.h>
 #include <qinputdialog.h>
+#include <qthread.h>
 #include "list.h"
 #include "global.h"
 
@@ -34,6 +35,7 @@ It also includes the interfaces for screenshot generation, drawing functions and
 #define PRECISION3D current3dSteps
 #define TEXTURESIZE (256<<pref.solvePrec)
 #define BACKSTEPS 3
+#define THREADS 4
 
 
 ////////////////drawRules//////////////////////////////////////////
@@ -60,6 +62,12 @@ It also includes the interfaces for screenshot generation, drawing functions and
 //   GLuint list7
 //   GLuint list8
 //	there exists one objectInfo element and one ObjectCoordinates element for every object. They all have the same index
+//
+// processFunction() creates the ObjectInfo and objects enteries without calculating the data
+// a seperate method walks through all ObjectInfo objects and processes the data when necessary
+// this method creates a new thread for the calculation
+// for better performance, this method should be able to process several objects when needed
+//
 
 struct ObjectInfo
 {
@@ -71,6 +79,10 @@ struct ObjectInfo
 	char* function;
 	char* function2;
 	QColor color;
+	bool processed,glCreated;
+	GLuint glObject;
+	double*coordinates;
+	
 };
 
 struct DrawData
@@ -81,16 +93,74 @@ struct DrawData
 	QColor color;
 };
 
+class GraphicsThread :public QThread
+{
+	int index;
+	QGLWidget*parent;
+	ThreadSync*threadData;
+	Variable*vars;
+	public:
+	GraphicsThread(QGLWidget*p) :QThread()
+	{
+		
+		parent=p;
+		index=-1;
+		
+		vars=new Variable[27];
+		
+		threadData=new ThreadSync;
+		threadData->mutex=NULL;
+		threadData->eventReciver=parent;
+		threadData->status=0;
+		threadData->eventCount=0;
+		threadData->exit=false;
+		threadData->usleep=false;
+		threadData->bbreak=false;
+		threadData->bcontinue=false;
+		threadData->calcMode=true;
+		threadData->data=NULL;
+		threadData->sleepTime=1000;
+		threadData->vars=new Number*[VARNUM];
+		for(int c=0; c<VARNUM;c++)
+		{
+			threadData->vars[c]=(Number*)malloc(sizeof(Number));
+			threadData->numlen[c]=1;
+			threadData->vars[c][0].type=NNONE;
+			threadData->vars[c][0].cval=NULL;
+			threadData->vars[c][0].fval=Complex(0.0,0.0);
+			for(int c1=0; c1<VARDIMENSIONS; c1++)
+				threadData->dimension[c][c1]=1;
+		}
+	}
+	
+	~GraphicsThread()
+	{
+		delete[] vars;
+		for(int c=0; c<VARNUM;c++)
+		{
+			free(threadData->vars[c]);
+		}
+		free(threadData->vars);
+	}
+	
+	void setIndex(int i)
+	{
+		index=i;
+	}
+	
+	protected:
+		void run();
+};
+
+
 
 class GraphOutput :public QGLWidget
 {
 	
 	GLuint axes;
 	Preferences pref;
-	List <GLuint> objects;
 	List <GLuint> additionalObjects;
 	List <int* > drawRules;
-	List <double*> objectCoordinates;
 	List <ObjectInfo> objectInfo;
 	Variable*vars;
 	ThreadSync*threadData;
@@ -101,8 +171,7 @@ class GraphOutput :public QGLWidget
 	double dynamicStart,dynamicEnd;
 	bool isDynamic;
 	int dynamicPos;
-	QTimer * timer;
-	int ineq1,ineq2;
+	QTimer * timer,*threadTimer;
 	double oldX,oldY;
 	double oldXMin,oldXMax;
 	QPixmap scr;
@@ -121,13 +190,14 @@ class GraphOutput :public QGLWidget
 	int current2dSteps;
 	int currentSolvePrec;
 	bool hasSolveObjects,hasStatisticsObjects;
+	GraphicsThread* threads[THREADS];
+	bool graphProcess;
 
-	
-	
 Q_OBJECT
 public:
 	GraphOutput(QWidget*parent,Variable*va,ThreadSync*td,QGLWidget*shareWidget=NULL) :QGLWidget(parent,0,shareWidget)
 	{
+		graphProcess=false;
 		axes=0xffffffff;
 		pref.solvePrec=currentSolvePrec=1;
 		drawImage=new QImage(TEXTURESIZE,TEXTURESIZE,32);
@@ -152,24 +222,32 @@ public:
 		threadData=td;
 
 		xRotation=yRotation=zMove=0;
-		ineq1=ineq2=-1;
 		unlock=false;
 		isDynamic=false;
 		dynamicPos=0;
 		timer = new QTimer(this);
+		threadTimer=new QTimer(this);
+		for(int c=0; c<THREADS; c++)
+			threads[c]=new GraphicsThread((QGLWidget*)this);
 		QObject::connect(timer,SIGNAL(timeout()),this,SLOT(timerSlot()));
+		QObject::connect(threadTimer,SIGNAL(timeout()),this,SLOT(threadTimerSlot()));
+		
 	}
 
 
-	void processStdFunction(QString);
-	void processPolarFunction(QString);
-	void processParameterFunction(QString);
-	void process3dFunction(QString);
-	void processInequalityFunction(QString,QString,int);
-	void processComplexFunction(QString,bool);
-	void processFunction(int);
+	void processStdFunction(int,ThreadSync*,Variable*);
+	void processPolarFunction(int,ThreadSync*,Variable*);
+	void processParameterFunction(int,ThreadSync*,Variable*);
+	void process3dFunction(int,ThreadSync*,Variable*);
+	void processInequalityFunction(int,ThreadSync*,Variable*);
+	void processComplexFunction(int,ThreadSync*,Variable*);
+	void processFunction(QString, QString, int, QColor, bool, bool);
+
 	bool updateFunctions(double,double);
 	GLuint generateGLList(int);
+	void calculateGraphData();
+	void processGraph(int i,ThreadSync*,Variable*);
+	void createGLLists();
 	GLuint drawStdAxes();
 	GLuint drawPolarAxes();
 	GLuint draw3dAxes();
@@ -194,7 +272,7 @@ public slots:
 	void removeLines();
 	void resetRotation();
 	void timerSlot();
-	void inequaityIntersectionSlot(int i1, int i2);
+	void threadTimerSlot();
 	void screenshotSlot(int,int);
 	void drawSlot(int,QColor,int);
 	void timerStartSlot(bool);
@@ -207,6 +285,8 @@ protected:
 	void mouseMoveEvent(QMouseEvent*);
 	void mouseReleaseEvent(QMouseEvent*);
 	void wheelEvent(QWheelEvent*);
+	void customEvent(QCustomEvent*);
+
 	
 signals:
 	void prefChange(Preferences);
@@ -215,6 +295,7 @@ signals:
 	void screenshotSignal(QPixmap*);
 	void solveRedrawSignal();
 	void statisticsRedrawSignal();
+	void processingFinished();
 };
 
 

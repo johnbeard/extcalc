@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GraphArea meta object code from reading C++ file 'graph.h'
 **
-** Created: Thu Mar 27 18:08:49 2008
+** Created: Sun Jun 8 17:17:12 2008
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -176,13 +176,19 @@ QMetaObject* GraphWidget::staticMetaObject()
     static const QUMethod slot_11 = {"graphSizeSlot", 0, 0 };
     static const QUMethod slot_12 = {"dockWindowSlot", 0, 0 };
     static const QUParameter param_slot_13[] = {
+	{ 0, &static_QUType_int, 0, QUParameter::In },
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_13 = {"inequalitySlot", 2, param_slot_13 };
+    static const QUMethod slot_14 = {"graphProcessingFinishedSlot", 0, 0 };
+    static const QUParameter param_slot_15[] = {
 	{ "newPref", &static_QUType_ptr, "Preferences", QUParameter::In }
     };
-    static const QUMethod slot_13 = {"getPref", 1, param_slot_13 };
-    static const QUParameter param_slot_14[] = {
+    static const QUMethod slot_15 = {"getPref", 1, param_slot_15 };
+    static const QUParameter param_slot_16[] = {
 	{ "fType", &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod slot_14 = {"functionTypeSlot", 1, param_slot_14 };
+    static const QUMethod slot_16 = {"functionTypeSlot", 1, param_slot_16 };
     static const QMetaData slot_tbl[] = {
 	{ "selectionChangedSlot(int,int)", &slot_0, QMetaData::Public },
 	{ "tableEditSlot(QString)", &slot_1, QMetaData::Public },
@@ -197,8 +203,10 @@ QMetaObject* GraphWidget::staticMetaObject()
 	{ "catalogSlot()", &slot_10, QMetaData::Public },
 	{ "graphSizeSlot()", &slot_11, QMetaData::Public },
 	{ "dockWindowSlot()", &slot_12, QMetaData::Public },
-	{ "getPref(Preferences)", &slot_13, QMetaData::Public },
-	{ "functionTypeSlot(int)", &slot_14, QMetaData::Public }
+	{ "inequalitySlot(int,int)", &slot_13, QMetaData::Public },
+	{ "graphProcessingFinishedSlot()", &slot_14, QMetaData::Public },
+	{ "getPref(Preferences)", &slot_15, QMetaData::Public },
+	{ "functionTypeSlot(int)", &slot_16, QMetaData::Public }
     };
     static const QUParameter param_signal_0[] = {
 	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
@@ -225,7 +233,7 @@ QMetaObject* GraphWidget::staticMetaObject()
     };
     metaObj = QMetaObject::new_metaobject(
 	"GraphWidget", parentObject,
-	slot_tbl, 15,
+	slot_tbl, 17,
 	signal_tbl, 5,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -308,8 +316,10 @@ bool GraphWidget::qt_invoke( int _id, QUObject* _o )
     case 10: catalogSlot(); break;
     case 11: graphSizeSlot(); break;
     case 12: dockWindowSlot(); break;
-    case 13: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 14: functionTypeSlot((int)static_QUType_int.get(_o+1)); break;
+    case 13: inequalitySlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
+    case 14: graphProcessingFinishedSlot(); break;
+    case 15: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
+    case 16: functionTypeSlot((int)static_QUType_int.get(_o+1)); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }

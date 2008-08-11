@@ -50,7 +50,7 @@ using namespace std;
 #define UIFILE ".extcalc/ui.conf"
 #define GRAPHSDIR ".extcalc/graphs/"
 
-#define VERSIONSTRING "Version: 0.9.2\n2008-03-29\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.9.2\n2008-08-11\n\n"+QString(DEVVERSION)
 
 
 #define AUTHORSTRING "Homepage:\nhttp://extcalc-linux.sourceforge.net\n\n"+QString(GLOBALH_STR1)
@@ -373,6 +373,7 @@ using namespace std;
 #define SIGGRAPHTRANSLATE	50023
 #define SIGIDENTITY			50024
 #define SIGDRAW				50025
+#define SIGTHREADSYNC		50026
 #define SIGFINISHED			50030
 
 #define ROOTSTRING			8730

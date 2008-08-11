@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GraphSolveWidget meta object code from reading C++ file 'graphsolve.h'
 **
-** Created: Thu Mar 27 18:08:49 2008
+** Created: Sat Jun 7 07:08:39 2008
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -144,7 +144,7 @@ QMetaObject* GraphSolveWidget::staticMetaObject()
 	{ 0, &static_QUType_int, 0, QUParameter::In },
 	{ 0, &static_QUType_int, 0, QUParameter::In }
     };
-    static const QUMethod signal_9 = {"drawInequaityIntersection", 2, param_signal_9 };
+    static const QUMethod signal_9 = {"drawInequalityIntersection", 2, param_signal_9 };
     static const QUMethod signal_10 = {"redrawGraphs", 0, 0 };
     static const QUParameter param_signal_11[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In },
@@ -167,7 +167,7 @@ QMetaObject* GraphSolveWidget::staticMetaObject()
 	{ "add3dZLine(double,double)", &signal_6, QMetaData::Public },
 	{ "removeLines()", &signal_7, QMetaData::Public },
 	{ "prefChange(Preferences)", &signal_8, QMetaData::Public },
-	{ "drawInequaityIntersection(int,int)", &signal_9, QMetaData::Public },
+	{ "drawInequalityIntersection(int,int)", &signal_9, QMetaData::Public },
 	{ "redrawGraphs()", &signal_10, QMetaData::Public },
 	{ "getScreenshotSignal(int,int)", &signal_11, QMetaData::Public },
 	{ "drawSignal(int,QColor,int)", &signal_12, QMetaData::Public }
@@ -280,8 +280,8 @@ void GraphSolveWidget::prefChange( Preferences t0 )
     activate_signal( clist, o );
 }
 
-// SIGNAL drawInequaityIntersection
-void GraphSolveWidget::drawInequaityIntersection( int t0, int t1 )
+// SIGNAL drawInequalityIntersection
+void GraphSolveWidget::drawInequalityIntersection( int t0, int t1 )
 {
     if ( signalsBlocked() )
 	return;
@@ -367,7 +367,7 @@ bool GraphSolveWidget::qt_emit( int _id, QUObject* _o )
     case 6: add3dZLine((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
     case 7: removeLines(); break;
     case 8: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 9: drawInequaityIntersection((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
+    case 9: drawInequalityIntersection((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
     case 10: redrawGraphs(); break;
     case 11: getScreenshotSignal((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
     case 12: drawSignal((int)static_QUType_int.get(_o+1),(QColor)(*((QColor*)static_QUType_ptr.get(_o+2))),(int)static_QUType_int.get(_o+3)); break;

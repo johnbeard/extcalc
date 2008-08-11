@@ -1445,8 +1445,7 @@ void GraphSolveWidget::solveButtonSlot()
 				showRoots(functionString,0.0,QColor(0,0,0),pref.logicFunctions[functionIndices[functionBox->currentItem()]]|pref.logicFunctions[functionIndices[functionBox2->currentItem()]]);
 			}
 			else {
-				emit drawInequaityIntersection(functionIndices[functionBox->currentItem()],functionIndices[functionBox2->currentItem()]);
-				emit redrawGraphs();
+				emit drawInequalityIntersection(functionIndices[functionBox->currentItem()],functionIndices[functionBox2->currentItem()]);
 			}
 			break;
 		}

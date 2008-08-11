@@ -74,7 +74,6 @@ class GraphArea :public QWidget
 
 
 
-
 class GraphWidget :public QWidget
 {
 	GraphOutput*graph;
@@ -107,7 +106,7 @@ class GraphWidget :public QWidget
 	bool functionChanged;
 	bool dynamicStart;
 	int menuBottom;
-	
+	bool processStarted;
 	
 Q_OBJECT
 	public:
@@ -122,6 +121,7 @@ Q_OBJECT
 		functionChanged=false;
 		changedRow=-1;
 		dynamicStart=false;
+		processStarted=false;
 		
 		
 		horzSplit=new QSplitter(Qt::Horizontal,this);
@@ -163,6 +163,7 @@ Q_OBJECT
 		s[1]=300;
 		s[0]=300;
 		horzSplit->setSizes(s);
+		
 
 		solveType->insertItem(GRAPHH_STR4,-2);
 		solveType->insertItem(GRAPHH_STR5,-3);
@@ -215,7 +216,7 @@ Q_OBJECT
 		QObject::connect(this,SIGNAL(solveTypeSignal(int)),solveWidget,SLOT(setState(int)));
 		QObject::connect(functionType,SIGNAL(activated(int)),solveWidget,SLOT(setFunctionType(int)));
 		QObject::connect(functionType,SIGNAL(activated(int)),this,SLOT(functionTypeSlot(int)));
-		QObject::connect(solveWidget,SIGNAL(drawInequaityIntersection(int, int)),graph,SLOT(inequaityIntersectionSlot(int,int)));
+		QObject::connect(solveWidget,SIGNAL(drawInequalityIntersection(int, int)),this,SLOT(inequalitySlot(int,int)));
 		QObject::connect(solveWidget,SIGNAL(redrawGraphs()),this,SLOT(drawSlot()));
 		QObject::connect(graph,SIGNAL(redrawSignal()),this,SLOT(drawSlot()));
 		QObject::connect(graph,SIGNAL(screenshotSignal(QPixmap*)),solveWidget,SLOT(screenshotSlot(QPixmap*)));
@@ -227,6 +228,7 @@ Q_OBJECT
 		QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(buttonInputSlot(QString)));
 		QObject::connect(catalogButton,SIGNAL(clicked()),this,SLOT(catalogSlot()));
 		QObject::connect(graphArea,SIGNAL(sizeChanged()),this,SLOT(graphSizeSlot()));
+		QObject::connect(graph,SIGNAL(processingFinished()),this,SLOT(graphProcessingFinishedSlot()));
 
 	}
 	
@@ -302,6 +304,8 @@ public slots:
 	void catalogSlot();
 	void graphSizeSlot();
 	void dockWindowSlot();
+	void inequalitySlot(int,int);
+	void graphProcessingFinishedSlot();
 	void getPref(Preferences newPref)
 	{
 		emit prefChange(newPref);

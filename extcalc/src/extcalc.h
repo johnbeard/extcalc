@@ -143,7 +143,7 @@ dialog, the todo list and the bug list.
 ////////////////////////////////////////beta releases/////////////////////////////////////////
 //                                                                                          //
 //  - reorganisation of the checkString and script preprocessor functions               ok  //
-//  - optimization of the split and parse methods                                           //
+//  - optimization of the split and parse methods                                       ok  //
 //  - change structure of exec and calc methods                                             //
 //  - standardized user interface design for all tabs                                   ok  //
 //  - open help file in default browser                                                 ok  //
@@ -156,7 +156,7 @@ dialog, the todo list and the bug list.
 //  - logic operations for graph drawing                                                ok  //
 //  - graph analysis for functions with logic operations                                ok  //
 //  - multi-line edit for functions in graphics window                                      //
-//  - usage of multithreading for graph calculation                                         //
+//  - usage of multithreading for graph calculation                                     ok  //
 //  - import/export function for graphs                                                 ok  //
 //  - organize graphs in graph sets with equal settings                                 ok  //
 //                                                                                          //
@@ -207,6 +207,10 @@ dialog, the todo list and the bug list.
 //	- command priority in script interpreter wrong										ok	//
 //	- autosize setting leads to wrong screenshot size									ok	//
 //	- abs does not exist in standard calculator class									ok	//
+//	- timer for animated graphs does not work											ok	//
+//	- automatic insertion of * operator is not allways correct							ok	//
+//	- different fonts in different windows												ok	//
+//	- segfault when drawing animated graphs												ok	//
 
 
 //////////////////////////used variables//////////////////////////

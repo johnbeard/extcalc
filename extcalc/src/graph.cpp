@@ -92,26 +92,6 @@ void GraphWidget::tableEditSlot(QString string)
 
 void GraphWidget::drawSlot()
 {
-	if(dynamicStart && pref.dynamicDelay!=0)
-	{
-		dynamicStart=false;
-		graph->timerStartSlot(false);
-		drawButton->setText(GRAPHH_STR1);
-		return;
-	}
-	if(functionChanged)
-		inputTextFinished();
-	graph->clearGL();
-	dynamicStart=false;
-	for(int c=0; c<20; c++)
-	{
-		if(pref.activeFunctions[c])
-		{
-			graph->processFunction(c);
-			if(pref.dynamicFunctions[c])
-				dynamicStart=true;
-		}
-	}
 	if(dynamicStart)
 	{
 		if(pref.dynamicDelay==0)
@@ -121,12 +101,61 @@ void GraphWidget::drawSlot()
 		}
 		else
 		{
-			graph->timerStartSlot(true);
-			drawButton->setText(GRAPHC_STR5);
+			dynamicStart=false;
+			graph->timerStartSlot(false);
+			drawButton->setText(GRAPHH_STR1);
+			return;
 		}
 	}
-	else graph->repaint(true);
+
 	
+	if(processStarted)
+		return;
+	drawButton->setEnabled(false);
+	processStarted=true;
+	
+	if(functionChanged)
+		inputTextFinished();
+	graph->clearGL();
+	dynamicStart=false;
+	int type;
+	qDebug("create data structures");
+	for(int c=0; c<20; c++)
+	{
+		if(pref.activeFunctions[c])
+		{
+			type=pref.functionTypes[c];
+			if(type==GRAPHIEGE)
+				type=GRAPHIEG;
+			else if(type==GRAPHIELE)
+				type=GRAPHIEL;
+
+			graph->processFunction(pref.functions[c],"",type,pref.functionColors[c],pref.logicFunctions[c],pref.dynamicFunctions[c]);
+			if(type==GRAPHIEL || type==GRAPHIEG)
+				graph->processFunction(pref.functions[c],"",GRAPHSTD,QColor(0,0,0),pref.logicFunctions[c],pref.dynamicFunctions[c]);
+
+			if(pref.dynamicFunctions[c])
+				dynamicStart=true;
+		}
+	}
+	
+	if(dynamicStart && pref.dynamicDelay!=0)
+		drawButton->setText(GRAPHC_STR5);
+	else drawButton->setText(GRAPHH_STR1);
+	qDebug("data structure creation finished; start processing");
+	
+	graph->calculateGraphData();
+
+}
+
+void GraphWidget::graphProcessingFinishedSlot()
+{
+	qDebug("processing finished; initialize gl lists");
+	graph->createGLLists();
+	qDebug("gl initialization finished");
+	graph->repaint(true);
+	processStarted=false;
+	drawButton->setEnabled(true);
 }
 
 
@@ -459,6 +488,36 @@ void GraphWidget::graphSizeSlot()
 	}
 	graph->setGeometry((width-newWidth)/2,(height-newHeight)/2,newWidth,newHeight);
 }
+
+void GraphWidget::inequalitySlot(int i1,int i2)
+{
+	pref.activeFunctions[i1]=pref.activeFunctions[i2]=false;
+	drawSlot();
+	pref.activeFunctions[i1]=pref.activeFunctions[i2]=true;	
+	if((pref.functionTypes[i1]==GRAPHIEG || pref.functionTypes[i1]==GRAPHIEGE) && 
+		   (pref.functionTypes[i2]==GRAPHIEG || pref.functionTypes[i2]==GRAPHIEGE))
+		graph->processFunction(pref.functions[i1],pref.functions[i2],GRAPHIEG,QColor(123,121,255),pref.logicFunctions[i1]|pref.logicFunctions[i2],false);
+	else if((pref.functionTypes[i1]==GRAPHIEL || pref.functionTypes[i1]==GRAPHIELE) && 
+				(pref.functionTypes[i2]==GRAPHIEL || pref.functionTypes[i2]==GRAPHIELE))
+		graph->processFunction(pref.functions[i1],pref.functions[i2],GRAPHIEL,QColor(123,121,255),pref.logicFunctions[i1]|pref.logicFunctions[i2],false);
+	else if((pref.functionTypes[i1]==GRAPHIEG || pref.functionTypes[i1]==GRAPHIEGE) && 
+		   (pref.functionTypes[i2]==GRAPHIEL || pref.functionTypes[i2]==GRAPHIELE))
+		graph->processFunction(pref.functions[i1],pref.functions[i2],GRAPHIEGE,QColor(123,121,255),pref.logicFunctions[i1]|pref.logicFunctions[i2],false);
+	else if((pref.functionTypes[i1]==GRAPHIEL || pref.functionTypes[i1]==GRAPHIELE) && 
+		   (pref.functionTypes[i2]==GRAPHIEG || pref.functionTypes[i2]==GRAPHIEGE))
+		graph->processFunction(pref.functions[i1],pref.functions[i2],GRAPHIELE,QColor(123,121,255),pref.logicFunctions[i1]|pref.logicFunctions[i2],false);
+
+	graph->processFunction(pref.functions[i1],"",GRAPHSTD,pref.functionColors[i1],pref.logicFunctions[i1],false);
+	graph->processFunction(pref.functions[i2],"",GRAPHSTD,pref.functionColors[i2],pref.logicFunctions[i2],false);
+
+
+	graph->calculateGraphData();
+	graph->createGLLists();
+
+
+	graph->repaint(true);
+}
+
 
 
 

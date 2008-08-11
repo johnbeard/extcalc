@@ -14,7 +14,7 @@ any later version.
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "graphout.h"
-
+#include <pthread.h>
 
 ////////////////////////////////////////initializeGL/////////////////////////////////////////
 
@@ -57,11 +57,6 @@ void GraphOutput::initializeGL()
 			emit solveRedrawSignal();
 		
 		clearGL();
-		for(int c=0; c<20; c++)
-		{
-			if(pref.activeFunctions[c])
-				processFunction(c);
-		}
 	}
 }
 
@@ -191,9 +186,6 @@ GLuint GraphOutput::drawStdAxes()
 
 GLuint GraphOutput::drawPolarAxes()
 {
-
-
-	
 	GLuint list;
 
 	list = glGenLists( 1 );
@@ -756,11 +748,66 @@ void GraphOutput::wheelEvent(QWheelEvent*e)
 }
 
 
-void GraphOutput::processStdFunction(QString function)
+void GraphOutput::customEvent(QCustomEvent*ev)
 {
-	char*func;
-	func = preprocessor(&function,&pref,false);
-	
+
+	switch(ev->type())
+	{
+		case SIGTHREADSYNC:
+//			qDebug("main process "+QString::number(pthread_self()));
+			threadTimerSlot();
+			break;
+		case SIGPRINT:	
+			free(ev->data());
+			break;
+		case SIGCLEARTEXT:
+			break;
+		case SIGGETKEY:
+		{
+			char*strBuf=new char[2];
+			strBuf[1]=(char)0;
+			strBuf[0]=(char)0;
+			threadData->data=strBuf;
+			break;
+		}
+		case SIGKEYSTATE:
+		{
+			char*strBuf=new char[1];
+			strBuf[0]=(char)0;
+			threadData->data=strBuf;
+			break;
+		}
+		case SIGGETLINE:
+		{
+			char*strBuf=new char[2];
+			strBuf[1]=(char)0;
+			strBuf[0]=(char)0;
+			threadData->data=strBuf;
+			break;
+		}
+		case SIGSETTEXTPOS:
+			free(ev->data());
+			break;
+		case SIGFINISHED:		//script stopped
+			{
+				break;
+			}
+		case SIGDEBUG:
+		{
+			free(ev->data());
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+
+}
+
+void GraphOutput::processStdFunction(int index,ThreadSync*td,Variable*va)
+{
+	char*func=objectInfo[index].function;
 
 	double xStart,xStep;
 	Number result;
@@ -774,42 +821,39 @@ void GraphOutput::processStdFunction(QString function)
 	struct timeval t1,t2;
 	
 	double* coordinates=new double[PRECISION2D*2+2];
-	objectCoordinates.NewItem(coordinates);
-	int index=objectCoordinates.GetLen()-1;
+	objectInfo[index].coordinates=coordinates;
 	objectInfo[index].length=PRECISION2D;
-	objectInfo[index].function=func;
 	if(objectInfo[index].logic)
 	{
-		Script ca1(NULL,func,&pref,vars,threadData);
+		Script ca1(NULL,func,&pref,va,td);
 		gettimeofday(&t1,NULL);
-		
-		
+		td->vars[0][0].type=NFLOAT;
+		td->vars[0][0].fval=objectInfo[index].dynamicParameter;
 		for(int c=0; c<PRECISION2D; c++)
 		{
-			threadData->vars[23][0].type=NFLOAT;
-			threadData->vars[23][0].fval=xStart+(double)c*xStep;
-			objectCoordinates[index][2*c]  =threadData->vars[23][0].fval.real();
+			td->vars[23][0].type=NFLOAT;
+			td->vars[23][0].fval=xStart+(double)c*xStep;
+			coordinates[2*c]  =td->vars[23][0].fval.real();
 			result=ca1.exec();
 			convertToFloat(&result);
-			objectCoordinates[index][2*c+1]=result.fval.real();
+			coordinates[2*c+1]=result.fval.real();
 		}
 		gettimeofday(&t2,NULL);
 	}
 	else 
 	{
-		Calculate ca1(NULL,func,&pref,vars);
+		Calculate ca1(NULL,func,&pref,va);
 		gettimeofday(&t1,NULL);
 		
+		va[0]=objectInfo[index].dynamicParameter;
 		for(int c=0; c<PRECISION2D; c++)
 		{
-			vars[23]=xStart+(double)c*xStep;
-			objectCoordinates[index][2*c]  =vars[23];
-			objectCoordinates[index][2*c+1]=ca1.calc();
+			va[23]=xStart+(double)c*xStep;
+			coordinates[2*c]  =va[23];
+			coordinates[2*c+1]=ca1.calc();
 		}
 		gettimeofday(&t2,NULL);
 	}
-
-
 
 	int seconds,usecs;
 	seconds=t2.tv_sec-t1.tv_sec;
@@ -819,16 +863,14 @@ void GraphOutput::processStdFunction(QString function)
 		seconds--;
 		usecs=1000000+usecs;
 	}
-
-
-	objects.NewItem(generateGLList(index));
+//	objectInfo[index].processed=true;
 }
 
 
-void GraphOutput::processPolarFunction(QString function)
+void GraphOutput::processPolarFunction(int index,ThreadSync*threadData,Variable*vars)
 {
 	char*func;
-	func = preprocessor(&function,&pref,false);
+	func = objectInfo[index].function;
 
 	double xStart,xStep;
 	xStart=0;
@@ -844,8 +886,7 @@ void GraphOutput::processPolarFunction(QString function)
 	}
 
 	double* coordinates=new double[PRECISION2D*2+2];
-	objectCoordinates.NewItem(coordinates);
-	int index=objectCoordinates.GetLen()-1;
+	objectInfo[index].coordinates=coordinates;
 	objectInfo[index].length=PRECISION2D+1;
 //	perror("Polar function index: "+QString::number(index));
 
@@ -860,6 +901,8 @@ void GraphOutput::processPolarFunction(QString function)
 		
 		gettimeofday(&t1,NULL);
 		
+		threadData->vars[0][0].type=NFLOAT;
+		threadData->vars[0][0].fval=objectInfo[index].dynamicParameter;
 		for(int c=0; c<=PRECISION2D; c++)
 		{
 			x=xStart+(double)c*xStep;
@@ -868,21 +911,22 @@ void GraphOutput::processPolarFunction(QString function)
 
 			r=ca1.exec();
 			convertToFloat(&r);
-			objectCoordinates[index][2*c]  =cos(x*multiplier)*r.fval.real();
-			objectCoordinates[index][2*c+1]=sin(x*multiplier)*r.fval.real();
+			objectInfo[index].coordinates[2*c]  =cos(x*multiplier)*r.fval.real();
+			objectInfo[index].coordinates[2*c+1]=sin(x*multiplier)*r.fval.real();
 			
 		}
 		gettimeofday(&t2,NULL);
 	}
 	else {
 		Calculate ca1(NULL,func,&pref,vars);
+		vars[0]=objectInfo[index].dynamicParameter;
 		gettimeofday(&t1,NULL);
 		for(int c=0; c<=PRECISION2D; c++)
 		{
 			vars[23]=xStart+(double)c*xStep;
 			r=ca1.calc();
-			objectCoordinates[index][c*2]=cos(vars[23]*multiplier)*r;
-			objectCoordinates[index][c*2+1]=sin(vars[23]*multiplier)*r;
+			objectInfo[index].coordinates[c*2]=cos(vars[23]*multiplier)*r;
+			objectInfo[index].coordinates[c*2+1]=sin(vars[23]*multiplier)*r;
 		}
 		gettimeofday(&t2,NULL);
 	}
@@ -895,34 +939,21 @@ void GraphOutput::processPolarFunction(QString function)
 		seconds--;
 		usecs=1000000+usecs;
 	}
-	free(func);
-	objects.NewItem(generateGLList(index));
+//	objectInfo[index].processed=true;
 }
 
-void GraphOutput::processParameterFunction(QString function)
+void GraphOutput::processParameterFunction(int index,ThreadSync*threadData,Variable*vars)
 {
 	char*func1,*func2;
-	QString f1,f2;
-	int sep=function.find("\\");
-	if(sep==-1)
-	{
-		f1="";
-		f2="";
-	}
-	else {
-		f1=function.left(sep);
-		f2=function.right(function.length()-1-sep);
-	}
-	func1 = preprocessor(&f1,&pref,false);
-	func2 = preprocessor(&f2,&pref,false);
+	func1 = objectInfo[index].function;
+	func2 = objectInfo[index].function2;
 
 	double xStart,xStep;
 	xStart=pref.parameterStart;
 	xStep=(pref.parameterEnd-pref.parameterStart)/(double)pref.parameterSteps;
 
 	double* coordinates=new double[pref.parameterSteps*2];
-	objectCoordinates.NewItem(coordinates);
-	int index=objectCoordinates.GetLen()-1;
+	objectInfo[index].coordinates=coordinates;
 	objectInfo[index].length=pref.parameterSteps;
 
 	QString num,num2;
@@ -935,6 +966,8 @@ void GraphOutput::processParameterFunction(QString function)
 		Script ca2(NULL,func2,&pref,vars,threadData);
 		gettimeofday(&t1,NULL);
 		
+		threadData->vars[0][0].type=NFLOAT;
+		threadData->vars[0][0].fval=objectInfo[index].dynamicParameter;
 		
 		for(int c=0; c<pref.parameterSteps; c++)
 		{
@@ -942,24 +975,24 @@ void GraphOutput::processParameterFunction(QString function)
 			threadData->vars[19][0].fval=xStart+(double)c*xStep;
 			result=ca1.exec();
 			convertToFloat(&result);
-			objectCoordinates[index][2*c]=result.fval.real();
+			objectInfo[index].coordinates[2*c]=result.fval.real();
 			threadData->vars[19][0].type=NFLOAT;
 			threadData->vars[19][0].fval=xStart+(double)c*xStep;
 			result=ca2.exec();
 			convertToFloat(&result);
-			objectCoordinates[index][2*c+1]=result.fval.real();
+			objectInfo[index].coordinates[2*c+1]=result.fval.real();
 		}
 	}
 	else {
 	Calculate ca1(NULL,func1,&pref,vars);
 	Calculate ca2(NULL,func2,&pref,vars);
-
+	vars[0]=objectInfo[index].dynamicParameter;
 	gettimeofday(&t1,NULL);
 	for(int c=0; c<pref.parameterSteps; c++)
 	{
 		vars[19]=xStart+(double)c*xStep;
-		objectCoordinates[index][2*c]=ca1.calc();
-		objectCoordinates[index][2*c+1]=ca2.calc();
+		objectInfo[index].coordinates[2*c]=ca1.calc();
+		objectInfo[index].coordinates[2*c+1]=ca2.calc();
 	}
 	gettimeofday(&t2,NULL);
 	}
@@ -972,10 +1005,7 @@ void GraphOutput::processParameterFunction(QString function)
 		seconds--;
 		usecs=1000000+usecs;
 	}
-	
-	free(func1);
-	free(func2);
-	objects.NewItem(generateGLList(index));
+//	objectInfo[index].processed=true;
 }
 
 
@@ -1015,12 +1045,12 @@ void GraphOutput::setGLColor(float y)
 
 
 
-void GraphOutput::process3dFunction(QString function)
+void GraphOutput::process3dFunction(int index,ThreadSync*threadData,Variable*vars)
 {
 
 
 	char*func;
-	func = preprocessor(&function,&pref,false);
+	func = objectInfo[index].function;
 
 
 	double xStart,xStep,zStart,zStep;
@@ -1028,12 +1058,10 @@ void GraphOutput::process3dFunction(QString function)
 	zStart=pref.zmin;
 	xStep=(pref.xmax-pref.xmin)/PRECISION3D;
 	zStep=(pref.zmax-pref.zmin)/PRECISION3D;
-	
 
-	
-	double* coordinates=new double[PRECISION3D*PRECISION3D];
-	objectCoordinates.NewItem(coordinates);
-	int index=objectCoordinates.GetLen()-1;
+
+	double*coordinates=new double[PRECISION3D*PRECISION3D];
+	objectInfo[index].coordinates=coordinates;
 	objectInfo[index].length=PRECISION3D;
 
 	QString num,num2;
@@ -1043,6 +1071,9 @@ void GraphOutput::process3dFunction(QString function)
 		Number result;
 		Script ca1(NULL,func,&pref,vars,threadData);
 		gettimeofday(&t1,NULL);
+		
+		threadData->vars[0][0].type=NFLOAT;
+		threadData->vars[0][0].fval=objectInfo[index].dynamicParameter;
 		
 		for(int c=0; c<PRECISION3D; c++)
 		{
@@ -1060,7 +1091,7 @@ void GraphOutput::process3dFunction(QString function)
 	}
 	else {
 		Calculate ca1(NULL,func,&pref,vars);
-	
+		vars[0]=objectInfo[index].dynamicParameter;
 		gettimeofday(&t1,NULL);
 	
 		for(int c=0; c<PRECISION3D; c++)
@@ -1077,7 +1108,6 @@ void GraphOutput::process3dFunction(QString function)
 	gettimeofday(&t2,NULL);
 
 
-	glEndList();
 
 	int seconds,usecs;
 	seconds=t2.tv_sec-t1.tv_sec;
@@ -1087,51 +1117,39 @@ void GraphOutput::process3dFunction(QString function)
 		seconds--;
 		usecs=1000000+usecs;
 	}
-//	MessageBox(  "Sekunden:      "+QString::number(seconds)+
-//			   "\nMicrosekunden: "+QString::number(usecs));
-	free(func);
-	GLuint newList=generateGLList(index);
-	delete[]coordinates;
-	objectCoordinates[objectCoordinates.GetLen()-1]=NULL;
-	objects.NewItem(newList);
+	
+//	objectInfo[index].processed=true;
 }
 
 
-void GraphOutput::processInequalityFunction(QString function1,QString function2,int type)
+void GraphOutput::processInequalityFunction(int index,ThreadSync*threadData,Variable*vars)
 {
 	//types:
 	//GRAPHIEG: both greather
 	//GRAPHIEL: both less
 	//GRAPHIEGE: first greather, second less
 	
-	
-//    GLuint list;
 	char*func,*func2;
-	func = preprocessor(&function1,&pref,false);
-	func2= preprocessor(&function2,&pref,false);
+	func = objectInfo[index].function;
+	func2= objectInfo[index].function2;
 	
-//	list = glGenLists( 1 );
-//	glNewList( list, GL_COMPILE );
 	double xStart,xStep;
 	xStart=pref.xmin;
 	xStep=(pref.xmax-pref.xmin)/PRECISION2D;
 	double endLine;
 	
-	if(type==GRAPHIEGE || type==GRAPHIEG)
+	if(objectInfo[index].type==GRAPHIEGE || objectInfo[index].type==GRAPHIEG)
 		endLine=pref.ymax;
 	else endLine=pref.ymin;
 	struct timeval t1,t2;
 
 
 	double* coordinates;
-	if(type==GRAPHIEG || type==GRAPHIEL)
+	if(objectInfo[index].type==GRAPHIEG || objectInfo[index].type==GRAPHIEL)
 		coordinates=new double[PRECISION2D*2+2];
 	else coordinates=new double[PRECISION2D*3+3];
-	objectCoordinates.NewItem(coordinates);
-	int index=objectCoordinates.GetLen()-1;
+	objectInfo[index].coordinates=coordinates;
 	objectInfo[index].length=PRECISION2D+1;
-	objectInfo[index].function=func;
-	objectInfo[index].function2=func2;
 
 	float x,y1,y2;
 	QString num,num2;
@@ -1141,10 +1159,15 @@ void GraphOutput::processInequalityFunction(QString function1,QString function2,
 	if(objectInfo[index].logic)
 	{
 		
+		threadData->vars[0][0].type=NFLOAT;
+		threadData->vars[0][0].fval=objectInfo[index].dynamicParameter;
+		
 		s1=new Script(NULL,func,&pref,vars,threadData);	
 		s2=new Script(NULL,func2,&pref,vars,threadData);	
 	}
 	else {
+		vars[0]=objectInfo[index].dynamicParameter;
+
 		ca1=new Calculate(NULL,func,&pref,vars);
 		ca2=new Calculate(NULL,func2,&pref,vars);
 	}
@@ -1168,29 +1191,29 @@ void GraphOutput::processInequalityFunction(QString function1,QString function2,
 			y1=ca1->calc();
 			y2=ca2->calc();
 		}
-		if(type==GRAPHIEG)
+		if(objectInfo[index].type==GRAPHIEG)
 		{
-			objectCoordinates[index][2*c]=x;
+			objectInfo[index].coordinates[2*c]=x;
 			if(y1>=y2)
-				objectCoordinates[index][2*c+1]=y1;
-			else objectCoordinates[index][2*c+1]=y2;
+				objectInfo[index].coordinates[2*c+1]=y1;
+			else objectInfo[index].coordinates[2*c+1]=y2;
 		}
-		else if(type==GRAPHIEL)
+		else if(objectInfo[index].type==GRAPHIEL)
 		{
-			objectCoordinates[index][2*c]=x;
+			objectInfo[index].coordinates[2*c]=x;
 			if(y1<=y2)
-				objectCoordinates[index][2*c+1]=y1;
-			else objectCoordinates[index][2*c+1]=y2;
+				objectInfo[index].coordinates[2*c+1]=y1;
+			else objectInfo[index].coordinates[2*c+1]=y2;
 		}
 		else
 		{
 			if(y1<=y2)
 			{
-				objectCoordinates[index][3*c]=x;
-				objectCoordinates[index][3*c+1]=y1;
-				objectCoordinates[index][3*c+2]=y2;
+				objectInfo[index].coordinates[3*c]=x;
+				objectInfo[index].coordinates[3*c+1]=y1;
+				objectInfo[index].coordinates[3*c+2]=y2;
 			}
-			else objectCoordinates[index][3*c+1]=objectCoordinates[index][3*c+2]=0.0;
+			else objectInfo[index].coordinates[3*c+1]=objectInfo[index].coordinates[3*c+2]=0.0;
 		}
 	}
 
@@ -1204,9 +1227,7 @@ void GraphOutput::processInequalityFunction(QString function1,QString function2,
 		seconds--;
 		usecs=1000000+usecs;
 	}
-//	MessageBox(  "Sekunden:      "+QString::number(seconds)+
-//			   "\nMicrosekunden: "+QString::number(usecs));
-	objects.NewItem(generateGLList(index));
+
 	if(objectInfo[index].logic)
 	{
 		delete s1;
@@ -1216,16 +1237,18 @@ void GraphOutput::processInequalityFunction(QString function1,QString function2,
 		delete ca1;
 		delete ca2;
 	}
+	
+//	objectInfo[index].processed=true;
 }
 
-void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
+void GraphOutput::processComplexFunction(int index,ThreadSync*threadData,Variable*vars)
 {
 	char*func;
-	func = preprocessor(&function,&pref,false);
+	func = objectInfo[index].function;
 
 	double zStart,zStep;
 	double* coordinates;
-	if(draw3D)
+	if(objectInfo[index].type==GRAPHCOMP3D)
 	{
 		zStart=pref.zmin;
 		coordinates=new double[pref.nyquistSteps*3+3];
@@ -1245,22 +1268,24 @@ void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
 	struct timeval t1,t2;
 	Number result;
 
-	objectCoordinates.NewItem(coordinates);
-	int index=objectCoordinates.GetLen()-1;
+	objectInfo[index].coordinates=coordinates;
 	objectInfo[index].length=pref.nyquistSteps;
-	objectInfo[index].function=func;
 
+	
+	threadData->vars[0][0].type=NFLOAT;
+	threadData->vars[0][0].fval=objectInfo[index].dynamicParameter;
+	
 	gettimeofday(&t1,NULL);
 	threadData->vars[25][0].type=NFLOAT;
-	if(draw3D)
+	if(objectInfo[index].type==GRAPHCOMP3D)
 	{
 		for(int c=0; c<=pref.nyquistSteps; c++)
 		{
 			threadData->vars[25][0].fval=Complex(zStart+(double)c*zStep,0.0);
 			result=ca1.exec();
-			objectCoordinates[index][3*c+2]  =threadData->vars[25][0].fval.real();
-			objectCoordinates[index][3*c]=result.fval.real();
-			objectCoordinates[index][3*c+1]=result.fval.imag();
+			objectInfo[index].coordinates[3*c+2]  =threadData->vars[25][0].fval.real();
+			objectInfo[index].coordinates[3*c]=result.fval.real();
+			objectInfo[index].coordinates[3*c+1]=result.fval.imag();
 		}
 	}
 	else {
@@ -1270,8 +1295,8 @@ void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
 				threadData->vars[25][0].fval=Complex(pow(10,zStart+(double)c*zStep),0.0);
 			else threadData->vars[25][0].fval=Complex(zStart+(double)c*zStep,0.0);
 			result=ca1.exec();
-			objectCoordinates[index][2*c]=result.fval.real();
-			objectCoordinates[index][2*c+1]=result.fval.imag();
+			objectInfo[index].coordinates[2*c]=result.fval.real();
+			objectInfo[index].coordinates[2*c+1]=result.fval.imag();
 		}
 	}
 
@@ -1285,8 +1310,7 @@ void GraphOutput::processComplexFunction(QString function,bool draw3D=false)
 		seconds--;
 		usecs=1000000+usecs;
 	}
-
-	objects.NewItem(generateGLList(index));
+//	objectInfo[index].processed=true;
 }
 
 
@@ -1298,6 +1322,20 @@ void GraphOutput::paintGL()
 
 	glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
+	
+	if(graphProcess)
+	{
+		qglColor(QColor(100,100,100));
+		QFont waitFont("Helvetica");
+		QString text=tr("Processing ...");
+		waitFont.setPixelSize(16);
+		QFontMetrics f(waitFont);
+		
+		int x=(width()-f.width(text))/2;
+		renderText(x,height()/2,text,waitFont);
+		return;
+	}
+	
 	if(pref.graphType==GRAPH3D)
 	{
 		glFrustum(-10.0,10.0,-10.0,10.0,1.0,100.0);
@@ -1332,12 +1370,14 @@ void GraphOutput::paintGL()
 	{
 		if(dynamicPos<drawRules[c][0])
 		{
-			glCallList(objects[drawRules[c][dynamicPos+1]]);
+			if(objectInfo[drawRules[c][dynamicPos+1]].glCreated)
+				glCallList(objectInfo[drawRules[c][dynamicPos+1]].glObject);
 		}
-		else 
-		{
-			glCallList(objects[drawRules[c][drawRules[c][0]]]);
+		else {
+			if(objectInfo[drawRules[c][1]].glCreated)
+				glCallList(objectInfo[drawRules[c][1]].glObject);
 		}
+
 	}
 
 
@@ -1468,28 +1508,29 @@ void GraphOutput::resizeGL( int w, int h )
 
 void GraphOutput::clearGL()
 {
+	if(graphProcess)
+		return;
+	
 	current3dSteps=pref.prec3dSteps;
 	current2dSteps=pref.prec2dSteps;
-	while(objects.GetLen() > 0)
+	while(objectInfo.GetLen() > 0)
 	{
-		glDeleteLists(objects[0],1);
-		objects.DeleteItem(0);
+		if(objectInfo[0].processed)
+			delete[]objectInfo[0].coordinates;
+		if(objectInfo[0].glCreated)
+			glDeleteLists(objectInfo[0].glObject,1);
+
+		if(objectInfo[0].function!=NULL)
+			free(objectInfo[0].function);
+		if(objectInfo[0].function2!=NULL)
+			free(objectInfo[0].function2);
+		objectInfo.DeleteItem(0);
 	}
 
 	while(drawRules.GetLen() > 0)
 	{
 		delete[]drawRules[0];
 		drawRules.DeleteItem(0);
-	}
-	while(objectInfo.GetLen() > 0)
-	{
-		objectInfo.DeleteItem(0);
-	}
-	while(objectCoordinates.GetLen() > 0)
-	{
-		if(objectCoordinates[0]!=NULL)
-			delete[]objectCoordinates[0];
-		objectCoordinates.DeleteItem(0);
 	}
 	isDynamic=false;
 	timer->stop();
@@ -1523,6 +1564,9 @@ void GraphOutput::setPref(Preferences newPref)
 
 bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 {
+	if(graphProcess)
+		return false;
+	
 	bool shiftRight;
 	double xStart,xStep;
 	int steps,startStep;
@@ -1565,7 +1609,6 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 			threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
 		}
 		else vars[0]=objectInfo[c].dynamicParameter;
-		
 		if(!ret);
 		else if(objectInfo[c].type == GRAPHSTD)
 		{
@@ -1575,9 +1618,9 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 
 			if(shiftRight)
 				for(int c1=steps*2; c1<PRECISION2D*2; c1++)
-					objectCoordinates[c][c1-steps*2]=objectCoordinates[c][c1];
-			else for(int c1=(PRECISION2D)*2+1; c1>=0; c1--)
-						objectCoordinates[c][c1]=objectCoordinates[c][c1-steps*2];
+					objectInfo[c].coordinates[c1-steps*2]=objectInfo[c].coordinates[c1];
+			else for(int c1=(PRECISION2D)*2+1; c1>=steps*2; c1--)
+						objectInfo[c].coordinates[c1]=objectInfo[c].coordinates[c1-steps*2];
 			if(objectInfo[c].logic)
 			{
 				Number result;
@@ -1586,10 +1629,10 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 				{
 					threadData->vars[23][0].type=NFLOAT;
 					threadData->vars[23][0].fval=xStart+c1*xStep;
-					objectCoordinates[c][(startStep+c1)*2]  =threadData->vars[23][0].fval.real();
+					objectInfo[c].coordinates[(startStep+c1)*2]  =threadData->vars[23][0].fval.real();
 					result=ca.exec();
 					convertToFloat(&result);
-					objectCoordinates[c][(startStep+c1)*2+1]=result.fval.real();
+					objectInfo[c].coordinates[(startStep+c1)*2+1]=result.fval.real();
 				}
 			}
 			else {
@@ -1597,8 +1640,8 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 				for(int c1=0; c1<steps; c1++)
 				{
 					vars[23]=xStart+c1*xStep;
-					objectCoordinates[c][(startStep+c1)*2]=vars[23];
-					objectCoordinates[c][(startStep+c1)*2+1]=ca.calc();
+					objectInfo[c].coordinates[(startStep+c1)*2]=vars[23];
+					objectInfo[c].coordinates[(startStep+c1)*2+1]=ca.calc();
 				}
 			}
 		}
@@ -1624,16 +1667,16 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 			{
 			if(shiftRight)
 				for(int c1=steps*2; c1<PRECISION2D*2+2; c1++)
-					objectCoordinates[c][c1-steps*2]=objectCoordinates[c][c1];
+					objectInfo[c].coordinates[c1-steps*2]=objectInfo[c].coordinates[c1];
 			else for(int c1=(PRECISION2D+1)*2-1; c1>=0; c1--)
-						objectCoordinates[c][c1]=objectCoordinates[c][c1-steps*2];
+						objectInfo[c].coordinates[c1]=objectInfo[c].coordinates[c1-steps*2];
 			}
 			else {
 				if(shiftRight)
 					for(int c1=steps*3; c1<PRECISION2D*3+3; c1++)
-						objectCoordinates[c][c1-steps*3]=objectCoordinates[c][c1];
+						objectInfo[c].coordinates[c1-steps*3]=objectInfo[c].coordinates[c1];
 				else for(int c1=(PRECISION2D+1)*3-1; c1>=0; c1--)
-							objectCoordinates[c][c1]=objectCoordinates[c][c1-steps*3];
+							objectInfo[c].coordinates[c1]=objectInfo[c].coordinates[c1-steps*3];
 			}
 			
 			double x, y1, y2;
@@ -1662,27 +1705,27 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 		
 				if(objectInfo[c].type==GRAPHIEG)
 				{
-					objectCoordinates[c][2*(startStep+c1)]=x;
+					objectInfo[c].coordinates[2*(startStep+c1)]=x;
 					if(y1>=y2)
-						objectCoordinates[c][2*(startStep+c1)+1]=y1;
-					else objectCoordinates[c][2*(startStep+c1)+1]=y2;
+						objectInfo[c].coordinates[2*(startStep+c1)+1]=y1;
+					else objectInfo[c].coordinates[2*(startStep+c1)+1]=y2;
 				}
 				else if(objectInfo[c].type==GRAPHIEL)
 				{
-					objectCoordinates[c][2*(startStep+c1)]=x;
+					objectInfo[c].coordinates[2*(startStep+c1)]=x;
 					if(y1<=y2)
-						objectCoordinates[c][2*(startStep+c1)+1]=y1;
-					else objectCoordinates[c][2*(startStep+c1)+1]=y2;
+						objectInfo[c].coordinates[2*(startStep+c1)+1]=y1;
+					else objectInfo[c].coordinates[2*(startStep+c1)+1]=y2;
 				}
 				else
 				{
 					if(y1<=y2)
 					{
-						objectCoordinates[c][3*(startStep+c1)]=x;
-						objectCoordinates[c][3*(startStep+c1)+1]=y1;
-						objectCoordinates[c][3*(startStep+c1)+2]=y2;
+						objectInfo[c].coordinates[3*(startStep+c1)]=x;
+						objectInfo[c].coordinates[3*(startStep+c1)+1]=y1;
+						objectInfo[c].coordinates[3*(startStep+c1)+2]=y2;
 					}
-					else objectCoordinates[c][3*(startStep+c1)+1]=objectCoordinates[c][3*(startStep+c1)+2]=0.0;
+					else objectInfo[c].coordinates[3*(startStep+c1)+1]=objectInfo[c].coordinates[3*(startStep+c1)+2]=0.0;
 				}
 			}
 			if(objectInfo[c].logic)
@@ -1699,358 +1742,94 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 		}
 		if(objectInfo[c].type!=GRAPH3D)
 		{
-			glDeleteLists(objects[c],1);
-			objects[c]=generateGLList(c);
+			glDeleteLists(objectInfo[c].glObject,1);
+			objectInfo[c].glObject=generateGLList(c);
 		}
 	}
 	
 	return ret;
 }
 
-
-void GraphOutput::processFunction(int index)
+void GraphOutput::processFunction(QString function,QString function2, int type, QColor color, bool logic, bool dynamic)
 {
-	makeCurrent();
-	oldXMin=pref.xmin;
-	oldXMax=pref.xmax;
+	if(graphProcess)
+		return;
 	
 	int ruleIndex=drawRules.GetLen();
-	if(index==ineq2)
-		return;
 	
-	if((pref.functionTypes[index]==GRAPH3D || pref.functionTypes[index]==GRAPHCOMP3D) && pref.graphType!=GRAPH3D)
+	if((type==GRAPH3D || type==GRAPHCOMP3D) && pref.graphType!=GRAPH3D)
 		return;
 
-	if(!pref.dynamicFunctions[index])
+
+	ObjectInfo info;
+	info.type=type;
+	info.color=color;
+	info.dynamic=dynamic;
+	info.logic=logic;
+	info.processed=info.glCreated=false;
+	if(type==GRAPHPARAMETER)
 	{
-		ObjectInfo info;
-		info.type=pref.functionTypes[index];
-		info.color=pref.functionColors[index];
-		info.dynamic=false;
-		info.logic=pref.logicFunctions[index];
-		objectInfo.NewItem(info);
-		
-		drawRules.NewItem(new int[2]);
-		drawRules[ruleIndex][0]=1;
+		int sep=function.find("\\");
+		QString f1=function.left(sep);
+		QString f2=function.right(function.length()-sep-1);
+		info.function=preprocessor(&f1,&pref,false);
+		info.function2=preprocessor(&f2,&pref,false);
+	}
+	else if(type==GRAPHIEGE)
+	{
+		info.function=preprocessor(&function,&pref,false);
+		info.function2=preprocessor(&function2,&pref,false);
+	}
+	else if(type==GRAPHIELE)
+	{
+		info.function=preprocessor(&function2,&pref,false);
+		info.function2=preprocessor(&function,&pref,false);
+	}
+	else if(type==GRAPHIEL || type==GRAPHIEG)
+	{
+		info.function=preprocessor(&function,&pref,false);
+		if(function2.length()<=0)
+			info.function2=preprocessor(&function,&pref,false);
+		else info.function2=preprocessor(&function2,&pref,false);
 
-		switch(pref.functionTypes[index])
+	}
+	else
+	{
+		info.function=preprocessor(&function,&pref,false);
+		info.function2=NULL;
+	}
+
+	if(dynamic)
+	{
+		drawRules.NewItem(new int[pref.dynamicSteps+1]);
+		drawRules[ruleIndex][0]=pref.dynamicSteps;
+		for(int c=0; c<pref.dynamicSteps; c++)
 		{
-			case GRAPHPOLAR:
-				processPolarFunction(pref.functions[index]);
-				drawRules[ruleIndex][1]=objects.GetLen()-1;
-	//			perror("polar function rule index: "+QString::number(drawRules[ruleIndex][1]));
-				break;
-			case GRAPHPARAMETER:
-				processParameterFunction(pref.functions[index]);
-				drawRules[ruleIndex][1]=objects.GetLen()-1;
-				break;
-			case GRAPH3D:
-				process3dFunction(pref.functions[index]);
-				drawRules[ruleIndex][1]=objects.GetLen()-1;
-				break;
-			case GRAPHIEG:
-			case GRAPHIEGE:
-			case GRAPHIEL:
-			case GRAPHIELE:
+			info.dynamicParameter=pref.dynamicStart+c*((pref.dynamicEnd-pref.dynamicStart)/(pref.dynamicSteps-1));
+			objectInfo.NewItem(info);
+			if(c>0)
 			{
-				if(index==ineq1)
-				{
-					if((pref.functionTypes[ineq1]==GRAPHIEG || pref.functionTypes[ineq1]==GRAPHIEGE) &&
-						(pref.functionTypes[ineq2]==GRAPHIEG || pref.functionTypes[ineq2]==GRAPHIEGE))
-					{
-						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEG;
-						objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-						processInequalityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEG);
-						
-					}
-					else if((pref.functionTypes[ineq1]==GRAPHIEL || pref.functionTypes[ineq1]==GRAPHIELE) &&
-						(pref.functionTypes[ineq2]==GRAPHIEL || pref.functionTypes[ineq2]==GRAPHIELE))
-					{
-						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEL;
-						objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-						processInequalityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEL);
-					}
-					else if((pref.functionTypes[ineq1]==GRAPHIEL || pref.functionTypes[ineq1]==GRAPHIELE) &&
-						(pref.functionTypes[ineq2]==GRAPHIEG || pref.functionTypes[ineq2]==GRAPHIEGE))
-					{
-						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEGE;
-						objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-						processInequalityFunction(pref.functions[ineq2],pref.functions[ineq1],GRAPHIEGE);
-					}
-					else
-					{
-						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEGE;
-						objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-						processInequalityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEGE);
-					}
-					drawRules[ruleIndex][1]=objects.GetLen()-1;
-					
-					info.type=GRAPHSTD;
-					info.color=pref.functionColors[ineq1];
-					info.dynamic=false;
-					info.logic=pref.logicFunctions[ineq1]|pref.logicFunctions[ineq2];
-					objectInfo.NewItem(info);
-					drawRules.NewItem(new int[2]);
-					drawRules[ruleIndex+1][0]=1;
-					processStdFunction(pref.functions[ineq1]);
-					drawRules[ruleIndex+1][1]=objects.GetLen()-1;
-					
-					info.type=GRAPHSTD;
-					info.color=pref.functionColors[ineq2];
-					info.logic=pref.logicFunctions[ineq2];
-					info.dynamic=false;
-					objectInfo.NewItem(info);
-					drawRules.NewItem(new int[2]);
-					drawRules[ruleIndex+2][0]=1;
-					processStdFunction(pref.functions[ineq2]);
-					drawRules[ruleIndex+2][1]=objects.GetLen()-1;
+				objectInfo[objectInfo.GetLen()-1].function=(char*)malloc(strlen(objectInfo[objectInfo.GetLen()-2].function)+1);
+				memcpy(objectInfo[objectInfo.GetLen()-1].function,objectInfo[objectInfo.GetLen()-2].function,strlen(objectInfo[objectInfo.GetLen()-2].function)+1);
+				if(objectInfo[objectInfo.GetLen()-2].function2!=NULL)
+				{					objectInfo[objectInfo.GetLen()-1].function2=(char*)malloc(strlen(objectInfo[objectInfo.GetLen()-2].function2)+1);
+				memcpy(objectInfo[objectInfo.GetLen()-1].function2,objectInfo[objectInfo.GetLen()-2].function2,strlen(objectInfo[objectInfo.GetLen()-2].function2)+1);
 				}
-				else 
-				{
-					if(pref.functionTypes[index]==GRAPHIEG ||pref.functionTypes[index]==GRAPHIEGE)
-					{
-						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEG;
-						processInequalityFunction(pref.functions[index],pref.functions[index],GRAPHIEG);
-					}
-					else {
-						objectInfo[objectInfo.GetLen()-1].type=GRAPHIEL;
-						processInequalityFunction(pref.functions[index],pref.functions[index],GRAPHIEL);
-					}
-					drawRules[ruleIndex][1]=objects.GetLen()-1;
-
-					info.type=GRAPHSTD;
-					info.color=QColor(0,0,0);
-					info.dynamic=false;
-					info.logic=pref.logicFunctions[index];
-					objectInfo.NewItem(info);
-					drawRules.NewItem(new int[2]);
-					drawRules[ruleIndex+1][0]=1;
-					processStdFunction(pref.functions[index]);
-					drawRules[ruleIndex+1][1]=objects.GetLen()-1;
-				}
-				break;
 			}
-			case GRAPHCOMPLEX:
-				processComplexFunction(pref.functions[index]);
-				drawRules[ruleIndex][1]=objects.GetLen()-1;
-				break;
-			case GRAPHCOMP3D:
-				processComplexFunction(pref.functions[index],true);
-				drawRules[ruleIndex][1]=objects.GetLen()-1;
-				break;
-			default:
-				processStdFunction(pref.functions[index]);
-				drawRules[ruleIndex][1]=objects.GetLen()-1;
-	//			perror("standard function rule index: "+QString::number(drawRules[ruleIndex][1]));
-				break;
+			drawRules[ruleIndex][c+1]=objectInfo.GetLen()-1;
 		}
+		if(pref.dynamicDelay>0)
+			timer->start(pref.dynamicDelay*10,false);
+		isDynamic=true;
 	}
 	else 
 	{
-		ObjectInfo info;
-		info.type=pref.functionTypes[index];
-		info.color=pref.functionColors[index];
-		info.logic=pref.logicFunctions[index];
-		info.dynamic=true;
-
-		
-		drawRules.NewItem(new int[2+dynamicSteps]);
-		drawRules[ruleIndex][0]=dynamicSteps+1;
-		isDynamic=true;
-		switch(pref.functionTypes[index])
-		{
-
-			case GRAPHPOLAR:
-				for(int c=0; c<=dynamicSteps; c++)
-				{
-					if(pref.logicFunctions[index])
-					{
-						threadData->vars[0][0].type=NFLOAT;
-						threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
-					}
-					else vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					objectInfo.NewItem(info);
-					processPolarFunction(pref.functions[index]);
-					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
-				}
-				break;
-			case GRAPHPARAMETER:
-				for(int c=0; c<=dynamicSteps; c++)
-				{
-					if(pref.logicFunctions[index])
-					{
-						threadData->vars[0][0].type=NFLOAT;
-						threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
-					}
-					else vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					objectInfo.NewItem(info);
-					processParameterFunction(pref.functions[index]);
-					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
-				}
-				break;
-			case GRAPHCOMPLEX:
-				for(int c=0; c<=dynamicSteps; c++)
-				{
-					threadData->vars[0][0].type=NFLOAT;
-					threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
-					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					objectInfo.NewItem(info);
-					processComplexFunction(pref.functions[index]);
-					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
-				}
-				break;
-			case GRAPHCOMP3D:
-				for(int c=0; c<=dynamicSteps; c++)
-				{
-					threadData->vars[0][0].type=NFLOAT;
-					threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
-					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					objectInfo.NewItem(info);
-					processComplexFunction(pref.functions[index],true);
-					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
-				}
-				break;
-			case GRAPH3D:
-				for(int c=0; c<=dynamicSteps; c++)
-				{
-					if(pref.logicFunctions[index])
-					{
-						threadData->vars[0][0].type=NFLOAT;
-						threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
-					}
-					else vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					objectInfo.NewItem(info);
-					process3dFunction(pref.functions[index]);
-					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
-				}
-				break;
-			case GRAPHIEG:
-			case GRAPHIEGE:
-			case GRAPHIEL:
-			case GRAPHIELE:
-				
-				for(int c=0; c<=dynamicSteps; c++)
-				{
-					if(pref.logicFunctions[index])
-					{
-						threadData->vars[0][0].type=NFLOAT;
-						threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
-					}
-					else vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.type=pref.functionTypes[index];
-					info.color=pref.functionColors[index];
-					info.logic=pref.logicFunctions[index];
-					info.dynamic=true;
-					objectInfo.NewItem(info);
-
-					if(index==ineq1)
-					{
-						if((pref.functionTypes[ineq1]==GRAPHIEG || pref.functionTypes[ineq1]==GRAPHIEGE) &&
-													(pref.functionTypes[ineq2]==GRAPHIEG || pref.functionTypes[ineq2]==GRAPHIEGE))
-						{
-							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEG;
-							objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-							processInequalityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEG);
-					
-						}
-						else if((pref.functionTypes[ineq1]==GRAPHIEL || pref.functionTypes[ineq1]==GRAPHIELE) &&
-														(pref.functionTypes[ineq2]==GRAPHIEL || pref.functionTypes[ineq2]==GRAPHIELE))
-						{
-							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEL;
-							objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-							processInequalityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEL);
-						}
-						else if((pref.functionTypes[ineq1]==GRAPHIEL || pref.functionTypes[ineq1]==GRAPHIELE) &&
-														(pref.functionTypes[ineq2]==GRAPHIEG || pref.functionTypes[ineq2]==GRAPHIEGE))
-						{
-							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEGE;
-							objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-							processInequalityFunction(pref.functions[ineq2],pref.functions[ineq1],GRAPHIEGE);
-						}
-						else
-						{
-							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEGE;
-							objectInfo[objectInfo.GetLen()-1].color=QColor(123,121,255);
-							processInequalityFunction(pref.functions[ineq1],pref.functions[ineq2],GRAPHIEGE);
-						}
-						drawRules[ruleIndex][c+1]=objects.GetLen()-1;
-				
-						info.type=GRAPHSTD;
-						info.color=pref.functionColors[ineq1];
-						info.dynamic=true;
-						info.logic=pref.logicFunctions[ineq1]|pref.logicFunctions[ineq2];
-						objectInfo.NewItem(info);
-						if(c==0)
-						{
-							drawRules.NewItem(new int[dynamicSteps+2]);
-							drawRules[ruleIndex+1][0]=dynamicSteps+1;
-						}
-						processStdFunction(pref.functions[ineq1]);
-						drawRules[ruleIndex+1][c+1]=objects.GetLen()-1;
-				
-						info.type=GRAPHSTD;
-						info.color=pref.functionColors[ineq2];
-						info.dynamic=true;
-						info.logic=pref.logicFunctions[ineq2];
-						objectInfo.NewItem(info);
-						if(c==0)
-						{
-							drawRules.NewItem(new int[dynamicSteps+2]);
-							drawRules[ruleIndex+2][0]=dynamicSteps+1;
-						}
-						processStdFunction(pref.functions[ineq2]);
-						drawRules[ruleIndex+2][c+1]=objects.GetLen()-1;
-					}
-					else 
-					{
-						if(pref.functionTypes[index]==GRAPHIEG ||pref.functionTypes[index]==GRAPHIEGE)
-						{
-							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEG;
-							processInequalityFunction(pref.functions[index],pref.functions[index],GRAPHIEG);
-						}
-						else {
-							objectInfo[objectInfo.GetLen()-1].type=GRAPHIEL;
-							processInequalityFunction(pref.functions[index],pref.functions[index],GRAPHIEL);
-						}
-						drawRules[ruleIndex][c+1]=objects.GetLen()-1;
-
-						info.type=GRAPHSTD;
-						info.color=QColor(0,0,0);
-						info.dynamic=true;
-						info.logic=pref.logicFunctions[index];
-						objectInfo.NewItem(info);
-						if(c==0)
-						{
-							drawRules.NewItem(new int[dynamicSteps+2]);
-							drawRules[ruleIndex+1][0]=dynamicSteps+1;
-						}
-						processStdFunction(pref.functions[index]);
-						drawRules[ruleIndex+1][c+1]=objects.GetLen()-1;
-					}
-				}
-				break;
-			default:
-				for(int c=0; c<=dynamicSteps; c++)
-				{
-					if(pref.logicFunctions[index])
-					{
-						threadData->vars[0][0].type=NFLOAT;
-						threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
-					}
-					else vars[0]=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					info.dynamicParameter=dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps));
-					objectInfo.NewItem(info);
-					processStdFunction(pref.functions[index]);
-					drawRules[ruleIndex][c+1]=objects.GetLen()-1;
-				}
-				break;
-		}
-	//	timer->start(pref.dynamicDelay*10,false);
+		drawRules.NewItem(new int[2]);
+		drawRules[ruleIndex][0]=1;
+		objectInfo.NewItem(info);
+		drawRules[ruleIndex][1]=objectInfo.GetLen()-1;
 	}
+
 }
 
 inline void GraphOutput::drawTriangle(float x[3],float y[3],float z[3],bool colored)
@@ -2151,9 +1930,81 @@ inline void GraphOutput::drawTriangle(float x[3],float y[3],float z[3],bool colo
 	}
 }
 
+void GraphOutput::createGLLists()
+{
+	if(graphProcess)
+		return;
+	
+	makeCurrent();
+	for(int c=0; c<objectInfo.GetLen(); c++)
+	{
+		if(objectInfo[c].processed &&!objectInfo[c].glCreated)
+		{
+//			qDebug("create list "+QString::number(c));
+			objectInfo[c].glObject=generateGLList(c);
+		}
+	}
+	repaint();
+}
+
+void GraphOutput::calculateGraphData()
+{
+	graphProcess=true;
+	int threadCount=0;
+	for(int c=0; c<objectInfo.GetLen(); c++)
+	{
+		if(!objectInfo[c].processed)
+		{
+			objectInfo[c].processed=true;
+			threads[threadCount]->setIndex(c);
+			threads[threadCount]->start();
+			threadCount++;
+			if(threadCount>=THREADS)
+				break;
+		}
+	}
+	threadTimer->start(10);
+	repaint();
+}
+
+void GraphOutput::processGraph(int c,ThreadSync*td,Variable*va)
+{
+
+//	if(!objectInfo[c].processed)
+//	{
+		switch(objectInfo[c].type)
+		{
+			case GRAPHSTD:
+	//			qDebug("Graph Data for Object "+QString::number(c)+" created");
+				processStdFunction(c,td,va);
+				break;
+			case GRAPHPOLAR:
+				processPolarFunction(c,td,va);
+				break;
+			case GRAPHIEG:
+			case GRAPHIEL:
+			case GRAPHIEGE:
+			case GRAPHIELE:
+				processInequalityFunction(c,td,va);
+				break;
+			case GRAPH3D:
+				process3dFunction(c,td,va);
+				break;
+			case GRAPHPARAMETER:
+				processParameterFunction(c,td,va);
+				break;
+			case GRAPHCOMPLEX:
+			case GRAPHCOMP3D:
+				processComplexFunction(c,td,va);
+				break;
+		}
+//	}
+}
 
 GLuint GraphOutput::generateGLList(int index)
 {
+
+	
 	GLuint list;
 
 	list = glGenLists(1);
@@ -2172,24 +2023,12 @@ GLuint GraphOutput::generateGLList(int index)
 
 	if(objectInfo[index].type==GRAPH3D)
 	{
-//		GLuint list;
-
-//		list = glGenLists( 1 );
-//		glNewList( list, GL_COMPILE );
-
-//		float height=pref.ymax-pref.ymin;
-//		middle=pref.ymin+height/2.0;		//calculate middle height
-//		lowerMiddle=-height/4.0;
-//		upperMiddle=height/4.0;
 
 		double xStart=pref.xmin,xStep=(pref.xmax-pref.xmin)/PRECISION3D;
 		double zStart=pref.zmin,zStep=(pref.zmax-pref.zmin)/PRECISION3D;
 		double z=0.0,y=0.0,x=0.0,lastY;
 
-	//	if(objectInfo[index].color==QColor(1,1,1))
-	//		colored=1;
-	//	else qglColor(objectInfo[index].color);
-		if(objectCoordinates[index]!=NULL)
+		if(objectInfo[index].processed)
 		{
 			glMatrixMode(GL_MODELVIEW);
 			if(!pref.show3dGrid)
@@ -2209,9 +2048,9 @@ GLuint GraphOutput::generateGLList(int index)
 						xc[1]=x2;
 						xc[2]=x;
 						
-						yc[0]=objectCoordinates[index][(c-1)*PRECISION3D+c1-1];
-						yc[1]=objectCoordinates[index][c*PRECISION3D+c1-1];
-						yc[2]=objectCoordinates[index][(c-1)*PRECISION3D+c1];
+						yc[0]=objectInfo[index].coordinates[(c-1)*PRECISION3D+c1-1];
+						yc[1]=objectInfo[index].coordinates[c*PRECISION3D+c1-1];
+						yc[2]=objectInfo[index].coordinates[(c-1)*PRECISION3D+c1];
 						
 						zc[0]=z2;
 						zc[1]=z;
@@ -2222,9 +2061,9 @@ GLuint GraphOutput::generateGLList(int index)
 						xc[1]=x;
 						xc[2]=x;
 						
-						yc[0]=objectCoordinates[index][c*PRECISION3D+c1-1];
-						yc[1]=objectCoordinates[index][c*PRECISION3D+c1];
-						yc[2]=objectCoordinates[index][(c-1)*PRECISION3D+c1];
+						yc[0]=objectInfo[index].coordinates[c*PRECISION3D+c1-1];
+						yc[1]=objectInfo[index].coordinates[c*PRECISION3D+c1];
+						yc[2]=objectInfo[index].coordinates[(c-1)*PRECISION3D+c1];
 						
 						zc[0]=z;
 						zc[1]=z;
@@ -2241,11 +2080,11 @@ GLuint GraphOutput::generateGLList(int index)
 				{
 					z=zStart+c*zStep;
 					glBegin(GL_LINES);
-					lastY=objectCoordinates[index][c*PRECISION3D];
+					lastY=objectInfo[index].coordinates[c*PRECISION3D];
 					for(int c1=1; c1<PRECISION3D; c1++)
 					{
 						x=xStart+c1*xStep;
-						y=objectCoordinates[index][c*PRECISION3D+c1];
+						y=objectInfo[index].coordinates[c*PRECISION3D+c1];
 						
 						if((y > pref.ymin&&y<pref.ymax) || (lastY > pref.ymin && lastY < pref.ymax))
 						{
@@ -2287,11 +2126,11 @@ GLuint GraphOutput::generateGLList(int index)
 				{
 					x=xStart+c*xStep;
 					glBegin(GL_LINES);
-					lastY=objectCoordinates[index][c];
+					lastY=objectInfo[index].coordinates[c];
 					for(int c1=1; c1<PRECISION3D; c1++)
 					{
 						z=zStart+c1*zStep;
-						y=objectCoordinates[index][c1*PRECISION3D+c];
+						y=objectInfo[index].coordinates[c1*PRECISION3D+c];
 						
 						if((y > pref.ymin&&y<pref.ymax) || (lastY > pref.ymin && lastY < pref.ymax))
 						{
@@ -2330,7 +2169,10 @@ GLuint GraphOutput::generateGLList(int index)
 					glEnd();
 				}
 			}
+			delete[] objectInfo[index].coordinates;
+			objectInfo[index].processed=false;
 		}
+		
 		glEndList();
 	}
 	else if(objectInfo[index].type==GRAPHCOMP3D)
@@ -2351,42 +2193,42 @@ GLuint GraphOutput::generateGLList(int index)
 
 		for(int c=0; c<objectInfo[index].length; c++)
 		{
-			z=objectCoordinates[index][c*3+2];
-			x=objectCoordinates[index][c*3];
-			y=objectCoordinates[index][c*3+1];
+			z=objectInfo[index].coordinates[c*3+2];
+			x=objectInfo[index].coordinates[c*3];
+			y=objectInfo[index].coordinates[c*3+1];
 			
 			if(!end)
 			{
 				if(x>pref.xmax)
 				{
-					double fakt=(pref.xmax-objectCoordinates[index][(c-1)*3])/(x-objectCoordinates[index][(c-1)*3]);
+					double fakt=(pref.xmax-objectInfo[index].coordinates[(c-1)*3])/(x-objectInfo[index].coordinates[(c-1)*3]);
 					x=pref.xmax;
-					y=objectCoordinates[index][(c-1)*3+1]+(y-objectCoordinates[index][(c-1)*3+1])*fakt;
-					z=objectCoordinates[index][(c-1)*3+2]+(z-objectCoordinates[index][(c-1)*3+2])*fakt;
+					y=objectInfo[index].coordinates[(c-1)*3+1]+(y-objectInfo[index].coordinates[(c-1)*3+1])*fakt;
+					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
 					end=true;
 				}
 				else if(x<pref.xmin)
 				{
-					double fakt=(pref.xmin-objectCoordinates[index][(c-1)*3])/(x-objectCoordinates[index][(c-1)*3]);
+					double fakt=(pref.xmin-objectInfo[index].coordinates[(c-1)*3])/(x-objectInfo[index].coordinates[(c-1)*3]);
 					x=pref.xmin;
-					y=objectCoordinates[index][(c-1)*3+1]+(y-objectCoordinates[index][(c-1)*3+1])*fakt;
-					z=objectCoordinates[index][(c-1)*3+2]+(z-objectCoordinates[index][(c-1)*3+2])*fakt;
+					y=objectInfo[index].coordinates[(c-1)*3+1]+(y-objectInfo[index].coordinates[(c-1)*3+1])*fakt;
+					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
 					end=true;
 				}
 				if(y>pref.ymax)
 				{
-					double fakt=(pref.ymax-objectCoordinates[index][(c-1)*3+1])/(y-objectCoordinates[index][(c-1)*3+1]);
+					double fakt=(pref.ymax-objectInfo[index].coordinates[(c-1)*3+1])/(y-objectInfo[index].coordinates[(c-1)*3+1]);
 					y=pref.ymax;
-					x=objectCoordinates[index][(c-1)*3]+(x-objectCoordinates[index][(c-1)*3])*fakt;
-					z=objectCoordinates[index][(c-1)*3+2]+(z-objectCoordinates[index][(c-1)*3+2])*fakt;
+					x=objectInfo[index].coordinates[(c-1)*3]+(x-objectInfo[index].coordinates[(c-1)*3])*fakt;
+					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
 					end=true;
 				}
 				else if(y<pref.ymin)
 				{
-					double fakt=(pref.ymin-objectCoordinates[index][(c-1)*3+1])/(y-objectCoordinates[index][(c-1)*3+1]);
+					double fakt=(pref.ymin-objectInfo[index].coordinates[(c-1)*3+1])/(y-objectInfo[index].coordinates[(c-1)*3+1]);
 					y=pref.ymin;
-					x=objectCoordinates[index][(c-1)*3]+(x-objectCoordinates[index][(c-1)*3])*fakt;
-					z=objectCoordinates[index][(c-1)*3+2]+(z-objectCoordinates[index][(c-1)*3+2])*fakt;
+					x=objectInfo[index].coordinates[(c-1)*3]+(x-objectInfo[index].coordinates[(c-1)*3])*fakt;
+					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
 					end=true;
 				}
 				if(colored)
@@ -2407,31 +2249,31 @@ GLuint GraphOutput::generateGLList(int index)
 				double tmpX=x,tmpY=y,tmpZ=z;
 				if(x>pref.xmax)
 				{
-					double fakt=(pref.xmax-objectCoordinates[index][(c-1)*3])/(x-objectCoordinates[index][(c-1)*3]);
+					double fakt=(pref.xmax-objectInfo[index].coordinates[(c-1)*3])/(x-objectInfo[index].coordinates[(c-1)*3]);
 					x=pref.xmax;
-					y=objectCoordinates[index][(c-1)*3+1]+(y-objectCoordinates[index][(c-1)*3+1])*fakt;
-					z=objectCoordinates[index][(c-1)*3+2]+(z-objectCoordinates[index][(c-1)*3+2])*fakt;
+					y=objectInfo[index].coordinates[(c-1)*3+1]+(y-objectInfo[index].coordinates[(c-1)*3+1])*fakt;
+					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
 				}
 				else if(x<pref.xmin)
 				{
-					double fakt=(pref.xmin-objectCoordinates[index][(c-1)*3])/(x-objectCoordinates[index][(c-1)*3]);
+					double fakt=(pref.xmin-objectInfo[index].coordinates[(c-1)*3])/(x-objectInfo[index].coordinates[(c-1)*3]);
 					x=pref.xmin;
-					y=objectCoordinates[index][(c-1)*3+1]+(y-objectCoordinates[index][(c-1)*3+1])*fakt;
-					z=objectCoordinates[index][(c-1)*3+2]+(z-objectCoordinates[index][(c-1)*3+2])*fakt;
+					y=objectInfo[index].coordinates[(c-1)*3+1]+(y-objectInfo[index].coordinates[(c-1)*3+1])*fakt;
+					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
 				}
 				if(y>pref.ymax)
 				{
-					double fakt=(pref.ymax-objectCoordinates[index][(c-1)*3+1])/(y-objectCoordinates[index][(c-1)*3+1]);
+					double fakt=(pref.ymax-objectInfo[index].coordinates[(c-1)*3+1])/(y-objectInfo[index].coordinates[(c-1)*3+1]);
 					y=pref.ymax;
-					x=objectCoordinates[index][(c-1)*3]+(x-objectCoordinates[index][(c-1)*3])*fakt;
-					z=objectCoordinates[index][(c-1)*3+2]+(z-objectCoordinates[index][(c-1)*3+2])*fakt;
+					x=objectInfo[index].coordinates[(c-1)*3]+(x-objectInfo[index].coordinates[(c-1)*3])*fakt;
+					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
 				}
 				else if(y<pref.ymin)
 				{
-					double fakt=(pref.ymin-objectCoordinates[index][(c-1)*3+1])/(y-objectCoordinates[index][(c-1)*3+1]);
+					double fakt=(pref.ymin-objectInfo[index].coordinates[(c-1)*3+1])/(y-objectInfo[index].coordinates[(c-1)*3+1]);
 					y=pref.ymin;
-					x=objectCoordinates[index][(c-1)*3]+(x-objectCoordinates[index][(c-1)*3])*fakt;
-					z=objectCoordinates[index][(c-1)*3+2]+(z-objectCoordinates[index][(c-1)*3+2])*fakt;
+					x=objectInfo[index].coordinates[(c-1)*3]+(x-objectInfo[index].coordinates[(c-1)*3])*fakt;
+					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
 				}
 				if(colored)
 					setGLColor(y);
@@ -2459,8 +2301,8 @@ GLuint GraphOutput::generateGLList(int index)
 		{
 			if(objectInfo[index].type==GRAPHIEG)
 			{
-				x=objectCoordinates[index][c*2];
-				y2=objectCoordinates[index][c*2+1];
+				x=objectInfo[index].coordinates[c*2];
+				y2=objectInfo[index].coordinates[c*2+1];
 				if(y2>pref.ymax)
 					y2=pref.ymax;
 				else if(y2<pref.ymin)
@@ -2470,8 +2312,8 @@ GLuint GraphOutput::generateGLList(int index)
 			}
 			else if(objectInfo[index].type==GRAPHIEL)
 			{
-				x=objectCoordinates[index][c*2];
-				y1=objectCoordinates[index][c*2+1];
+				x=objectInfo[index].coordinates[c*2];
+				y1=objectInfo[index].coordinates[c*2+1];
 				if(y1<pref.ymin)
 					y1=pref.ymin;
 				else if(y1>pref.ymax)
@@ -2480,9 +2322,9 @@ GLuint GraphOutput::generateGLList(int index)
 					setGLColor(y1);
 			}
 			else {
-				x=objectCoordinates[index][c*3];
-				y1=objectCoordinates[index][c*3+1];
-				y2=objectCoordinates[index][c*3+2];
+				x=objectInfo[index].coordinates[c*3];
+				y1=objectInfo[index].coordinates[c*3+1];
+				y2=objectInfo[index].coordinates[c*3+2];
 				if(y1<pref.ymin)
 					y1=pref.ymin;
 				else if(y1>pref.ymax)
@@ -2529,24 +2371,24 @@ GLuint GraphOutput::generateGLList(int index)
 		{
 			if(end)
 			{
-				if(objectCoordinates[index][c*2+1] >pref.ymin && objectCoordinates[index][c*2+1] < pref.ymax && objectCoordinates[index][c*2]>pref.xmin && objectCoordinates[index][c*2]< pref.xmax)   
+				if(objectInfo[index].coordinates[c*2+1] >pref.ymin && objectInfo[index].coordinates[c*2+1] < pref.ymax && objectInfo[index].coordinates[c*2]>pref.xmin && objectInfo[index].coordinates[c*2]< pref.xmax)   
 				{
 					glBegin(GL_LINE_STRIP);
 					end=false;
 					if(colored)
-						setGLColor(objectCoordinates[index][(c)*2+1]);
+						setGLColor(objectInfo[index].coordinates[(c)*2+1]);
 				//	glVertex3f(oldx,oldy,0.0f);
 					
 					
 					if(c<objectInfo[index].length-2)
 					{
-						double delta1=objectCoordinates[index][(c-1)*2+1]-objectCoordinates[index][c*2+1];
-						double delta2=objectCoordinates[index][c*2+1]-objectCoordinates[index][(c+1)*2+1];
+						double delta1=objectInfo[index].coordinates[(c-1)*2+1]-objectInfo[index].coordinates[c*2+1];
+						double delta2=objectInfo[index].coordinates[c*2+1]-objectInfo[index].coordinates[(c+1)*2+1];
 						if(delta1*delta2>=0.0)
-							glVertex3f(objectCoordinates[index][(c-1)*2],objectCoordinates[index][(c-1)*2+1],0.0f);
+							glVertex3f(objectInfo[index].coordinates[(c-1)*2],objectInfo[index].coordinates[(c-1)*2+1],0.0f);
 						else 
 						{
-							glVertex3f(objectCoordinates[index][(c-1)*2],-1.0*objectCoordinates[index][(c-1)*2+1]*HUGE_VAL,0.0f);
+							glVertex3f(objectInfo[index].coordinates[(c-1)*2],-1.0*objectInfo[index].coordinates[(c-1)*2+1]*HUGE_VAL,0.0f);
 						}
 					}
 					
@@ -2554,43 +2396,43 @@ GLuint GraphOutput::generateGLList(int index)
 					
 					
 					if(colored)
-						setGLColor(objectCoordinates[index][c*2+1]);
-					glVertex3f(objectCoordinates[index][c*2],objectCoordinates[index][c*2+1],0.0f);
+						setGLColor(objectInfo[index].coordinates[c*2+1]);
+					glVertex3f(objectInfo[index].coordinates[c*2],objectInfo[index].coordinates[c*2+1],0.0f);
 				}
 				else {
-					oldx=objectCoordinates[index][c*2];
-					oldy=objectCoordinates[index][c*2+1];
+					oldx=objectInfo[index].coordinates[c*2];
+					oldy=objectInfo[index].coordinates[c*2+1];
 				}
 			}
 			else {
-				if(objectCoordinates[index][c*2+1] >pref.ymin && objectCoordinates[index][c*2+1] < pref.ymax && objectCoordinates[index][c*2]>pref.xmin && objectCoordinates[index][c*2]< pref.xmax)   
+				if(objectInfo[index].coordinates[c*2+1] >pref.ymin && objectInfo[index].coordinates[c*2+1] < pref.ymax && objectInfo[index].coordinates[c*2]>pref.xmin && objectInfo[index].coordinates[c*2]< pref.xmax)   
 				{
 					
 					if(colored)
-						setGLColor(objectCoordinates[index][c*2+1]);
-					glVertex3f(objectCoordinates[index][c*2],objectCoordinates[index][c*2+1],0.0f);
+						setGLColor(objectInfo[index].coordinates[c*2+1]);
+					glVertex3f(objectInfo[index].coordinates[c*2],objectInfo[index].coordinates[c*2+1],0.0f);
 				}
 				else {
 					
 					if(colored)
-						setGLColor(objectCoordinates[index][c*2+1]);
+						setGLColor(objectInfo[index].coordinates[c*2+1]);
 					if(c>2)
 					{
-						double delta1=objectCoordinates[index][(c-2)*2+1]-objectCoordinates[index][(c-1)*2+1];
-						double delta2=objectCoordinates[index][(c-1)*2+1]-objectCoordinates[index][(c)*2+1];
+						double delta1=objectInfo[index].coordinates[(c-2)*2+1]-objectInfo[index].coordinates[(c-1)*2+1];
+						double delta2=objectInfo[index].coordinates[(c-1)*2+1]-objectInfo[index].coordinates[(c)*2+1];
 						if(delta1*delta2>=0.0)
-							glVertex3f(objectCoordinates[index][c*2],objectCoordinates[index][c*2+1],0.0f);
+							glVertex3f(objectInfo[index].coordinates[c*2],objectInfo[index].coordinates[c*2+1],0.0f);
 						else 
 						{
-							glVertex3f(objectCoordinates[index][c*2],-1.0*objectCoordinates[index][c*2+1]*HUGE_VAL,0.0f);
+							glVertex3f(objectInfo[index].coordinates[c*2],-1.0*objectInfo[index].coordinates[c*2+1]*HUGE_VAL,0.0f);
 						}
 					}
 					
 					
 					glEnd();
 					end=true;
-					oldx=objectCoordinates[index][c*2];
-					oldy=objectCoordinates[index][c*2+1];
+					oldx=objectInfo[index].coordinates[c*2];
+					oldy=objectInfo[index].coordinates[c*2+1];
 				}
 			}
 		}
@@ -2599,6 +2441,7 @@ GLuint GraphOutput::generateGLList(int index)
 		glEndList();
 	//	perror("print end");
 	}
+	objectInfo[index].glCreated=true;
 	return list;
 }
 
@@ -2767,7 +2610,6 @@ void GraphOutput::removeLines()
 		additionalObjects.DeleteItem(0);
 	}
 	hasSolveObjects=hasStatisticsObjects=false;
-	ineq1=ineq2=-1;
 	if(!drawScreenshot)
 		repaint();
 }
@@ -2845,7 +2687,7 @@ void GraphOutput::timerSlot()
 	}
 	else {
 		dynamicPos++;
-		if(dynamicPos > dynamicSteps)
+		if(dynamicPos >= dynamicSteps)
 			dynamicPos=0;
 	}
 	
@@ -2863,11 +2705,6 @@ void GraphOutput::timerStartSlot(bool start)
 	}
 }
 
-void GraphOutput::inequaityIntersectionSlot(int i1, int i2)
-{
-	ineq1=i1;
-	ineq2=i2;
-}
 
 void GraphOutput::screenshotSlot(int x, int y)
 {
@@ -2947,6 +2784,62 @@ void GraphOutput::drawSlot(int state,QColor color,int pen)
 		}
 	//	perror("DrawSlot: "+QString::number(drawState));
 	}
+}
+
+void GraphOutput::threadTimerSlot()
+{
+//	qDebug("threadTimer");
+	bool allStarted=true,allFinished=true;
+	for(int c=0; c<objectInfo.GetLen(); c++)
+	{
+		if(!objectInfo[c].processed)
+		{
+			allStarted=false;
+			for(int c1=0; c1<THREADS; c1++)
+			{
+				if(threads[c1]->wait(0))
+				{
+					objectInfo[c].processed=true;
+					threads[c1]->setIndex(c);
+					threads[c1]->start();
+					break;
+				}
+			}
+		}
+	}
+//	qDebug("threadTimer2");
+	if(allStarted)
+	{
+		for(int c=0; c<THREADS; c++)
+		{
+			if(!threads[c]->wait(0))
+			{
+				allFinished=false;
+				break;
+			}
+		}
+		if(allFinished)
+		{
+			graphProcess=false;
+			emit processingFinished();
+			threadTimer->stop();
+		}
+		
+	}
+//	qDebug("threadTimer end");
+}
+
+void GraphicsThread::run()
+{
+//	qDebug("process "+QString::number(index)+" started");
+	if(index>=0)
+		((GraphOutput*)parent)->processGraph(index,threadData,vars);
+//	qDebug("process "+QString::number(index)+" finished");
+//	qDebug("subprocess "+QString::number(pthread_self()));
+	QCustomEvent *ev=new QCustomEvent(SIGTHREADSYNC);
+	QApplication::postEvent(parent,ev);
+
+
 }
 
 

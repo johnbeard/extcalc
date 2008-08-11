@@ -75,9 +75,9 @@ int main( int argc, char **argv ) {
 	MainObject * mainObject = new MainObject;
 	mainObj=mainObject;
 
-	QFont stdFont("Helvetica");
-	stdFont.setPixelSize(14);
-	a.setFont(stdFont);
+//	QFont stdFont("Helvetica");
+//	stdFont.setPixelSize(14);
+//	a.setFont(stdFont);
 	setlocale(LC_NUMERIC,"C");	//use . for floating point values in every language
 	
 
@@ -2070,7 +2070,7 @@ void MainObject::graphMenuSlot(int item)
 	else if(item==GRAPHSAVECURR)
 	{
 		bool ok;
-		QString newString=QInputDialog::getText(tr("Save Curren Graph Set As"),tr("Insert new name of graph set:"),QLineEdit::Normal,QString(),&ok);
+		QString newString=QInputDialog::getText(tr("Save Current Graph Set As"),tr("Insert new name of graph set:"),QLineEdit::Normal,QString(),&ok);
 		
 		if(newString.find("/")!=-1 || newString.find("\\")!=-1)
 		{

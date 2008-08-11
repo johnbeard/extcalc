@@ -56,3 +56,4 @@ CVSCHECKPASSWORD=cvs
 OPENFILES=global.h, extcalc.h, graphsolve.cpp, graphsolve.h, extcalc.cpp, importdialog.h, importdialog.cpp
 CONFIG+=opengl
 CONFIG+=thread
+TRANSLATIONS += french.ts german.ts

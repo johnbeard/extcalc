@@ -783,15 +783,15 @@ char* macroPreprocessor(char*code)
 			replacementLen=strlen(replacement);
 			
 			
-			if(!(macro[0]>='a' && macro[0]<='z' ||
-						  macro[0]>='A' && macro[0]<='A' ||
+			if(!((macro[0]>='a' && macro[0]<='z') ||
+						  (macro[0]>='A' && macro[0]<='Z') ||
 						  macro[0]=='_'))
 				return NULL;
 			for(int c=1; c<macroLen; c++)
 			{
-				if(!(macro[c]>='a' && macro[c]<='z' ||
-								 macro[c]>='A' && macro[c]<='A' ||
-								 macro[c]>='0' && macro[c]<='9' ||
+				if(!((macro[c]>='a' && macro[c]<='z') ||
+								 (macro[c]>='A' && macro[c]<='Z') ||
+								 (macro[c]>='0' && macro[c]<='9') ||
 								 macro[c]=='_'))
 					return NULL;
 			}
@@ -807,12 +807,12 @@ char* macroPreprocessor(char*code)
 					
 					else if(!mQuote && strncmp(&code[c],macro,macroLen)==0)
 					{
-						if(c>0 && !(code[c-1]>='a' && code[c-1]<='z' ||
-						            code[c-1]>='A' && code[c-1]<='Z' ||
+						if(c>0 && !((code[c-1]>='a' && code[c-1]<='z') ||
+						            (code[c-1]>='A' && code[c-1]<='Z') ||
 									code[c-1]=='_')
-							   && !(code[c+macroLen]>='a' && code[c+macroLen]<='z' ||
-									code[c+macroLen]>='A' && code[c+macroLen]<='Z' ||
-									code[c+macroLen]>='0' && code[c+macroLen]<='9' ||
+							   && !((code[c+macroLen]>='a' && code[c+macroLen]<='z') ||
+									(code[c+macroLen]>='A' && code[c+macroLen]<='Z') ||
+									(code[c+macroLen]>='0' && code[c+macroLen]<='9') ||
 									code[c+macroLen]=='_')
 						  )
 						{
@@ -942,8 +942,8 @@ char* cleanString(char*code,Preferences*pref)
 		}
 		else if(strncmp(&code[c],"exp",3) == 0)
 		{
-			code=strreplace(code,c,3,"^");
-			code=strinsert(code,c,SEULER);
+			code=strreplace(code,c,3,"()^");
+			code=strinsert(code,c+1,SEULER);
 		}
 		else if(strncmp(&code[c],"d/dx",4) == 0)
 			code=strreplace(code,c,4,"\\d");
@@ -1010,18 +1010,38 @@ char* cleanString(char*code,Preferences*pref)
 		{
 			if(code[c]=='\"')
 				quote=true;
-			else if((code[c]>='A' && code[c]<='F' && pref->calcType!=BASE || code[c]>='G' && code[c]<='Z' || code[c]==']') && 
-					(code[c+1]>='0' && code[c+1] <='9' || code[c+1]=='.' || 
-					code[c+1]>='a' && code[c+1] <='z' || (code[c+1]=='$' && code[c+1]=='A') || code[c+1]=='\\' || 
-					code[c+1]=='(') || 
-					(code[c]>='0' && code[c]<='9' || code[c]=='.') && 
-					(code[c+1]>='A' && code[c+1]<='F' && pref->calcType!=BASE || code[c+1]>='G' && code[c+1]<='Z' || 
-					code[c+1]>='a' && code[c+1] <='z' && code[c+1]!='e' || (code[c+1]=='$' && code[c+1]=='A') || code[c+1]=='\\' || 
-					code[c+1]=='(')/* || 
-					code[c]==')' &&
-					(code[c+1]>='A' && code[c+1] <='Z' || 
-					code[c+1]>='a' && code[c+1] <='z' || 
-					code[c+1]>='0' && code[c+1] <='9' || code[c+1]=='.')*/)
+//left side
+// variable:
+// (code[c]>='A' && code[c]<='F' && pref->calcType!=BASE) || code[c]>='G' && code[c]<='Z' || code[c]==']'
+// bracket:
+// code[c]==')'
+// number:
+//(code[c]>='0' && code[c]<='9' || code[c]=='.' || code[c]==')')
+			
+//right side
+// variable:
+// code[c+1]>='A' && code[c+1]<='F' && pref->calcType!=BASE || code[c+1]>='G' && code[c+1]<='Z' || (code[c+1]=='$' && code[c+2]=='A')
+// bracket:
+// code[c+1]=='('
+// number:
+//code[c+1]>='0' && code[c+1] <='9' || code[c+1]=='.'
+// unary operator
+// code[c+1]>='a' && code[c+1] <='z' && code[c+1]!='e' || (code[c+1]=='$' && code[c+1]=='A') || code[c+1]=='\\'
+			
+			else if(
+					((code[c]>='A' && code[c]<='F' && pref->calcType!=BASE) || code[c]>='G' && code[c]<='Z' || code[c]==']' ||
+					(code[c]>='0' && code[c]<='9') || code[c]=='.') &&
+					(code[c+1]>='A' && code[c+1]<='F' && pref->calcType!=BASE || code[c+1]>='G' && code[c+1]<='Z'||
+					(code[c+1]=='$' && code[c+2]=='A') ||
+					code[c+1]=='(' ||
+					code[c+1]>='a' && code[c+1] <='z' && code[c+1]!='e' || code[c+1]=='\\')
+					||
+					((code[c]>='A' && code[c]<='F' && pref->calcType!=BASE) || code[c]>='G' && code[c]<='Z' || code[c]==']') &&
+					(code[c+1]>='0' && code[c+1] <='9' || code[c+1]=='.' ||
+					code[c+1]>='A' && code[c+1]<='F' && pref->calcType!=BASE || code[c+1]>='G' && code[c+1]<='Z'||
+					(code[c+1]=='$' && code[c+2]=='A') ||
+					code[c+1]=='(')
+				   )
 			{
 				code=strinsert(code,c+1,"*");
 			}
@@ -2288,9 +2308,9 @@ int Script::parse(char* line,int start,int end)
 	}
 	
 
-	QString outLine(line);
-	outLine=outLine.mid(start,end-start);
-	qDebug(outLine);
+//	QString outLine(line);
+//	outLine=outLine.mid(start,end-start);
+//	qDebug(outLine);
 	
 	int pos1;
 //	perror(line);
@@ -2566,32 +2586,47 @@ int Script::parse(char* line,int start,int end)
 	pos1=start;
 	while((pos1=bracketFind(line,"+",pos1,end)) != -1)
 	{
-		if(pos1>1 && line[pos1-1]=='e')
+		if(pos1>start && line[pos1-1]=='e')
 		{
 			pos1++;
 			continue;
 		}
 		operation=SFAIL;
 		if(pos1<start+1)
-			printError("First operand of + invalid",semicolonCount,eventReciver);
+		{
+			operation=PLUS;
+			vertObj=NULL;
+		}
 		else if(end-pos1<2)
 			printError("Second operand of + invalid",semicolonCount,eventReciver);
-		else operation=PLUS;
-		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		else {
+			operation=PLUS;
+			vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		}
 		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
 
 		return -1;
 	}
 	pos1=end-1;
-	while((pos1=bracketFindRev(line,"-",pos1,start)) != -1)
-	{		
-		if(pos1>1 && !(line[pos1-1]>='A' && line[pos1-1]<='Z' || line[pos1-1]>='0' && line[pos1-1]<='9' || line[pos1-1]=='i' || line[pos1-1]==')'||line[pos1-1]==']'|| line[pos1-1]=='!') )
+	while((pos1=bracketFindRev(line,"-",pos1,start)) !=-1)
+	{
+		if(pos1>start && !(line[pos1-1]>='A' && line[pos1-1]<='Z' || line[pos1-1]>='0' && line[pos1-1]<='9' || line[pos1-1]=='i' || line[pos1-1]==')'||line[pos1-1]==']'|| line[pos1-1]=='!') )
 		{
 			pos1--;
 			continue;
 		}
-		operation=MINUS;
-		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		operation=SFAIL;
+		if(pos1<start+1)
+		{
+			operation=MINUS;
+			vertObj=NULL;
+		}
+		else if(end-pos1<2)
+			printError("Second operand of - invalid",semicolonCount,eventReciver);
+		else {
+			operation=MINUS;
+			vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		}
 		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
 		return -1;
 	}
@@ -3172,7 +3207,7 @@ int Script::parse(char* line,int start,int end)
 		vertObj4=new Script(this,line,pos2+1,end-1,pref,vars,eventReciver);
 		return -1;
 	}
-	else if(strncmp(line,"drawclear",9) == 0)
+	else if(strncmp(line+start,"drawclear",9) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
@@ -3377,7 +3412,7 @@ int Script::parse(char* line,int start,int end)
 		vertObj=new Script(this,line,pos1+1,end-1,pref,vars,eventReciver);
 		return -1;
 	}
-	else if(strncmp(line,"\\i(",3) == 0)
+	else if(strncmp(line+start,"\\i(",3) == 0)
 	{
 		operation=INTEGRAL;
 		pos1=bracketFind(line,",",start+3,end);
@@ -3761,7 +3796,6 @@ int Script::parse(char* line,int start,int end)
 		return -1;
 	}
 	else {
-		qDebug("value");
 		operation=SVALUE;
 		char*err,*tmpval;
 		tmpval=new char[end-start+1];
@@ -3954,7 +3988,12 @@ Number Script::exec()
 		}
 		case PLUS:
 		{
-			value=vertObj->exec();
+			if(vertObj!=NULL)
+				value=vertObj->exec();
+			else {
+				value.type=NFLOAT;
+				value.fval=Complex(0.0);
+			}
 			Number n;
 
 			if((value.type==NVECTOR || value.type==NMATRIX) &&value.ival==27)
@@ -4130,7 +4169,13 @@ Number Script::exec()
 		case MINUS:
 		{
 			Number n;
-			value=vertObj->exec();
+			if(vertObj!=NULL)
+				value=vertObj->exec();
+			else
+			{
+				value.type=NFLOAT;
+				value.fval=Complex(0.0);
+			}
 			if((value.type==NVECTOR || value.type==NMATRIX) &&value.ival==27)
 			{
 				Number*tmpMem=eventReciver->vars[27];
@@ -6278,9 +6323,9 @@ Number Script::exec()
 		double *line2=new double[3];
 		double y,oldy;
 		vars[23]=start;
-		oldy=horzObj->calc();
+		oldy=vertObj4->calc();
 		vars[23]=end;
-		y=horzObj->calc();
+		y=vertObj4->calc();
 		line1[0]=(y+oldy)*(end-start)/2.0;
 		double fail=HUGE_VAL,oldfail=0.0;
 		
@@ -6299,7 +6344,7 @@ Number Script::exec()
 			for(int c=1; c<=steps; c++)
 			{
 				vars[23]=start+((2*c-1)*(end-start))/pow(2.0,(double)num);
-				line1[0]+=horzObj->calc();
+				line1[0]+=vertObj4->calc();
 			}
 			line1[0]=0.5*(line1[0]*(end-start)/pow(2.0,(double)(num-1))+line2[0]);
 			

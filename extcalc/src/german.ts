@@ -3657,6 +3657,13 @@ Determinante ist gleich 0.</translation>
     </message>
 </context>
 <context>
+    <name>GraphOutput</name>
+    <message>
+        <source>Processing ...</source>
+        <translation>Berechnung ...</translation>
+    </message>
+</context>
+<context>
     <name>GraphSolveWidget</name>
     <message>
         <source>This operation can&apos;t be executed for graphs that use logic expressions!</source>
@@ -3667,44 +3674,52 @@ Determinante ist gleich 0.</translation>
     <name>ImportDialog</name>
     <message>
         <source>Function</source>
-        <translation>Funktion</translation>
+        <translation type="obsolete">Funktion</translation>
     </message>
     <message>
         <source>Import to</source>
-        <translation>Ziel</translation>
+        <translation type="obsolete">Ziel</translation>
     </message>
     <message>
         <source>Export</source>
-        <translation>Export</translation>
+        <translation type="obsolete">Export</translation>
     </message>
     <message>
         <source>Comment</source>
-        <translation>Kommentar</translation>
+        <translation type="obsolete">Kommentar</translation>
     </message>
     <message>
         <source>Error
 
 No functions marked for export!</source>
-        <translation>Fehler
+        <translation type="obsolete">Fehler
 
 Keine Funktionen zum Export ausgewählt!</translation>
     </message>
     <message>
         <source>Unable to write file: </source>
-        <translation>Die Datei konnte nicht geschrieben werden: </translation>
+        <translation type="obsolete">Die Datei konnte nicht geschrieben werden: </translation>
     </message>
     <message>
         <source>Really overwrite F%1?</source>
-        <translation>Soll F%1 wirklich überschrieben werden?</translation>
+        <translation type="obsolete">Soll F%1 wirklich überschrieben werden?</translation>
     </message>
     <message>
         <source>Unable to open file: </source>
-        <translation>Die Datei konnte nicht geöffnet werden: </translation>
+        <translation type="obsolete">Die Datei konnte nicht geöffnet werden: </translation>
     </message>
     <message>
         <source>None</source>
-        <translation>Keine
+        <translation type="obsolete">Keine
 </translation>
+    </message>
+    <message>
+        <source>Import Graph File</source>
+        <translation>Graphen importieren</translation>
+    </message>
+    <message>
+        <source>Export Graph File</source>
+        <translation>Graphen exportieren</translation>
     </message>
 </context>
 <context>
@@ -3880,6 +3895,80 @@ Restart now?</source>
         <translation>Um die Änderungen zu übernehmen, muss Extcalc neu gestartet werden.
 
 Jetzt neu starten?</translation>
+    </message>
+    <message>
+        <source>Choose Current Set</source>
+        <translation>Aktuelle Gruppe auswählen</translation>
+    </message>
+    <message>
+        <source>Manage Sets</source>
+        <translation>Gruppen verwalten</translation>
+    </message>
+    <message>
+        <source>Save Current Set As</source>
+        <translation>Gruppe speichern unter</translation>
+    </message>
+    <message>
+        <source>Create New Set</source>
+        <translation>Neue Gruppe</translation>
+    </message>
+    <message>
+        <source>Create New Graph Set</source>
+        <translation>Neue Gruppe</translation>
+    </message>
+    <message>
+        <source>Insert name of new graph set:</source>
+        <translation>Name der Gruppe:</translation>
+    </message>
+    <message>
+        <source>Invalid graph set name %1</source>
+        <translation>Ungültiger Gruppenname %1</translation>
+    </message>
+    <message>
+        <source>%1 already exists!
+
+Overwrite it?</source>
+        <translation>%1 existiert bereits!
+
+Überscheiben?</translation>
+    </message>
+    <message>
+        <source>Save Curren Graph Set As</source>
+        <translation type="obsolete">Gruppe speichern unter</translation>
+    </message>
+    <message>
+        <source>Insert new name of graph set:</source>
+        <translation>Name der Gruppe:</translation>
+    </message>
+    <message>
+        <source>Unable to read file %1
+
+</source>
+        <translation>%1 kann nicht gelesen werden
+
+</translation>
+    </message>
+    <message>
+        <source>Unable to read graphs file %1
+
+</source>
+        <translation>%1 kann nicht gelesen werden</translation>
+    </message>
+    <message>
+        <source>Unable to write graphs file %1
+
+</source>
+        <translation>%1 kann nicht geschrieben werden</translation>
+    </message>
+    <message>
+        <source>Unable to create graphs directory %1
+
+</source>
+        <translation>%1 konnte nicht erstellt werden</translation>
+    </message>
+    <message>
+        <source>Save Current Graph Set As</source>
+        <translation>Gruppe speichern unter</translation>
     </message>
 </context>
 </TS>

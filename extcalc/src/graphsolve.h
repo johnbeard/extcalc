@@ -209,7 +209,7 @@ signals:
 	void add3dZLine(double x,double y);
 	void removeLines();
 	void prefChange(Preferences);
-	void drawInequaityIntersection(int, int);
+	void drawInequalityIntersection(int, int);
 	void redrawGraphs();
 	void getScreenshotSignal(int,int);
 	void drawSignal(int,QColor,int);

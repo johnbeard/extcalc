@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GraphOutput meta object code from reading C++ file 'graphout.h'
 **
-** Created: Thu Mar 27 18:08:49 2008
+** Created: Sun Aug 10 06:55:21 2008
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -92,11 +92,7 @@ QMetaObject* GraphOutput::staticMetaObject()
     static const QUMethod slot_8 = {"removeLines", 0, 0 };
     static const QUMethod slot_9 = {"resetRotation", 0, 0 };
     static const QUMethod slot_10 = {"timerSlot", 0, 0 };
-    static const QUParameter param_slot_11[] = {
-	{ "i1", &static_QUType_int, 0, QUParameter::In },
-	{ "i2", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_11 = {"inequaityIntersectionSlot", 2, param_slot_11 };
+    static const QUMethod slot_11 = {"threadTimerSlot", 0, 0 };
     static const QUParameter param_slot_12[] = {
 	{ 0, &static_QUType_int, 0, QUParameter::In },
 	{ 0, &static_QUType_int, 0, QUParameter::In }
@@ -124,7 +120,7 @@ QMetaObject* GraphOutput::staticMetaObject()
 	{ "removeLines()", &slot_8, QMetaData::Public },
 	{ "resetRotation()", &slot_9, QMetaData::Public },
 	{ "timerSlot()", &slot_10, QMetaData::Public },
-	{ "inequaityIntersectionSlot(int,int)", &slot_11, QMetaData::Public },
+	{ "threadTimerSlot()", &slot_11, QMetaData::Public },
 	{ "screenshotSlot(int,int)", &slot_12, QMetaData::Public },
 	{ "drawSlot(int,QColor,int)", &slot_13, QMetaData::Public },
 	{ "timerStartSlot(bool)", &slot_14, QMetaData::Public }
@@ -145,18 +141,20 @@ QMetaObject* GraphOutput::staticMetaObject()
     static const QUMethod signal_3 = {"screenshotSignal", 1, param_signal_3 };
     static const QUMethod signal_4 = {"solveRedrawSignal", 0, 0 };
     static const QUMethod signal_5 = {"statisticsRedrawSignal", 0, 0 };
+    static const QUMethod signal_6 = {"processingFinished", 0, 0 };
     static const QMetaData signal_tbl[] = {
 	{ "prefChange(Preferences)", &signal_0, QMetaData::Protected },
 	{ "leftMButtonPressed(double,double)", &signal_1, QMetaData::Protected },
 	{ "redrawSignal()", &signal_2, QMetaData::Protected },
 	{ "screenshotSignal(QPixmap*)", &signal_3, QMetaData::Protected },
 	{ "solveRedrawSignal()", &signal_4, QMetaData::Protected },
-	{ "statisticsRedrawSignal()", &signal_5, QMetaData::Protected }
+	{ "statisticsRedrawSignal()", &signal_5, QMetaData::Protected },
+	{ "processingFinished()", &signal_6, QMetaData::Protected }
     };
     metaObj = QMetaObject::new_metaobject(
 	"GraphOutput", parentObject,
 	slot_tbl, 15,
-	signal_tbl, 6,
+	signal_tbl, 7,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
 	0, 0,
@@ -234,6 +232,12 @@ void GraphOutput::statisticsRedrawSignal()
     activate_signal( staticMetaObject()->signalOffset() + 5 );
 }
 
+// SIGNAL processingFinished
+void GraphOutput::processingFinished()
+{
+    activate_signal( staticMetaObject()->signalOffset() + 6 );
+}
+
 bool GraphOutput::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
@@ -248,7 +252,7 @@ bool GraphOutput::qt_invoke( int _id, QUObject* _o )
     case 8: removeLines(); break;
     case 9: resetRotation(); break;
     case 10: timerSlot(); break;
-    case 11: inequaityIntersectionSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
+    case 11: threadTimerSlot(); break;
     case 12: screenshotSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
     case 13: drawSlot((int)static_QUType_int.get(_o+1),(QColor)(*((QColor*)static_QUType_ptr.get(_o+2))),(int)static_QUType_int.get(_o+3)); break;
     case 14: timerStartSlot((bool)static_QUType_bool.get(_o+1)); break;
@@ -267,6 +271,7 @@ bool GraphOutput::qt_emit( int _id, QUObject* _o )
     case 3: screenshotSignal((QPixmap*)static_QUType_varptr.get(_o+1)); break;
     case 4: solveRedrawSignal(); break;
     case 5: statisticsRedrawSignal(); break;
+    case 6: processingFinished(); break;
     default:
 	return QGLWidget::qt_emit(_id,_o);
     }

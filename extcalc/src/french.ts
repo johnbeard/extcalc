@@ -3654,6 +3654,13 @@ Déterminant est égual à 0.</translation>
     </message>
 </context>
 <context>
+    <name>GraphOutput</name>
+    <message>
+        <source>Processing ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>GraphSolveWidget</name>
     <message>
         <source>This operation can&apos;t be executed for graphs that use logic expressions!</source>
@@ -3664,40 +3671,14 @@ Déterminant est égual à 0.</translation>
     <name>ImportDialog</name>
     <message>
         <source>Function</source>
-        <translation type="unfinished">Fonction</translation>
+        <translation type="obsolete">Fonction</translation>
     </message>
     <message>
-        <source>Import to</source>
+        <source>Import Graph File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Export</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Comment</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error
-
-No functions marked for export!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unable to write file: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Really overwrite F%1?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unable to open file: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>None</source>
+        <source>Export Graph File</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3867,6 +3848,72 @@ No functions marked for export!</source>
         <source>Extcalc must be restarted to apply this changes!
 
 Restart now?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose Current Set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manage Sets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save Current Set As</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create New Set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create New Graph Set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Insert name of new graph set:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid graph set name %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 already exists!
+
+Overwrite it?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Insert new name of graph set:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to read file %1
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to read graphs file %1
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to write graphs file %1
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to create graphs directory %1
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save Current Graph Set As</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

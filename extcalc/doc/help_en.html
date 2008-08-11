@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - Scientific Calculator </h1>
-  Version 0.9.1
+  Version 0.9.2
   <br>
   <br>
   <h3>Contents</h3>
@@ -18,8 +18,9 @@
   <a href="#calcstd"><h5>3.1.2 Base Mode</h5></a>
   <a href="#graph"><h4>3.2 Graphics</h4></a>
   <a href="#graphdraw"><h5>3.2.1 Draw Graphs</h5></a>
-  <a href="#graphsolve"><h5>3.2.2 Analyze Graphs</h5></a>
-  <a href="#screenshot"><h5>3.2.3 Screen shots</h5></a>
+  <a href="#graphmanage"><h5>3.2.2 Graph Management</h5></a>
+  <a href="#graphsolve"><h5>3.2.3 Analyze Graphs</h5></a>
+  <a href="#screenshot"><h5>3.2.4 Screen shots</h5></a>
   <a href="#table"><h4>3.3 Tables</h4></a>
   <a href="#script"><h4>3.4 Script Programming</h4></a>
   <a href="#scriptcom"><h5>3.4.1 Introduction</h5></a>
@@ -35,7 +36,7 @@
   <a name="introduction"><h2>1. Introduction</h2></a>
   Extcalc is a scientific graphic calculator for Linux. Extcalc is able to process difficult
   mathematical functions, to draw graph and to work with them. It includes a C-like script language.<br>
-  This is the documentation for version 0.9.1 beta. 
+  This is the documentation for version 0.9.2 beta. 
   <br>
   <br>
   <br>
@@ -43,8 +44,8 @@
   This description is only for the installation of the source code package (.tar.gz). If you install a binary package, you have to use the
   packet manager of your distribution.<br><br>
   <UL>
-  <LI> extract packet (tar -xzf extcalc-0.9.1.tar.gz)<br>
-  <LI> switch to directory (cd extcalc-0.9.1)<br>
+  <LI> extract packet (tar -xzf extcalc-0.9.2.tar.gz)<br>
+  <LI> switch to directory (cd extcalc-0.9.2)<br>
   <LI> configure (./configure)<br>
   <LI> compile (make)<br>
   <LI> become root (su)<br>
@@ -411,12 +412,29 @@ You can choose one type of coordinate system for your output window at the graph
 <tr><td>Complex graph</td>                         <td>exp(Z*i)</td>                                 <td>Coordinate system: 3D, standard size</td></tr>
 <tr><td>Nyquist plot</td>                          <td>10/(1+Z*i)</td>                               <td>Coordinate system: standard, standard size</td></tr>
 </table>
-<h5>Import and export graphs</h5>
-  It is possible to export functions from Extcalc and store them into a file. This files may also be imported into Extcalc.<br>
-  This option can be used to share graphs with others or to archive them.<br>
-  The import and export dialogs are in the menu at Graphic -> Import Graphs and Graphic -> Export Graphs.<br>
   <br>
-  <a name="graphsolve"><h3>3.2.2 Analyze Graphs </h3></a>
+    <a name="graphmanage"><h3>3.2.2 Graph Management </h3></a>
+    The graph table of Extcalc can handle up to 20 functions. If you want to use save more functions or
+    if you want to sort the functions into different groups, you will have to use graph sets.
+    <br><br>
+    One graph set is created by default. It includes some example graphs. A new set can be created by choosing
+    Graphic -> Create New Set in the menu of the graphics window.
+    <br><br>
+    When you want to know the current graph set or change the graph set, you will have to ckick on Graphic -> Choose
+    Current Set. When you choose another set there, Extcalc will automatically store the current graph set and load
+    the new functions into the function table.
+    <br><br>
+    A graph set does not only include the functions. It also stores all relevant preferences for graph drawing so
+    that it is not necessary to change them after loading a new graph set.
+    <br><br>
+    Furthermore, there is a dialog for renaming and removing graph sets, which can be found in the graphics menu at
+    Graphic -> Manage Sets. When you want to save the current set under a different name, you can use Graphic -> Save
+    Current Set As but generally, loading and saving the sets will be done automatically.
+    <br><br>
+    Every graph set is stored in a seperate file. This files can be imported or exported so that you can
+    share them with others. Some examples can be downloaded from the Extcalc home page.
+
+  <a name="graphsolve"><h3>3.2.3 Analyze Graphs </h3></a>
 <img src="analyse.jpg"></img>
 <br>
 If you want to analyze graphs, you can press the analyze button. <br>
@@ -584,7 +602,7 @@ Pressing the calculate-button will show you the results.
 </TABLE>
   
   <br>
-  <a name="screenshot"><h3>3.2.3 Screen shots </h3></a>
+  <a name="screenshot"><h3>3.2.4 Screen shots </h3></a>
   If you choose the point Screenshot/Drawing in the box below the graphics area, you can save Screen shots and draw into the graphics window.<br>
   <img src="screenshot.jpg"></img>
   <br>
@@ -642,7 +660,7 @@ Rubber: If you want to erase a part of the drawn things, you can use this tool. 
   not in the calculator.
   The scripts programs run in a separate console, and you may use the other extcalc functions while running a script.
   Scripts can be managed, edited and started from the integrated script editor.<br>
-  In this version 0.9.1 are not all planned features included.<br><br>
+  In this version 0.9.2 are not all planned features included.<br><br>
 
   <a name="scriptedit"><h3>3.4.2 The Script-Editor</h3></a>
   <img src="scriptedit.jpg"></img>
@@ -690,10 +708,10 @@ If is running while you change something, you can press the right mouse button a
   You can always stop a running script by pressing the "Kill"-Button at the script console window.<br>
   If the script does not stop before the timeout, an error message is displayed. You have to press the kill-button again to stop the script correctly.<br>
   <a name="scriptsyntax"><h3>3.4.3 Scripting Language</h3></a>
-  In version 0.9.1 of Extcalc, not all features are included. You can read more about the planned features 
+  In version 0.9.2 of Extcalc, not all features are included. You can read more about the planned features 
   at <a href="#else">Chapter 4</a>.<br>
   <h5>Problems:</h5>
-  This is a list of the current problems of the 0.9.1 version of the Extcalc Script Interpreter<br><br>
+  This is a list of the current problems of the 0.9.2 version of the Extcalc Script Interpreter<br><br>
   <OL>
   <LI>Speed<br>
   The extcalc scripts were ran by an Interpreter and so they run not as fast as compiled programms, but it will be optimized in later versions.<br><br>
@@ -1812,7 +1830,7 @@ while(1)
   <br>
   <a name="else"><h2>4. Other</h2></a>
   <h5> Version</h5>
-  Extcalc version 0.9.1<br>
+  Extcalc version 0.9.2<br>
   This is a beta-version of Extcalc.<br>
   This means, that there may be some bugs in this program, because the new features from the earlier version have to be tested.<br>
   Further information to the beta version can be found on the <a href="http://extcalc-linux.sourceforge.net">projekt homepage</a>.
