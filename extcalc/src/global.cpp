@@ -7067,9 +7067,7 @@ bool invertMatrix(int size,long double*matrix)
 			effDestIndex=c4+c3*size;
 			long double subDet=gauss(size-1,size-1,subMatrix);
 			result[effDestIndex]=mainDet*(long double)vz*subDet;
-			fprintf(stderr,QString::number((double)result[effDestIndex])+" ");
 		}
-		fprintf(stderr,"\n");
 	}
 	memcpy(matrix,result,size*size*sizeof(long double));
 	free(result);
