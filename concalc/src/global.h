@@ -32,7 +32,7 @@ any later version.
 using namespace std;
 
 
-#define VERSIONSTRING "Version: 0.9.1 2008-03-08\nCalculator algorithms: extcalc v0.9.1 2008-03-08"
+#define VERSIONSTRING "Version: 0.9.2 2008-08-11\nCalculator algorithms: extcalc v0.9.1 2008-08-11"
 #define AUTHORSTRING "Author:\nRainer Strobel\nhttp://extcalc-linux.sourceforge.net\n2008\n"
 
 
@@ -255,8 +255,8 @@ char* strreplace(char*st,int index,int len,char*rep);
 char* strinsert(char*st,int index,char*ins);
 
 long double calculate(char*,Preferences*pref,Variable*vars);
-int bracketFind(char* string,char* searchString, int start=0);
-int bracketFindRev(char* string,char* searchString, int start=-1);
+int bracketFind(char* string,char* searchString, int start=0,int end=-1);
+int bracketFindRev(char* string,char* searchString, int start=-1, int end=0);
 char*strcut(char*src,int index,int len=1);
 char*strins(char*dest,const char*src,int index);
 int strcopy(char*dest,char*src,int len);
@@ -300,71 +300,103 @@ long double gauss(int sizex,int sizey,long double*matrix);
 class Math
 {
 	protected:
-	Variable*vars;
-	Preferences*pref;
-	Math*parent;
-	Math *vertObj,*horzObj;
-	double number;
-	int var;
-	int operation;
-	
-public:
-		
-	Math(Math*par,Preferences*pr,Variable*va)
-	{
-		parent=par;
-		pref=pr;
-		vars=va;
-	}
-	virtual ~Math()
-	{
-		if(vertObj!=NULL)
-			delete vertObj;
-		if(horzObj!=NULL)
-			delete horzObj;
-	}
-	
-	int getOperation()
-	{
-		return operation;
-	}
-	
-	virtual double calc() {return 0.0;}
-	virtual double calcVertObj() {return 0.0;}
-	virtual double calcHorzObj() {return 0.0;}
-	
-	virtual Number exec() {Number r;r.type=NNONE;return r;}
-	virtual Number execVertObj() {Number r;r.type=NNONE;return r;}
-	virtual Number execHorzObj() {Number r;r.type=NNONE;return r;}
+		Variable*vars;
+		Preferences*pref;
+		Math*parent;
+		Math *vertObj,*horzObj;
+		double number;
+		int var;
 
-	virtual int split(char*line){return 0;}
-	virtual char* parse(char*line){return 0;}
+	
+	
+	public:
+		int operation;
+		Math(Math*par,Preferences*pr,Variable*va)
+		{
+			parent=par;
+			pref=pr;
+			vars=va;
+		}
+		virtual ~Math()
+		{
+			if(vertObj!=NULL)
+			{
+				delete vertObj;
+				vertObj=NULL;
+			}
+			if(horzObj!=NULL)
+			{
+				delete horzObj;
+				horzObj=NULL;
+			}
+		}
+	
+		int getOperation()
+		{
+			return operation;
+		}
+	
+		virtual double calc() {return 0.0;}
+		virtual double calcVertObj() {return 0.0;}
+		virtual double calcHorzObj() {return 0.0;}
+	
+		virtual Number exec() {Number r;r.type=NNONE;return r;}
+		virtual Number execVertObj() {Number r;r.type=NNONE;return r;}
+		virtual Number execHorzObj() {Number r;r.type=NNONE;return r;}
 
+		virtual int split(char*,int,int){return 0;}
+		virtual int parse(char*,int,int){return 0;}
+	
 };
 
 
 class Calculate :public Math
 {
 	
-	virtual int split(char* line);
+	virtual int split(char* line,int,int);
 
-public:
+	public:
 	
-	Calculate(Math *par,char* line,Preferences*pr,Variable*va) :Math((Math*)par,pr,va)
-	{
-		horzObj=vertObj=NULL;
-		split(line);
-	}
+		Calculate(Math *par,char* line,int start, int end,Preferences*pr,Variable*va) :Math((Math*)par,pr,va)
+		{
+			horzObj=vertObj=NULL;
+			split(line,start,end);
+		}
+		Calculate(Math *par,char* line,Preferences*pr,Variable*va) :Math((Math*)par,pr,va)
+		{
+			horzObj=vertObj=NULL;
+			if(line==NULL)
+			{
+				operation=NONE;
+				number=NAN;
+				var=-1;
+			}
+			else split(line,0,strlen(line));
+		}
+		~Calculate()
+		{
+			if(horzObj!=NULL)
+			{
+				delete horzObj;
+				horzObj=NULL;
+			}
+			if(vertObj!=NULL)
+			{
+				delete vertObj;
+				vertObj=NULL;
+			}
+		}
 
 
-	virtual double calc();
-	virtual double calcVertObj();
-	virtual double calcHorzObj();
+		virtual double calc();
+		virtual double calcVertObj();
+		virtual double calcHorzObj();
 };
+
 class Script :public Math
 {
 	Number value;
-	Math*nextObj,*vertObj2,*vertObj3;
+	Math *vertObj2,*vertObj3,*vertObj4;
 	ThreadSync*eventReciver;
 		
 	private:
@@ -375,19 +407,46 @@ class Script :public Math
 
 		Script(Script*par,char*line,Preferences*pr,Variable*va,ThreadSync*evrec) :Math((Math*)par,pr,va)
 		{
-			horzObj=vertObj=vertObj2=vertObj3=nextObj=NULL;
+			parent=par;
+			horzObj=vertObj=vertObj2=vertObj3=vertObj4=NULL;
 			value.type=NNONE;
+			operation=SFAIL;
+			number=NAN;
 			eventReciver=evrec;
 			value.cval=NULL;
-			if(par==NULL)
-				split(line);
-			else if(line!=NULL)
+			if(line!=NULL)
 			{
-				char*rest=parse(line);
-				if(rest!=NULL)
+				if(par==NULL)
 				{
-					operation=SFAIL;
-					delete[]rest;
+					split(line,0,strlen(line));
+				}
+				else
+				{
+					int rest=parse(line,0,strlen(line));
+					if(rest!=-1)
+						operation=SFAIL;
+				}
+			}
+		}
+	
+		Script(Script*par,char*line,int start,int end,Preferences*pr,Variable*va,ThreadSync*evrec) :Math((Math*)par,pr,va)
+		{
+			horzObj=vertObj=vertObj2=vertObj3=vertObj4=NULL;
+			value.type=NNONE;
+			operation=SFAIL;
+			eventReciver=evrec;
+			value.cval=NULL;
+			if(line!=NULL)
+			{
+				if(par==NULL)
+				{
+					split(line,start,end);
+				}
+				else if(line!=NULL)
+				{
+					int rest=parse(line,start,end);
+					if(rest!=-1)
+						operation=SFAIL;
 				}
 			}
 		}
@@ -418,14 +477,14 @@ class Script :public Math
 				delete vertObj3;
 				vertObj3=NULL;
 			}
-			if(nextObj!=NULL)
+			if(vertObj4!=NULL)
 			{
-				delete nextObj;
-				nextObj=NULL;
+				delete vertObj4;
+				vertObj4=NULL;
 			}
 		}
-		char*parse(char*line);
-		virtual int split(char* line);
+		virtual int parse(char*line,int start,int end);
+		virtual int split(char* line,int start,int end);
 
 
 		virtual double calc();
@@ -437,7 +496,6 @@ class Script :public Math
 		virtual Number execHorzObj();
 
 };
-
 #endif
 
 

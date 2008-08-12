@@ -1,6 +1,5 @@
 #include "global.h"
 
-
 char* preprocessor(char*input,Preferences*pref,bool script)
 {
 	char*ret=removeComments(input);
@@ -23,6 +22,7 @@ char* preprocessor(char*input,Preferences*pref,bool script)
 		
 	return ret;	
 }
+
 
 
 char* removeComments(char*input)
@@ -234,16 +234,16 @@ char* macroPreprocessor(char*code)
 			replacementLen=strlen(replacement);
 			
 			
-			if(!(macro[0]>='a' && macro[0]<='z' ||
-						  macro[0]>='A' && macro[0]<='A' ||
-						  macro[0]=='_'))
+			if(!((macro[0]>='a' && macro[0]<='z') ||
+						   (macro[0]>='A' && macro[0]<='Z') ||
+						   macro[0]=='_'))
 				return NULL;
 			for(int c=1; c<macroLen; c++)
 			{
-				if(!(macro[c]>='a' && macro[c]<='z' ||
-								 macro[c]>='A' && macro[c]<='A' ||
-								 macro[c]>='0' && macro[c]<='9' ||
-								 macro[c]=='_'))
+				if(!((macro[c]>='a' && macro[c]<='z') ||
+								  (macro[c]>='A' && macro[c]<='Z') ||
+								  (macro[c]>='0' && macro[c]<='9') ||
+								  macro[c]=='_'))
 					return NULL;
 			}
 			
@@ -258,12 +258,12 @@ char* macroPreprocessor(char*code)
 					
 					else if(!mQuote && strncmp(&code[c],macro,macroLen)==0)
 					{
-						if(c>0 && !(code[c-1]>='a' && code[c-1]<='z' ||
-											 code[c-1]>='A' && code[c-1]<='Z' ||
+						if(c>0 && !((code[c-1]>='a' && code[c-1]<='z') ||
+											 (code[c-1]>='A' && code[c-1]<='Z') ||
 											 code[c-1]=='_')
-											 && !(code[c+macroLen]>='a' && code[c+macroLen]<='z' ||
-											 code[c+macroLen]>='A' && code[c+macroLen]<='Z' ||
-											 code[c+macroLen]>='0' && code[c+macroLen]<='9' ||
+											 && !((code[c+macroLen]>='a' && code[c+macroLen]<='z') ||
+											 (code[c+macroLen]>='A' && code[c+macroLen]<='Z') ||
+											 (code[c+macroLen]>='0' && code[c+macroLen]<='9') ||
 											 code[c+macroLen]=='_')
 						  )
 						{
@@ -393,8 +393,8 @@ char* cleanString(char*code,Preferences*pref)
 		}
 		else if(strncmp(&code[c],"exp",3) == 0)
 		{
-			code=strreplace(code,c,3,"^");
-			code=strinsert(code,c,SEULER);
+			code=strreplace(code,c,3,"()^");
+			code=strinsert(code,c+1,SEULER);
 		}
 		else if(strncmp(&code[c],"d/dx",4) == 0)
 			code=strreplace(code,c,4,"\\d");
@@ -461,18 +461,38 @@ char* cleanString(char*code,Preferences*pref)
 		{
 			if(code[c]=='\"')
 				quote=true;
-			else if((code[c]>='A' && code[c]<='F' && pref->calcType!=BASE || code[c]>='G' && code[c]<='Z' || code[c]==']') && 
-							  (code[c+1]>='0' && code[c+1] <='9' || code[c+1]=='.' || 
-							  code[c+1]>='a' && code[c+1] <='z' || (code[c+1]=='$' && code[c+1]=='A') || code[c+1]=='\\' || 
-							  code[c+1]=='(') || 
-							  (code[c]>='0' && code[c]<='9' || code[c]=='.') && 
-							  (code[c+1]>='A' && code[c+1]<='F' && pref->calcType!=BASE || code[c+1]>='G' && code[c+1]<='Z' || 
-							  code[c+1]>='a' && code[c+1] <='z' && code[c+1]!='e' || (code[c+1]=='$' && code[c+1]=='A') || code[c+1]=='\\' || 
-							  code[c+1]=='(')/* || 
-							  code[c]==')' &&
-							  (code[c+1]>='A' && code[c+1] <='Z' || 
-							  code[c+1]>='a' && code[c+1] <='z' || 
-							  code[c+1]>='0' && code[c+1] <='9' || code[c+1]=='.')*/)
+//left side
+// variable:
+// (code[c]>='A' && code[c]<='F' && pref->calcType!=BASE) || code[c]>='G' && code[c]<='Z' || code[c]==']'
+// bracket:
+// code[c]==')'
+// number:
+//(code[c]>='0' && code[c]<='9' || code[c]=='.' || code[c]==')')
+			
+//right side
+// variable:
+// code[c+1]>='A' && code[c+1]<='F' && pref->calcType!=BASE || code[c+1]>='G' && code[c+1]<='Z' || (code[c+1]=='$' && code[c+2]=='A')
+// bracket:
+// code[c+1]=='('
+// number:
+//code[c+1]>='0' && code[c+1] <='9' || code[c+1]=='.'
+// unary operator
+// code[c+1]>='a' && code[c+1] <='z' && code[c+1]!='e' || (code[c+1]=='$' && code[c+1]=='A') || code[c+1]=='\\'
+			
+			else if(
+					((code[c]>='A' && code[c]<='F' && pref->calcType!=BASE) || code[c]>='G' && code[c]<='Z' || code[c]==']' ||
+							 (code[c]>='0' && code[c]<='9') || code[c]=='.') &&
+							 (code[c+1]>='A' && code[c+1]<='F' && pref->calcType!=BASE || code[c+1]>='G' && code[c+1]<='Z'||
+							 (code[c+1]=='$' && code[c+2]=='A') ||
+							 code[c+1]=='(' ||
+							 code[c+1]>='a' && code[c+1] <='z' && code[c+1]!='e' || code[c+1]=='\\')
+							 ||
+							 ((code[c]>='A' && code[c]<='F' && pref->calcType!=BASE) || code[c]>='G' && code[c]<='Z' || code[c]==']') &&
+							 (code[c+1]>='0' && code[c+1] <='9' || code[c+1]=='.' ||
+							 code[c+1]>='A' && code[c+1]<='F' && pref->calcType!=BASE || code[c+1]>='G' && code[c+1]<='Z'||
+							 (code[c+1]=='$' && code[c+2]=='A') ||
+							 code[c+1]=='(')
+				   )
 			{
 				code=strinsert(code,c+1,"*");
 			}
@@ -484,13 +504,15 @@ char* cleanString(char*code,Preferences*pref)
 	return code;
 }
 
-int bracketFind(char* string,char* searchString, int start)
+int bracketFind(char* string,char* searchString, int start,int end)
 {
 
 	int searchLen=strlen(searchString);
 	int bracket=0,brace=0,sqbracket=0;
 	bool quote=false;
-	for(int c=start; c<(int)strlen(string); c++)
+	if(end==-1)
+		end=(int)strlen(string);
+	for(int c=start; c<end; c++)
 	{
 		if(bracket == 0 && brace == 0  && sqbracket==0 && !quote)
 		{
@@ -553,7 +575,7 @@ int bracketFind(char* string,char* searchString, int start)
 }
 
 
-int bracketFindRev(char* string,char* searchString, int start)
+int bracketFindRev(char* string,char* searchString, int start, int end)
 {
 	if(start==-1)
 		start=strlen(string)-1;
@@ -561,7 +583,8 @@ int bracketFindRev(char* string,char* searchString, int start)
 	int searchLen=strlen(searchString);
 	int bracket=0,brace=0,sqbracket=0;
 	bool quote=false;
-	for(int c=start; c>=0; c--)
+	end+=searchLen-1;
+	for(int c=start; c>=end; c--)
 	{
 
 		if(bracket == 0 && brace == 0 && sqbracket==0 && !quote)
@@ -1197,63 +1220,46 @@ void convertToBool(Number*num)
 
 
 
-int Calculate::split(char* line)
+int Calculate::split(char* line, int start, int end)
 {
-
+	int pos;
+	operation=NONE;
+	number=NAN;
+	var=-1;
+	horzObj=NULL;
+	vertObj=NULL;
+	
 	if(line==NULL)
-	{
-		operation=NONE;
-		number=NAN;
-		var=-1;
-		horzObj=NULL;
-		vertObj=NULL;
 		return -1;
-	}
-	int len=strlen(line);
-	if(len <=0)
-	{
-		operation=NONE;
-		number=NAN;
-		var=-1;
-		horzObj=NULL;
-		vertObj=NULL;
-		return -1;
-	}
-//	perror("split: "+QString(line));
 
-	if(bracketFind(line," ") != -1)	//none operation
+	int len=strlen(line);
+	if(len <=0 || start>=end)
+		return -1;
+
+
+	if((pos=bracketFind(line," ",start,end)) != -1)	//none operation
 	{
-		operation=NONE;
-		var=-1;
-		number=NAN;
-		int pos=bracketFind(line," ");
-		char* recString1=new char[pos+1];
-		char* recString2=new char[len-pos];
-		strcopy(recString1,line,pos);
-		strcopy(recString2,&line[pos+1],len-pos-1);
-		horzObj=new Calculate(this,recString1,pref,vars);
-		vertObj=new Calculate(this,recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
+		horzObj=new Calculate(this,line,0,pos,pref,vars);
+		vertObj=new Calculate(this,line,pos+1,end,pref,vars);
 		return 0;
 	}
-	else if(bracketFind(line,"+") != -1 || bracketFind(line,"-") != -1)
+	else if(bracketFindRev(line,"+",end-1,start) != -1 || bracketFindRev(line,"-",end-1,start) != -1)
 	{
-		int pos1,pos2,pos=-1;
+		int pos1,pos2,pos=end-1;
 		while(true)
 		{
-			pos1=bracketFindRev(line,"+",pos);
-			if(pos1<=0)
+			pos1=bracketFindRev(line,"+",pos,start);
+			if(pos1<=start)
 				break;
 			if(line[pos1-1]=='e')
 				pos=pos1-1;
 			else break;
 		}
-		pos=-1;
+		pos=end-1;
 		while(true)
 		{
-			pos2=bracketFindRev(line,"-",pos);
-			if(pos2<=0)
+			pos2=bracketFindRev(line,"-",pos,start);
+			if(pos2<=start)
 				break;
 			if(line[pos2-1]=='e')
 				pos=pos2-1;
@@ -1262,371 +1268,240 @@ int Calculate::split(char* line)
 		
 		if(pos2>pos1)
 		{
-			if(pos2>0 && (line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
+			if(pos2>start && (line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
 						|| line[pos2-1]>='0' && line[pos2-1]<='9'
 						|| line[pos2-1]=='.' || line[pos2-1]==')'|| line[pos2-1]==']'))
 			{
 				pos=pos2;
-				number=NAN;
-				var=-1;
 				operation=MINUS;
-				char*recString2=new char[len-pos];
-				strcopy(recString2,&line[pos+1],len-pos-1);
-				horzObj=new Calculate(this,recString2,pref,vars);
-				delete[]recString2;
-				char*recString1=new char[pos+1];
-				strcopy(recString1,line,pos);
-				vertObj=new Calculate(this,recString1,pref,vars);
-				delete[]recString1;
+				horzObj=new Calculate(this,line,pos+1,end,pref,vars);
+				vertObj=new Calculate(this,line,start,pos,pref,vars);
 				return 0;
 			}
-			else if(pos2==0)										//unary - operator
+			else if(pos2==start)										//unary - operator
 			{
 				operation=MINUS;
-				var=-1;
-				number=NAN;
-				vertObj=NULL;
-				horzObj=new Calculate(this,&line[1],pref,vars);
+				horzObj=new Calculate(this,line,start+1,end,pref,vars);
 				return 0;
 			}
 		}
 		else if(pos1>pos2)
 		{
-			if(pos1>0 && (line[pos1-1] >='A' && line[pos1-1]<='Z'					//binary + operator
+			if(pos1>start && (line[pos1-1] >='A' && line[pos1-1]<='Z'					//binary + operator
 						|| line[pos1-1]>='0' && line[pos1-1]<='9'
 						|| line[pos1-1]=='.' || line[pos1-1]==')' || line[pos1-1]==']'))
 			{
 				pos=pos1;
-				number=NAN;
-				var=-1;
 				operation=PLUS;
-				char*recString2=new char[len-pos];
-				strcopy(recString2,&line[pos+1],len-pos-1);
-				horzObj=new Calculate(this,recString2,pref,vars);
-				delete[]recString2;
-				char*recString1=new char[pos+1];
-				strcopy(recString1,line,pos);
-				vertObj=new Calculate(this,recString1,pref,vars);
-				delete[]recString1;
+				horzObj=new Calculate(this,line,pos+1,end,pref,vars);
+				vertObj=new Calculate(this,line,start,pos,pref,vars);
 				return 0;
 			}
-			else if(pos1==0)										//unary + operator
+			else if(pos1==start)										//unary + operator
 			{
 				operation=PLUS;
-				var=-1;
-				number=NAN;
-				vertObj=NULL;
-				horzObj=new Calculate(this,&line[1],pref,vars);
+				horzObj=new Calculate(this,line,start+1,end,pref,vars);
 				return 0;
 			}
-
 		}
 	}
-	if(bracketFind(line,"*") != -1 || bracketFind(line,"/") != -1)
+	if(bracketFind(line,"*",start,end) != -1 || bracketFind(line,"/",start,end) != -1)
 	{
-		int pos1=bracketFindRev(line,"*");
-		int pos2=bracketFindRev(line,"/");
-		if(pos1==-1 && pos2==-1)
-			return -1;
-		int pos;
+		int pos1=bracketFindRev(line,"*",end-1,start);
+		int pos2=bracketFindRev(line,"/",end-1,start);
 		if((pos2>pos1 && pos2 != -1) || pos1==-1)
 		{
 			pos=pos2;
-			var=-1;
 			operation=DIVIDE;
-			char*recString1=new char[pos+1];
-			char*recString2=new char[len-pos];
-			strcopy(recString1,line,pos);
-			strcopy(recString2,&line[pos+1],len-pos-1);
-			horzObj=new Calculate(this,recString2,pref,vars);
-			vertObj=new Calculate(this,recString1,pref,vars);
-			delete[]recString1;
-			delete[]recString2;
+			horzObj=new Calculate(this,line,pos+1,end,pref,vars);
+			vertObj=new Calculate(this,line,start,pos,pref,vars);
 			return 0;
 		}
 		else
 		{
 			pos=pos1;
-			var=-1;
 			operation=MULT;
-			char*recString1=new char[pos+1];
-			char*recString2=new char[len-pos];
-			strcopy(recString1,line,pos);
-			strcopy(recString2,&line[pos+1],len-pos-1);
-			horzObj=new Calculate(this,recString2,pref,vars);
-			vertObj=new Calculate(this,recString1,pref,vars);
-			delete[]recString1;
-			delete[]recString2;
+			horzObj=new Calculate(this,line,pos+1,end,pref,vars);
+			vertObj=new Calculate(this,line,start,pos,pref,vars);
 			return 0;
 		}
 	}
-	else if(bracketFind(line,"%") != -1)
+	else if((pos=bracketFind(line,"%")) != -1)
 	{
-		number=NAN;
 		operation=MODULO;
-		var=-1;
-		int pos=bracketFind(line,"%");
-		char*recString1=new char[pos+1];
-		strcopy(recString1,line,pos);
-		char*recString2=new char[len-pos];
-		strcopy(recString2,&line[pos+1],len-pos-1);
-		vertObj=new Calculate(this,recString1,pref,vars);
-		horzObj=new Calculate(this,recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
+		vertObj=new Calculate(this,line,start,pos,pref,vars);
+		horzObj=new Calculate(this,line,pos+1,end,pref,vars);
 		return 0;
 		
 		
 	}
-	else if(bracketFind(line,"^") != -1)
+	else if((pos=bracketFindRev(line,"^",end-1,start)) != -1)
 	{
-		int pos1=bracketFindRev(line,"^");
-		number=NAN;
 		operation=POW;
-		var=-1;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Calculate(this,recString1,pref,vars);
-		horzObj=new Calculate(this,recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
+		vertObj=new Calculate(this,line,start,pos,pref,vars);
+		horzObj=new Calculate(this,line,pos+1,end,pref,vars);
 		return 0;
 	}
-	else if(bracketFind(line,"$r") != -1)	//	root operation for extcalc (binary operator)
+	else if((pos=bracketFind(line,"$r",end-1,start)) != -1)	//	root operation for extcalc (binary operator)
 	{
 		operation=ROOT;
-		var=-1;
-		number=NAN;
-		int pos=bracketFind(line,"$r");
-		char* recString1=new char[pos+1];
-		char* recString2=new char[len-pos-1];
-		strcopy(recString1,line,pos);
-		strcopy(recString2,&line[pos+2],len-pos-2);
-		vertObj=new Calculate(this,recString1,pref,vars);
-		horzObj=new Calculate(this,recString2,pref,vars);
-		delete[]recString1;
-		delete[]recString2;
+		vertObj=new Calculate(this,line,start,pos,pref,vars);
+		horzObj=new Calculate(this,line,pos+2,end,pref,vars);
 		return 0;
 	}
-	else if(line[0]>='a' && line[0]<='z') 
+	else if(line[start]>='a' && line[start]<='z') 
 	{
-		horzObj=NULL;
-		var=-1;
 		if(pref->angle==DEG)
 			number=180.0/(long double)PI;
 		else if(pref->angle==RAD)
 			number=1.0;
 		else number=200.0/(long double)PI;
-		if(strncmp("asinh",line,5) == 0)
+		if(strncmp("asinh",line+start,5) == 0)
 		{
 			operation=ASINH;
-			vertObj=new Calculate(this,&line[5],pref,vars);
+			vertObj=new Calculate(this,line,start+5,end,pref,vars);
 		}
-		else if(strncmp("acosh",line,5) == 0)
+		else if(strncmp("acosh",line+start,5) == 0)
 		{
 			operation=ACOSH;
-			vertObj=new Calculate(this,&line[5],pref,vars);
+			vertObj=new Calculate(this,line,start+5,end,pref,vars);
 		}
-		else if(strncmp("atanh",line,5) == 0)
+		else if(strncmp("atanh",line+start,5) == 0)
 		{
 			operation=ATANH;
-			vertObj=new Calculate(this,&line[5],pref,vars);
+			vertObj=new Calculate(this,line,start+5,end,pref,vars);
 		}
-		else if(strncmp("asin",line,4) == 0)
+		else if(strncmp("asin",line+start,4) == 0)
 		{
 			operation=ASIN;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp("acos",line,4) == 0)
+		else if(strncmp("acos",line+start,4) == 0)
 		{
 			operation=ACOS;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp("atan",line,4) == 0)
+		else if(strncmp("atan",line+start,4) == 0)
 		{
 			operation=ATAN;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp("sinh",line,4) == 0)
+		else if(strncmp("sinh",line+start,4) == 0)
 		{
 			operation=SINH;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp("cosh",line,4) == 0)
+		else if(strncmp("cosh",line+start,4) == 0)
 		{
 			operation=COSH;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp("tanh",line,4) == 0)
+		else if(strncmp("tanh",line+start,4) == 0)
 		{
 			operation=TANH;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp("sin",line,3) == 0)
+		else if(strncmp("sin",line+start,3) == 0)
 		{
 			operation=SIN;
-			vertObj=new Calculate(this,&line[3],pref,vars);
+			vertObj=new Calculate(this,line,start+3,end,pref,vars);
 		}
-		else if(strncmp("cos",line,3) == 0)
+		else if(strncmp("cos",line+start,3) == 0)
 		{
 			operation=COS;
-			vertObj=new Calculate(this,&line[3],pref,vars);
+			vertObj=new Calculate(this,line,start+3,end,pref,vars);
 		}
-		else if(strncmp("tan",line,3) == 0)
+		else if(strncmp("tan",line+start,3) == 0)
 		{
 			operation=TAN;
-			vertObj=new Calculate(this,&line[3],pref,vars);
+			vertObj=new Calculate(this,line,start+3,end,pref,vars);
 		}
-		else if(strncmp("log",line,3) == 0)
+		else if(strncmp("log",line+start,3) == 0)
 		{
 			operation=LG;
-			vertObj=new Calculate(this,&line[3],pref,vars);
+			vertObj=new Calculate(this,line,start+3,end,pref,vars);
 		}
-		else if(strncmp("ln",line,2) == 0)
+		else if(strncmp(line+start,"ln",2) == 0)
 		{
 			operation=LN;
-			vertObj=new Calculate(this,&line[2],pref,vars);
+			vertObj=new Calculate(this,line,start+2,end,pref,vars);
 		}
-		else if(strncmp(line,"sqrt",4) == 0)
+		else if(strncmp(line+start,"sqrt",4) == 0)
 		{
 			operation=SQRT;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp(line,"curt",4) == 0)
+		else if(strncmp(line+start,"curt",4) == 0)
 		{
 			operation=CURT;
-			vertObj=new Calculate(this,&line[4],pref,vars);
+			vertObj=new Calculate(this,line,start+4,end,pref,vars);
 		}
-		else if(strncmp(line,"abs",3) == 0)
+		else if(strncmp(line+start,"abs",3) == 0)
 		{
 			operation=SABS;
-			vertObj=new Calculate(this,&line[3],pref,vars);
+			vertObj=new Calculate(this,line,start+3,end,pref,vars);
 		}
 		else{
-			operation=NONE;
 			number=NAN;
 			return -1;
 		}
-
 		return 0;
 	}
-	/*	else if(bracketFind(line,"$r(") != -1)		//root operation for calc (operator with arguments)
+	else if(strncmp(line+start,"\\d(",3) == 0)
 	{
-		// syntax: fourth root of nine: root(4,9)
-	operation=ROOT;
-	var=-1;
-	number=NAN;
-	int pos1=bracketFind(line,"$r(");
-	pos1+=3;
-	int pos2=bracketFind(line,",",pos1);
-	if(pos1==-1 || pos2 == -1 || line[len-1]!=')')
-	return (NAN);
-			
-	char* recString1=new char[pos2-pos1+1];
-	char* recString2=new char[len-pos2-1];
-	strcopy(recString1,&line[pos1],pos2-pos1);
-	strcopy(recString2,&line[pos2+1],len-pos2-2);
-			
-	vertObj=new Calculate(this,recString1,pref,vars);
-	horzObj=new Calculate(this,recString2,pref,vars);
-		
-	delete[]recString1;
-	delete[]recString2;
-	return 0;
-}*/
-	else if(bracketFind(line,"\\d(") != -1)
-	{
-		operation=DIFF;
-		number=NAN;
-		var=-1;
-		int pos1=bracketFind(line,",",3);
-		if(pos1<0 || pos1>len-2)
+		pos=bracketFind(line,",",start+3,end);
+		if(pos<0 || pos>len-2)
 			return -1;
-		char* function=new char[pos1-2];
-		char* startStr=new char[len-pos1-1];
-		strcopy(function,&line[3],pos1-3);
-		strcopy(startStr,&line[pos1+1],len-pos1-2);
+		operation=DIFF;
 
-
-		horzObj=new Calculate(this,function,pref,vars);
-		vertObj=new Calculate(this,startStr,pref,vars);
-		delete[]function;
-		delete[]startStr;
+		horzObj=new Calculate(this,line,start+3,pos,pref,vars);
+		vertObj=new Calculate(this,line,pos+1,end-1,pref,vars);
 		return 0;
 	}
-	else if(bracketFind(line,"\\i(") != -1)
+	else if(strncmp(line+start,"\\i(",3) == 0)
 	{
-		operation=INTEGRAL;
-		number=NAN;
-		var=-1;
-		int pos1=bracketFind(line,",",3);
+		int pos1=bracketFind(line,",",3,end);
 		if(pos1==-1)
 			return-1;
-		int pos2=bracketFind(line,",",pos1+1);
+		int pos2=bracketFind(line,",",pos1+1,end);
 		if(pos2==-1)
 			return -1;
-		char *function=new char[pos1-2];
+		operation=INTEGRAL;
+		
 		char *parStr=new char[len-pos1+2];
-
-		strcopy(function,&line[3],pos1-3);
 		strcopy(parStr,&line[pos1+1],pos2-pos1-1);
 		parStr[pos2-pos1-1]=' ';
 		strcopy(&parStr[pos2-pos1],&line[pos2+1],len-pos2-2);
-		horzObj=new Calculate(this,function,pref,vars);
-		vertObj=new Calculate(this,parStr,pref,vars);
-		delete[]function;
+		horzObj=new Calculate(this,line,start+3,pos1,pref,vars);
+		vertObj=new Calculate(this,parStr,0,strlen(parStr),pref,vars);
 		delete[]parStr;
 		return 0;
 	}
-	else if(line[0]=='(')
+	else if(line[start]=='(')
 	{
-		number=NAN;
-		operation=NONE;
-		var=-1;
-		char*recString1;
-		if(len>0 && line[len-1] == ')')
-		{
-			recString1=new char[len-1];
-			strcopy(recString1,&line[1],len-2);
-		}
-		else 
-		{
-			recString1=new char[len];
-			strcopy(recString1,&line[1],len-1);
-		}
-		horzObj=new Calculate(this,recString1,pref,vars);
-		delete[]recString1;
-		vertObj=NULL;
-		
+		if(end-start && line[end-1] == ')')
+			horzObj=new Calculate(this,line,start+1,end-1,pref,vars);
+		else horzObj=new Calculate(this,line,start+1,end,pref,vars);
+
 		return 0;
 	}
-	else if(line[0]>='A' && line[0]<='Z')
+	else if(line[start]>='A' && line[start]<='Z')
 	{
-		operation=NONE;
-		number=NAN;
-		vertObj=NULL;
-		var=((int)line[0])-65;
-		
-		if(len>1)
+		var=((int)line[start])-65;
+		if(end-start>1)
 			var=-1;
-		else 
-		{
-			operation=NONE;
-			horzObj=NULL;
-		}
+		return 0;
 	}
 	else{
-		operation=NONE;
-		number=strtod(line,NULL);
-		var=-1;
-		horzObj=NULL;
-		vertObj=NULL;
+		char*tmp=new char[end-start+1];
+		tmp[end-start]=(char)0;
+		memcpy(tmp,&line[start],end-start);
+		number=strtod(tmp,NULL);
+		delete[] tmp;
+		
 		if(number==NAN)
 			return -1;
 		else return 0;
-//		 line.toDouble();
 	}
 	return -1;
 }
@@ -1844,275 +1719,208 @@ double Calculate::calcHorzObj()
 }
 
 
-int Script::split(char*line)
+int Script::split(char*line,int start,int end)
 {
 	bool init=false;
-	char*rest;
+	int rest;
 	if(parent==NULL)
 	{
 		value.type=NNONE;
-		operation=SINIT;
-		rest=line;
+		rest=start;
 		init=true;
-		parse(NULL);
+		parse(NULL,0,0);
+		operation=SINIT;
 	}
-	else rest=parse(line);
+	else rest=parse(line,start,end);
 
-	if(rest!=NULL)
+	if(rest!=-1)
 	{
-		nextObj=new Script(this,NULL,pref,vars,eventReciver);
-		nextObj->split(rest);
-		if(parent!=NULL)
-			delete[]rest;
+		horzObj=new Script(this,NULL,0,0,pref,vars,eventReciver);
+		horzObj->split(line,rest,end);
 	}
 	return 0;
 }
 
 
-char* Script::parse(char* line)
+int Script::parse(char* line,int start,int end)
 {
+
 	static int semicolonCount=0;
 	if(line==NULL)
 	{
 		semicolonCount=0;
-		return NULL;
+		return -1;
+	}
+	if(end<=start)
+	{
+//		printError("Empty operation",semicolonCount,eventReciver);
+		operation=SFAIL;
+		return -1;
 	}
 	
+
+//	QString outLine(line);
+//	outLine=outLine.mid(start,end-start);
+//	qDebug(outLine);
+	
 	int pos1;
-	int len=strlen(line);
 //	perror(line);
 
 	
-	if(line[0]== '{' && bracketFind(line,"}")==len-1 || line[0]== '(' && bracketFind(line,")")==len-1)
+	if(line[start]== '{' && bracketFind(line,"}",start,end)==end-1 || line[start]== '(' && bracketFind(line,")",start,end)==end-1)
 	{
-		char*recString=new char[len-1];
-		strcopy(recString,&line[1],len-2);
-		split(recString);
-		delete[] recString;
-		return NULL;
+		split(line,start+1,end-1);
+		return -1;
 	}
 //	static int commands=0;
 //	perror("Commands: "+QString::number(commands++));
 //	perror("line after bracket: "+QString(line));
 	
 	//programming language structures
-	if((pos1=bracketFind(line,"if(")) == 0)
+	if(strncmp("if(",line+start,3) == 0)
 	{
-		int pos2=bracketFind(line,")");
-		if(pos2<3 || len<pos2+2)
+		int pos2=bracketFind(line,")",start,end);
+		if(pos2<start+3)
 		{
 			printError("No closing bracket for if found",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char*recString1=new char[pos2-2];
-		strcopy(recString1,&line[3],pos2-3);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		delete[] recString1;
-		
-		char*recString2=new char[len-pos2];
-		strcopy(recString2,&line[pos2+1],len-pos2-1);
-		vertObj2=new Script(this,NULL,pref,vars,eventReciver);
-		char*rest=vertObj2->parse(recString2);
-		delete[]recString2;
-		if(rest==NULL)
+		vertObj=new Script(this,line,start+3,pos2,pref,vars,eventReciver);
+
+		vertObj2=new Script(this,NULL,0,0,pref,vars,eventReciver);
+		int rest=vertObj2->parse(line,pos2+1,end);
+		if(rest==-1)
 		{
 			operation=SIF;
-			return NULL;
+			return -1;
 		}
 
-		if(strncmp(rest,"else",4)==0)
+		if(strncmp(line+rest,"else",4)==0)
 		{
 			operation=SIFELSE;
-			char*recString3=new char[strlen(rest)-3];
-			strcopy(recString3,&rest[4],strlen(rest)-4);
-			delete[]rest;
 			vertObj3=new Script(this,NULL,pref,vars,eventReciver);
-			rest=vertObj3->parse(recString3);
-			delete[]recString3;
+			rest=vertObj3->parse(line,rest+4,end);
 		}
 		else operation=SIF;
-		
+
 		return rest;
 	}
-	else if((pos1=bracketFind(line,"while(")) == 0)
+	else if(strncmp(line+start,"while(",6) == 0)
 	{
 		operation=SWHILE;
-		int pos2=bracketFind(line,")");
-		if(pos2<7)
+		int pos2=bracketFind(line,")",start,end);
+		if(pos2<start+7)
 		{
 			printError("No closing bracket for while found",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
-		char*recString1=new char[pos2-5];
-		strcopy(recString1,&line[6],pos2-6);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		delete[]recString1;
-		char*recString2=new char[len-pos2];
-		strcopy(recString2,&line[pos2+1],len-pos2-1);
 
-		vertObj2=new Script(this,NULL,pref,vars,eventReciver);
-		char*rest=vertObj2->parse(recString2);
-		delete[]recString2;
-		
+		vertObj=new Script(this,line,start+6,pos2,pref,vars,eventReciver);
+		vertObj2=new Script(this,NULL,0,0,pref,vars,eventReciver);
+		int rest=vertObj2->parse(line,pos2+1,end);
+
 		return rest;
 	}
-	else if((pos1=bracketFind(line,"for(")) == 0)
+	else if(strncmp(line+start,"for(",4) == 0)
 	{
-		
 		operation=SFOR;
-		int pos2=bracketFind(line,";",4);
-		int pos3=bracketFind(line,";",pos2+1);
-		int pos4=bracketFind(line,")",3);
-		if(pos2<4 || pos3<5 || pos4<6)
+		int pos2=bracketFind(line,";",start+4,end);
+		int pos3=bracketFind(line,";",pos2+1,end);
+		int pos4=bracketFind(line,")",start,end);
+		if(pos2<start+4 || pos3<start+5 || pos4<start+6)
 		{
 			printError("Invalid usage of for",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
+
+		vertObj=new Script(this,line,start+4,pos2,pref,vars,eventReciver);
+
+		semicolonCount++;
+		if(pos3-pos2>1)
+			vertObj2=new Script(this,line,pos2+1,pos3,pref,vars,eventReciver);
+		else vertObj2=NULL;
+		semicolonCount++;
+
+
+		vertObj3=new Script(this,line,pos3+1,pos4,pref,vars,eventReciver);
+
 		
-		char*recString1=new char[pos2-2];
-		strcopy(recString1,&line[4],pos2-3);
-		char*recString2=new char[pos3-pos2+1];
-		strcopy(recString2,&line[pos2+1],pos3-pos2);
-		
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		
-		delete[]recString1;
-		delete[]recString2;
-		if(pos4-pos3>1)
-		{
-			char*recString3=new char[pos4-pos3];
-			strcopy(recString3,&line[pos3+1],pos4-pos3-1);
-			vertObj3=new Script(this,recString3,pref,vars,eventReciver);
-			delete[]recString3;
-		}
-		else vertObj3=NULL;
-		
-		if(len-pos4<2)
+		if(end-pos4<2)
 		{
 			printError("For-loop has no body",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char*recString4=new char[len-pos4];
-		strcopy(recString4,&line[pos4+1],len-pos4-1);
-		horzObj=new Script(this,NULL,pref,vars,eventReciver);
-		char*rest=horzObj->parse(recString4);
-//		perror("for rest: "+QString(rest));
-		delete[]recString4;
-		
-		return rest;
+
+		vertObj4=new Script(this,NULL,pref,vars,eventReciver);
+		return vertObj4->parse(line,pos4+1,end);
 	}
-	else if(line[0] == '{')
+	else if(line[start] == '{')
 	{
-//		perror("another bracket");
 		operation=SBRACKET;
-		int pos1=bracketFind(line,"}");
+		pos1=bracketFind(line,"}",start,end);
 		if(pos1<1)
 		{
 			printError("No closing bracket for { found",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char*recString1=new char[pos1];
-		strcopy(recString1,&line[1],pos1-1);
 		vertObj=new Script(this,NULL,pref,vars,eventReciver);
-		vertObj->split(recString1);
-		delete[]recString1;
-		if(pos1==len-1)
-		{
-//			perror("bracket returns 0");
-			return NULL;
-		}
-		else {
-			char*recString2=new char[len-pos1];
-			strcopy(recString2,&line[pos1+1],len-pos1-1);
-//			perror("bracket return: "+QString(recString2));
-			return recString2;
-		}
+		vertObj->split(line,start+1,pos1);
+		if(pos1==end)
+			return -1;
+		else return pos1+1;
 	}
 	//operators
-	else if((pos1=bracketFind(line,";")) != -1)
+	else if((pos1=bracketFind(line,";",start,end)) != -1)
 	{
-//		perror("semicolon");
 		operation=SSEMICOLON;
-		char*recString1=new char[pos1+1];
-		strcopy(recString1,line,pos1);
-		if(pos1>0)
-			vertObj=new Script(this,recString1,pref,vars,eventReciver);
+
+		if(pos1>start)
+			vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
 		else vertObj=NULL;
-		delete[]recString1;
-	//	printError("Strichpunkt gefunden",semicolonCount,eventReciver);
 		semicolonCount++;
-		
-		
-		if(len-pos1>1)
-		{
-			char*recString2=new char[len-pos1];
-			strcopy(recString2,&line[pos1+1],len-pos1-1);
-			return recString2;
-		}
-		else return NULL;
 
+		if(pos1<end-1)
+			return pos1+1;
+		else return -1;
 	}
-	else if((pos1=bracketFind(line,"&&")) != -1)
+	else if((pos1=bracketFind(line,"&&",start,end)) != -1)
 	{
-
 		operation=SAND;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1-1];
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+2],len-pos1-2);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+2,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"||")) != -1)
+	else if((pos1=bracketFind(line,"||",start,end)) != -1)
 	{
-
 		operation=SOR;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1-1];
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+2],len-pos1-2);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+2,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"->")) != -1)
+	else if((pos1=bracketFind(line,"->",start,end)) != -1)
 	{
 		operation=SSET;
-		char*recString2;
-		vertObj2=vertObj3=NULL;
 		int pos2=0;
-		if(pos1!=len-3)
+		if(pos1!=end-3)
 		{
-			if(line[pos1+3]=='[' && line[len-1]==']' && len-pos1!=4)
+			if(line[pos1+3]=='[' && line[end-1]==']')
 			{
 				if((pos2=bracketFindRev(line,"["))!=-1)
 				{
@@ -2120,448 +1928,297 @@ char* Script::parse(char* line)
 					{
 						printError("No closing brace for set operation found",semicolonCount,eventReciver);
 						operation=SFAIL;
-						return NULL;
+						return -1;
 					}
-					recString2=new char[pos2-pos1-4];
-					char*recString3=new char[len-pos2-1];
-					strcopy(recString2,&line[pos1+4],pos2-pos1-5);
-					strcopy(recString3,&line[pos2+1],len-pos2-2);
-					vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-					vertObj3=new Script(this,recString3,pref,vars,eventReciver);
-				//	perror(QString("arrow index: ")+recString2);
-					delete[]recString2;
-					delete[]recString3;
-					
+					vertObj2=new Script(this,line,pos1+4,pos2-1,pref,vars,eventReciver);
+					vertObj3=new Script(this,line,pos2+1,end-1,pref,vars,eventReciver);
 				}
-				else {
-					recString2=new char[len-pos1-4];
-					strcopy(recString2,&line[pos1+4],len-pos1-5);
-					vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-			//		perror(QString("arrow index: ")+recString2);
-					delete[]recString2;
-				}
+				else vertObj2=new Script(this,line,pos1+4,end-1,pref,vars,eventReciver);
 			}
 			else {
 				printError("Right operand of set operation invalid",semicolonCount,eventReciver);
 				operation=SFAIL;
-				return NULL;
+				return -1;
 			}
 		}
-		char*recString1=new char[pos1+1];
-		strcopy(recString1,line,pos1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
 
-			
+		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+
 		var=line[pos1+2]-65;
 		if(var<0 || var>25)
 		{
 			printError("Invalid variable for set operation",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			delete[]recString1;
-			return NULL;
+			return -1;
 		}
-		//eventReciver->numlen[var]=1;
-		delete[]recString1;
-		return NULL;
+		return -1;
 	}
-	else if(bracketFind(line,"==") != -1)
+	else if((pos1=bracketFindRev(line,"==",end-1,start)) != -1)
 	{
-		pos1=bracketFindRev(line,"==")-1;
 		operation=SCOMPARE;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1-1];
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+2],len-pos1-2);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1-1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"!=") != -1)
+	else if((pos1=bracketFindRev(line,"!=",end-1,start)) != -1)
 	{
-		pos1=bracketFindRev(line,"!=")-1;
 		operation=SUNEQUAL;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1-1];
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+2],len-pos1-2);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1-1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,">=") != -1)
+	else if((pos1=bracketFindRev(line,">=",end-1,start)) != -1)
 	{
-		pos1=bracketFindRev(line,">=")-1;
 		operation=SGREQ;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1-1];
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+2],len-pos1-2);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1-1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"<=") != -1)
+	else if((pos1=bracketFindRev(line,"<=",end-1,start)) != -1)
 	{
-		pos1=bracketFindRev(line,"<=")-1;
 		operation=SLESSEQ;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1-1];
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+2],len-pos1-2);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1-1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,">")) != -1 && line[pos1+1]!='>')
+	else if((pos1=bracketFindRev(line,">",end-1,start)) != -1 && line[pos1+1]!='>')
 	{
 		operation=SGREATHER;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"<")) != -1 && line[pos1+1]!='<')
+	else if((pos1=bracketFindRev(line,"<",end-1,start)) != -1 && line[pos1+1]!='<')
 	{
 		operation=SLESS;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"=")) != -1)
+	else if((pos1=bracketFind(line,"=",start,end)) != -1)
 	{
 		operation=SSET;
-		char*recString1=new char[len-pos1];
-		strcopy(recString1,&line[pos1+1],len-pos1-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		delete[]recString1;
-		vertObj2=vertObj3=NULL;
+
+		vertObj=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
 		int pos2=0;
-		if(pos1!=1)
+		if(pos1!=start+1)
 		{
-			if(line[1]=='[' && line[pos1-1]==']')
+			if(line[start+1]=='[' && line[pos1-1]==']')
 			{
-				if((pos2=bracketFind(line,"]")) !=pos1-1)
+				if((pos2=bracketFind(line,"]",start,end)) !=pos1-1)
 				{
 					if(line[pos2+1]!='[')
 					{
 						printError("Closing brace for set operation not found",semicolonCount,eventReciver);
 						operation=SFAIL;
-						return NULL;
+						return -1;
 					}
-					char*recString2=new char[pos2-1];
-					char*recString3=new char[pos1-pos2-2];
-					strcopy(recString2,&line[2],pos2-2);
-					strcopy(recString3,&line[pos2+2],pos1-pos2-3);
-					vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-					vertObj3=new Script(this,recString3,pref,vars,eventReciver);
-	//				perror(QString("set index: ")+recString2);
-					delete[]recString2;
-					delete[]recString3;
+
+					vertObj2=new Script(this,line,start+2,pos2,pref,vars,eventReciver);
+					vertObj3=new Script(this,line,pos2+2,pos1-1,pref,vars,eventReciver);
 				}
-				else {
-					char*recString2=new char[pos1-2];
-					strcopy(recString2,&line[2],pos1-3);
-					vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-	//				perror(QString("set index: ")+recString2);
-					delete[]recString2;
-				}
+				else vertObj2=new Script(this,line,start+2,pos1-1,pref,vars,eventReciver);
 			}
 			else {
 				printError("Left operand of set operation invalid",semicolonCount,eventReciver);
 				operation=SFAIL;
-				return NULL;
+				return -1;
 			}
 			
 		}
-		var=line[0]-65;
+		var=line[start]-65;
 		if(var<0 || var>25)
 		{
 			printError("Invalid variable for set operation",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
 		}
-//		eventReciver->numlen[var]=1;
-		return NULL;
+		return -1;
 	}
-	pos1=0;
-	while((pos1=bracketFind(line,"+",pos1)) != -1)
+	pos1=start;
+	while((pos1=bracketFind(line,"+",pos1,end)) != -1)
 	{
-		if(pos1>1 && line[pos1-1]=='e')
+		if(pos1>start && line[pos1-1]=='e')
 		{
 			pos1++;
 			continue;
 		}
 		operation=SFAIL;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		if(pos1<1)
-			printError("First operand of + invalid",semicolonCount,eventReciver);
-		else if(len-pos1<2)
+		if(pos1<start+1)
+		{
+			operation=PLUS;
+			vertObj=NULL;
+		}
+		else if(end-pos1<2)
 			printError("Second operand of + invalid",semicolonCount,eventReciver);
-		else operation=PLUS;
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-			
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		else {
+			operation=PLUS;
+			vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		}
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+
+		return -1;
 	}
-	pos1=-1;
-	while((pos1=bracketFindRev(line,"-",pos1)) != -1)
-	{		
-		if(pos1>1 && !(line[pos1-1]>='A' && line[pos1-1]<='Z' || line[pos1-1]>='0' && line[pos1-1]<='9' || line[pos1-1]=='i' || line[pos1-1]==')'||line[pos1-1]==']'|| line[pos1-1]=='!') )
+	pos1=end-1;
+	while((pos1=bracketFindRev(line,"-",pos1,start)) !=-1)
+	{
+		if(pos1>start && !(line[pos1-1]>='A' && line[pos1-1]<='Z' || line[pos1-1]>='0' && line[pos1-1]<='9' || line[pos1-1]=='i' || line[pos1-1]==')'||line[pos1-1]==']'|| line[pos1-1]=='!') )
 		{
 			pos1--;
 			continue;
 		}
-		operation=MINUS;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		operation=SFAIL;
+		if(pos1<start+1)
+		{
+			operation=MINUS;
+			vertObj=NULL;
+		}
+		else if(end-pos1<2)
+			printError("Second operand of - invalid",semicolonCount,eventReciver);
+		else {
+			operation=MINUS;
+			vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		}
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
 	}
-	if((pos1=bracketFindRev(line,"*")) != -1)
+	if((pos1=bracketFindRev(line,"*",end-1,start)) != -1)
 	{
 		operation=SFAIL;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		if(pos1<1)
+		if(pos1<start+1)
 			printError("First operand of * invalid",semicolonCount,eventReciver);
-		else if(len-pos1<2)
+		else if(end-pos1<2)
 			printError("Second operand of * invalid",semicolonCount,eventReciver);
 		else operation=MULT;
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-			
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFindRev(line,"/")) != -1)
+	else if((pos1=bracketFindRev(line,"/",end-1,start)) != -1)
 	{
 		operation=SFAIL;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		if(pos1<1)
+		if(pos1<start+1)
 			printError("First operand of / invalid",semicolonCount,eventReciver);
-		else if(len-pos1<2)
+		else if(end-pos1<2)
 			printError("Second operand of / invalid",semicolonCount,eventReciver);
 		else {
 			if(pref->complex)
 				operation=CDIVIDE;
 			else operation=DIVIDE;
 		}
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-			
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"$s") != -1)
+	else if((pos1=bracketFindRev(line,"$s",end-1,start)) != -1)
 	{
-		pos1=bracketFindRev(line,"$s")-1;
 		operation=SFAIL;
-		if(pos1<1)
+		if(pos1<start+2)
 			printError("First operand of root invalid",semicolonCount,eventReciver);
-		else if(len-pos1<3)
+		else if(end-pos1<2)
 			printError("Second operand of root invalid",semicolonCount,eventReciver);
 		else {
 			operation=SCALARPROD;
 		}
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1-1];
-
-		
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+2],len-pos1-2);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1-1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
 	}	
-	else if((pos1=bracketFind(line,"%")) != -1)
+	else if((pos1=bracketFind(line,"%",start,end)) != -1)
 	{
 		operation=SFAIL;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		if(pos1<1)
+		if(pos1<start+1)
 			printError("First operand of % invalid",semicolonCount,eventReciver);
-		else if(len-pos1<2)
+		else if(end-pos1<2)
 			printError("Second operand of % invalid",semicolonCount,eventReciver);
 		else operation=MODULO;
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-			
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,">>") != -1)
+	else if((pos1=bracketFind(line,">>",start,end)) != -1)
 	{
-		pos1=bracketFind(line,">>");
 		operation=SFAIL;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1-1];
-		if(pos1<1)
+		if(pos1<start+1)
 			printError("First operand of >> invalid",semicolonCount,eventReciver);
-		else if(len-pos1<3)
+		else if(end-pos1<3)
 			printError("Second operand of >> invalid",semicolonCount,eventReciver);
 		else operation=RSHIFT;
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+2],len-pos1-2);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+2,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"<<") != -1)
+	else if((pos1=bracketFind(line,"<<",start,end)) != -1)
 	{
-		pos1=bracketFind(line,"<<");
 		operation=SFAIL;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1-1];
-		if(pos1<1)
+		if(pos1<start+1)
 			printError("First operand of << invalid",semicolonCount,eventReciver);
-		else if(len-pos1<3)
+		else if(end-pos1<3)
 			printError("Second operand of << invalid",semicolonCount,eventReciver);
 		else operation=LSHIFT;
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+2],len-pos1-2);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+2,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"x")) != -1)
+	else if((pos1=bracketFind(line,"x",start,end)) != -1)
 	{
 		operation=SFAIL;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		if(pos1<1)
+		if(pos1<start+1)
 			printError("First operand of x invalid",semicolonCount,eventReciver);
-		else if(len-pos1<2)
+		else if(end-pos1<2)
 			printError("Second operand of x invalid",semicolonCount,eventReciver);
 		else operation=XOR;
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-			
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"&")) != -1)
+	else if((pos1=bracketFind(line,"&",start,end)) != -1)
 	{
 		operation=SFAIL;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		if(pos1<1)
+		if(pos1<start+1)
 			printError("First operand of & invalid",semicolonCount,eventReciver);
-		else if(len-pos1<2)
+		else if(end-pos1<2)
 			printError("Second operand of & invalid",semicolonCount,eventReciver);
 		else operation=SBAND;
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-			
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"|")) != -1)
+	else if((pos1=bracketFind(line,"|",start,end)) != -1)
 	{
 		operation=SFAIL;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		if(pos1<1)
+		if(pos1<start+1)
 			printError("First operand of | invalid",semicolonCount,eventReciver);
-		else if(len-pos1<2)
+		else if(end-pos1<2)
 			printError("Second operand of | invalid",semicolonCount,eventReciver);
 		else operation=SBOR;
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-			
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"!"))!=-1)
+	else if((pos1=bracketFind(line,"!",start,end))!=-1)
 	{
-		vertObj2=vertObj3=horzObj=nextObj=NULL;
-		char*recString1=new char[len];
-		if(pos1<=0)
+		if(pos1==end-1)
 		{
-			if(len>1)
-			{
-				operation=SNOT;
-				strcopy(recString1,&line[1],len-1);
-			}
-			else {
-				operation=SFAIL;
-				printError("No argument for ! set",semicolonCount,eventReciver);
-			}
+			operation=SNOT;
+			vertObj=new Script(this,line,start,end-1,pref,vars,eventReciver);
+		}
+		else if(pos1==start)
+		{
+			operation=SFAK;
+			vertObj=new Script(this,line,start+1,end,pref,vars,eventReciver);
 		}
 		else {
-			operation=SFAK;
-			strcopy(recString1,line,len-1);
-				
+			operation=SFAIL;
+			printError("Invalid use of !",semicolonCount,eventReciver);
 		}
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		delete[]recString1;
-		return NULL;
+		return -1;
 	}
-	else if((pos1=bracketFindRev(line,"^")) != -1)
+	else if((pos1=bracketFindRev(line,"^",end-1,start)) != -1)
 	{
 		operation=SFAIL;
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1];
-		if(pos1<1)
+		if(pos1<start+1)
 			printError("First operand of ^ invalid",semicolonCount,eventReciver);
-		else if(len-pos1<2)
+		else if(end-pos1<2)
 			printError("Second operand of ^ invalid",semicolonCount,eventReciver);
 		else 
 		{
@@ -2569,904 +2226,617 @@ char* Script::parse(char* line)
 				operation=CPOW;
 			else operation=POW;
 		}
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+1],len-pos1-1);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		if(strcmp(recString2,"-1")!=0)
-			vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		else {
-			operation=INVERT;
-			vertObj2=NULL;
-		}
-			
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
+		vertObj=new Script(this,line,start,pos1,pref,vars,eventReciver);
+		if(strncmp(line+pos1+1,"-1",2)!=0)
+			vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		else operation=INVERT;
+		return -1;
 	}
-	else if(bracketFind(line,"$r") != -1)
+	else if((pos1=bracketFindRev(line,"$r",end-1,start)) != -1)
 	{
-		pos1=bracketFindRev(line,"$r")-1;
 		operation=SFAIL;
 		if(pos1<1)
 			printError("First operand of root invalid",semicolonCount,eventReciver);
-		else if(len-pos1<3)
+		else if(end-pos1<3)
 			printError("Second operand of root invalid",semicolonCount,eventReciver);
 		else {
 			if(pref->complex)
 				operation=CROOT;
 			else operation=ROOT;
 		}
-		char*recString1=new char[pos1+1];
-		char*recString2=new char[len-pos1-1];
+		vertObj=new Script(this,line,start,pos1-1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end,pref,vars,eventReciver);
+		return -1;
+	}
 
-		
-		strcopy(recString1,line,pos1);
-		strcopy(recString2,&line[pos1+2],len-pos1-2);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-		return NULL;
-	}	
-	else if((pos1=bracketFind(line,"print(")) == 0)
+	else if(strncmp(line+start,"print(",6) == 0)
 	{
-//		perror("print");
 		operation=SPRINT;
-		int pos2=bracketFind(line,")");
-		if(pos2<7)
+		if(bracketFind(line,")",start,end)!=end-1)
 		{
 			printError("Closing bracket for print not found",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char*recString1=new char[pos2-5];
-		strcopy(recString1,&line[6],pos2-6);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		delete[]recString1;
-
-		return NULL;
+		vertObj=new Script(this,line,start+6,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"clear")) == 0)
+	else if(strncmp(line+start,"clear",5) == 0)
 	{
-//		perror("clear");
 		operation=SCLEARTEXT;
-		return NULL;
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"setcursor(")) == 0)
+	else if(strncmp(line+start,"setcursor(",10) == 0)
 	{
-//		perror("setcursor");
 		operation=SSETCURSOR;
-		int pos2=bracketFind(line,",",10);
-		int pos3=bracketFindRev(line,")");
-		if(pos2<11 || pos3<12 || pos3<pos2)
+		pos1=bracketFind(line,",",start+10,end-1);
+		int pos2=bracketFind(line,")",start,end);
+		if(pos2!=end-1 || pos1<start+10)
 		{
 			printError("Invalid use of setcursor",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char*recString1=new char[pos2-9];
-		strcopy(recString1,&line[10],pos2-10);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		char*recString2=new char[pos3-pos2];
-		strcopy(recString2,&line[pos2+1],pos3-pos2-1);
-		vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		delete[]recString1;
-		delete[]recString2;
-
-		return NULL;
+		vertObj=new Script(this,line,start+10,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"sleep(")) == 0)
+	else if(strncmp(line+start,"sleep(",6) == 0)
 	{
-//		perror("sleep");
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SSLEEP;
-		int pos2=bracketFind(line,")");
-		if(pos2<7)
+		if(bracketFind(line,")",start,end)!=end-1)
 		{
 			printError("No closing bracket for sleep found",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char*recString1=new char[pos2-5];
-		strcopy(recString1,&line[6],pos2-6);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		delete[]recString1;
-		return NULL;
+		vertObj=new Script(this,line,start+6,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"rnd(")) == 0)
+	else if(strncmp(line+start,"rnd(",4) == 0)
 	{
 		operation=SRAND;
 		value.type=NFLOAT;
-		if(line[len-1]!=')')
+		if(bracketFind(line,")",start,end)!=end-1)
 		{
 			printError("No closing bracket for rnd found",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char*recString1=new char[len-pos1-4];
-		strcopy(recString1,&line[4],len-pos1-5);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		delete[]recString1;
-		return NULL;
+		vertObj=new Script(this,line,start+4,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"readfile(")) == 0)
+	else if(strncmp(line+start,"readfile(",9) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SFREAD;
-		int pos2=bracketFind(line,")");
-		if(pos2<10)
+		if(bracketFind(line,")",start,end)!=end-1)
 		{
 			printError("Closing bracket for readfile not found",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
 		}
-		char*recString1=new char[pos2-8];
-		strcopy(recString1,&line[9],pos2-9);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		delete[]recString1;
-
-		return NULL;
+		else vertObj=new Script(this,line,start+9,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"writefile(")) == 0)
+	else if(strncmp(line+start,"writefile(",10) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SFWRITE;
-		var=-1;
-		int pos1=bracketFind(line,",",10);
-		if(pos1<11 || pos1>len-2)
+		pos1=bracketFind(line,",",start+10,end);
+		if(pos1<start+10)
 		{
 			printError("Invalid use of writefile",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char* filename=new char[pos1-9];
-		char* input=new char[len-pos1-1];
-		strcopy(filename,&line[10],pos1-10);
-		strcopy(input,&line[pos1+1],len-pos1-2);
-
-
-		vertObj=new Script(this,filename,pref,vars,eventReciver);
-		vertObj2=new Script(this,input,pref,vars,eventReciver);
-		delete[]input;
-		delete[]filename;
-		return NULL;
+		vertObj=new Script(this,line,start+10,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"removefile(")) == 0)
+	else if(strncmp(line+start,"removefile(",11) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SFREMOVE;
-		int pos2=bracketFind(line,")");
-		if(pos2<12)
+		if(bracketFind(line,")",start,end)<start+11)
 		{
 			printError("Closing bracket for removefile not found",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char*recString1=new char[pos2-10];
-		strcopy(recString1,&line[11],pos2-11);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		delete[]recString1;
-
-		return NULL;
+		vertObj=new Script(this,line,start+11,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"appendfile(")) == 0)
+	else if(strncmp(line+start,"appendfile(",11) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SFAPPEND;
-		var=-1;
-		int pos1=bracketFind(line,",",11);
-		if(pos1<12 || pos1>len-2)
+		pos1=bracketFind(line,",",start+11,end);
+		if(pos1<start+12)
 		{
 			printError("Invalid use of appendfile",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char* filename=new char[pos1-10];
-		char* input=new char[len-pos1-1];
-		strcopy(filename,&line[11],pos1-11);
-		strcopy(input,&line[pos1+1],len-pos1-2);
-
-		vertObj=new Script(this,filename,pref,vars,eventReciver);
-		vertObj2=new Script(this,input,pref,vars,eventReciver);
-		delete[]input;
-		delete[]filename;
-		return NULL;
+		vertObj=new Script(this,line,start+11,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"glbegin(")) == 0)
+	else if(strncmp(line+start,"glbegin(",8) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SGRAPHPAINT;
-		int pos2=bracketFind(line,")");
-		if(pos2<9)
+		if(bracketFind(line,")",start+8,end)<start+8)
 		{
 			printError("Closing bracket for glbegin not found",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char*recString1=new char[pos2-7];
-		strcopy(recString1,&line[8],pos2-8);
-		if(strcmp(recString1,"points")==0)
+		if(strncmp(line+start+8,"points",6)==0)
 			value.ival=0;
-		else if(strcmp(recString1,"lines")==0)
-			value.ival=1;
-		else if(strcmp(recString1,"linestrip")==0)
+		else if(strncmp(line+start+8,"linestrip",9)==0)
 			value.ival=2;
-		else if(strcmp(recString1,"lineloop")==0)
+		else if(strncmp(line+start+8,"lineloop",8)==0)
 			value.ival=3;
-		else if(strcmp(recString1,"triangles")==0)
-			value.ival=4;
-		else if(strcmp(recString1,"trianglestrip")==0)
+		else if(strncmp(line+start+8,"lines",5)==0)
+			value.ival=1;
+		else if(strncmp(line+start+8,"trianglestrip",13)==0)
 			value.ival=5;
-		else if(strcmp(recString1,"trianglefan")==0)
+		else if(strncmp(line+start+8,"trianglefan",11)==0)
 			value.ival=6;
-		else if(strcmp(recString1,"quads")==0)
-			value.ival=7;
-		else if(strcmp(recString1,"quadstrip")==0)
+		else if(strncmp(line+start+8,"triangles",9)==0)
+			value.ival=4;
+		else if(strncmp(line+start+8,"quadstrip",9)==0)
 			value.ival=8;
-		else if(strcmp(recString1,"polygon")==0)
+		else if(strncmp(line+start+8,"quads",5)==0)
+			value.ival=7;
+		else if(strncmp(line+start+8,"polygon",7)==0)
 			value.ival=9;
 		else{
 			printError("Invalid argument in glbegin",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		delete[]recString1;
-		
-		return NULL;
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"glendlist")) == 0)
+	else if(strncmp(line+start,"glendlist",9) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SGRAPHLIST;
 		var=2;
-		return NULL;
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"glend")) == 0)
+	else if(strncmp(line+start,"glend",5) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SGRAPHCONTROL;
 		var=2;
-		return NULL;
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"glshow")) == 0)
+	else if(strncmp(line+start,"glshow",6) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SGRAPHCONTROL;
 		var=0;
-		return NULL;
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"glclear")) == 0)
+	else if(strncmp(line+start,"glclear",7) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SGRAPHCONTROL;
 		var=1;
-		return NULL;
+		return -1;
 	}
-
-	else if((pos1=bracketFind(line,"glloadidentity")) == 0)
+	else if(strncmp(line+start,"glloadidentity",14) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SGRAPHCONTROL;
 		var=3;
-		return NULL;
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"glstartlist")) == 0)
+	else if(strncmp(line+start,"glstartlist",11) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SGRAPHLIST;
 		var=1;
-		return NULL;
+		return -1;
 	}
-
-	else if((pos1=bracketFind(line,"glcalllist(")) == 0)
+	else if(strncmp(line+start,"glcalllist(",11) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SGRAPHLIST;
 		var=0;
-		int pos2=bracketFind(line,")");
-		if(pos2<12)
+		if(bracketFind(line,")",start,end)<start+12)
 		{
 			printError("Closing bracket for glcalllist not found",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char*recString1=new char[pos2-10];
-		strcopy(recString1,&line[11],pos2-11);
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		delete[]recString1;
-
-		return NULL;
+		vertObj=new Script(this,line,start+11,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"glpoint(") == 0)
+	else if(strncmp(line+start,"glpoint(",8) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SGRAPHVERTEX;
-		int pos1=bracketFind(line,",",8);
-
-		int pos2=bracketFind(line,",",pos1+1);
-		if(pos1==-1 || pos2==-1)
+		pos1=bracketFind(line,",",start+8,end);
+		int pos2=bracketFind(line,",",pos1+1,end);
+		if(pos1<start+8 || pos2<start+8)
 		{
 			printError("Invalid use of glpoint",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-
-		char *xval=new char[pos1-7];
-		char *yval=new char[pos2-pos1];
-		char *zval=new char[len-pos2-1];
-
-		strcopy(xval,&line[8],pos1-8);
-		strcopy(yval,&line[pos1+1],pos2-pos1-1);
-		strcopy(zval,&line[pos2+1],len-pos2-2);
-		vertObj=new Script(this,xval,pref,vars,eventReciver);
-		vertObj2=new Script(this,yval,pref,vars,eventReciver);
-		vertObj3=new Script(this,zval,pref,vars,eventReciver);
-		delete[]xval;
-		delete[]yval;
-		delete[]zval;
-		return NULL;
+		vertObj=new Script(this,line,start+8,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,pos2,pref,vars,eventReciver);
+		vertObj3=new Script(this,line,pos2+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"glscale(") == 0)
+	else if(strncmp(line+start,"glscale(",8) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SGRAPHTRANSFORM;
 		var=0;
-		int pos1=bracketFind(line,",",8);
-
-		int pos2=bracketFind(line,",",pos1+1);
-		if(pos1==-1 || pos2==-1)
+		pos1=bracketFind(line,",",start+8,end);
+		int pos2=bracketFind(line,",",pos1+1,end);
+		if(pos1<start+8 || pos2<start+8)
 		{
 			printError("Invalid use of glscale",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-
-		char *xval=new char[pos1-7];
-		char *yval=new char[pos2-pos1];
-		char *zval=new char[len-pos2-1];
-
-		strcopy(xval,&line[8],pos1-8);
-		strcopy(yval,&line[pos1+1],pos2-pos1-1);
-		strcopy(zval,&line[pos2+1],len-pos2-2);
-		vertObj=new Script(this,xval,pref,vars,eventReciver);
-		vertObj2=new Script(this,yval,pref,vars,eventReciver);
-		vertObj3=new Script(this,zval,pref,vars,eventReciver);
-		delete[]xval;
-		delete[]yval;
-		delete[]zval;
-		return NULL;
+		vertObj=new Script(this,line,start+8,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,pos2,pref,vars,eventReciver);
+		vertObj3=new Script(this,line,pos2+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"glmove(") == 0)
+	else if(strncmp(line+start,"glmove(",7) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SGRAPHTRANSFORM;
 		var=1;
-		int pos1=bracketFind(line,",",7);
-
-		int pos2=bracketFind(line,",",pos1+1);
-		if(pos1==-1 || pos2==-1)
+		pos1=bracketFind(line,",",start+7,end);
+		int pos2=bracketFind(line,",",pos1+1,end);
+		if(pos1<start+7 || pos2<start+7)
 		{
 			printError("Invalid use of glmove",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-
-		char *xval=new char[pos1-6];
-		char *yval=new char[pos2-pos1];
-		char *zval=new char[len-pos2-1];
-
-		strcopy(xval,&line[7],pos1-7);
-		strcopy(yval,&line[pos1+1],pos2-pos1-1);
-		strcopy(zval,&line[pos2+1],len-pos2-2);
-		vertObj=new Script(this,xval,pref,vars,eventReciver);
-		vertObj2=new Script(this,yval,pref,vars,eventReciver);
-		vertObj3=new Script(this,zval,pref,vars,eventReciver);
-		delete[]xval;
-		delete[]yval;
-		delete[]zval;
-		return NULL;
+		vertObj=new Script(this,line,start+7,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,pos2,pref,vars,eventReciver);
+		vertObj3=new Script(this,line,pos2+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"glrotate(") == 0)
+	else if(strncmp(line+start,"glrotate(",9) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SGRAPHTRANSFORM;
 		var=2;
-		int pos1=bracketFind(line,",",9);
-
-		int pos2=bracketFind(line,",",pos1+1);
-		int pos3=bracketFind(line,",",pos2+1);
-		if(pos1==-1 || pos2==-1 || pos3==-1)
+		pos1=bracketFind(line,",",start+9,end);
+		int pos2=bracketFind(line,",",pos1+1,end);
+		int pos3=bracketFind(line,",",pos2+1,end);
+		if(pos1<start+9 || pos2==start+9 || pos3==start+9)
 		{
 			printError("Invalid use if glrotate",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char *angle=new char[pos1-8];
-		char *xval=new char[pos2-pos1];
-		char *yval=new char[pos3-pos2];
-		char *zval=new char[len-pos3-1];
-		
-		strcopy(angle,&line[9],pos1-9);
-		strcopy(xval,&line[pos1+1],pos2-pos1-1);
-		strcopy(yval,&line[pos2+1],pos3-pos2-1);
-		strcopy(zval,&line[pos3+1],len-pos3-2);
-		
-		horzObj=new Script(this,angle,pref,vars,eventReciver);
-		vertObj=new Script(this,xval,pref,vars,eventReciver);
-		vertObj2=new Script(this,yval,pref,vars,eventReciver);
-		vertObj3=new Script(this,zval,pref,vars,eventReciver);
-		delete[]angle;
-		delete[]xval;
-		delete[]yval;
-		delete[]zval;
-		return NULL;
+		vertObj4=new Script(this,line,start+9,pos1,pref,vars,eventReciver);
+		vertObj=new Script(this,line,pos1+1,pos2,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos2+1,pos3,pref,vars,eventReciver);
+		vertObj3=new Script(this,line,pos3+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"glcolor(") == 0)
+	else if(strncmp(line+start,"glcolor(",8) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SGRAPHCOLOR;
-		int pos1=bracketFind(line,",",8);
-
-		int pos2=bracketFind(line,",",pos1+1);
-		if(pos1==-1 || pos2==-1)
+		pos1=bracketFind(line,",",start+8,end);
+		int pos2=bracketFind(line,",",pos1+1,end);
+		if(pos1<start+8 || pos2<start+8)
 		{
 			printError("Invalid use of glcolor",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-
-		char *xval=new char[pos1-7];
-		char *yval=new char[pos2-pos1];
-		char *zval=new char[len-pos2-1];
-
-		strcopy(xval,&line[8],pos1-8);
-		strcopy(yval,&line[pos1+1],pos2-pos1-1);
-		strcopy(zval,&line[pos2+1],len-pos2-2);
-		vertObj=new Script(this,xval,pref,vars,eventReciver);
-		vertObj2=new Script(this,yval,pref,vars,eventReciver);
-		vertObj3=new Script(this,zval,pref,vars,eventReciver);
-		delete[]xval;
-		delete[]yval;
-		delete[]zval;
-		return NULL;
+		vertObj=new Script(this,line,start+8,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,pos2,pref,vars,eventReciver);
+		vertObj3=new Script(this,line,pos2+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"glstring(") == 0)
+	else if(strncmp(line+start,"glstring(",9) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SGRAPHTEXT;
 		var=2;
-		int pos1=bracketFind(line,",",9);
-
-		int pos2=bracketFind(line,",",pos1+1);
-		if(pos1==-1 || pos2==-1)
+		pos1=bracketFind(line,",",start+9,end);
+		int pos2=bracketFind(line,",",pos1+1,end);
+		if(pos1<start+9 || pos2<start+9)
 		{
 			printError("Invalid use of glstring",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char *xval=new char[pos1-8];
-		char *yval=new char[pos2-pos1];
-		char *text=new char[len-pos2-1];
-		
-		strcopy(xval,&line[9],pos1-9);
-		strcopy(yval,&line[pos1+1],pos2-pos1-1);
-		strcopy(text,&line[pos2+1],len-pos2-2);
-		
-		horzObj=new Script(this,text,pref,vars,eventReciver);
-		vertObj=new Script(this,xval,pref,vars,eventReciver);
-		vertObj2=new Script(this,yval,pref,vars,eventReciver);
-		delete[]text;
-		delete[]xval;
-		delete[]yval;
-		return NULL;
+		vertObj=new Script(this,line,start+9,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,pos2,pref,vars,eventReciver);
+		vertObj4=new Script(this,line,pos2+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"drawclear")) == 0)
+	else if(strncmp(line+start,"drawclear",9) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SDRAW;
 		var=0;
-		return NULL;
+		return -1;
 	}
-	else if(bracketFind(line,"drawpoint(") != -1)
+	else if(strncmp(line+start,"drawpoint(",10) ==0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SDRAW;
 		var=1;
-		int pos1=bracketFind(line,",",10);
-		if(pos1<0 || pos1>len-2)
+		pos1=bracketFind(line,",",start+10,end);
+		if(pos1<start+10)
 		{
 			printError("Invalid use of drawpoint",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char* x=new char[pos1-9];
-		char* y=new char[len-pos1-1];
-		strcopy(x,&line[10],pos1-10);
-		strcopy(y,&line[pos1+1],len-pos1-2);
-
-
-		vertObj=new Script(this,x,pref,vars,eventReciver);
-		vertObj2=new Script(this,y,pref,vars,eventReciver);
-		delete[]x;
-		delete[]y;
-		return NULL;
+		vertObj=new Script(this,line,start+10,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"drawcolor(") == 0)
+	else if(strncmp(line+start,"drawcolor(",10) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SDRAW;
 		var=2;
-		int pos1=bracketFind(line,",",10);
-
-		int pos2=bracketFind(line,",",pos1+1);
-		if(pos1==-1 || pos2==-1)
+		pos1=bracketFind(line,",",start+10,end);
+		int pos2=bracketFind(line,",",pos1+1,end);
+		if(pos1<start+10 || pos2<start+10)
 		{
 			printError("Invalid use of drawcolor",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-
-		char *xval=new char[pos1-9];
-		char *yval=new char[pos2-pos1];
-		char *zval=new char[len-pos2-1];
-
-		strcopy(xval,&line[10],pos1-10);
-		strcopy(yval,&line[pos1+1],pos2-pos1-1);
-		strcopy(zval,&line[pos2+1],len-pos2-2);
-		vertObj=new Script(this,xval,pref,vars,eventReciver);
-		vertObj2=new Script(this,yval,pref,vars,eventReciver);
-		vertObj3=new Script(this,zval,pref,vars,eventReciver);
-		delete[]xval;
-		delete[]yval;
-		delete[]zval;
-		return NULL;
+		vertObj=new Script(this,line,start+10,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,pos2,pref,vars,eventReciver);
+		vertObj3=new Script(this,line,pos2+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"drawstring(") == 0)
+	else if(strncmp(line+start,"drawstring(",11) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SDRAW;
 		var=3;
-		int pos1=bracketFind(line,",",11);
-
-		int pos2=bracketFind(line,",",pos1+1);
-		if(pos1==-1 || pos2==-1)
+		pos1=bracketFind(line,",",start+11,end);
+		int pos2=bracketFind(line,",",pos1+1,end);
+		if(pos1<start+11 || pos2<start+11)
 		{
 			printError("Invalid use of drawstring",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-
-		char *xval=new char[pos1-10];
-		char *yval=new char[pos2-pos1];
-		char *zval=new char[len-pos2-1];
-
-		strcopy(xval,&line[11],pos1-11);
-		strcopy(yval,&line[pos1+1],pos2-pos1-1);
-		strcopy(zval,&line[pos2+1],len-pos2-2);
-		vertObj=new Script(this,xval,pref,vars,eventReciver);
-		vertObj2=new Script(this,yval,pref,vars,eventReciver);
-		vertObj3=new Script(this,zval,pref,vars,eventReciver);
-		delete[]xval;
-		delete[]yval;
-		delete[]zval;
-		return NULL;
+		vertObj=new Script(this,line,start+11,pos1,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos1+1,pos2,pref,vars,eventReciver);
+		vertObj3=new Script(this,line,pos2+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"drawline(") == 0)
+	else if(strncmp(line+start,"drawline(",9) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SDRAW;
 		var=4;
-		int pos1=bracketFind(line,",",9);
-
-		int pos2=bracketFind(line,",",pos1+1);
-		int pos3=bracketFind(line,",",pos2+1);
-		if(pos1==-1 || pos2==-1 || pos3==-1)
+		int pos1=bracketFind(line,",",start+9,end);
+		int pos2=bracketFind(line,",",pos1+1,end);
+		int pos3=bracketFind(line,",",pos2+1,end);
+		if(pos1<start+9 || pos2<start+9 || pos3<start+9)
 		{
 			printError("Invalid use of drawline",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char *angle=new char[pos1-8];
-		char *xval=new char[pos2-pos1];
-		char *yval=new char[pos3-pos2];
-		char *zval=new char[len-pos3-1];
-		
-		strcopy(angle,&line[9],pos1-9);
-		strcopy(xval,&line[pos1+1],pos2-pos1-1);
-		strcopy(yval,&line[pos2+1],pos3-pos2-1);
-		strcopy(zval,&line[pos3+1],len-pos3-2);
-		
-		horzObj=new Script(this,angle,pref,vars,eventReciver);
-		vertObj=new Script(this,xval,pref,vars,eventReciver);
-		vertObj2=new Script(this,yval,pref,vars,eventReciver);
-		vertObj3=new Script(this,zval,pref,vars,eventReciver);
-		delete[]angle;
-		delete[]xval;
-		delete[]yval;
-		delete[]zval;
-		return NULL;
+		vertObj4=new Script(this,line,start+9,pos1,pref,vars,eventReciver);
+		vertObj=new Script(this,line,pos1+1,pos2,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos2+1,pos3,pref,vars,eventReciver);
+		vertObj3=new Script(this,line,pos3+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"drawrect(") == 0)
+	else if(strncmp(line+start,"drawrect(",9) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SDRAW;
 		var=5;
-		int pos1=bracketFind(line,",",9);
-
-		int pos2=bracketFind(line,",",pos1+1);
-		int pos3=bracketFind(line,",",pos2+1);
-		if(pos1==-1 || pos2==-1 || pos3==-1)
+		int pos1=bracketFind(line,",",start+9,end);
+		int pos2=bracketFind(line,",",pos1+1,end);
+		int pos3=bracketFind(line,",",pos2+1,end);
+		if(pos1<start+9 || pos2<start+9 || pos3<start+9)
 		{
 			printError("Invalid use of drawrect",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char *angle=new char[pos1-8];
-		char *xval=new char[pos2-pos1];
-		char *yval=new char[pos3-pos2];
-		char *zval=new char[len-pos3-1];
-		
-		strcopy(angle,&line[9],pos1-9);
-		strcopy(xval,&line[pos1+1],pos2-pos1-1);
-		strcopy(yval,&line[pos2+1],pos3-pos2-1);
-		strcopy(zval,&line[pos3+1],len-pos3-2);
-		
-		horzObj=new Script(this,angle,pref,vars,eventReciver);
-		vertObj=new Script(this,xval,pref,vars,eventReciver);
-		vertObj2=new Script(this,yval,pref,vars,eventReciver);
-		vertObj3=new Script(this,zval,pref,vars,eventReciver);
-		delete[]angle;
-		delete[]xval;
-		delete[]yval;
-		delete[]zval;
-		return NULL;
+		vertObj4=new Script(this,line,start+9,pos1,pref,vars,eventReciver);
+		vertObj=new Script(this,line,pos1+1,pos2,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos2+1,pos3,pref,vars,eventReciver);
+		vertObj3=new Script(this,line,pos3+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"drawcircle(") == 0)
+	else if(strncmp(line+start,"drawcircle(",11) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SDRAW;
 		var=6;
-		int pos1=bracketFind(line,",",11);
-
-		int pos2=bracketFind(line,",",pos1+1);
-		int pos3=bracketFind(line,",",pos2+1);
-		if(pos1==-1 || pos2==-1 || pos3==-1)
+		pos1=bracketFind(line,",",start+11,end);
+		int pos2=bracketFind(line,",",pos1+1,end);
+		int pos3=bracketFind(line,",",pos2+1,end);
+		if(pos1<start+11 || pos2<start+11 || pos3<start+11)
 		{
 			printError("Invalid use of drawline",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char *angle=new char[pos1-10];
-		char *xval=new char[pos2-pos1];
-		char *yval=new char[pos3-pos2];
-		char *zval=new char[len-pos3-1];
-		
-		strcopy(angle,&line[11],pos1-11);
-		strcopy(xval,&line[pos1+1],pos2-pos1-1);
-		strcopy(yval,&line[pos2+1],pos3-pos2-1);
-		strcopy(zval,&line[pos3+1],len-pos3-2);
-		
-		horzObj=new Script(this,angle,pref,vars,eventReciver);
-		vertObj=new Script(this,xval,pref,vars,eventReciver);
-		vertObj2=new Script(this,yval,pref,vars,eventReciver);
-		vertObj3=new Script(this,zval,pref,vars,eventReciver);
-		delete[]angle;
-		delete[]xval;
-		delete[]yval;
-		delete[]zval;
-		return NULL;
+		vertObj4=new Script(this,line,start+11,pos1,pref,vars,eventReciver);
+		vertObj=new Script(this,line,pos1+1,pos2,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos2+1,pos3,pref,vars,eventReciver);
+		vertObj3=new Script(this,line,pos3+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if((pos1=bracketFind(line,"run(")) == 0)
+	else if(strncmp(line+start,"run(",4) == 0)
 	{
 		if(eventReciver->calcMode)
 		{
 			printError("Operation not allowed in calculator mode",semicolonCount,eventReciver);
 			operation=SFAIL;
-			horzObj=vertObj=NULL;
-			number=NAN;
-			return NULL;
+			return -1;
 		}
 		operation=SRUN;
 		
-		if(line[len-1]!=')')
+		if(bracketFind(line,")",start,end)!=end-1)
 		{
 			printError("No closing bracket for run found",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		if(line[len-2]!='\"' || line[4]!='\"')
+		if(line[end-2]!='\"' || line[start+4]!='\"')
 		{
 			printError("Filename in run must be quoted",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char*recString1=new char[len-pos1-6];
-		strcopy(recString1,&line[5],len-pos1-7);
 		var=-1;
 		for(int c=0; c<eventReciver->subprogramPath.GetLen(); c++)
-			if(strcmp(eventReciver->subprogramPath[c],recString1)==0)
+			if(strncmp(eventReciver->subprogramPath[c],line+start+5,end-start-7)==0 && (signed)strlen(eventReciver->subprogramPath[c])==end-start-7)
 		{
 			var=c;
 			break;
@@ -3474,80 +2844,55 @@ char* Script::parse(char* line)
 		if(var==-1)
 		{
 			printError("File for run does not exist",semicolonCount,eventReciver);
-			delete[]recString1;
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		delete[]recString1;
-		return NULL;
+		return -1;
 	}
-	else if(bracketFind(line,"\\d(") != -1)
+	else if(strncmp(line+start,"\\d(",3) == 0)
 	{
 		operation=DIFF;
-		var=-1;
-		int pos1=bracketFind(line,",",3);
-		if(pos1<0 || pos1>len-2)
+		pos1=bracketFind(line,",",start+3,end);
+		if(pos1<start+3 || bracketFind(line,")",start,end)!=end-1)
 		{
 			printError("Invalid use if d/dx",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-		char* function=new char[pos1-2];
-		char* startStr=new char[len-pos1-1];
-		strcopy(function,&line[3],pos1-3);
-		strcopy(startStr,&line[pos1+1],len-pos1-2);
-
-
-		horzObj=new Script(this,function,pref,vars,eventReciver);
-		vertObj=new Script(this,startStr,pref,vars,eventReciver);
-		delete[]function;
-		delete[]startStr;
-		return NULL;
+		vertObj4=new Script(this,line,start+4,pos1,pref,vars,eventReciver);
+		vertObj=new Script(this,line,pos1+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"\\i(") != -1)
+	else if(strncmp(line+start,"\\i(",3) == 0)
 	{
 		operation=INTEGRAL;
-		var=-1;
-		int pos1=bracketFind(line,",",3);
-
-		int pos2=bracketFind(line,",",pos1+1);
-		if(pos1==-1 || pos2==-1)
+		pos1=bracketFind(line,",",start+3,end);
+		int pos2=bracketFind(line,",",pos1+1,end);
+		if(pos1<start+3 || pos2<start+3)
 		{
 			printError("Invalid use of integ",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-
-		char *function=new char[pos1-2];
-		char *startStr=new char[pos2-pos1];
-		char *endStr=new char[len-pos2-1];
-
-		strcopy(function,&line[3],pos1-3);
-		strcopy(startStr,&line[pos1+1],pos2-pos1-1);
-		strcopy(endStr,&line[pos2+1],len-pos2-2);
-		horzObj=new Calculate(this,function,pref,vars);
-		vertObj=new Script(this,startStr,pref,vars,eventReciver);
-		vertObj2=new Script(this,endStr,pref,vars,eventReciver);
-		delete[]function;
-		delete[]startStr;
-		delete[]endStr;
-		return NULL;
+		vertObj4=new Calculate(this,line,start+3,pos1,pref,vars);
+		vertObj=new Script(this,line,pos1+1,pos2,pref,vars,eventReciver);
+		vertObj2=new Script(this,line,pos2+1,end-1,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(bracketFind(line,"getline") ==0)
+	else if(strncmp(line+start,"getline",7) ==0)
 	{
-		if(len>7)
+		if(end-start>7)
 		{
 			printError("Invalid operation after getline",semicolonCount,eventReciver);
 			operation=SFAIL;
 		}
 		else operation=SGETLINE;
 		value.type=NCHAR;
-		vertObj=vertObj2=vertObj3=horzObj=nextObj=NULL;
-		return NULL;
+		return -1;
 	}
-	else if(bracketFind(line,"getkey") ==0)
+	else if(strncmp(line+start,"getkey",6) ==0)
 	{
-		if(len>6)
+		if(end-start>6)
 		{
 			printError("Invalid operation after getkey",semicolonCount,eventReciver);
 			operation=SFAIL;
@@ -3556,12 +2901,11 @@ char* Script::parse(char* line)
 		value.type=NCHAR;
 		value.cval=new char[2];
 		value.cval[1]=(char)0;
-		vertObj=vertObj2=vertObj3=horzObj=nextObj=NULL;
-		return NULL;
+		return -1;
 	}
-	else if(bracketFind(line,"keystate") ==0)
+	else if(strncmp(line+start,"keystate",8) ==0)
 	{
-		if(len>8)
+		if(end-start>8)
 		{
 			printError("Invalid operation after keystate",semicolonCount,eventReciver);
 			operation=SFAIL;
@@ -3570,439 +2914,362 @@ char* Script::parse(char* line)
 		value.type=NCHAR;
 		value.cval=new char[2];
 		value.cval[1]=(char)0;
-		vertObj=vertObj2=vertObj3=horzObj=nextObj=NULL;
-		return NULL;
+		return -1;
 	}
-	else if(bracketFind(line,"break") ==0)
+	else if(strncmp(line+start,"break",5) ==0)
 	{
-		if(len>5)
+		if(end-start>5)
 		{
 			printError("Invalid operation after break",semicolonCount,eventReciver);
 			operation=SFAIL;
 		}
 		else operation=SBREAK;
-		value.type=NNONE;
-		vertObj=vertObj2=vertObj3=horzObj=nextObj=NULL;
-		return NULL;
+		return -1;
 	}
-	else if(bracketFind(line,"continue") ==0)
+	else if(strncmp(line+start,"continue",8) == 0)
 	{
-		if(len>8)
+		if(end-start>8)
 		{
 			printError("Invalid operation after getkey",semicolonCount,eventReciver);
 			operation=SFAIL;
 		}
 		else operation=SCONTINUE;
-		value.type=NNONE;
-		vertObj=vertObj2=vertObj3=horzObj=nextObj=NULL;
-		return NULL;
+		return -1;
 	}
-	else if(bracketFind(line,"stop") ==0)
+	else if(strncmp(line+start,"stop",4) ==0)
 	{
-		if(len>4)
+		if(end-start>4)
 		{
 			printError("Invalid operation after stop",semicolonCount,eventReciver);
 			operation=SFAIL;
 		}
 		else operation=SSTOP;
-		vertObj=vertObj2=vertObj3=horzObj=nextObj=NULL;
-		return NULL;
+		return -1;
 	}
-	else if(line[0]>='a' && line[0]<='z') 
+	else if(line[start]>='a' && line[start]<='z') 
 	{
-		horzObj=vertObj2=vertObj3=nextObj=NULL;
 		if(pref->angle==DEG)
 			number=180.0/(long double)PI;
 		else if(pref->angle==RAD)
 			number=1.0;
 		else number=200.0/(long double)PI;
-		if(strncmp("asinh",line,5) == 0)
+		if(strncmp("asinh",line+start,5) == 0)
 		{
 			operation=ASINH;
-			vertObj=new Script(this,&line[5],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+5,end,pref,vars,eventReciver);
 		}
-		else if(strncmp("acosh",line,5) == 0)
+		else if(strncmp("acosh",line+start,5) == 0)
 		{
 			operation=ACOSH;
-			vertObj=new Script(this,&line[5],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+5,end,pref,vars,eventReciver);
 		}
-		else if(strncmp("atanh",line,5) == 0)
+		else if(strncmp("atanh",line+start,5) == 0)
 		{
 			operation=ATANH;
-			vertObj=new Script(this,&line[5],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+5,end,pref,vars,eventReciver);
 		}
-		else if(strncmp("asin",line,4) == 0)
+		else if(strncmp("asin",line+start,4) == 0)
 		{
 			operation=ASIN;
-			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+4,end,pref,vars,eventReciver);
 		}
-		else if(strncmp("acos",line,4) == 0)
+		else if(strncmp("acos",line+start,4) == 0)
 		{
 			operation=ACOS;
-			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+4,end,pref,vars,eventReciver);
 		}
-		else if(strncmp("atan",line,4) == 0)
+		else if(strncmp("atan",line+start,4) == 0)
 		{
 			operation=ATAN;
-			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+4,end,pref,vars,eventReciver);
 		}
-		else if(strncmp("sinh",line,4) == 0)
+		else if(strncmp("sinh",line+start,4) == 0)
 		{
 			if(pref->complex)
 				operation=CSINH;
 			else operation=SINH;
-			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+4,end,pref,vars,eventReciver);
 		}
-		else if(strncmp("cosh",line,4) == 0)
+		else if(strncmp("cosh",line+start,4) == 0)
 		{
 			if(pref->complex)
 				operation=CCOSH;
 			else operation=COSH;
-			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+4,end,pref,vars,eventReciver);
 		}
-		else if(strncmp("tanh",line,4) == 0)
+		else if(strncmp("tanh",line+start,4) == 0)
 		{
 			if(pref->complex)
 				operation=CTANH;
 			else operation=TANH;
-			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+4,end,pref,vars,eventReciver);
 		}
-		else if(strncmp("sin",line,3) == 0)
+		else if(strncmp("sin",line+start,3) == 0)
 		{
 			if(pref->complex)
 				operation=CSIN;
 			else operation=SIN;
-			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+3,end,pref,vars,eventReciver);
 		}
-		else if(strncmp("cos",line,3) == 0)
+		else if(strncmp("cos",line+start,3) == 0)
 		{
 			if(pref->complex)
 				operation=CCOS;
 			else operation=COS;
-			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+3,end,pref,vars,eventReciver);
 		}
-		else if(strncmp("tan",line,3) == 0)
+		else if(strncmp("tan",line+start,3) == 0)
 		{
 			if(pref->complex)
 				operation=CTAN;
 			else operation=TAN;
-			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+3,end,pref,vars,eventReciver);
 		}
-		else if(strncmp("log",line,3) == 0)
+		else if(strncmp("log",line+start,3) == 0)
 		{
 			if(pref->complex)
 				operation=CLG;
 			else operation=LG;
-			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+3,end,pref,vars,eventReciver);
 		}
-		else if(strncmp("ln",line,2) == 0)
+		else if(strncmp("ln",line+start,2) == 0)
 		{
 			if(pref->complex)
 				operation=CLN;
 			else operation=LN;
-			vertObj=new Script(this,&line[2],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+2,end,pref,vars,eventReciver);
 		}
-		else if(strncmp(line,"sqrt",4) == 0)
+		else if(strncmp(line+start,"sqrt",4) == 0)
 		{
 			if(pref->complex)
 				operation=CSQRT;
 			else operation=SQRT;
-			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+4,end,pref,vars,eventReciver);
 		}
-		else if(strncmp(line,"curt",4) == 0)
+		else if(strncmp(line+start,"curt",4) == 0)
 		{
 			if(pref->complex)
 			{
 				operation=CROOT;
-				vertObj=new Script(this,"3",pref,vars,eventReciver);
-				vertObj2=new Script(this,&line[4],pref,vars,eventReciver);
+				vertObj=new Script(this,"3",0,1,pref,vars,eventReciver);
+				vertObj2=new Script(this,line,start+4,end,pref,vars,eventReciver);
 			}
 			else 
 			{
 				operation=CURT;
-				vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+				vertObj=new Script(this,line,start+4,end,pref,vars,eventReciver);
 			}
 		}
-		else if(strncmp(line,"real",4) == 0)
+		else if(strncmp(line+start,"real",4) == 0)
 		{
 			operation=SREAL;
-			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
-			vertObj2=new Script(this,"3",pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+4,end,pref,vars,eventReciver);
 		}
-		else if(strncmp(line,"imag",4) == 0)
+		else if(strncmp(line+start,"imag",4) == 0)
 		{
 			operation=SIMAG;
-			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+4,end,pref,vars,eventReciver);
 		}
-		else if(strncmp(line,"abs",3) == 0)
+		else if(strncmp(line+start,"abs",3) == 0)
 		{
 			if(pref->complex)
 				operation=CABS;
 			else operation=SABS;
-			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+3,end,pref,vars,eventReciver);
 		}
-		else if(strncmp(line,"arg",3) == 0 && pref->complex)
+		else if(strncmp(line+start,"arg",3) == 0 && pref->complex)
 		{
 			operation=SARG;
-			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+3,end,pref,vars,eventReciver);
 		}
-		else if(strncmp(line,"conj",4) == 0 && pref->complex)
+		else if(strncmp(line+start,"conj",4) == 0 && pref->complex)
 		{
 			operation=SCONJ;
-			vertObj=new Script(this,&line[4],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+4,end,pref,vars,eventReciver);
 		}
 		else if(strncmp(line,"det",3) == 0)
 		{
 			operation=DETERMINANT;
-			vertObj=new Script(this,&line[3],pref,vars,eventReciver);
+			vertObj=new Script(this,line,start+3,end,pref,vars,eventReciver);
 		}
-		else if(strncmp(line,"i",1) == 0  && pref->complex)
+		else if(strncmp(line+start,"i",1) == 0  && pref->complex)
 		{
 			operation=SVALUE;
 			value.type=NFLOAT;
 			value.fval=Complex(0.0,1.0);
-			return NULL;
+			return -1;
 		}
 		else{
 			printError("Unknown command",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
 		}
-		return NULL;
+		return -1;
 	}
-	else if(bracketFind(line,"~")==0)
+	else if(bracketFind(line,"~",start,end)==0)
 	{
-		vertObj2=vertObj3=horzObj=nextObj=NULL;
-		char*recString1=new char[len];
-		if(len<2)
+		if(end-start<2)
 		{
 			operation=SFAIL;
 			printError("No argument for ~ set",semicolonCount,eventReciver);
 		}
 		else operation=SBNOT;
-		
-		strcopy(recString1,&line[1],len-1);
-		
-		vertObj=new Script(this,recString1,pref,vars,eventReciver);
-		delete[]recString1;
-		return NULL;
+		vertObj=new Script(this,line,start+1,end,pref,vars,eventReciver);
+		return -1;
 	}
-	else if(line[0] == '(' && (line[len-1]==')' || strncmp(&line[1],"float",5)==0 || strncmp(&line[1],"int",3)==0 || strncmp(&line[1],"bool",4)==0 || strncmp(&line[1],"string",6)==0))
+	else if(strncmp(&line[start],"(float)",7)==0 || strncmp(&line[start],"(int)",5)==0 || strncmp(&line[start],"(bool)",6)==0 || strncmp(&line[start],"(string)",8)==0)
 	{
-//		perror("bracket");
-		int pos1=bracketFind(line,")");
-		if(pos1<1)
+
+		operation=SCAST;
+		if(strncmp(line+start,"(int)",5)==0)
 		{
-			printError("Closing bracket for ( not found",semicolonCount,eventReciver);
-			operation=SFAIL;
-			return NULL;
+			value.type=NINT;
+			vertObj=new Script(this,line,start+5,end,pref,vars,eventReciver);
 		}
-		else if(pos1!=len-1)
+		else if(strncmp(line+start,"(float)",7)==0)
 		{
-			char*castType=new char[pos1];
-			strcopy(castType,&line[1],pos1-1);
-			if(strcmp(castType,"int")==0)
-			{
-				char*recString1=new char[len-pos1];
-				strcopy(recString1,&line[pos1+1],len-pos1-1);
-				operation=SCAST;
-				value.type=NINT;
-				vertObj=new Script(this,recString1,pref,vars,eventReciver);
-				delete[]castType;
-				delete[]recString1;
-				return NULL;
-			}
-			else if(strcmp(castType,"float")==0)
-			{
-				char*recString1=new char[len-pos1];
-				strcopy(recString1,&line[pos1+1],len-pos1-1);
-				operation=SCAST;
-				value.type=NFLOAT;
-				vertObj=new Script(this,recString1,pref,vars,eventReciver);
-				delete[]castType;
-				delete[]recString1;
-				return NULL;
-			}
-			else if(strcmp(castType,"bool")==0)
-			{
-				char*recString1=new char[len-pos1];
-				strcopy(recString1,&line[pos1+1],len-pos1-1);
-				operation=SCAST;
-				value.type=NBOOL;
-				vertObj=new Script(this,recString1,pref,vars,eventReciver);
-				delete[]castType;
-				delete[]recString1;
-				return NULL;
-			}
-			else if(strcmp(castType,"string")==0)
-			{
-				char*recString1=new char[len-pos1];
-				strcopy(recString1,&line[pos1+1],len-pos1-1);
-				operation=SCAST;
-				value.type=NCHAR;
-				vertObj=new Script(this,recString1,pref,vars,eventReciver);
-				delete[]castType;
-				delete[]recString1;
-				return NULL;
-			}
+			value.type=NFLOAT;
+			vertObj=new Script(this,line,start+7,end,pref,vars,eventReciver);;
 		}
-		operation=SBRACKET;
-		char*recString1=new char[pos1];
-		strcopy(recString1,&line[1],pos1-1);
-		vertObj=new Script(this,NULL,pref,vars,eventReciver);
-		vertObj->split(recString1);
-		delete[]recString1;
-		if(pos1==len-1)
-			return NULL;
-		else {
-			char*recString2=new char[len-pos1];
-			strcopy(recString2,&line[pos1+1],len-pos1-1);
-			return recString2;
+		else if(strncmp(line+start,"(bool)",6)==0)
+		{
+			value.type=NBOOL;
+			vertObj=new Script(this,line,start+6,end,pref,vars,eventReciver);
 		}
+		else if(strncmp(line+start,"(string)",8)==0)
+		{
+			value.type=NCHAR;
+			vertObj=new Script(this,line,start+8,end,pref,vars,eventReciver);
+		}
+		else operation=SFAIL;
+		return -1;
 	}
-	else if((pref->calcType == SCIENTIFIC && line[0]>='A' || line[0]>='G') && line[0]<='Z'&& len==1 || strncmp(line,"$A",2)==0 &&len==2)
+	
+	else if((pref->calcType == SCIENTIFIC && line[start]>='A' || line[start]>='G') && line[start]<='Z'&& end-start==1 || (strncmp(line+start,"$A",2)==0 &&end-start==2))
 	{
 		operation=SVAR;
-		if(strncmp(line,"$A",2)==0)
+		if(strncmp(line+start,"$A",2)==0)
 			var=26;
-		else var=line[0]-65;
-//		eventReciver->numlen[var]=1;
-		return NULL;
+		else var=line[start]-65;
+		return -1;
 	}
-	else if((line[0]>='A' && line[0]<='Z' || strncmp(line,"$A",2)==0) && line[len-1]==']')
+	else if((line[start]>='A' && line[start]<='Z' || strncmp(line+start,"$A",2)==0) && line[end-1]==']')
 	{
-		if(strncmp(line,"$A",2)==0)
+		if(strncmp(line+start,"$A",2)==0)
 		{
 			var=26;
-			line++;
-			len--;
+			start++;
 		}
-		else var=line[0]-65;
+		else var=line[start]-65;
 		
-		if((pos1=bracketFindRev(line,"["))>1)
+		if((pos1=bracketFindRev(line,"[",end-1,start))>start+1)
 		{
 			if(line[pos1-1] !=']')
 			{
 				printError("Closing brace for variable not found",semicolonCount,eventReciver);
 				operation=SFAIL;
-				return NULL;
+				return -1;
 			}
-			if(pos1-3<=0 && len-pos1-2<=0)
+			if(pos1-3<=start && end-pos1-2<=0)
 			{
 				vertObj=vertObj2=NULL;
 			}
 			else {
-				char*recString1=new char[pos1-2];
-				char*recString2=new char[len-pos1-1];
-				strcopy(recString1,&line[2],pos1-3);
-				strcopy(recString2,&line[pos1+1],len-pos1-2);
-				
-				vertObj=new Script(this,recString1,pref,vars,eventReciver);
-				vertObj2=new Script(this,recString2,pref,vars,eventReciver);
-		//		perror(QString("index: ")+recString1);
-				delete[]recString1;
-				delete[]recString2;
+				vertObj=new Script(this,line,start+2,pos1-1,pref,vars,eventReciver);
+				vertObj2=new Script(this,line,pos1+1,end-1,pref,vars,eventReciver);
 			}
 			operation=SMATRIX;
 		}
 		else {
 
-			if(len-3<=0)
+			if(end-start<=3)
 				operation=SVECTOR;
 			else {
-				char*recString1=new char[len-2];
-				strcopy(recString1,&line[2],len-3);
-				vertObj=new Script(this,recString1,pref,vars,eventReciver);
-				vertObj2=vertObj3=horzObj=nextObj=NULL;
-	//			perror(QString("index: ")+recString1);
-				delete[]recString1;
+				vertObj=new Script(this,line,start+2,end-1,pref,vars,eventReciver);
 				operation=SARRAY;
 			}
 		}
-
 		if(var>26 || var < 0)
 		{
 			printError("Invalid variable",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-//		eventReciver->numlen[var]=1;
-		return NULL;
+		return -1;
 	}
-	else if(line[0] == '\"')
+	else if(line[start] == '\"')
 	{
-		if(line[len-1]!='\"' || len <=1)
+		if(line[end-1]!='\"' || end-start <=1)
 		{
 			printError("Invalid String",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
 		operation=SVALUE;
 		value.type=NCHAR;
-		value.cval=(char*)malloc(len-1);
-		strcopy(value.cval,&line[1],len-2);
-		return NULL;
+		value.cval=(char*)malloc(end-start-1);
+		strcopy(value.cval,&line[start+1],end-start-2);
+		return -1;
 	}
-	else if(line[0] == '\\')
+	else if(line[start] == '\\')
 	{
-		char*err;
-		if(len<3)
+		char*err,*tmpval;
+		if(end-start<3)
 		{
 			printError("Invalid number",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
+			return -1;
 		}
-
 		operation=SVALUE;
 		value.type=NINT;
+		
+		tmpval=new char[end-start-1];
+		strcopy(tmpval,&line[start+2],end-start-2);
 
-		if(line[1] == 'b')
-			value.ival=strtoll(&line[2],&err,2);
-		else if(line[1] == 'o')
-			value.ival=strtoll(&line[2],&err,8);
-		else if(line[1] == 'c')
-			value.ival=strtoll(&line[2],&err,10);
-		else if(line[1] == 'h')
-			value.ival=strtoll(&line[2],&err,16);
+		if(line[start+1] == 'b')
+			value.ival=strtoll(tmpval,&err,2);
+		else if(line[start+1] == 'o')
+			value.ival=strtoll(tmpval,&err,8);
+		else if(line[start+1] == 'c')
+			value.ival=strtoll(tmpval,&err,10);
+		else if(line[start+1] == 'h')
+			value.ival=strtoll(tmpval,&err,16);
 		else {
 			printError("Invalid number",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
 		}
 		if(*err!=(char)0)
 		{
 			printError("Invalid number",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
 		}
-
-
-		return NULL;
+		
+		delete[] tmpval;
+		return -1;
 	}
 	else {
-		
 		operation=SVALUE;
-		char*err;
+		char*err,*tmpval;
+		tmpval=new char[end-start+1];
+		strcopy(tmpval,&line[start],end-start);
 		
 		if(pref->calcType == BASE)
 		{
 			value.type=NINT;
 			if(pref->base == BIN)
-				value.ival=strtoll(line,&err,2);
+				value.ival=strtoll(tmpval,&err,2);
 			else if(pref->base == OCT)
-				value.ival=strtoll(line,&err,8);
+				value.ival=strtoll(tmpval,&err,8);
 			else if(pref->base == HEX)
-				value.ival=strtoll(line,&err,16);
+				value.ival=strtoll(tmpval,&err,16);
 			else if(pref->base == DEC)
-				value.ival=strtoll(line,&err,10);
-
+				value.ival=strtoll(tmpval,&err,10);
 		}
 		else
 		{
-			value.ival=strtoll(line,&err,10);
+			value.ival=strtoll(tmpval,&err,10);
 			if(*err!=(char)0)
 			{
-				value.fval=Complex(strtold(line,&err),0.0);
+				value.fval=Complex(strtold(tmpval,&err),0.0);
 				value.type=NFLOAT;
 			}
 			else value.type=NINT;
@@ -4011,10 +3278,11 @@ char* Script::parse(char* line)
 		{
 			printError("Invalid number",semicolonCount,eventReciver);
 			operation=SFAIL;
-			return NULL;
 		}
+		delete[] tmpval;
 	}
-	return NULL;
+	
+	return -1;
 }
 
 
@@ -4081,9 +3349,9 @@ Number Script::exec()
 		{
 			if(vertObj!=NULL)
 				value=vertObj->exec();
-			if(nextObj!=NULL)
+			if(horzObj!=NULL)
 			{
-				return value=nextObj->exec();
+				return value=horzObj->exec();
 			}
 			else return value;
 		}
@@ -4171,7 +3439,12 @@ Number Script::exec()
 		}
 		case PLUS:
 		{
-			value=vertObj->exec();
+			if(vertObj!=NULL)
+				value=vertObj->exec();
+			else {
+				value.type=NFLOAT;
+				value.fval=Complex(0.0);
+			}
 			Number n;
 
 			if((value.type==NVECTOR || value.type==NMATRIX) &&value.ival==27)
@@ -4347,7 +3620,13 @@ Number Script::exec()
 		case MINUS:
 		{
 			Number n;
-			value=vertObj->exec();
+			if(vertObj!=NULL)
+				value=vertObj->exec();
+			else
+			{
+				value.type=NFLOAT;
+				value.fval=Complex(0.0);
+			}
 			if((value.type==NVECTOR || value.type==NMATRIX) &&value.ival==27)
 			{
 				Number*tmpMem=eventReciver->vars[27];
@@ -4728,9 +4007,9 @@ Number Script::exec()
 			else if(value.type==NFLOAT)
 				if(value.fval.real()!=0.0)
 					value=vertObj2->exec();
-			if(nextObj==NULL)
+			if(horzObj==NULL)
 				return value;
-			else return nextObj->exec();
+			else return horzObj->exec();
 		}
 		case SIFELSE:
 		{
@@ -4749,9 +4028,9 @@ Number Script::exec()
 			else value=vertObj3->exec();
 			else value=vertObj3->exec();
 			
-			if(nextObj==NULL)
+			if(horzObj==NULL)
 				return value;
-			else return nextObj->exec();
+			else return horzObj->exec();
 		}
 		case SWHILE:
 		{
@@ -4790,9 +4069,9 @@ Number Script::exec()
 					}
 				}
 			}
-			if(nextObj==NULL)
+			if(horzObj==NULL)
 				return value;
-			else return nextObj->exec();
+			else return horzObj->exec();
 		}
 		case SFOR:
 		{
@@ -4800,18 +4079,21 @@ Number Script::exec()
 			{
 				for(vertObj->exec();;vertObj3->exec())
 				{
-					value=vertObj2->exec();
-					if(value.type==NBOOL)
-						if(!value.bval)
-							break;
-					else if(value.type==NINT)
-						if(value.ival==0)
-							break;
-					else if(value.type==NFLOAT)
-						if(value.fval.real()==0.0)
-							break;
-					else break;
-					horzObj->exec();
+					if(vertObj2!=NULL)
+					{
+						value=vertObj2->exec();
+						if(value.type==NBOOL)
+							if(!value.bval)
+								break;
+						else if(value.type==NINT)
+							if(value.ival==0)
+								break;
+						else if(value.type==NFLOAT)
+							if(value.fval.real()==0.0)
+								break;
+						else break;
+					}
+					vertObj4->exec();
 					if(eventReciver->status)
 					{
 						if(eventReciver->bbreak)
@@ -4831,18 +4113,21 @@ Number Script::exec()
 			else {
 				for(vertObj->exec();;)
 				{
-					value=vertObj2->exec();
-					if(value.type==NBOOL)
-						if(!value.bval)
-							break;
-					else if(value.type==NINT)
-						if(value.ival==0)
-							break;
-					else if(value.type==NFLOAT)
-						if(value.fval.real()==0.0)
-							break;
-					else break;
-					horzObj->exec();
+					if(vertObj2!=NULL)
+					{
+						value=vertObj2->exec();
+						if(value.type==NBOOL)
+							if(!value.bval)
+								break;
+						else if(value.type==NINT)
+							if(value.ival==0)
+								break;
+						else if(value.type==NFLOAT)
+							if(value.fval.real()==0.0)
+								break;
+						else break;
+					}
+					vertObj4->exec();
 					if(eventReciver->status)
 					{
 						if(eventReciver->bbreak)
@@ -4859,9 +4144,9 @@ Number Script::exec()
 					}
 				}
 			}
-			if(nextObj==NULL)
+			if(horzObj==NULL)
 				return value;
-			else return nextObj->exec();
+			else return horzObj->exec();
 		}
 
 		case SUNEQUAL:
@@ -5319,9 +4604,9 @@ Number Script::exec()
 			free(eventContent);
 #endif
 
-			if(nextObj==NULL)
+			if(horzObj==NULL)
 				return value;
-			else return nextObj->exec();
+			else return horzObj->exec();
 		}
 #ifndef CONSOLE
 		case SDRAW:
@@ -5390,7 +4675,7 @@ Number Script::exec()
 				case 6:
 					eventContent=(char*)malloc(17);
 					eventContent[0]=var;
-					value=horzObj->exec();
+					value=vertObj4->exec();
 					convertToInt(&value);
 					arg=(int)value.ival;
 					memcpy(&eventContent[1],&arg,4);
@@ -5536,7 +4821,7 @@ Number Script::exec()
 			eventContent[2]=(double)value.fval.real();
 			if(var==2)
 			{
-				value=horzObj->exec();
+				value=vertObj4->exec();
 				convertToFloat(&value);
 				eventContent[3]=(double)value.fval.real();
 				ev=new QCustomEvent(SIGGRAPHROTATE);
@@ -5590,7 +4875,7 @@ Number Script::exec()
 			QCustomEvent *ev=new QCustomEvent(SIGGRAPHTEXT);
 			char*eventContent;
 			
-			value=horzObj->exec();
+			value=vertObj4->exec();
 			if(value.type!=NCHAR)
 			{
 				convertToFloat(&value);
@@ -6456,10 +5741,10 @@ Number Script::exec()
 				step=1e-8;
 			eventReciver->vars[23][0].type=NFLOAT;
 			eventReciver->vars[23][0].fval=Complex(pos-step,0.0);
-			Number w1=horzObj->exec();
+			Number w1=vertObj4->exec();
 			convertToFloat(&w1);
 			eventReciver->vars[23][0].fval=Complex(pos+step,0.0);
-			Number w2=horzObj->exec();
+			Number w2=vertObj4->exec();
 			convertToFloat(&w2);
 			value.fval=Complex((w2.fval.real()-w1.fval.real())/(2.0*step),0.0);
 		
@@ -6489,9 +5774,9 @@ Number Script::exec()
 			double *line2=new double[3];
 			double y,oldy;
 			vars[23]=start;
-			oldy=horzObj->calc();
+			oldy=vertObj4->calc();
 			vars[23]=end;
-			y=horzObj->calc();
+			y=vertObj4->calc();
 			line1[0]=(y+oldy)*(end-start)/2.0;
 			double fail=HUGE_VAL,oldfail=0.0;
 		
@@ -6510,7 +5795,7 @@ Number Script::exec()
 				for(int c=1; c<=steps; c++)
 				{
 					vars[23]=start+((2*c-1)*(end-start))/pow(2.0,(double)num);
-					line1[0]+=horzObj->calc();
+					line1[0]+=vertObj4->calc();
 				}
 				line1[0]=0.5*(line1[0]*(end-start)/pow(2.0,(double)(num-1))+line2[0]);
 			
@@ -6870,9 +6155,9 @@ Number Script::exec()
 			{
 				usleep(sleeptime);
 			}
-			if(nextObj==NULL)
+			if(horzObj==NULL)
 				return value;
-			else return nextObj->exec();
+			else return horzObj->exec();
 		}
 		case SSETCURSOR:
 		{
@@ -6898,9 +6183,9 @@ Number Script::exec()
 			fprintf(stderr,"\033[%i;%iH",coords[1]+1,coords[0]+1);
 #endif
 
-			if(nextObj==NULL)
+			if(horzObj==NULL)
 				return value;
-			else return nextObj->exec();
+			else return horzObj->exec();
 		}
 		case SCLEARTEXT:
 		{
@@ -6915,9 +6200,9 @@ Number Script::exec()
 			fprintf(stderr,"\033[1;1H");
 #endif
 
-			if(nextObj==NULL)
+			if(horzObj==NULL)
 				return value;
-			else return nextObj->exec();
+			else return horzObj->exec();
 		}
 		case SGETKEY:
 		{
@@ -6946,9 +6231,9 @@ Number Script::exec()
 #else 
 			value.cval[0]=(char)getchar();
 #endif
-			if(nextObj==NULL)
+			if(horzObj==NULL)
 				return value;
-			else return nextObj->exec();
+			else return horzObj->exec();
 		}
 		case SKEYSTATE:
 		{
@@ -7000,9 +6285,9 @@ Number Script::exec()
 			if(tcsetattr(fileno(stdout),TCSANOW,&terminfo)!=0)
 				perror("tcsetattr fehler");
 #endif
-			if(nextObj==NULL)
+			if(horzObj==NULL)
 				return value;
-			else return nextObj->exec();
+			else return horzObj->exec();
 		}
 		case SGETLINE:
 		{
@@ -7053,15 +6338,15 @@ Number Script::exec()
 			free(input);			
 			
 #endif
-			if(nextObj==NULL)
+			if(horzObj==NULL)
 				return value;
-			else return nextObj->exec();
+			else return horzObj->exec();
 		}
 		case SINIT:
 		{
 
-			if(nextObj!=NULL)
-				value=nextObj->exec();
+			if(horzObj!=NULL)
+				value=horzObj->exec();
 #ifndef CONSOLE
 			QCustomEvent*killEvent=new QCustomEvent(SIGFINISHED);
 			QApplication::postEvent(eventReciver->eventReciver,killEvent);
@@ -7233,16 +6518,16 @@ bool invertMatrix(int size,long double*matrix)
 			effDestIndex=c4+c3*size;
 			long double subDet=gauss(size-1,size-1,subMatrix);
 			result[effDestIndex]=mainDet*(long double)vz*subDet;
+//			fprintf(stderr,QString::number((double)result[effDestIndex])+" ");
 		}
 		fprintf(stderr,"\n");
 	}
 	memcpy(matrix,result,size*size*sizeof(long double));
 	free(result);
 	free(subMatrix);
-	
+
 	return true;
 }
-
 
 
 

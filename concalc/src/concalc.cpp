@@ -688,7 +688,7 @@ void loadSubScripts(ThreadSync*scriptData,Preferences*pref,Variable*vars,Script*
 				else 
 				{
 					subScript=new Script(parent,NULL,pref,vars,scriptData);
-					subScript->split(cleanSubFileContent);
+					subScript->split(cleanSubFileContent,0,strlen(cleanSubFileContent));
 				}
 				free(subFileContent);
 				scriptData->subprograms.NewItem(subScript);
