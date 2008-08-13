@@ -2857,7 +2857,7 @@ void MainObject::readGraphsDir()
 	QStringList dirEntries=graphsDir->entryList(QDir::Files);
 	if(dirEntries.empty())
 	{
-		writeFunctionFile(QString(getenv("HOME"))+"/"+QString(GRAPHSDIR)+"std");
+		writeFunctionFile("std");
 		dirEntries=graphsDir->entryList(QDir::Files);
 		pref.currentSet="std";
 	}
