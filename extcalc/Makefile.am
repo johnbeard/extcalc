@@ -1,2 +1,0 @@
-SUBDIRS = src share doc
-DIST_SUBDIRS = $(SUBDIRS)
