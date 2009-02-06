@@ -14,6 +14,16 @@ any later version.
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "scriptedit.h"
+//Added by qt3to4:
+#include <QContextMenuEvent>
+#include <QDragLeaveEvent>
+#include <QKeyEvent>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QResizeEvent>
+#include <QMouseEvent>
+#include <QWheelEvent>
 
 
 void ScriptWidget::resizeEvent(QResizeEvent*)
@@ -23,7 +33,7 @@ void ScriptWidget::resizeEvent(QResizeEvent*)
 
 	if(maximized)
 	{
-		splitter->setGeometry(20,menuBottom+40,width-40,height-100);
+		splitter->setGeometry(20,menuBottom+50,width-40,height-100);
 		
 //		runButton->setGeometry(20,height-45,90,35);
 //		maximizeButton->setGeometry(120,height-45,90,35);
@@ -31,7 +41,7 @@ void ScriptWidget::resizeEvent(QResizeEvent*)
 		dockArea->setGeometry(0,menuBottom,width,35);
 	}
 	else {
-		splitter->setGeometry(20,50,width-40,height-290);
+		splitter->setGeometry(20,20,width-40,height-260);
 
 //		runButton->setGeometry(width/2+15,height-220,90,35);
 //		maximizeButton->setGeometry(width/2+115,height-220,90,35);
@@ -64,11 +74,11 @@ void ScriptWidget::buttonInputSlot(QString text)
 {
 	if(text == "calculate")
 	{
-		editor->doKeyboardAction(QTextEdit::ActionReturn);
+		editor->doKeyboardAction(Q3TextEdit::ActionReturn);
 	}
 	else if(text == "backkey")
 	{
-		editor->doKeyboardAction(QTextEdit::ActionBackspace);
+		editor->doKeyboardAction(Q3TextEdit::ActionBackspace);
 	}
 	else if(text == "clearall")
 	{
@@ -165,12 +175,12 @@ void ScriptWidget::updateFileList()
 
 	while((dirItem=readdir(scriptDir))!=NULL)
 	{
-		if(lstat(startPath+QString("/")+dirItem->d_name,&itemStat)==0 && dirItem->d_name[0]!='.')
+		if(lstat(startPath+QString("/")+QString(dirItem->d_name),&itemStat)==0 && dirItem->d_name[0]!='.')
 		{
-			QListViewItem* newItem = new QListViewItem(fileBrowser,dirItem->d_name);
+			Q3ListViewItem* newItem = new Q3ListViewItem(fileBrowser,dirItem->d_name);
 			fileBrowser->insertItem(newItem);
 			if(S_ISDIR(itemStat.st_mode))
-				readDir(startPath+QString("/")+dirItem->d_name,newItem);
+				readDir(startPath+QString("/")+QString(dirItem->d_name),newItem);
 		}
 	}
 	closedir(scriptDir);
@@ -184,7 +194,7 @@ void ScriptWidget::updateFileList()
 			int slash=origFileString.findRev("/.tmp");
 			origFileString.remove(slash+1,4);
 //			MessageBox("origFileString: "+origFileString);
-			QListViewItem*changedItem=getFileItem(origFileString);
+			Q3ListViewItem*changedItem=getFileItem(origFileString);
 			if(changedItem!=NULL)
 			{
 //				MessageBox("ChangedItem: "+changedItem->text(0));
@@ -216,7 +226,7 @@ void ScriptWidget::updateFileList()
 }
 
 
-void ScriptWidget::readDir(QString rootDir,QListViewItem*parent)
+void ScriptWidget::readDir(QString rootDir,Q3ListViewItem*parent)
 {
 //	perror("readDir");
 	DIR*scriptDir;
@@ -228,25 +238,25 @@ void ScriptWidget::readDir(QString rootDir,QListViewItem*parent)
 
 	while((dirItem=readdir(scriptDir))!=NULL)
 	{
-		if(lstat(rootDir+QString("/")+dirItem->d_name,&itemStat)==0 && dirItem->d_name[0]!='.')
+		if(lstat(rootDir+QString("/")+QString(dirItem->d_name),&itemStat)==0 && dirItem->d_name[0]!='.')
 		{
 			if(!parent->isExpandable())
 				parent->setExpandable(true);
-			QListViewItem* newItem = new QListViewItem(parent,dirItem->d_name);
+			Q3ListViewItem* newItem = new Q3ListViewItem(parent,dirItem->d_name);
 			parent->insertItem(newItem);
 			if(S_ISDIR(itemStat.st_mode))
-				readDir(rootDir+QString("/")+dirItem->d_name,newItem);
+				readDir(rootDir+QString("/")+QString(dirItem->d_name),newItem);
 		}
 	}
 	closedir(scriptDir);
 }
 
 
-void ScriptWidget::showFile(QListViewItem*activeItem)
+void ScriptWidget::showFile(Q3ListViewItem*activeItem)
 {
 //	perror("showFile");
 	QString completePath=activeItem->text(0);
-	QListViewItem *parentItem=activeItem;
+	Q3ListViewItem *parentItem=activeItem;
 	if(parentItem==NULL)
 		return;
 	while((parentItem=parentItem->parent())!=NULL)
@@ -367,7 +377,7 @@ void ScriptWidget::createNumbers()
 	lineNumbers->setContentsPos(0,editor->contentsY());
 }
 
-void ScriptWidget::createFileBrowserMenu(QListViewItem*item,const QPoint&pos,int col)
+void ScriptWidget::createFileBrowserMenu(Q3ListViewItem*item,const QPoint&pos,int col)
 {
 	
 	if(item!=NULL && col!=-1)
@@ -484,7 +494,7 @@ void ScriptWidget::fileBrowserMenuSlot(int item)
 				else if(ret==-1)
 					break;
 			}
-			QString filePath=QFileDialog::getSaveFileName(
+			QString filePath=Q3FileDialog::getSaveFileName(
 					pref.scriptPath+"/"+pref.scriptDirName,
 			"*",
 			this,
@@ -593,11 +603,11 @@ void ScriptWidget::textChangedSlot()
 	}
 }
 
-QString ScriptWidget::getFileName(QListViewItem*startItem)
+QString ScriptWidget::getFileName(Q3ListViewItem*startItem)
 {
 //	perror("getFilename");
 	QString completePath=startItem->text(0);
-	QListViewItem *parentItem=startItem;
+	Q3ListViewItem *parentItem=startItem;
 	while((parentItem=parentItem->parent())!=NULL)
 	{
 		completePath.insert(0,'/');
@@ -607,7 +617,7 @@ QString ScriptWidget::getFileName(QListViewItem*startItem)
 	return completePath;
 }
 
-QListViewItem* ScriptWidget::getFileItem(QString path)
+Q3ListViewItem* ScriptWidget::getFileItem(QString path)
 {
 	//Search QListViewItem by path
 	//Use this to set activeFileItem after updateFileList()
@@ -630,8 +640,8 @@ QListViewItem* ScriptWidget::getFileItem(QString path)
 	if(pos2==-1)
 		pos2=searchString.length();
 	QString searchPart=searchString.mid(pos1,pos2-pos1);
-	QListViewItem *treeItem=fileBrowser->findItem(searchPart,0);
-	QListViewItem *walkItem;
+	Q3ListViewItem *treeItem=fileBrowser->findItem(searchPart,0);
+	Q3ListViewItem *walkItem;
 	
 	while(true)
 	{
@@ -678,7 +688,7 @@ void ScriptWidget::saveSlot()
 	bool fileCreated=false;
 	if(activeFileItem==NULL)
 	{
-		filePath=QFileDialog::getSaveFileName(
+		filePath=Q3FileDialog::getSaveFileName(
 				pref.scriptPath+"/"+pref.scriptDirName,
 				"*",
 				this,

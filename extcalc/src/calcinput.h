@@ -19,11 +19,14 @@ math classes and shows the user output.
 
 
 #include "global.h"
-#include <qtextedit.h>
+#include <q3textedit.h>
 #include <qfont.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qthread.h>
 #include <qevent.h>
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <QKeyEvent>
 #include "list.h"
 
 /*
@@ -49,7 +52,7 @@ protected:
 
 
 
-class CalcInput :public QTextEdit
+class CalcInput :public Q3TextEdit
 {
 	int lineLength;
 	int charLength;
@@ -69,7 +72,7 @@ class CalcInput :public QTextEdit
 	
 	Q_OBJECT
 	public:
-		CalcInput(QWidget*parentWin,Variable*va,ThreadSync*td,bool aB=false) :QTextEdit((QWidget*)parentWin)
+		CalcInput(QWidget*parentWin,Variable*va,ThreadSync*td,bool aB=false) :Q3TextEdit((QWidget*)parentWin)
 		{
 			vars=va;
 			threadData=td;
@@ -87,7 +90,7 @@ class CalcInput :public QTextEdit
 
 			QFontMetrics fontSize=fontMetrics();
 			charLength=fontSize.size(0,QString("m")).width();
-			setWrapPolicy(QTextEdit::AtWordOrDocumentBoundary);
+			setWrapPolicy(Q3TextEdit::AtWordOrDocumentBoundary);
 
 			lineLength=width()/charLength-1;
 
@@ -114,7 +117,7 @@ class CalcInput :public QTextEdit
 		virtual void keyPressEvent(QKeyEvent*);
 		virtual void resizeEvent(QResizeEvent*);
 //		virtual void customEvent(QCustomEvent*ev);
-		virtual QPopupMenu *createPopupMenu(const QPoint&);
+		virtual Q3PopupMenu *createPopupMenu(const QPoint&);
 	
 	public slots:
 		void cursorSlot(int para,int pos);

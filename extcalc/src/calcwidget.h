@@ -24,11 +24,15 @@ This is the class for the calculator tab window.
 #include "catalog.h"
 #include <qcombobox.h>
 
-#include <qtoolbar.h>
-#include <qdockarea.h>
-#include <qiconset.h>
-#include <qpopupmenu.h>
+#include <QWidget>
+#include <q3toolbar.h>
+#include <q3dockarea.h>
+#include <qicon.h>
+#include <q3popupmenu.h>
 #include <qtooltip.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <QResizeEvent>
 
 
 
@@ -44,8 +48,8 @@ class CalcWidget :public QWidget
 	Variable *vars;
 	ThreadSync*threadData;
 	
-	QToolBar*toolBar;
-	QDockArea*dockArea;
+	Q3ToolBar*toolBar;
+	Q3DockArea*dockArea;
 	QComboBox *angleBox,*baseBox,*typeBox;
 	QPixmap *minimizeIcon,*angleIcon,*maximizeIcon,*scientificIcon,*baseIcon,*catalogIcon;
 	Catalog *catalog,*constants;
@@ -58,7 +62,7 @@ class CalcWidget :public QWidget
 
 
 
-	
+
 	public:
 	CalcWidget(QWidget*parent,Preferences p,Variable *va,ThreadSync*td,int mB) :QWidget(parent)
 	{
@@ -78,8 +82,8 @@ class CalcWidget :public QWidget
 		baseIcon=new QPixmap(INSTALLDIR+QString("/data/binary.png"));
 		catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
 		
-		dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
-		toolBar=new QToolBar();
+		dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
+		toolBar=new Q3ToolBar();
 		dockArea->moveDockWindow(toolBar);
 		
 		viewButton=new QPushButton(*maximizeIcon,"",toolBar);

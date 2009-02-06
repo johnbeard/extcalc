@@ -1,232 +1,143 @@
 /****************************************************************************
-** ScriptWidget meta object code from reading C++ file 'scriptedit.h'
+** Meta object code from reading C++ file 'scriptedit.h'
 **
-** Created: Fri Jun 6 11:52:50 2008
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
+** Created: Fri Feb 6 17:36:41 2009
+**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#undef QT_NO_COMPAT
 #include "scriptedit.h"
-#include <qmetaobject.h>
-#include <qapplication.h>
-
-#include <private/qucomextra_p.h>
-#if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
-#error "This file was generated using the moc from 3.3.8b. It"
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'scriptedit.h' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.4.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
-const char *ScriptWidget::className() const
+QT_BEGIN_MOC_NAMESPACE
+static const uint qt_meta_data_ScriptWidget[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+      20,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      14,   13,   13,   13, 0x05,
+      38,   13,   13,   13, 0x05,
+      58,   13,   13,   13, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+      81,   13,   13,   13, 0x0a,
+     102,   13,   13,   13, 0x0a,
+     127,   13,   13,   13, 0x0a,
+     148,   13,   13,   13, 0x0a,
+     162,   13,   13,   13, 0x0a,
+     191,  188,   13,   13, 0x0a,
+     246,  241,   13,   13, 0x0a,
+     271,   13,   13,   13, 0x0a,
+     289,   13,   13,   13, 0x0a,
+     300,   13,   13,   13, 0x0a,
+     318,  316,   13,   13, 0x0a,
+     339,   13,   13,   13, 0x0a,
+     353,   13,   13,   13, 0x0a,
+     363,   13,   13,   13, 0x0a,
+     376,   13,   13,   13, 0x0a,
+     389,   13,   13,   13, 0x0a,
+     406,   13,   13,   13, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_ScriptWidget[] = {
+    "ScriptWidget\0\0prefChange(Preferences)\0"
+    "runScript(QString*)\0controlScriptMenu(int)\0"
+    "getPref(Preferences)\0buttonInputSlot(QString)\0"
+    "maximizeButtonSlot()\0editSlot(int)\0"
+    "showFile(Q3ListViewItem*)\0,,\0"
+    "createFileBrowserMenu(Q3ListViewItem*,QPoint,int)\0"
+    "item\0fileBrowserMenuSlot(int)\0"
+    "textChangedSlot()\0saveSlot()\0"
+    "runButtonSlot()\0,\0lineNumSlot(int,int)\0"
+    "saveallSlot()\0newSlot()\0importSlot()\0"
+    "exportSlot()\0dockWindowSlot()\0"
+    "catalogSlot()\0"
+};
+
+const QMetaObject ScriptWidget::staticMetaObject = {
+    { &QWidget::staticMetaObject, qt_meta_stringdata_ScriptWidget,
+      qt_meta_data_ScriptWidget, 0 }
+};
+
+const QMetaObject *ScriptWidget::metaObject() const
 {
-    return "ScriptWidget";
+    return &staticMetaObject;
 }
 
-QMetaObject *ScriptWidget::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_ScriptWidget( "ScriptWidget", &ScriptWidget::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString ScriptWidget::tr( const char *s, const char *c )
+void *ScriptWidget::qt_metacast(const char *_clname)
 {
-    if ( qApp )
-	return qApp->translate( "ScriptWidget", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString ScriptWidget::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "ScriptWidget", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* ScriptWidget::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QWidget::staticMetaObject();
-    static const QUParameter param_slot_0[] = {
-	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod slot_0 = {"getPref", 1, param_slot_0 };
-    static const QUParameter param_slot_1[] = {
-	{ 0, &static_QUType_QString, 0, QUParameter::In }
-    };
-    static const QUMethod slot_1 = {"buttonInputSlot", 1, param_slot_1 };
-    static const QUMethod slot_2 = {"maximizeButtonSlot", 0, 0 };
-    static const QUParameter param_slot_3[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_3 = {"editSlot", 1, param_slot_3 };
-    static const QUParameter param_slot_4[] = {
-	{ 0, &static_QUType_ptr, "QListViewItem", QUParameter::In }
-    };
-    static const QUMethod slot_4 = {"showFile", 1, param_slot_4 };
-    static const QUParameter param_slot_5[] = {
-	{ 0, &static_QUType_ptr, "QListViewItem", QUParameter::In },
-	{ 0, &static_QUType_varptr, "\x0e", QUParameter::In },
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_5 = {"createFileBrowserMenu", 3, param_slot_5 };
-    static const QUParameter param_slot_6[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_6 = {"fileBrowserMenuSlot", 1, param_slot_6 };
-    static const QUMethod slot_7 = {"textChangedSlot", 0, 0 };
-    static const QUMethod slot_8 = {"saveSlot", 0, 0 };
-    static const QUMethod slot_9 = {"runButtonSlot", 0, 0 };
-    static const QUParameter param_slot_10[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In },
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_10 = {"lineNumSlot", 2, param_slot_10 };
-    static const QUMethod slot_11 = {"saveallSlot", 0, 0 };
-    static const QUMethod slot_12 = {"newSlot", 0, 0 };
-    static const QUMethod slot_13 = {"importSlot", 0, 0 };
-    static const QUMethod slot_14 = {"exportSlot", 0, 0 };
-    static const QUMethod slot_15 = {"dockWindowSlot", 0, 0 };
-    static const QUMethod slot_16 = {"catalogSlot", 0, 0 };
-    static const QMetaData slot_tbl[] = {
-	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
-	{ "buttonInputSlot(QString)", &slot_1, QMetaData::Public },
-	{ "maximizeButtonSlot()", &slot_2, QMetaData::Public },
-	{ "editSlot(int)", &slot_3, QMetaData::Public },
-	{ "showFile(QListViewItem*)", &slot_4, QMetaData::Public },
-	{ "createFileBrowserMenu(QListViewItem*,const QPoint&,int)", &slot_5, QMetaData::Public },
-	{ "fileBrowserMenuSlot(int)", &slot_6, QMetaData::Public },
-	{ "textChangedSlot()", &slot_7, QMetaData::Public },
-	{ "saveSlot()", &slot_8, QMetaData::Public },
-	{ "runButtonSlot()", &slot_9, QMetaData::Public },
-	{ "lineNumSlot(int,int)", &slot_10, QMetaData::Public },
-	{ "saveallSlot()", &slot_11, QMetaData::Public },
-	{ "newSlot()", &slot_12, QMetaData::Public },
-	{ "importSlot()", &slot_13, QMetaData::Public },
-	{ "exportSlot()", &slot_14, QMetaData::Public },
-	{ "dockWindowSlot()", &slot_15, QMetaData::Public },
-	{ "catalogSlot()", &slot_16, QMetaData::Public }
-    };
-    static const QUParameter param_signal_0[] = {
-	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"prefChange", 1, param_signal_0 };
-    static const QUParameter param_signal_1[] = {
-	{ 0, &static_QUType_varptr, "\x03", QUParameter::In }
-    };
-    static const QUMethod signal_1 = {"runScript", 1, param_signal_1 };
-    static const QUParameter param_signal_2[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod signal_2 = {"controlScriptMenu", 1, param_signal_2 };
-    static const QMetaData signal_tbl[] = {
-	{ "prefChange(Preferences)", &signal_0, QMetaData::Protected },
-	{ "runScript(QString*)", &signal_1, QMetaData::Protected },
-	{ "controlScriptMenu(int)", &signal_2, QMetaData::Protected }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"ScriptWidget", parentObject,
-	slot_tbl, 17,
-	signal_tbl, 3,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_ScriptWidget.setMetaObject( metaObj );
-    return metaObj;
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_ScriptWidget))
+        return static_cast<void*>(const_cast< ScriptWidget*>(this));
+    return QWidget::qt_metacast(_clname);
 }
 
-void* ScriptWidget::qt_cast( const char* clname )
+int ScriptWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    if ( !qstrcmp( clname, "ScriptWidget" ) )
-	return this;
-    return QWidget::qt_cast( clname );
-}
-
-#include <qobjectdefs.h>
-#include <qsignalslotimp.h>
-
-// SIGNAL prefChange
-void ScriptWidget::prefChange( Preferences t0 )
-{
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 0 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_ptr.set(o+1,&t0);
-    activate_signal( clist, o );
-}
-
-// SIGNAL runScript
-void ScriptWidget::runScript( QString* t0 )
-{
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 1 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_varptr.set(o+1,t0);
-    activate_signal( clist, o );
-}
-
-// SIGNAL controlScriptMenu
-void ScriptWidget::controlScriptMenu( int t0 )
-{
-    activate_signal( staticMetaObject()->signalOffset() + 2, t0 );
-}
-
-bool ScriptWidget::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 1: buttonInputSlot((QString)static_QUType_QString.get(_o+1)); break;
-    case 2: maximizeButtonSlot(); break;
-    case 3: editSlot((int)static_QUType_int.get(_o+1)); break;
-    case 4: showFile((QListViewItem*)static_QUType_ptr.get(_o+1)); break;
-    case 5: createFileBrowserMenu((QListViewItem*)static_QUType_ptr.get(_o+1),(const QPoint&)*((const QPoint*)static_QUType_ptr.get(_o+2)),(int)static_QUType_int.get(_o+3)); break;
-    case 6: fileBrowserMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 7: textChangedSlot(); break;
-    case 8: saveSlot(); break;
-    case 9: runButtonSlot(); break;
-    case 10: lineNumSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
-    case 11: saveallSlot(); break;
-    case 12: newSlot(); break;
-    case 13: importSlot(); break;
-    case 14: exportSlot(); break;
-    case 15: dockWindowSlot(); break;
-    case 16: catalogSlot(); break;
-    default:
-	return QWidget::qt_invoke( _id, _o );
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 1: runScript((*reinterpret_cast< QString*(*)>(_a[1]))); break;
+        case 2: controlScriptMenu((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 3: getPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 4: buttonInputSlot((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 5: maximizeButtonSlot(); break;
+        case 6: editSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 7: showFile((*reinterpret_cast< Q3ListViewItem*(*)>(_a[1]))); break;
+        case 8: createFileBrowserMenu((*reinterpret_cast< Q3ListViewItem*(*)>(_a[1])),(*reinterpret_cast< const QPoint(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3]))); break;
+        case 9: fileBrowserMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 10: textChangedSlot(); break;
+        case 11: saveSlot(); break;
+        case 12: runButtonSlot(); break;
+        case 13: lineNumSlot((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 14: saveallSlot(); break;
+        case 15: newSlot(); break;
+        case 16: importSlot(); break;
+        case 17: exportSlot(); break;
+        case 18: dockWindowSlot(); break;
+        case 19: catalogSlot(); break;
+        }
+        _id -= 20;
     }
-    return TRUE;
+    return _id;
 }
 
-bool ScriptWidget::qt_emit( int _id, QUObject* _o )
+// SIGNAL 0
+void ScriptWidget::prefChange(Preferences _t1)
 {
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 1: runScript((QString*)static_QUType_varptr.get(_o+1)); break;
-    case 2: controlScriptMenu((int)static_QUType_int.get(_o+1)); break;
-    default:
-	return QWidget::qt_emit(_id,_o);
-    }
-    return TRUE;
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
-#ifndef QT_NO_PROPERTIES
 
-bool ScriptWidget::qt_property( int id, int f, QVariant* v)
+// SIGNAL 1
+void ScriptWidget::runScript(QString * _t1)
 {
-    return QWidget::qt_property( id, f, v);
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 
-bool ScriptWidget::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
+// SIGNAL 2
+void ScriptWidget::controlScriptMenu(int _t1)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 2, _a);
+}
+QT_END_MOC_NAMESPACE

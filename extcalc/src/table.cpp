@@ -14,6 +14,9 @@ any later version.
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "table.h"
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <Q3ValueList>
 
 void TableWidget::resizeEvent(QResizeEvent*)
 {
@@ -59,7 +62,7 @@ void TableWidget::setPref(Preferences p)
 		typeBox->setCurrentText(TABLEH_STR4);
 	else if(pref.tableType==TABLEPARAMETER)
 		typeBox->setCurrentText(TABLEH_STR5);
-	else if(pref.tableType==TABLEINEQUAITY)
+	else if(pref.tableType==TABLEINEQUALITY)
 		typeBox->setCurrentText(TABLEH_STR6);
 	else if(pref.tableType==TABLE3D)
 		typeBox->setCurrentText(TABLEH_STR7);
@@ -211,7 +214,7 @@ void TableWidget::calculateButtonSlot()
 			}
 		}
 	}
-	else if(pref.tableType==TABLEINEQUAITY)
+	else if(pref.tableType==TABLEINEQUALITY)
 	{
 		vars[0]=pref.tableAValue;
 		for(int c=0; c<20;c++)
@@ -303,7 +306,7 @@ void TableWidget::maximizeButtonSlot()
 		maximizeButton->setIconSet(*maximizeIcon);
 		standardButtons->show();
 		extButtons->show();
-		QValueList<int> s = horzSplit->sizes();
+		Q3ValueList<int> s = horzSplit->sizes();
 		s[1]=(s[0]+s[1])/2;
 		s[0]=s[1];
 		horzSplit->setSizes(s);
@@ -315,7 +318,7 @@ void TableWidget::maximizeButtonSlot()
 		maximizeButton->setIconSet(*minimizeIcon);
 		standardButtons->hide();
 		extButtons->hide();
-		QValueList<int> s = horzSplit->sizes();
+		Q3ValueList<int> s = horzSplit->sizes();
 		s[1]=s[0]+s[1];
 		s[0]=0;
 		horzSplit->setSizes(s);
@@ -337,7 +340,7 @@ void TableWidget::typeBoxSlot(const QString&str)
 	else if(str==TABLEH_STR5)
 		pref.tableType=TABLEPARAMETER;
 	else if(str==TABLEH_STR6)
-		pref.tableType=TABLEINEQUAITY;
+		pref.tableType=TABLEINEQUALITY;
 	else if(str==TABLEH_STR7)
 		pref.tableType=TABLE3D;
 	else if(str==TABLEH_STR9)
@@ -361,7 +364,7 @@ void TableWidget::buttonInputSlot(QString text)
 		functionTable->setText(functionTable->currentRow(),0,inputLine->text());
 		if((inputLine->text().length())<=0)
 		{
-			QCheckTableItem *checkItem=(QCheckTableItem*)functionTable->item(functionTable->currentRow(),2);
+			Q3CheckTableItem *checkItem=(Q3CheckTableItem*)functionTable->item(functionTable->currentRow(),2);
 			checkItem->setChecked(false);
 		}
 	}
@@ -380,7 +383,7 @@ void TableWidget::buttonInputSlot(QString text)
 		inputLine->setText(fullText);
 		inputLine->setCursorPosition(cursorPos+text.length());
 		functionTable->setText(functionTable->currentRow(),0,inputLine->text());
-		QCheckTableItem *checkItem=(QCheckTableItem*)functionTable->item(functionTable->currentRow(),2);
+		Q3CheckTableItem *checkItem=(Q3CheckTableItem*)functionTable->item(functionTable->currentRow(),2);
 		checkItem->setChecked(true);
 	}
 

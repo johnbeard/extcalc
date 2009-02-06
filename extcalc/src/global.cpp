@@ -14,6 +14,8 @@ any later version.
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "global.h"
+//Added by qt3to4:
+#include <QCustomEvent>
 
 
 QString cleanConfigString(QString prefName,QString par)
@@ -2748,12 +2750,12 @@ int Script::parse(char* line,int start,int end)
 	{
 		if(pos1==end-1)
 		{
-				operation=SNOT;
+				operation=SFAK;
 				vertObj=new Script(this,line,start,end-1,pref,vars,eventReciver);
 		}
 		else if(pos1==start)
 		{
-			operation=SFAK;
+			operation=SNOT;
 			vertObj=new Script(this,line,start+1,end,pref,vars,eventReciver);
 		}
 		else {
@@ -3641,11 +3643,30 @@ int Script::parse(char* line,int start,int end)
 			operation=DETERMINANT;
 			vertObj=new Script(this,line,start+3,end,pref,vars,eventReciver);
 		}
-		else if(strncmp(line+start,"i",1) == 0  && pref->complex)
+		else if(strncmp(line+start,"i",1) == 0 && pref->complex)
 		{
-			operation=SVALUE;
+			operation=SVALUE; 
 			value.type=NFLOAT;
-			value.fval=Complex(0.0,1.0);
+			
+			if((end-start)==1)
+			{
+				value.fval=Complex(0.0,1.0);
+			}
+			else
+			{
+				char*err,*tmpval;
+				tmpval=new char[end-start];
+				strcopy(tmpval,&line[start+1],end-start-1);
+		
+				value.fval=Complex(0.0,strtold(tmpval,&err));
+					
+				if(*err!=(char)0)
+				{
+					printError("Invalid number",semicolonCount,eventReciver);
+					operation=SFAIL;
+				}
+				delete[] tmpval;
+			}
 			return -1;
 		}
 		else{
@@ -5144,7 +5165,7 @@ Number Script::exec()
 #ifndef CONSOLE
 			QCustomEvent *ev=new QCustomEvent(SIGPRINT);
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -5244,7 +5265,7 @@ Number Script::exec()
 					
 			}
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -5261,7 +5282,7 @@ Number Script::exec()
 				int*eventContent=(int*)malloc(sizeof(int));
 				memcpy(eventContent,&num,sizeof(int));
 				ev->setData(eventContent);
-				QApplication::postEvent(eventReciver->eventReciver,ev);
+				QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 				eventReciver->eventCount++;
 				if(eventReciver->eventCount>200)
 					eventReciver->status=1;
@@ -5269,7 +5290,7 @@ Number Script::exec()
 			else if(var==1)
 			{
 				QCustomEvent *ev=new QCustomEvent(SIGSTARTLIST);
-				QApplication::postEvent(eventReciver->eventReciver,ev);
+				QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 				eventReciver->eventCount++;
 				if(eventReciver->eventCount>200)
 					eventReciver->status=1;
@@ -5279,7 +5300,7 @@ Number Script::exec()
 				eventReciver->data=NULL;
 				QCustomEvent*ev=new QCustomEvent(SIGENDLIST);
 				qApp->lock();
-				QApplication::postEvent(eventReciver->eventReciver,ev);
+				QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 				eventReciver->eventCount++;
 				if(eventReciver->eventCount>200)
 					eventReciver->status=1;
@@ -5314,7 +5335,7 @@ Number Script::exec()
 				ev=new QCustomEvent(SIGGRAPHEND);
 			else ev=new QCustomEvent(SIGIDENTITY);
 			
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -5327,7 +5348,7 @@ Number Script::exec()
 			int*eventContent=(int*)malloc(sizeof(int));
 			*eventContent=(int)value.ival;
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -5349,7 +5370,7 @@ Number Script::exec()
 			eventContent[2]=(double)value.fval.real();
 
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -5380,7 +5401,7 @@ Number Script::exec()
 			else ev=new QCustomEvent(SIGGRAPHSCALE);
 
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -5413,7 +5434,7 @@ Number Script::exec()
 			eventContent[2]=(int)value.ival;
 
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -5443,7 +5464,7 @@ Number Script::exec()
 			((int*)eventContent)[1]=(int)value.ival;
 			
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6077,7 +6098,7 @@ Number Script::exec()
 				long double res=1.0;
 				for(int c=2; c<=end; c++)
 					res*=(long double)c;
-				value.fval=Complex(res,value.fval.imag());
+				value.fval=Complex(res,0.0);
 			}
 			return value;
 		}
@@ -6439,7 +6460,7 @@ Number Script::exec()
 		{
 #ifndef CONSOLE
 			QCustomEvent*killEvent=new QCustomEvent(SIGFINISHED);
-			QApplication::postEvent(eventReciver->eventReciver,killEvent);
+			QCoreApplication::postEvent(eventReciver->eventReciver,killEvent);
 			pthread_exit(0);
 #else 
 			exit(0);
@@ -6521,7 +6542,7 @@ Number Script::exec()
 			QCustomEvent*fileEvent=new QCustomEvent(SIGFILEREAD);
 			fileEvent->setData(eventContent);
 
-			QApplication::postEvent(eventReciver->eventReciver,fileEvent);
+			QCoreApplication::postEvent(eventReciver->eventReciver,fileEvent);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6596,7 +6617,7 @@ Number Script::exec()
 #ifndef CONSOLE
 			QCustomEvent *ev=new QCustomEvent(SIGFILEAPPEND);
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6646,7 +6667,7 @@ Number Script::exec()
 #ifndef CONSOLE
 			QCustomEvent *ev=new QCustomEvent(SIGFILEWRITE);
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6683,7 +6704,7 @@ Number Script::exec()
 			strcpy(eventContent,value.cval);
 			QCustomEvent *ev=new QCustomEvent(SIGFILEREMOVE);
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6724,7 +6745,7 @@ Number Script::exec()
 #ifndef CONSOLE
 			QCustomEvent *ev=new QCustomEvent(SIGSETTEXTPOS);
 			ev->setData(coords);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6740,7 +6761,7 @@ Number Script::exec()
 		{
 #ifndef CONSOLE
 			QCustomEvent*clearEvent=new QCustomEvent(SIGCLEARTEXT);
-			QApplication::postEvent(eventReciver->eventReciver,clearEvent);
+			QCoreApplication::postEvent(eventReciver->eventReciver,clearEvent);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6759,7 +6780,7 @@ Number Script::exec()
 			eventReciver->data=NULL;
 			QCustomEvent*clearEvent=new QCustomEvent(SIGGETKEY);
 
-			QApplication::postEvent(eventReciver->eventReciver,clearEvent);
+			QCoreApplication::postEvent(eventReciver->eventReciver,clearEvent);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6790,7 +6811,7 @@ Number Script::exec()
 			eventReciver->data=NULL;
 			QCustomEvent*clearEvent=new QCustomEvent(SIGKEYSTATE);
 
-			QApplication::postEvent(eventReciver->eventReciver,clearEvent);
+			QCoreApplication::postEvent(eventReciver->eventReciver,clearEvent);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6844,7 +6865,7 @@ Number Script::exec()
 			eventReciver->data=NULL;
 			QCustomEvent*clearEvent=new QCustomEvent(SIGGETLINE);
 
-			QApplication::postEvent(eventReciver->eventReciver,clearEvent);
+			QCoreApplication::postEvent(eventReciver->eventReciver,clearEvent);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6898,7 +6919,7 @@ Number Script::exec()
 				value=horzObj->exec();
 #ifndef CONSOLE
 			QCustomEvent*killEvent=new QCustomEvent(SIGFINISHED);
-			QApplication::postEvent(eventReciver->eventReciver,killEvent);
+			QCoreApplication::postEvent(eventReciver->eventReciver,killEvent);
 #endif
 			return value;
 		}
@@ -7085,7 +7106,7 @@ void printError(const char*text,int num,ThreadSync*eventReciver)
 		memcpy(debugData,&num,4);
 		memcpy(&debugData[4],text,strlen(text)+1);
 		debugEvent->setData(debugData);
-		QApplication::postEvent(eventReciver->eventReciver,debugEvent);
+		QCoreApplication::postEvent(eventReciver->eventReciver,debugEvent);
 }
 
 

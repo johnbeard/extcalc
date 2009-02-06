@@ -19,6 +19,8 @@ This class manages the functions for graph drawing and function tables.
 
 #include <calctable.h>
 #include "list.h"
+//Added by qt3to4:
+#include <QKeyEvent>
 
 
 class FunctionTable :public CalcTable
@@ -78,7 +80,7 @@ public:
 		setColumnLabels(colLabels);
 
 		for(int c=0; c<tableFunctionMap.GetLen(); c++)
-			setItem(c,2,new QCheckTableItem(this,""));
+			setItem(c,2,new Q3CheckTableItem(this,""));
 		
 		colorList+=GRAPHH_COL1;
 		colorList+=GRAPHH_COL2;
@@ -93,7 +95,7 @@ public:
 		colorList+=GRAPHH_COL11;
 		
 		for(int c=0; c<tableFunctionMap.GetLen(); c++)
-			setItem(c,1,new QComboTableItem(this,colorList));
+			setItem(c,1,new Q3ComboTableItem(this,colorList));
 		
 		graphTypeList+=GRAPHH_STR15;
 		graphTypeList+=GRAPHH_STR16;
@@ -106,14 +108,14 @@ public:
 		graphTypeList+="Nyquist Plot";
 		graphTypeList+="3D Nyquist Plot";
 		for(int c=0; c<tableFunctionMap.GetLen(); c++)
-			setItem(c,3,new QComboTableItem(this,graphTypeList));
+			setItem(c,3,new Q3ComboTableItem(this,graphTypeList));
 			
 
 		for(int c=0; c<tableFunctionMap.GetLen(); c++)
-			setItem(c,4,new QCheckTableItem(this,""));
+			setItem(c,4,new Q3CheckTableItem(this,""));
 
 		for(int c=0; c<tableFunctionMap.GetLen(); c++)
-			setItem(c,5,new QCheckTableItem(this,""));
+			setItem(c,5,new Q3CheckTableItem(this,""));
 
 		for(int c=0; c<tableFunctionMap.GetLen(); c++)
 			setRowHeight(c,25);

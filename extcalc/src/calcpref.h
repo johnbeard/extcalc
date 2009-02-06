@@ -49,7 +49,7 @@ class CalcPreferences :public QWidget
 	
 	Q_OBJECT
 	public:
-		CalcPreferences(Preferences p,QWidget*parent) :QWidget(parent,"Calculator Preferences",Qt::WStyle_Dialog | Qt::WType_Dialog)
+		CalcPreferences(Preferences p,QWidget*parent) :QWidget(parent,"Calculator Preferences",Qt::WType_Dialog | Qt::WType_Dialog)
 		{
 			pref=p;
 			saveButton=new QPushButton(CALCPREFH_STR1,this);

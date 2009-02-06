@@ -1,489 +1,291 @@
 /****************************************************************************
-** CoordinatePreferences meta object code from reading C++ file 'graphpref.h'
+** Meta object code from reading C++ file 'graphpref.h'
 **
-** Created: Fri Jun 6 11:52:50 2008
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
+** Created: Wed Dec 31 16:17:57 2008
+**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#undef QT_NO_COMPAT
 #include "graphpref.h"
-#include <qmetaobject.h>
-#include <qapplication.h>
-
-#include <private/qucomextra_p.h>
-#if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
-#error "This file was generated using the moc from 3.3.8b. It"
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'graphpref.h' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.4.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
-const char *CoordinatePreferences::className() const
+QT_BEGIN_MOC_NAMESPACE
+static const uint qt_meta_data_CoordinatePreferences[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       5,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      23,   22,   22,   22, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+      47,   22,   22,   22, 0x0a,
+      63,   22,   22,   22, 0x0a,
+      81,   22,   22,   22, 0x0a,
+     105,  100,   22,   22, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_CoordinatePreferences[] = {
+    "CoordinatePreferences\0\0prefChange(Preferences)\0"
+    "stdButtonSlot()\0angleButtonSlot()\0"
+    "graphTypeSlot(int)\0pref\0getPref(Preferences)\0"
+};
+
+const QMetaObject CoordinatePreferences::staticMetaObject = {
+    { &QWidget::staticMetaObject, qt_meta_stringdata_CoordinatePreferences,
+      qt_meta_data_CoordinatePreferences, 0 }
+};
+
+const QMetaObject *CoordinatePreferences::metaObject() const
 {
-    return "CoordinatePreferences";
+    return &staticMetaObject;
 }
 
-QMetaObject *CoordinatePreferences::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_CoordinatePreferences( "CoordinatePreferences", &CoordinatePreferences::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString CoordinatePreferences::tr( const char *s, const char *c )
+void *CoordinatePreferences::qt_metacast(const char *_clname)
 {
-    if ( qApp )
-	return qApp->translate( "CoordinatePreferences", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString CoordinatePreferences::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "CoordinatePreferences", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* CoordinatePreferences::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QWidget::staticMetaObject();
-    static const QUMethod slot_0 = {"stdButtonSlot", 0, 0 };
-    static const QUMethod slot_1 = {"angleButtonSlot", 0, 0 };
-    static const QUParameter param_slot_2[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_2 = {"graphTypeSlot", 1, param_slot_2 };
-    static const QUParameter param_slot_3[] = {
-	{ "pref", &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod slot_3 = {"getPref", 1, param_slot_3 };
-    static const QMetaData slot_tbl[] = {
-	{ "stdButtonSlot()", &slot_0, QMetaData::Public },
-	{ "angleButtonSlot()", &slot_1, QMetaData::Public },
-	{ "graphTypeSlot(int)", &slot_2, QMetaData::Public },
-	{ "getPref(Preferences)", &slot_3, QMetaData::Public }
-    };
-    static const QUParameter param_signal_0[] = {
-	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"prefChange", 1, param_signal_0 };
-    static const QMetaData signal_tbl[] = {
-	{ "prefChange(Preferences)", &signal_0, QMetaData::Public }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"CoordinatePreferences", parentObject,
-	slot_tbl, 4,
-	signal_tbl, 1,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_CoordinatePreferences.setMetaObject( metaObj );
-    return metaObj;
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_CoordinatePreferences))
+        return static_cast<void*>(const_cast< CoordinatePreferences*>(this));
+    return QWidget::qt_metacast(_clname);
 }
 
-void* CoordinatePreferences::qt_cast( const char* clname )
+int CoordinatePreferences::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    if ( !qstrcmp( clname, "CoordinatePreferences" ) )
-	return this;
-    return QWidget::qt_cast( clname );
-}
-
-#include <qobjectdefs.h>
-#include <qsignalslotimp.h>
-
-// SIGNAL prefChange
-void CoordinatePreferences::prefChange( Preferences t0 )
-{
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 0 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_ptr.set(o+1,&t0);
-    activate_signal( clist, o );
-}
-
-bool CoordinatePreferences::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: stdButtonSlot(); break;
-    case 1: angleButtonSlot(); break;
-    case 2: graphTypeSlot((int)static_QUType_int.get(_o+1)); break;
-    case 3: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    default:
-	return QWidget::qt_invoke( _id, _o );
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 1: stdButtonSlot(); break;
+        case 2: angleButtonSlot(); break;
+        case 3: graphTypeSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 4: getPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        }
+        _id -= 5;
     }
-    return TRUE;
+    return _id;
 }
 
-bool CoordinatePreferences::qt_emit( int _id, QUObject* _o )
+// SIGNAL 0
+void CoordinatePreferences::prefChange(Preferences _t1)
 {
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    default:
-	return QWidget::qt_emit(_id,_o);
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+static const uint qt_meta_data_PerformancePreferences[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       5,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      24,   23,   23,   23, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+      53,   48,   23,   23, 0x0a,
+      74,   23,   23,   23, 0x0a,
+      90,   23,   23,   23, 0x0a,
+     111,   23,   23,   23, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_PerformancePreferences[] = {
+    "PerformancePreferences\0\0prefChange(Preferences)\0"
+    "pref\0getPref(Preferences)\0lowButtonSlot()\0"
+    "standardButtonSlot()\0highButtonSlot()\0"
+};
+
+const QMetaObject PerformancePreferences::staticMetaObject = {
+    { &QWidget::staticMetaObject, qt_meta_stringdata_PerformancePreferences,
+      qt_meta_data_PerformancePreferences, 0 }
+};
+
+const QMetaObject *PerformancePreferences::metaObject() const
+{
+    return &staticMetaObject;
+}
+
+void *PerformancePreferences::qt_metacast(const char *_clname)
+{
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_PerformancePreferences))
+        return static_cast<void*>(const_cast< PerformancePreferences*>(this));
+    return QWidget::qt_metacast(_clname);
+}
+
+int PerformancePreferences::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 1: getPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 2: lowButtonSlot(); break;
+        case 3: standardButtonSlot(); break;
+        case 4: highButtonSlot(); break;
+        }
+        _id -= 5;
     }
-    return TRUE;
-}
-#ifndef QT_NO_PROPERTIES
-
-bool CoordinatePreferences::qt_property( int id, int f, QVariant* v)
-{
-    return QWidget::qt_property( id, f, v);
+    return _id;
 }
 
-bool CoordinatePreferences::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
-
-
-const char *PerformancePreferences::className() const
+// SIGNAL 0
+void PerformancePreferences::prefChange(Preferences _t1)
 {
-    return "PerformancePreferences";
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+static const uint qt_meta_data_DynamicPreferences[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       3,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      20,   19,   19,   19, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+      49,   44,   19,   19, 0x0a,
+      70,   19,   19,   19, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_DynamicPreferences[] = {
+    "DynamicPreferences\0\0prefChange(Preferences)\0"
+    "pref\0getPref(Preferences)\0"
+    "standardButtonSlot()\0"
+};
+
+const QMetaObject DynamicPreferences::staticMetaObject = {
+    { &QWidget::staticMetaObject, qt_meta_stringdata_DynamicPreferences,
+      qt_meta_data_DynamicPreferences, 0 }
+};
+
+const QMetaObject *DynamicPreferences::metaObject() const
+{
+    return &staticMetaObject;
 }
 
-QMetaObject *PerformancePreferences::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_PerformancePreferences( "PerformancePreferences", &PerformancePreferences::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString PerformancePreferences::tr( const char *s, const char *c )
+void *DynamicPreferences::qt_metacast(const char *_clname)
 {
-    if ( qApp )
-	return qApp->translate( "PerformancePreferences", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString PerformancePreferences::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "PerformancePreferences", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* PerformancePreferences::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QWidget::staticMetaObject();
-    static const QUParameter param_slot_0[] = {
-	{ "pref", &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod slot_0 = {"getPref", 1, param_slot_0 };
-    static const QUMethod slot_1 = {"lowButtonSlot", 0, 0 };
-    static const QUMethod slot_2 = {"standardButtonSlot", 0, 0 };
-    static const QUMethod slot_3 = {"highButtonSlot", 0, 0 };
-    static const QMetaData slot_tbl[] = {
-	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
-	{ "lowButtonSlot()", &slot_1, QMetaData::Public },
-	{ "standardButtonSlot()", &slot_2, QMetaData::Public },
-	{ "highButtonSlot()", &slot_3, QMetaData::Public }
-    };
-    static const QUParameter param_signal_0[] = {
-	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"prefChange", 1, param_signal_0 };
-    static const QMetaData signal_tbl[] = {
-	{ "prefChange(Preferences)", &signal_0, QMetaData::Public }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"PerformancePreferences", parentObject,
-	slot_tbl, 4,
-	signal_tbl, 1,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_PerformancePreferences.setMetaObject( metaObj );
-    return metaObj;
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_DynamicPreferences))
+        return static_cast<void*>(const_cast< DynamicPreferences*>(this));
+    return QWidget::qt_metacast(_clname);
 }
 
-void* PerformancePreferences::qt_cast( const char* clname )
+int DynamicPreferences::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    if ( !qstrcmp( clname, "PerformancePreferences" ) )
-	return this;
-    return QWidget::qt_cast( clname );
-}
-
-// SIGNAL prefChange
-void PerformancePreferences::prefChange( Preferences t0 )
-{
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 0 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_ptr.set(o+1,&t0);
-    activate_signal( clist, o );
-}
-
-bool PerformancePreferences::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 1: lowButtonSlot(); break;
-    case 2: standardButtonSlot(); break;
-    case 3: highButtonSlot(); break;
-    default:
-	return QWidget::qt_invoke( _id, _o );
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 1: getPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 2: standardButtonSlot(); break;
+        }
+        _id -= 3;
     }
-    return TRUE;
+    return _id;
 }
 
-bool PerformancePreferences::qt_emit( int _id, QUObject* _o )
+// SIGNAL 0
+void DynamicPreferences::prefChange(Preferences _t1)
 {
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    default:
-	return QWidget::qt_emit(_id,_o);
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+static const uint qt_meta_data_GraphPreferences[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       3,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      18,   17,   17,   17, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+      42,   17,   17,   17, 0x0a,
+      62,   59,   17,   17, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_GraphPreferences[] = {
+    "GraphPreferences\0\0prefChange(Preferences)\0"
+    "saveButtonSlot()\0pr\0getPref(Preferences)\0"
+};
+
+const QMetaObject GraphPreferences::staticMetaObject = {
+    { &QTabWidget::staticMetaObject, qt_meta_stringdata_GraphPreferences,
+      qt_meta_data_GraphPreferences, 0 }
+};
+
+const QMetaObject *GraphPreferences::metaObject() const
+{
+    return &staticMetaObject;
+}
+
+void *GraphPreferences::qt_metacast(const char *_clname)
+{
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_GraphPreferences))
+        return static_cast<void*>(const_cast< GraphPreferences*>(this));
+    return QTabWidget::qt_metacast(_clname);
+}
+
+int GraphPreferences::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QTabWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 1: saveButtonSlot(); break;
+        case 2: getPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        }
+        _id -= 3;
     }
-    return TRUE;
+    return _id;
 }
-#ifndef QT_NO_PROPERTIES
 
-bool PerformancePreferences::qt_property( int id, int f, QVariant* v)
+// SIGNAL 0
+void GraphPreferences::prefChange(Preferences _t1)
 {
-    return QWidget::qt_property( id, f, v);
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
-
-bool PerformancePreferences::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
-
-
-const char *DynamicPreferences::className() const
-{
-    return "DynamicPreferences";
-}
-
-QMetaObject *DynamicPreferences::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_DynamicPreferences( "DynamicPreferences", &DynamicPreferences::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString DynamicPreferences::tr( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "DynamicPreferences", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString DynamicPreferences::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "DynamicPreferences", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* DynamicPreferences::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QWidget::staticMetaObject();
-    static const QUParameter param_slot_0[] = {
-	{ "pref", &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod slot_0 = {"getPref", 1, param_slot_0 };
-    static const QUMethod slot_1 = {"standardButtonSlot", 0, 0 };
-    static const QMetaData slot_tbl[] = {
-	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
-	{ "standardButtonSlot()", &slot_1, QMetaData::Public }
-    };
-    static const QUParameter param_signal_0[] = {
-	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"prefChange", 1, param_signal_0 };
-    static const QMetaData signal_tbl[] = {
-	{ "prefChange(Preferences)", &signal_0, QMetaData::Public }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"DynamicPreferences", parentObject,
-	slot_tbl, 2,
-	signal_tbl, 1,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_DynamicPreferences.setMetaObject( metaObj );
-    return metaObj;
-}
-
-void* DynamicPreferences::qt_cast( const char* clname )
-{
-    if ( !qstrcmp( clname, "DynamicPreferences" ) )
-	return this;
-    return QWidget::qt_cast( clname );
-}
-
-// SIGNAL prefChange
-void DynamicPreferences::prefChange( Preferences t0 )
-{
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 0 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_ptr.set(o+1,&t0);
-    activate_signal( clist, o );
-}
-
-bool DynamicPreferences::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 1: standardButtonSlot(); break;
-    default:
-	return QWidget::qt_invoke( _id, _o );
-    }
-    return TRUE;
-}
-
-bool DynamicPreferences::qt_emit( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    default:
-	return QWidget::qt_emit(_id,_o);
-    }
-    return TRUE;
-}
-#ifndef QT_NO_PROPERTIES
-
-bool DynamicPreferences::qt_property( int id, int f, QVariant* v)
-{
-    return QWidget::qt_property( id, f, v);
-}
-
-bool DynamicPreferences::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
-
-
-const char *GraphPreferences::className() const
-{
-    return "GraphPreferences";
-}
-
-QMetaObject *GraphPreferences::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_GraphPreferences( "GraphPreferences", &GraphPreferences::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString GraphPreferences::tr( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "GraphPreferences", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString GraphPreferences::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "GraphPreferences", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* GraphPreferences::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QTabWidget::staticMetaObject();
-    static const QUMethod slot_0 = {"saveButtonSlot", 0, 0 };
-    static const QUParameter param_slot_1[] = {
-	{ "pr", &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod slot_1 = {"getPref", 1, param_slot_1 };
-    static const QMetaData slot_tbl[] = {
-	{ "saveButtonSlot()", &slot_0, QMetaData::Public },
-	{ "getPref(Preferences)", &slot_1, QMetaData::Public }
-    };
-    static const QUParameter param_signal_0[] = {
-	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"prefChange", 1, param_signal_0 };
-    static const QMetaData signal_tbl[] = {
-	{ "prefChange(Preferences)", &signal_0, QMetaData::Public }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"GraphPreferences", parentObject,
-	slot_tbl, 2,
-	signal_tbl, 1,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_GraphPreferences.setMetaObject( metaObj );
-    return metaObj;
-}
-
-void* GraphPreferences::qt_cast( const char* clname )
-{
-    if ( !qstrcmp( clname, "GraphPreferences" ) )
-	return this;
-    return QTabWidget::qt_cast( clname );
-}
-
-// SIGNAL prefChange
-void GraphPreferences::prefChange( Preferences t0 )
-{
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 0 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_ptr.set(o+1,&t0);
-    activate_signal( clist, o );
-}
-
-bool GraphPreferences::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: saveButtonSlot(); break;
-    case 1: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    default:
-	return QTabWidget::qt_invoke( _id, _o );
-    }
-    return TRUE;
-}
-
-bool GraphPreferences::qt_emit( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    default:
-	return QTabWidget::qt_emit(_id,_o);
-    }
-    return TRUE;
-}
-#ifndef QT_NO_PROPERTIES
-
-bool GraphPreferences::qt_property( int id, int f, QVariant* v)
-{
-    return QTabWidget::qt_property( id, f, v);
-}
-
-bool GraphPreferences::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
+QT_END_MOC_NAMESPACE

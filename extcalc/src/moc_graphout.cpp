@@ -1,288 +1,176 @@
 /****************************************************************************
-** GraphOutput meta object code from reading C++ file 'graphout.h'
+** Meta object code from reading C++ file 'graphout.h'
 **
-** Created: Sun Aug 10 06:55:21 2008
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
+** Created: Fri Feb 6 12:52:18 2009
+**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#undef QT_NO_COMPAT
 #include "graphout.h"
-#include <qmetaobject.h>
-#include <qapplication.h>
-
-#include <private/qucomextra_p.h>
-#if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
-#error "This file was generated using the moc from 3.3.8b. It"
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'graphout.h' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.4.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
-const char *GraphOutput::className() const
+QT_BEGIN_MOC_NAMESPACE
+static const uint qt_meta_data_GraphOutput[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+      22,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      13,   12,   12,   12, 0x05,
+      39,   37,   12,   12, 0x05,
+      73,   12,   12,   12, 0x05,
+      88,   12,   12,   12, 0x05,
+     115,   12,   12,   12, 0x05,
+     135,   12,   12,   12, 0x05,
+     160,   12,   12,   12, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+     183,  181,   12,   12, 0x0a,
+     212,  210,   12,   12, 0x0a,
+     244,  237,   12,   12, 0x0a,
+     269,  263,   12,   12, 0x0a,
+     311,  291,   12,   12, 0x0a,
+     349,  345,   12,   12, 0x0a,
+     380,  376,   12,   12, 0x0a,
+     411,  407,   12,   12, 0x0a,
+     438,   12,   12,   12, 0x0a,
+     452,   12,   12,   12, 0x0a,
+     468,   12,   12,   12, 0x0a,
+     480,   12,   12,   12, 0x0a,
+     498,   37,   12,   12, 0x0a,
+     525,  522,   12,   12, 0x0a,
+     550,   12,   12,   12, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_GraphOutput[] = {
+    "GraphOutput\0\0prefChange(Preferences)\0"
+    ",\0leftMButtonPressed(double,double)\0"
+    "redrawSignal()\0screenshotSignal(QPixmap*)\0"
+    "solveRedrawSignal()\0statisticsRedrawSignal()\0"
+    "processingFinished()\0y\0"
+    "drawHorizontalLine(double)\0x\0"
+    "drawVerticalLine(double)\0radius\0"
+    "drawCircle(double)\0angle\0drawPolarLine(double)\0"
+    "coordinates,num,con\0"
+    "drawPoints(long double*,int,bool)\0y,z\0"
+    "draw3dXLine(double,double)\0x,z\0"
+    "draw3dYLine(double,double)\0x,y\0"
+    "draw3dZLine(double,double)\0removeLines()\0"
+    "resetRotation()\0timerSlot()\0"
+    "threadTimerSlot()\0screenshotSlot(int,int)\0"
+    ",,\0drawSlot(int,QColor,int)\0"
+    "timerStartSlot(bool)\0"
+};
+
+const QMetaObject GraphOutput::staticMetaObject = {
+    { &QGLWidget::staticMetaObject, qt_meta_stringdata_GraphOutput,
+      qt_meta_data_GraphOutput, 0 }
+};
+
+const QMetaObject *GraphOutput::metaObject() const
 {
-    return "GraphOutput";
+    return &staticMetaObject;
 }
 
-QMetaObject *GraphOutput::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_GraphOutput( "GraphOutput", &GraphOutput::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString GraphOutput::tr( const char *s, const char *c )
+void *GraphOutput::qt_metacast(const char *_clname)
 {
-    if ( qApp )
-	return qApp->translate( "GraphOutput", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString GraphOutput::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "GraphOutput", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* GraphOutput::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QGLWidget::staticMetaObject();
-    static const QUParameter param_slot_0[] = {
-	{ "y", &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod slot_0 = {"drawHorizontalLine", 1, param_slot_0 };
-    static const QUParameter param_slot_1[] = {
-	{ "x", &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod slot_1 = {"drawVerticalLine", 1, param_slot_1 };
-    static const QUParameter param_slot_2[] = {
-	{ "radius", &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod slot_2 = {"drawCircle", 1, param_slot_2 };
-    static const QUParameter param_slot_3[] = {
-	{ "angle", &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod slot_3 = {"drawPolarLine", 1, param_slot_3 };
-    static const QUParameter param_slot_4[] = {
-	{ "coordinates", &static_QUType_ptr, "long double", QUParameter::In },
-	{ "num", &static_QUType_int, 0, QUParameter::In },
-	{ "con", &static_QUType_bool, 0, QUParameter::In }
-    };
-    static const QUMethod slot_4 = {"drawPoints", 3, param_slot_4 };
-    static const QUParameter param_slot_5[] = {
-	{ "y", &static_QUType_double, 0, QUParameter::In },
-	{ "z", &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod slot_5 = {"draw3dXLine", 2, param_slot_5 };
-    static const QUParameter param_slot_6[] = {
-	{ "x", &static_QUType_double, 0, QUParameter::In },
-	{ "z", &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod slot_6 = {"draw3dYLine", 2, param_slot_6 };
-    static const QUParameter param_slot_7[] = {
-	{ "x", &static_QUType_double, 0, QUParameter::In },
-	{ "y", &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod slot_7 = {"draw3dZLine", 2, param_slot_7 };
-    static const QUMethod slot_8 = {"removeLines", 0, 0 };
-    static const QUMethod slot_9 = {"resetRotation", 0, 0 };
-    static const QUMethod slot_10 = {"timerSlot", 0, 0 };
-    static const QUMethod slot_11 = {"threadTimerSlot", 0, 0 };
-    static const QUParameter param_slot_12[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In },
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_12 = {"screenshotSlot", 2, param_slot_12 };
-    static const QUParameter param_slot_13[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In },
-	{ 0, &static_QUType_varptr, "\x0a", QUParameter::In },
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_13 = {"drawSlot", 3, param_slot_13 };
-    static const QUParameter param_slot_14[] = {
-	{ 0, &static_QUType_bool, 0, QUParameter::In }
-    };
-    static const QUMethod slot_14 = {"timerStartSlot", 1, param_slot_14 };
-    static const QMetaData slot_tbl[] = {
-	{ "drawHorizontalLine(double)", &slot_0, QMetaData::Public },
-	{ "drawVerticalLine(double)", &slot_1, QMetaData::Public },
-	{ "drawCircle(double)", &slot_2, QMetaData::Public },
-	{ "drawPolarLine(double)", &slot_3, QMetaData::Public },
-	{ "drawPoints(long double*,int,bool)", &slot_4, QMetaData::Public },
-	{ "draw3dXLine(double,double)", &slot_5, QMetaData::Public },
-	{ "draw3dYLine(double,double)", &slot_6, QMetaData::Public },
-	{ "draw3dZLine(double,double)", &slot_7, QMetaData::Public },
-	{ "removeLines()", &slot_8, QMetaData::Public },
-	{ "resetRotation()", &slot_9, QMetaData::Public },
-	{ "timerSlot()", &slot_10, QMetaData::Public },
-	{ "threadTimerSlot()", &slot_11, QMetaData::Public },
-	{ "screenshotSlot(int,int)", &slot_12, QMetaData::Public },
-	{ "drawSlot(int,QColor,int)", &slot_13, QMetaData::Public },
-	{ "timerStartSlot(bool)", &slot_14, QMetaData::Public }
-    };
-    static const QUParameter param_signal_0[] = {
-	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"prefChange", 1, param_signal_0 };
-    static const QUParameter param_signal_1[] = {
-	{ 0, &static_QUType_double, 0, QUParameter::In },
-	{ 0, &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod signal_1 = {"leftMButtonPressed", 2, param_signal_1 };
-    static const QUMethod signal_2 = {"redrawSignal", 0, 0 };
-    static const QUParameter param_signal_3[] = {
-	{ 0, &static_QUType_varptr, "\x06", QUParameter::In }
-    };
-    static const QUMethod signal_3 = {"screenshotSignal", 1, param_signal_3 };
-    static const QUMethod signal_4 = {"solveRedrawSignal", 0, 0 };
-    static const QUMethod signal_5 = {"statisticsRedrawSignal", 0, 0 };
-    static const QUMethod signal_6 = {"processingFinished", 0, 0 };
-    static const QMetaData signal_tbl[] = {
-	{ "prefChange(Preferences)", &signal_0, QMetaData::Protected },
-	{ "leftMButtonPressed(double,double)", &signal_1, QMetaData::Protected },
-	{ "redrawSignal()", &signal_2, QMetaData::Protected },
-	{ "screenshotSignal(QPixmap*)", &signal_3, QMetaData::Protected },
-	{ "solveRedrawSignal()", &signal_4, QMetaData::Protected },
-	{ "statisticsRedrawSignal()", &signal_5, QMetaData::Protected },
-	{ "processingFinished()", &signal_6, QMetaData::Protected }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"GraphOutput", parentObject,
-	slot_tbl, 15,
-	signal_tbl, 7,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_GraphOutput.setMetaObject( metaObj );
-    return metaObj;
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_GraphOutput))
+        return static_cast<void*>(const_cast< GraphOutput*>(this));
+    return QGLWidget::qt_metacast(_clname);
 }
 
-void* GraphOutput::qt_cast( const char* clname )
+int GraphOutput::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    if ( !qstrcmp( clname, "GraphOutput" ) )
-	return this;
-    return QGLWidget::qt_cast( clname );
+    _id = QGLWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 1: leftMButtonPressed((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
+        case 2: redrawSignal(); break;
+        case 3: screenshotSignal((*reinterpret_cast< QPixmap*(*)>(_a[1]))); break;
+        case 4: solveRedrawSignal(); break;
+        case 5: statisticsRedrawSignal(); break;
+        case 6: processingFinished(); break;
+        case 7: drawHorizontalLine((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 8: drawVerticalLine((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 9: drawCircle((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 10: drawPolarLine((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 11: drawPoints((*reinterpret_cast< long double*(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
+        case 12: draw3dXLine((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
+        case 13: draw3dYLine((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
+        case 14: draw3dZLine((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
+        case 15: removeLines(); break;
+        case 16: resetRotation(); break;
+        case 17: timerSlot(); break;
+        case 18: threadTimerSlot(); break;
+        case 19: screenshotSlot((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 20: drawSlot((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< QColor(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3]))); break;
+        case 21: timerStartSlot((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        }
+        _id -= 22;
+    }
+    return _id;
 }
 
-#include <qobjectdefs.h>
-#include <qsignalslotimp.h>
-
-// SIGNAL prefChange
-void GraphOutput::prefChange( Preferences t0 )
+// SIGNAL 0
+void GraphOutput::prefChange(Preferences _t1)
 {
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 0 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_ptr.set(o+1,&t0);
-    activate_signal( clist, o );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
-// SIGNAL leftMButtonPressed
-void GraphOutput::leftMButtonPressed( double t0, double t1 )
+// SIGNAL 1
+void GraphOutput::leftMButtonPressed(double _t1, double _t2)
 {
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 1 );
-    if ( !clist )
-	return;
-    QUObject o[3];
-    static_QUType_double.set(o+1,t0);
-    static_QUType_double.set(o+2,t1);
-    activate_signal( clist, o );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 
-// SIGNAL redrawSignal
+// SIGNAL 2
 void GraphOutput::redrawSignal()
 {
-    activate_signal( staticMetaObject()->signalOffset() + 2 );
+    QMetaObject::activate(this, &staticMetaObject, 2, 0);
 }
 
-// SIGNAL screenshotSignal
-void GraphOutput::screenshotSignal( QPixmap* t0 )
+// SIGNAL 3
+void GraphOutput::screenshotSignal(QPixmap * _t1)
 {
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 3 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_varptr.set(o+1,t0);
-    activate_signal( clist, o );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 3, _a);
 }
 
-// SIGNAL solveRedrawSignal
+// SIGNAL 4
 void GraphOutput::solveRedrawSignal()
 {
-    activate_signal( staticMetaObject()->signalOffset() + 4 );
+    QMetaObject::activate(this, &staticMetaObject, 4, 0);
 }
 
-// SIGNAL statisticsRedrawSignal
+// SIGNAL 5
 void GraphOutput::statisticsRedrawSignal()
 {
-    activate_signal( staticMetaObject()->signalOffset() + 5 );
+    QMetaObject::activate(this, &staticMetaObject, 5, 0);
 }
 
-// SIGNAL processingFinished
+// SIGNAL 6
 void GraphOutput::processingFinished()
 {
-    activate_signal( staticMetaObject()->signalOffset() + 6 );
+    QMetaObject::activate(this, &staticMetaObject, 6, 0);
 }
-
-bool GraphOutput::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: drawHorizontalLine((double)static_QUType_double.get(_o+1)); break;
-    case 1: drawVerticalLine((double)static_QUType_double.get(_o+1)); break;
-    case 2: drawCircle((double)static_QUType_double.get(_o+1)); break;
-    case 3: drawPolarLine((double)static_QUType_double.get(_o+1)); break;
-    case 4: drawPoints((long double*)static_QUType_ptr.get(_o+1),(int)static_QUType_int.get(_o+2),(bool)static_QUType_bool.get(_o+3)); break;
-    case 5: draw3dXLine((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
-    case 6: draw3dYLine((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
-    case 7: draw3dZLine((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
-    case 8: removeLines(); break;
-    case 9: resetRotation(); break;
-    case 10: timerSlot(); break;
-    case 11: threadTimerSlot(); break;
-    case 12: screenshotSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
-    case 13: drawSlot((int)static_QUType_int.get(_o+1),(QColor)(*((QColor*)static_QUType_ptr.get(_o+2))),(int)static_QUType_int.get(_o+3)); break;
-    case 14: timerStartSlot((bool)static_QUType_bool.get(_o+1)); break;
-    default:
-	return QGLWidget::qt_invoke( _id, _o );
-    }
-    return TRUE;
-}
-
-bool GraphOutput::qt_emit( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 1: leftMButtonPressed((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
-    case 2: redrawSignal(); break;
-    case 3: screenshotSignal((QPixmap*)static_QUType_varptr.get(_o+1)); break;
-    case 4: solveRedrawSignal(); break;
-    case 5: statisticsRedrawSignal(); break;
-    case 6: processingFinished(); break;
-    default:
-	return QGLWidget::qt_emit(_id,_o);
-    }
-    return TRUE;
-}
-#ifndef QT_NO_PROPERTIES
-
-bool GraphOutput::qt_property( int id, int f, QVariant* v)
-{
-    return QGLWidget::qt_property( id, f, v);
-}
-
-bool GraphOutput::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
+QT_END_MOC_NAMESPACE

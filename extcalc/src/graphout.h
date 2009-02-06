@@ -28,6 +28,10 @@ It also includes the interfaces for screenshot generation, drawing functions and
 #include <qpainter.h>
 #include <qinputdialog.h>
 #include <qthread.h>
+//Added by qt3to4:
+#include <QCustomEvent>
+#include <QWheelEvent>
+#include <QMouseEvent>
 #include "list.h"
 #include "global.h"
 
@@ -180,6 +184,7 @@ class GraphOutput :public QGLWidget
 	QColor drawColor;
 	int drawPen,previewPen;
 	QPixmap*drawMap;
+	QPixmap*backupDrawMap;
 	QImage*drawImage;
 	GLuint texture;
 	QPainter *draw;

@@ -21,7 +21,7 @@ Scripting preferences dialog.
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qpushbutton.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qcheckbox.h>
 #include "global.h"
 #include <sys/stat.h>
@@ -43,7 +43,7 @@ class ScriptPreferences :public QWidget
 	Q_OBJECT
 public:
 	ScriptPreferences(Preferences p,QWidget*parent) 
-	:QWidget(parent,"Script Preferences",Qt::WStyle_Dialog | Qt::WType_Dialog)
+	:QWidget(parent,"Script Preferences",Qt::WType_Dialog | Qt::WType_Dialog)
 	{
 		pref=p;
 		infoLabel=new QLabel(SCRIPTPREFH_STR1,this);

@@ -1,122 +1,78 @@
 /****************************************************************************
-** CalcTable meta object code from reading C++ file 'calctable.h'
+** Meta object code from reading C++ file 'calctable.h'
 **
-** Created: Fri Jun 6 11:52:50 2008
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
+** Created: Wed Dec 31 16:18:00 2008
+**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#undef QT_NO_COMPAT
 #include "calctable.h"
-#include <qmetaobject.h>
-#include <qapplication.h>
-
-#include <private/qucomextra_p.h>
-#if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
-#error "This file was generated using the moc from 3.3.8b. It"
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'calctable.h' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.4.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
-const char *CalcTable::className() const
+QT_BEGIN_MOC_NAMESPACE
+static const uint qt_meta_data_CalcTable[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       1,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      13,   11,   10,   10, 0x05,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_CalcTable[] = {
+    "CalcTable\0\0,\0cellEditStarted(int,int)\0"
+};
+
+const QMetaObject CalcTable::staticMetaObject = {
+    { &Q3Table::staticMetaObject, qt_meta_stringdata_CalcTable,
+      qt_meta_data_CalcTable, 0 }
+};
+
+const QMetaObject *CalcTable::metaObject() const
 {
-    return "CalcTable";
+    return &staticMetaObject;
 }
 
-QMetaObject *CalcTable::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_CalcTable( "CalcTable", &CalcTable::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString CalcTable::tr( const char *s, const char *c )
+void *CalcTable::qt_metacast(const char *_clname)
 {
-    if ( qApp )
-	return qApp->translate( "CalcTable", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString CalcTable::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "CalcTable", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* CalcTable::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QTable::staticMetaObject();
-    static const QUParameter param_signal_0[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In },
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"cellEditStarted", 2, param_signal_0 };
-    static const QMetaData signal_tbl[] = {
-	{ "cellEditStarted(int,int)", &signal_0, QMetaData::Protected }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"CalcTable", parentObject,
-	0, 0,
-	signal_tbl, 1,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_CalcTable.setMetaObject( metaObj );
-    return metaObj;
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_CalcTable))
+        return static_cast<void*>(const_cast< CalcTable*>(this));
+    return Q3Table::qt_metacast(_clname);
 }
 
-void* CalcTable::qt_cast( const char* clname )
+int CalcTable::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    if ( !qstrcmp( clname, "CalcTable" ) )
-	return this;
-    return QTable::qt_cast( clname );
-}
-
-#include <qobjectdefs.h>
-#include <qsignalslotimp.h>
-
-// SIGNAL cellEditStarted
-void CalcTable::cellEditStarted( int t0, int t1 )
-{
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 0 );
-    if ( !clist )
-	return;
-    QUObject o[3];
-    static_QUType_int.set(o+1,t0);
-    static_QUType_int.set(o+2,t1);
-    activate_signal( clist, o );
-}
-
-bool CalcTable::qt_invoke( int _id, QUObject* _o )
-{
-    return QTable::qt_invoke(_id,_o);
-}
-
-bool CalcTable::qt_emit( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: cellEditStarted((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
-    default:
-	return QTable::qt_emit(_id,_o);
+    _id = Q3Table::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: cellEditStarted((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        }
+        _id -= 1;
     }
-    return TRUE;
+    return _id;
 }
-#ifndef QT_NO_PROPERTIES
 
-bool CalcTable::qt_property( int id, int f, QVariant* v)
+// SIGNAL 0
+void CalcTable::cellEditStarted(int _t1, int _t2)
 {
-    return QTable::qt_property( id, f, v);
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
-
-bool CalcTable::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
+QT_END_MOC_NAMESPACE

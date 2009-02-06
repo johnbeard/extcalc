@@ -21,21 +21,26 @@ Class of the graphics tab window
 #include <stdio.h>
 #include <stdlib.h>
 #include <qapplication.h>
-#include <qwidget.h>
+#include <QWidget>
 #include <qpainter.h>
 #include <qmessagebox.h>
-#include <qgl.h>
+#include <QGLWidget>
+#include <QtOpenGL>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qcombobox.h>
 #include <qclipboard.h>
 #include <qapplication.h>
-#include <qtoolbar.h>
-#include <qdockarea.h>
-#include <qiconset.h>
-#include <qpopupmenu.h>
+#include <q3toolbar.h>
+#include <q3dockarea.h>
+#include <qicon.h>
+#include <q3popupmenu.h>
 #include <qtooltip.h>
 #include <qsplitter.h>
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <Q3ValueList>
+#include <QPixmap>
 #include <math.h>
 #include "list.h"
 #include <sys/time.h>
@@ -87,8 +92,8 @@ class GraphWidget :public QWidget
 
 	GraphSolveWidget *solveWidget;
 	
-	QToolBar*toolBar;
-	QDockArea*dockArea;
+	Q3ToolBar*toolBar;
+	Q3DockArea*dockArea;
 	QComboBox *solveType,*functionType,*modeBox;
 	QPixmap *minimizeIcon,*maximizeIcon,*printIcon,*catalogIcon;
 	Catalog *catalog;
@@ -138,8 +143,8 @@ Q_OBJECT
 		printIcon=new QPixmap(INSTALLDIR+QString("/data/print.png"));
 		catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
 		
-		dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
-		toolBar=new QToolBar();
+		dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
+		toolBar=new Q3ToolBar();
 		dockArea->moveDockWindow(toolBar);
 		
 		drawButton=new QPushButton(*printIcon,GRAPHH_STR1,toolBar);
@@ -159,7 +164,7 @@ Q_OBJECT
 		solveWidget->hide();
 		inputLine=new QLineEdit(vertSplit);
 		inputLine->setFixedHeight(25);
-		QValueList<int> s = horzSplit->sizes();
+		Q3ValueList<int> s = horzSplit->sizes();
 		s[1]=300;
 		s[0]=300;
 		horzSplit->setSizes(s);

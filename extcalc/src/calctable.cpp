@@ -19,7 +19,7 @@ any later version.
 
 void CalcTable::paintCell( QPainter * p, int row, int col, const QRect & cr, bool selected, const QColorGroup & cg )
 {
-	QTableItem*paintItem=item(row,col);
+	Q3TableItem*paintItem=item(row,col);
 	if(paintItem==NULL)
 	{
 		setText(row,col," ");
@@ -47,7 +47,7 @@ QWidget *CalcTable::beginEdit( int row, int col, bool replace )
 	emit cellEditStarted(row,col);
 	if ( isReadOnly() || isRowReadOnly( row ) || isColumnReadOnly( col ) || (!editable&&col==coloredCol))
 		return 0;
-	QTableItem *itm = item( row, col );
+	Q3TableItem *itm = item( row, col );
 	if ( itm && !itm->isEnabled() )
 		return 0;
 	if ( cellWidget( row, col ) )

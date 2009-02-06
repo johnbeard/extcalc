@@ -1,107 +1,76 @@
 /****************************************************************************
-** GraphSetDialog meta object code from reading C++ file 'graphsetdialog.h'
+** Meta object code from reading C++ file 'graphsetdialog.h'
 **
-** Created: Fri Jun 6 11:52:50 2008
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
+** Created: Wed Dec 31 16:18:14 2008
+**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#undef QT_NO_COMPAT
 #include "graphsetdialog.h"
-#include <qmetaobject.h>
-#include <qapplication.h>
-
-#include <private/qucomextra_p.h>
-#if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
-#error "This file was generated using the moc from 3.3.8b. It"
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'graphsetdialog.h' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.4.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
-const char *GraphSetDialog::className() const
+QT_BEGIN_MOC_NAMESPACE
+static const uint qt_meta_data_GraphSetDialog[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       3,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // slots: signature, parameters, type, tag, flags
+      16,   15,   15,   15, 0x0a,
+      25,   15,   15,   15, 0x0a,
+      38,   15,   15,   15, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_GraphSetDialog[] = {
+    "GraphSetDialog\0\0okSlot()\0removeSlot()\0"
+    "renameSlot()\0"
+};
+
+const QMetaObject GraphSetDialog::staticMetaObject = {
+    { &QWidget::staticMetaObject, qt_meta_stringdata_GraphSetDialog,
+      qt_meta_data_GraphSetDialog, 0 }
+};
+
+const QMetaObject *GraphSetDialog::metaObject() const
 {
-    return "GraphSetDialog";
+    return &staticMetaObject;
 }
 
-QMetaObject *GraphSetDialog::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_GraphSetDialog( "GraphSetDialog", &GraphSetDialog::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString GraphSetDialog::tr( const char *s, const char *c )
+void *GraphSetDialog::qt_metacast(const char *_clname)
 {
-    if ( qApp )
-	return qApp->translate( "GraphSetDialog", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString GraphSetDialog::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "GraphSetDialog", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* GraphSetDialog::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QWidget::staticMetaObject();
-    static const QUMethod slot_0 = {"okSlot", 0, 0 };
-    static const QUMethod slot_1 = {"removeSlot", 0, 0 };
-    static const QUMethod slot_2 = {"renameSlot", 0, 0 };
-    static const QMetaData slot_tbl[] = {
-	{ "okSlot()", &slot_0, QMetaData::Public },
-	{ "removeSlot()", &slot_1, QMetaData::Public },
-	{ "renameSlot()", &slot_2, QMetaData::Public }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"GraphSetDialog", parentObject,
-	slot_tbl, 3,
-	0, 0,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_GraphSetDialog.setMetaObject( metaObj );
-    return metaObj;
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_GraphSetDialog))
+        return static_cast<void*>(const_cast< GraphSetDialog*>(this));
+    return QWidget::qt_metacast(_clname);
 }
 
-void* GraphSetDialog::qt_cast( const char* clname )
+int GraphSetDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    if ( !qstrcmp( clname, "GraphSetDialog" ) )
-	return this;
-    return QWidget::qt_cast( clname );
-}
-
-bool GraphSetDialog::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: okSlot(); break;
-    case 1: removeSlot(); break;
-    case 2: renameSlot(); break;
-    default:
-	return QWidget::qt_invoke( _id, _o );
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: okSlot(); break;
+        case 1: removeSlot(); break;
+        case 2: renameSlot(); break;
+        }
+        _id -= 3;
     }
-    return TRUE;
+    return _id;
 }
-
-bool GraphSetDialog::qt_emit( int _id, QUObject* _o )
-{
-    return QWidget::qt_emit(_id,_o);
-}
-#ifndef QT_NO_PROPERTIES
-
-bool GraphSetDialog::qt_property( int id, int f, QVariant* v)
-{
-    return QWidget::qt_property( id, f, v);
-}
-
-bool GraphSetDialog::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
+QT_END_MOC_NAMESPACE

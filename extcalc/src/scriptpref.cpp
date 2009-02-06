@@ -147,7 +147,7 @@ void ScriptPreferences::saveSlot()
 void ScriptPreferences::fileDialogSlot()
 {
 	dialog=true;
-	QString path=QFileDialog::getExistingDirectory(getenv("HOME"),this,"getdir",SCRIPTPREFC_STR8,true);
+	QString path=Q3FileDialog::getExistingDirectory(getenv("HOME"),this,"getdir",SCRIPTPREFC_STR8,true);
 	dialog=false;
 	
 	if(!path.isNull())

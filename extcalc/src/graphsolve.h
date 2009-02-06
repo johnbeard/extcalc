@@ -25,8 +25,10 @@ functions.
 #include <qpushbutton.h>
 #include <qspinbox.h>
 #include <qpixmap.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qcolordialog.h>
+//Added by qt3to4:
+#include <QResizeEvent>
 #include "calctable.h"
 #include "global.h"
 

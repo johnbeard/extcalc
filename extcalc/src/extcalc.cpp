@@ -14,6 +14,12 @@ any later version.
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "extcalc.h"
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <QPixmap>
+#include <QCloseEvent>
+#include <QTranslator>
+#include <QCustomEvent>
 
 
 MainObject *mainObj;
@@ -44,15 +50,10 @@ int main( int argc, char **argv ) {
 			fclose(configFile);
 		}
 	}
-	
-	
 	QApplication a( argc, argv );
 	
 	if(language==LANG_DE)
 	{
-
-
-		
 		if(trans.load("data/german.qm",INSTALLDIR))
 			a.installTranslator(&trans);
 		else MessageBox("Extcalc-Sprachpaket konnte nicht geladen werden");
@@ -75,20 +76,7 @@ int main( int argc, char **argv ) {
 	MainObject * mainObject = new MainObject;
 	mainObj=mainObject;
 
-//	QFont stdFont("Helvetica");
-//	stdFont.setPixelSize(14);
-//	a.setFont(stdFont);
 	setlocale(LC_NUMERIC,"C");	//use . for floating point values in every language
-	
-
-
-
-//root		8730
-//Pi		960   (982)
-//Euler		65349 (1214)
-//Mega		65325 (1052)
-//Giga		65319 (1292)
-//Terra		65332 (1196)
 
 	a.setMainWidget(mainObj);
 	mainObj->show();
@@ -96,6 +84,641 @@ int main( int argc, char **argv ) {
 }
 
 
+MainObject::MainObject() :QMainWindow()
+{
+  helpBrowser=NULL;
+  graphsDir=NULL;
+  QAction *tmpAction;
+  vars=new Variable [27];
+  for(int c=0; c<27;c++)
+    vars[c]=0.0;
+  Number n0;
+  n0.type=NFLOAT;
+  vecs=new Vector [VARNUM];
+  for(int c=0; c<VARNUM;c++)
+    vecs[c].NewItem(n0);
+    
+  appIcon=new QPixmap(QString(INSTALLDIR)+"/data/icon22.png");
+  if(!appIcon->isNull())
+    setIcon(*appIcon);
+    
+  calcFocus=true;
+  calcModeChanged=false;
+    
+  struct timeval rndTime;
+  gettimeofday(&rndTime,NULL);
+  srand(rndTime.tv_usec*rndTime.tv_sec);
+    
+  setGeometry(10,10,640,630); 
+  setMinimumWidth(640);
+  setMinimumHeight(400);
+  helpProcess=new Q3Process(this);
+    
+  infoDialog=new Q3TabDialog(this,0,true);
+  licenseWidget=new Q3TextEdit(infoDialog);
+  QString license;
+  FILE*licenseFile;
+  struct stat fileStat;
+  licenseFile = fopen(INSTALLDIR+QString("/data/license.txt"),"r");
+  if(licenseFile == NULL)
+    license=EXTCALCH_STR1;
+  else {
+    if(lstat(INSTALLDIR+QString("/data/license.txt"),&fileStat) !=0)
+      MessageBox(EXTCALCH_MSG2);
+    else
+    {
+      char*cLicenseText=new char[fileStat.st_size+1];
+      cLicenseText[fileStat.st_size]=(char)0;
+      fread((void*)cLicenseText,fileStat.st_size,1,licenseFile);
+      license=EXTCALCH_STR2;
+      license+=QString(cLicenseText);
+      delete[]cLicenseText;
+    }
+    fclose(licenseFile);
+  }
+  licenseWidget->setText(license);
+  licenseWidget->setReadOnly(true);
+  authorInfo=new QLabel(INFOSTRING+QString(AUTHORSTRING),infoDialog);
+  versionInfo=new QLabel(INFOSTRING+QString(VERSIONSTRING),infoDialog);
+  authorInfo->setAlignment(Qt::AlignAuto | Qt::AlignCenter | Qt::ExpandTabs);
+  versionInfo->setAlignment(Qt::AlignAuto | Qt::AlignCenter | Qt::ExpandTabs);
+  infoDialog->addTab(versionInfo,EXTCALCH_STR3);
+  infoDialog->addTab(authorInfo,EXTCALCH_STR4);
+  infoDialog->addTab(licenseWidget,EXTCALCH_STR5);
+
+  grPref=NULL;
+  calcPref=NULL;
+  tablePref=NULL;
+  scriptPref=NULL;
+  importDialog=NULL;
+  exportDialog=NULL;
+  functionDialog=NULL;
+  graphSetDialog=NULL;
+
+  mainMenu=menuBar();
+//  toolBar=new QToolBar(this);
+//  addToolBar(toolBar);
+//  toolBar->addAction(new QAction("Test",toolBar));
+
+//standard preferences
+#ifndef NO_LONG_DOUBLE
+  pref.precision=LDBL_DIG;
+#else 
+  pref.precision=DBL_DIG;
+#endif
+  pref.angle=DEG;
+  pref.outputType=VARIABLENUM;
+  pref.outputLength=10;
+  pref.shift=false;
+  pref.alpha=false;
+  pref.hyp=false;
+  pref.raster=true;
+  pref.axis=true;
+  pref.label=false;
+  pref.complex=false;
+  pref.clearScriptMemory=true;
+  pref.functions=NULL;
+  pref.functionComments=NULL;
+  pref.activeFunctions=new bool[20];
+  for(int c=0; c<20;c++)
+    pref.activeFunctions[c]=false;
+  pref.functionColors=new QColor[20];
+  for(int c=0; c<20; c++)
+    pref.functionColors[c]=QColor(0,0,0);
+  pref.functionTypes=new int[20];
+  for(int c=0; c<20; c++)
+    pref.functionTypes[c]=GRAPHSTD;
+  pref.dynamicFunctions=new bool[20];
+  for(int c=0; c<20; c++)
+    pref.dynamicFunctions[c]=false;
+  pref.logicFunctions=new bool[20];
+  for(int c=0; c<20; c++)
+    pref.logicFunctions[c]=false;
+  pref.xmin=pref.ymin=pref.zmin=-10.0;
+  pref.xmax=pref.ymax=pref.zmax=10.0;
+  pref.rasterSizeX=pref.rasterSizeY=pref.rasterSizeZ=1.0;
+  pref.rasterSizeRadius=1.0;
+  pref.rasterSizeAngle=10.0;
+  pref.radiusMax=10.0;
+  pref.angleMax=360.0;
+  pref.parameterStart=0.0;
+  pref.parameterEnd=10.0;
+  pref.parameterSteps=400;
+  pref.graphType=GRAPHSTD;
+  pref.calcType=SCIENTIFIC;
+  pref.base=DEC;
+  pref.dynamicStart=0.0;
+  pref.dynamicEnd=10.0;
+  pref.nyquistStart=-3.0;
+  pref.nyquistEnd=3.0;
+  pref.nyquistSteps=400;
+  pref.prec2dSteps=400;
+  pref.prec3dSteps=50;
+  pref.solvePrec=1;
+  pref.show3dGrid=true;
+  pref.logNyquistSteps=true;
+  pref.dynamicSteps=10;
+  pref.dynamicDelay=1;
+  pref.moveUpDown=false;
+  pref.tableXStart=pref.tableZStart=0.0;
+  pref.tableXEnd=pref.tableZEnd=10.0;
+  pref.tableAValue=0.0;
+  pref.tableXSteps=pref.tableZSteps=10;
+  pref.tableType=TABLENORMAL;
+  pref.statAutoClear=true;
+  pref.showStatLines=false;
+  pref.showStatPoints=true;
+  pref.showWindows[0]=pref.showWindows[2]=pref.showWindows[3]=pref.showWindows[4]=pref.showWindows[6]=true;
+  pref.showWindows[1]=pref.showWindows[5]=pref.showWindows[7]=false;
+  pref.language=LANG_EN;
+  pref.constList=NULL;
+  pref.constLen=pref.userConstLen=0;
+
+
+  threadData=new ThreadSync;
+  threadData->mutex=NULL;
+  threadData->eventReciver=this;
+  threadData->status=0;
+  threadData->eventCount=0;
+  threadData->exit=false;
+  threadData->usleep=false;
+  threadData->bbreak=false;
+  threadData->bcontinue=false;
+  threadData->calcMode=true;
+  threadData->data=NULL;
+  threadData->sleepTime=1000;
+  threadData->vars=new Number*[VARNUM];
+  for(int c=0; c<VARNUM;c++)
+  {
+    threadData->vars[c]=(Number*)malloc(sizeof(Number));
+    threadData->numlen[c]=1;
+    threadData->vars[c][0].type=NNONE;
+    threadData->vars[c][0].cval=NULL;
+    threadData->vars[c][0].fval=Complex(0.0,0.0);
+    for(int c1=0; c1<VARDIMENSIONS; c1++)
+      threadData->dimension[c][c1]=1;
+  }
+
+  angleMapper=new QSignalMapper(this);
+  angleMenu=new QMenu(this);
+  angleActions=new QActionGroup(this);
+  tmpAction=angleMenu->addAction("DEG");
+  tmpAction->setData(QVariant(DEG));
+  tmpAction->setCheckable(true);
+  angleActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),angleMapper,SLOT(map()));
+  angleMapper->setMapping(tmpAction,DEG);
+  tmpAction=angleMenu->addAction("RAD");
+  tmpAction->setCheckable(true);
+  tmpAction->setData(QVariant(RAD));
+  angleActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),angleMapper,SLOT(map()));
+  angleMapper->setMapping(tmpAction,RAD);
+  tmpAction=angleMenu->addAction("GRA");
+  tmpAction->setCheckable(true);
+  tmpAction->setData(QVariant(GRA));
+  angleActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),angleMapper,SLOT(map()));
+  angleMapper->setMapping(tmpAction,GRA);
+  QObject::connect(angleMapper,SIGNAL(mapped(int)),this,SLOT(angleMenuSlot(int)));
+
+  floatPointMapper=new QSignalMapper(this);
+  floatPointMenu=new QMenu("Number of digits",this);
+  floatPointActions=new QActionGroup(this);
+  for(int c=2;c<=pref.precision; c++)
+  {
+    tmpAction=floatPointMenu->addAction(QString::number(c));
+	tmpAction->setData(QVariant(c));
+	tmpAction->setCheckable(true);
+	floatPointActions->addAction(tmpAction);
+	connect(tmpAction,SIGNAL(triggered()),floatPointMapper,SLOT(map()));
+	floatPointMapper->setMapping(tmpAction,c);
+  }
+  QObject::connect(floatPointMapper,SIGNAL(mapped(int)),this,SLOT(floatPointMenuSlot(int)));
+
+  outputMapper=new QSignalMapper(this);
+  outputMenu=new QMenu(this);
+  outputActions=new QActionGroup(this);
+  tmpAction=outputMenu->addAction("Fixed number of digits");
+  tmpAction->setData(QVariant(FIXEDNUM));
+  tmpAction->setCheckable(true);
+  outputActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),outputMapper,SLOT(map()));
+  outputMapper->setMapping(tmpAction,FIXEDNUM);
+  tmpAction=outputMenu->addAction("Variable number of digits");
+  tmpAction->setData(QVariant(VARIABLENUM));
+  tmpAction->setCheckable(true);
+  outputActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),outputMapper,SLOT(map()));
+  outputMapper->setMapping(tmpAction,VARIABLENUM);
+  tmpAction=outputMenu->addAction("With symbol");
+  tmpAction->setData(QVariant(EXPSYM));
+  tmpAction->setCheckable(true);
+  outputActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),outputMapper,SLOT(map()));
+  outputMapper->setMapping(tmpAction,EXPSYM);
+  QObject::connect(outputMapper,SIGNAL(mapped(int)),this,SLOT(outputMenuSlot(int)));
+  outputMenu->addMenu(floatPointMenu);
+
+    
+  baseMapper=new QSignalMapper(this);
+  baseMenu=new QMenu(this);
+  baseActions=new QActionGroup(this);
+  
+  tmpAction=baseMenu->addAction(tr("Binary (BIN)"));
+  tmpAction->setData(QVariant(BIN));
+  tmpAction->setCheckable(true);
+  baseActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),baseMapper,SLOT(map()));
+  baseMapper->setMapping(tmpAction,BIN);
+  
+  tmpAction=baseMenu->addAction(tr("Octal (OCT)"));
+  tmpAction->setData(QVariant(OCT));
+  tmpAction->setCheckable(true);
+  baseActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),baseMapper,SLOT(map()));
+  baseMapper->setMapping(tmpAction,OCT);
+  
+  tmpAction=baseMenu->addAction(tr("Decimal (DEC)"));
+  tmpAction->setData(QVariant(DEC));
+  tmpAction->setCheckable(true);
+  baseActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),baseMapper,SLOT(map()));
+  baseMapper->setMapping(tmpAction,DEC);
+  
+  tmpAction=baseMenu->addAction(tr("Hexadecimal (HEX)"));
+  tmpAction->setData(QVariant(HEX));
+  tmpAction->setCheckable(true);
+  baseActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),baseMapper,SLOT(map()));
+  baseMapper->setMapping(tmpAction,HEX);
+  
+  QObject::connect(outputMapper,SIGNAL(mapped(int)),this,SLOT(baseMenuSlot(int)));
+    
+  calcModeMenu=new QMenu(this);
+  calcModeActions=new QActionGroup(this);
+  calcModeMapper=new QSignalMapper(this);
+  tmpAction=calcModeMenu->addAction(tr("Scientific"));
+  tmpAction->setData(QVariant(SCIENTIFIC));
+  tmpAction->setCheckable(true);
+  calcModeActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),calcModeMapper,SLOT(map()));
+  calcModeMapper->setMapping(tmpAction,SCIENTIFIC);
+  tmpAction=calcModeMenu->addAction(tr("Base"));
+  tmpAction->setData(QVariant(BASE));
+  tmpAction->setCheckable(true);
+  calcModeActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),calcModeMapper,SLOT(map()));
+  calcModeMapper->setMapping(tmpAction,BASE);
+  QObject::connect(calcModeMapper,SIGNAL(mapped(int)),this,SLOT(calcModeMenuSlot(int)));
+
+  complexAction=calcModeMenu->addAction(tr("Complex"));
+  QObject::connect(complexAction,SIGNAL(triggered()),this,SLOT(calcComplexSlot()));
+
+  calcModeMenu->insertItem(EXTCALCH_MENU67,COMPLEXMENU);
+  calcModeMenu->insertItem(EXTCALCH_MENU33,baseMenu,BASEMENU);
+//  QObject::connect(calcTypeMenu,SIGNAL(activated(int)),this,SLOT(calcTypeMenuSlot(int)));
+  baseMenu->setItemChecked(pref.base,true);
+
+
+  calcMenu=new Q3PopupMenu;
+  calcMenu->insertItem(EXTCALCH_MENU8,angleMenu,ANGLE);
+  calcMenu->insertItem(EXTCALCH_MENU9,outputMenu,OUTPUT);
+  calcMenu->insertItem(EXTCALCH_MENU34,calcModeMenu,MODE);
+//  angleMenu->setItemChecked(pref.angle,true);
+//  outputMenu->setItemChecked(pref.outputType,true);
+//  calcTypeMenu->setItemChecked(pref.calcType,true);
+    
+  coordinateMenu=new Q3PopupMenu;
+  coordinateMenu->insertItem(EXTCALCH_MENU19,STANDARDCOORDS);
+  coordinateMenu->insertItem(EXTCALCH_MENU20,TRIGONOMETRICCOORDS);
+  coordinateMenu->insertItem(EXTCALCH_MENU21,SHOWAXES);
+  coordinateMenu->insertItem(EXTCALCH_MENU22,SHOWLABELS);
+  coordinateMenu->insertItem(EXTCALCH_MENU23,SHOWRASTER);
+  coordinateMenu->insertItem(EXTCALCH_MENU24,CONSTRATIO);
+  QObject::connect(coordinateMenu,SIGNAL(activated(int)),this,SLOT(coordinateMenuSlot(int)));
+
+
+  graphTypeMenu=new QMenu(this);
+  graphTypeActions=new QActionGroup(this);
+  graphTypeMapper=new QSignalMapper(this);
+
+  tmpAction=graphTypeMenu->addAction(tr("Standard"));
+  tmpAction->setData(QVariant(GRAPHSTD));
+  tmpAction->setCheckable(true);
+  graphTypeActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),graphTypeMapper,SLOT(map()));
+  graphTypeMapper->setMapping(tmpAction,GRAPHSTD);
+  
+  tmpAction=graphTypeMenu->addAction(tr("Polar"));
+  tmpAction->setData(QVariant(GRAPHPOLAR));
+  tmpAction->setCheckable(true);
+  graphTypeActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),graphTypeMapper,SLOT(map()));
+  graphTypeMapper->setMapping(tmpAction,GRAPHPOLAR);
+  
+  tmpAction=graphTypeMenu->addAction(tr("3D-Graph"));
+  tmpAction->setData(QVariant(GRAPH3D));
+  tmpAction->setCheckable(true);
+  graphTypeActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),graphTypeMapper,SLOT(map()));
+  graphTypeMapper->setMapping(tmpAction,GRAPH3D);
+
+  QObject::connect(graphTypeMapper,SIGNAL(mapped(int)),this,SLOT(graphTypeMenuSlot(int)));
+
+  
+  graphSetMenu=new QMenu(this);
+  graphSetMapper=new QSignalMapper(this);
+  graphSetActions=new QActionGroup(this);
+  QObject::connect(graphSetMapper,SIGNAL(mapped(int)),this,SLOT(graphSetMenuSlot(int))); 
+    
+  graphMenu=new Q3PopupMenu;
+  graphMenu->insertItem(EXTCALCH_MENU25,coordinateMenu,COORDINATE);
+  graphMenu->insertItem(EXTCALCH_MENU26,graphTypeMenu,GRAPHTYPE);
+  graphMenu->insertSeparator();
+  graphMenu->insertItem(tr("Choose Current Set"),graphSetMenu,GRAPHSETCH);
+  graphMenu->insertItem(tr("Manage Sets"),GRAPHSETMANAGE);
+  graphMenu->insertItem(tr("Save Current Set As"),GRAPHSAVECURR);
+  graphMenu->insertItem(tr("Create New Set"),GRAPHCREATESET);
+  graphMenu->insertItem(tr("Import Graphs"),GRAPHIMPORT);
+  graphMenu->insertItem(tr("Export Graphs"),GRAPHEXPORT);
+  QObject::connect(graphMenu,SIGNAL(activated(int)),this,SLOT(graphMenuSlot(int)));
+
+  
+  tableTypeMenu=new QMenu(this);
+  tableTypeActions=new QActionGroup(this);
+  tableTypeMapper=new QSignalMapper(this);
+  
+  tmpAction=tableTypeMenu->addAction(tr("Normal"));
+  tmpAction->setData(QVariant(TABLENORMAL));
+  tmpAction->setCheckable(true);
+  tableTypeActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),tableTypeMapper,SLOT(map()));
+  tableTypeMapper->setMapping(tmpAction,TABLENORMAL);
+  
+  tmpAction=tableTypeMenu->addAction(tr("Polar"));
+  tmpAction->setData(QVariant(TABLEPOLAR));
+  tmpAction->setCheckable(true);
+  tableTypeActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),tableTypeMapper,SLOT(map()));
+  tableTypeMapper->setMapping(tmpAction,TABLEPOLAR);
+    
+  tmpAction=tableTypeMenu->addAction(tr("Parameter"));
+  tmpAction->setData(QVariant(TABLEPARAMETER));
+  tmpAction->setCheckable(true);
+  tableTypeActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),tableTypeMapper,SLOT(map()));
+  tableTypeMapper->setMapping(tmpAction,TABLEPARAMETER);
+    
+  tmpAction=tableTypeMenu->addAction(tr("Inequality"));
+  tmpAction->setData(QVariant(TABLEINEQUALITY));
+  tmpAction->setCheckable(true);
+  tableTypeActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),tableTypeMapper,SLOT(map()));
+  tableTypeMapper->setMapping(tmpAction,TABLEINEQUALITY);
+    
+  tmpAction=tableTypeMenu->addAction(tr("3D"));
+  tmpAction->setData(QVariant(TABLE3D));
+  tmpAction->setCheckable(true);
+  tableTypeActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),tableTypeMapper,SLOT(map()));
+  tableTypeMapper->setMapping(tmpAction,TABLE3D);
+    
+  tmpAction=tableTypeMenu->addAction(tr("Complex"));
+  tmpAction->setData(QVariant(TABLECOMPLEX));
+  tmpAction->setCheckable(true);
+  tableTypeActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),tableTypeMapper,SLOT(map()));
+  tableTypeMapper->setMapping(tmpAction,TABLECOMPLEX);
+
+  QObject::connect(tableTypeMapper,SIGNAL(mapped(int)),this,SLOT(tableTypeMenuSlot(int)));
+    
+  tableMenu=new Q3PopupMenu;
+  tableMenu->insertItem(EXTCALCH_MENU43,STANDARDTABLE);
+  tableMenu->insertItem(EXTCALCH_MENU68,RESETTABLE);
+  tableMenu->insertItem(EXTCALCH_MENU44,tableTypeMenu,TABLETYPE);
+  QObject::connect(tableMenu,SIGNAL(activated(int)),this,SLOT(tableMenuSlot(int)));
+
+
+  scriptMenu=new Q3PopupMenu;
+  scriptMenu->insertItem(EXTCALCH_MENU62,EXPORTSCRIPT);
+  scriptMenu->insertItem(EXTCALCH_MENU63,IMPORTSCRIPT);
+  scriptMenu->insertSeparator();
+  scriptMenu->insertItem(EXTCALCH_MENU64,CLEARMEMALWAYS);
+  scriptMenu->insertItem(EXTCALCH_MENU65,CLEARMEMNOW);
+  QObject::connect(scriptMenu,SIGNAL(activated(int)),this,SLOT(scriptMenuSlot(int)));
+    
+  statisticsMenu=new Q3PopupMenu;
+  statisticsMenu->insertItem(EXTCALCH_MENU69,STATCLEAR);
+  statisticsMenu->insertItem(EXTCALCH_MENU70,STATAUTOCLEAR);
+  statisticsMenu->insertSeparator();
+  statisticsMenu->insertItem(EXTCALCH_MENU71,STATPOINTS);
+  statisticsMenu->insertItem(EXTCALCH_MENU72,STATLINES);
+  QObject::connect(statisticsMenu,SIGNAL(activated(int)),this,SLOT(statisticsMenuSlot(int)));
+    
+  languageMenu=new QMenu(this);
+  languageActions=new QActionGroup(this);
+  languageMapper=new QSignalMapper(this);
+  
+  tmpAction=languageMenu->addAction(tr("English"));
+  tmpAction->setData(QVariant(LANG_EN));
+  tmpAction->setCheckable(true);
+  languageActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),languageMapper,SLOT(map()));
+  languageMapper->setMapping(tmpAction,LANG_EN);
+  
+  tmpAction=languageMenu->addAction(tr("French"));
+  tmpAction->setData(QVariant(LANG_FR));
+  tmpAction->setCheckable(true);
+  languageActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),languageMapper,SLOT(map()));
+  languageMapper->setMapping(tmpAction,LANG_FR);
+  
+  tmpAction=languageMenu->addAction(tr("German"));
+  tmpAction->setData(QVariant(LANG_DE));
+  tmpAction->setCheckable(true);
+  languageActions->addAction(tmpAction);
+  connect(tmpAction,SIGNAL(triggered()),languageMapper,SLOT(map()));
+  languageMapper->setMapping(tmpAction,LANG_DE);
+  
+  QObject::connect(languageMapper,SIGNAL(mapped(int)),this,SLOT(languageMenuSlot(int)));
+
+
+
+  prefMenu=new Q3PopupMenu;
+  prefMenu->insertItem(EXTCALCH_MENU10,CPREF);
+  prefMenu->insertItem(EXTCALCH_MENU11,GPREF);
+  prefMenu->insertItem(EXTCALCH_MENU45,TPREF);
+  prefMenu->insertItem(EXTCALCH_MENU60,SPREF);
+  prefMenu->insertSeparator();
+  prefMenu->insertItem(tr("Language"),languageMenu,LPREF);
+
+  helpMenu=new Q3PopupMenu;
+  helpMenu->insertItem(EXTCALCH_MENU12,EXTHELP);
+  helpMenu->insertItem(EXTCALCH_MENU13,INFO);
+
+  editMapper=new QSignalMapper(this);
+  editMenu=new QMenu(this);
+  tmpAction=editMenu->addAction("Undo");
+  connect(tmpAction,SIGNAL(triggered()),editMapper,SLOT(map()));
+  editMapper->setMapping(tmpAction,EDITUNDO);
+  tmpAction=editMenu->addAction("Redo");
+  connect(tmpAction,SIGNAL(triggered()),editMapper,SLOT(map()));
+  editMapper->setMapping(tmpAction,EDITREDO);
+  tmpAction=editMenu->addAction("Cut");
+  connect(tmpAction,SIGNAL(triggered()),editMapper,SLOT(map()));
+  editMapper->setMapping(tmpAction,EDITCUT);
+  tmpAction=editMenu->addAction("Copy");
+  connect(tmpAction,SIGNAL(triggered()),editMapper,SLOT(map()));
+  editMapper->setMapping(tmpAction,EDITCOPY);
+  tmpAction=editMenu->addAction("Paste");
+  connect(tmpAction,SIGNAL(triggered()),editMapper,SLOT(map()));
+  editMapper->setMapping(tmpAction,EDITPASTE);
+  QObject::connect(editMapper,SIGNAL(mapped(int)),this,SLOT(editMenuSlot(int)));
+
+  viewMenu=new Q3PopupMenu;
+  viewMenu->insertItem(EXTCALCH_MENU52,VIEWCALC1);
+  viewMenu->insertItem(EXTCALCH_MENU53,VIEWCALC2);
+  viewMenu->insertItem(EXTCALCH_MENU54,VIEWGRAPH);
+  viewMenu->insertItem(EXTCALCH_MENU55,VIEWTABLE);
+  viewMenu->insertItem(EXTCALCH_MENU73,VIEWMATRIX);
+  viewMenu->insertItem(EXTCALCH_MENU74,VIEWSTATISTICS);
+  viewMenu->insertItem(EXTCALCH_MENU56,VIEWSCRIPTING);
+  viewMenu->insertItem(EXTCALCH_MENU61,VIEWSCRIPTIO);
+  QObject::connect(viewMenu,SIGNAL(activated(int)),this,SLOT(viewMenuSlot(int)));
+    
+  fileMenu=new Q3PopupMenu;
+  fileMenu->insertItem(EXTCALCH_MENU57,QUIT);
+  QObject::connect(fileMenu,SIGNAL(activated(int)),this,SLOT(fileMenuSlot(int)));
+    
+
+
+  mainMenu->insertItem(EXTCALCH_MENU14,fileMenu,FILEM);
+  mainMenu->insertItem(EXTCALCH_MENU58,editMenu,EDIT);
+  mainMenu->insertItem(EXTCALCH_MENU59,viewMenu,VIEW);
+  mainMenu->insertItem(EXTCALCH_MENU15,prefMenu,PREFERENCES);
+  mainMenu->insertItem(EXTCALCH_MENU16,calcMenu,CALCULATOR);
+  mainMenu->insertItem(EXTCALCH_MENU17,graphMenu,GRAPH);
+  mainMenu->insertItem(EXTCALCH_MENU46,tableMenu,TABLE);
+  mainMenu->insertItem(EXTCALCH_MENU66,scriptMenu,SCRIPTM);
+  mainMenu->insertItem(EXTCALCH_MENU74,statisticsMenu,STATISTICSM);
+  mainMenu->insertItem(EXTCALCH_MENU18,helpMenu,HELP);
+
+  clientArea=new QTabWidget(this);
+  setCentralWidget(clientArea);
+
+
+  calculator=new CalcWidget(clientArea,pref,vars,threadData,0);
+  calculator2=new CalcWidget(clientArea,pref,vars,threadData,0);
+  graph = new GraphWidget(clientArea,pref,vars,threadData,0);
+  table=new TableWidget(clientArea,pref,vars,threadData,0);
+  scripting=new ScriptWidget(clientArea,pref,vars,0);
+  scriptIO=new ScriptIOWidget(clientArea,pref,vars,graph->getShareContext(),0);
+  matrix=new MatrixWidget(clientArea,pref,vars,threadData);
+  statistics=new StatisticsWidget(clientArea,pref,vars,threadData,0);
+    
+
+  
+  
+  clientArea->addTab(calculator,tr("Calculator"));
+  clientArea->addTab(calculator2,tr("Another Calculator"));
+  clientArea->addTab(graph,tr("Graphics"));
+  clientArea->addTab(table,tr("Tables"));
+  clientArea->addTab(scripting,tr("Script Editor"));
+  clientArea->addTab(scriptIO,tr("Script Console"));
+  clientArea->addTab(matrix,tr("Matrix/Vector"));
+  clientArea->addTab(statistics,tr("Statistics"));
+    
+/*  calculator->setWindowTitle(tr("Calculator"));
+  calculator2->setWindowTitle(tr("Another Calculator"));
+  graph->setWindowTitle(tr("Graphics"));
+  table->setWindowTitle(tr("Tables"));
+  scripting->setWindowTitle(tr("Script Editor"));
+  scriptIO->setWindowTitle(tr("Script Console"));
+  matrix->setWindowTitle(tr("Matrix/Vector"));
+  statistics->setWindowTitle(tr("Statistics"));
+*/
+
+  QObject::connect(helpMenu,SIGNAL(activated(int)),this,SLOT(helpMenuSlot(int)));
+  QObject::connect(prefMenu,SIGNAL(activated(int)),this,SLOT(prefMenuSlot(int)));
+  QObject::connect(calculator,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+  QObject::connect(calculator2,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+  QObject::connect(graph,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+  QObject::connect(table,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+  QObject::connect(scripting,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+  QObject::connect(scriptIO,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+  QObject::connect(matrix,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+  QObject::connect(statistics,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+
+  QObject::connect(clientArea,SIGNAL(currentChanged(int)),this,SLOT(tabChangeSlot(int)));
+  QObject::connect(this,SIGNAL(editSignal(int)),calculator,SLOT(editSlot(int)));
+  QObject::connect(this,SIGNAL(editSignal(int)),calculator2,SLOT(editSlot(int)));
+  QObject::connect(this,SIGNAL(editSignal(int)),graph,SLOT(editSlot(int)));
+  QObject::connect(this,SIGNAL(editSignal(int)),table,SLOT(editSlot(int)));
+  QObject::connect(this,SIGNAL(editSignal(int)),scripting,SLOT(editSlot(int)));
+  QObject::connect(this,SIGNAL(editSignal(int)),scriptIO,SLOT(editSlot(int)));
+//  QObject::connect(this,SIGNAL(editSignal(int)),matrix,SLOT(editSlot(int)));
+//  QObject::connect(this,SIGNAL(editSignal(int)),statistics,SLOT(editSlot(int)));
+  QObject::connect(scripting,SIGNAL(runScript(QString*)),this,SLOT(runScriptSlot(QString*)));
+  QObject::connect(scripting,SIGNAL(runScript(QString*)),this,SIGNAL(runScript(QString*)));
+  QObject::connect(scripting,SIGNAL(controlScriptMenu(int)),this,SLOT(scriptMenuSlot(int)));
+  QObject::connect(this,SIGNAL(runScript(QString*)),scriptIO,SLOT(runScript(QString*)));
+  QObject::connect(this,SIGNAL(matrixEnterSignal()),matrix,SLOT(enterSlot()));
+  QObject::connect(tableMenu,SIGNAL(activated(int)),table,SLOT(tableMenuSlot(int)));
+  QObject::connect(statistics,SIGNAL(printSignal()),graph,SLOT(drawSlot()));
+  QObject::connect(statistics,SIGNAL(changeTabSignal(int)),this,SLOT(changeTabSlot(int)));
+  QObject::connect(statistics,SIGNAL(drawPointsSignal(long double*,int,bool)),graph,SIGNAL(drawPointsSignal(long double*,int,bool)));
+  QObject::connect(statistics,SIGNAL(removeLinesSignal()),graph,SIGNAL(removeLinesSignal()));
+  QObject::connect(graph,SIGNAL(statisticsRedrawSignal()),statistics,SLOT(redrawGraphSlot()));
+  QObject::connect(this,SIGNAL(removeGraphicsLinesSignal()),graph,SIGNAL(removeLinesSignal()));
+  QObject::connect(graphSetMenu,SIGNAL(aboutToShow()),this,SLOT(updateGraphSetMenuSlot()));
+
+    
+
+    
+    
+  int ret=readConfigFile();
+  if(ret==-1 || ret==1)
+  {
+    if(ret == -1)
+    {
+            //first start
+      ret=YesNoBox(EXTCALCH_MENU75);
+    }
+    else if(ret==1)
+    {
+      ret=YesNoBox(EXTCALCH_MENU76);
+    }
+    pref.scriptPath=QString(getenv("HOME"))+QString("/.extcalc/script/");
+    pref.scriptDirName="code";
+    pref.dataDirName="data";
+    if(ret==0)
+    {
+      if(scriptPref != NULL)
+        delete scriptPref;
+      scriptPref=new ScriptPreferences(pref,(QWidget*)this);
+      QObject::connect(scriptPref,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+    
+      scriptPref->show();
+    }
+    else 
+    {
+      if(scriptPref != NULL)
+        delete scriptPref;
+      scriptPref=new ScriptPreferences(pref,(QWidget*)this);
+      QObject::connect(scriptPref,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+      scriptPref->saveSlot();
+      MessageBox(EXTCALCH_MENU77);
+    }
+  }
+  initConstants();
+  readVarFile();
+  readUIState();
+  readGraphsDir();
+  if(pref.currentSet.length()>0)
+    readFunctionFile(QString(getenv("HOME"))+"/"+QString(GRAPHSDIR)+pref.currentSet);
+    
+}
 
 
 
@@ -381,26 +1004,26 @@ F17LOGIC=true\n\
 F18LOGIC=false\n\
 F19LOGIC=false\n\
 F20LOGIC=false\n\
-F1COLOR=red\n\
-F2COLOR=black\n\
-F3COLOR=blue\n\
-F4COLOR=black\n\
-F5COLOR=red\n\
-F6COLOR=green\n\
-F7COLOR=yellow\n\
-F8COLOR=blue\n\
-F9COLOR=green\n\
-F10COLOR=red\n\
-F11COLOR=magenta\n\
+F1COLOR=Qt::red\n\
+F2COLOR=Qt::black\n\
+F3COLOR=Qt::blue\n\
+F4COLOR=Qt::black\n\
+F5COLOR=Qt::red\n\
+F6COLOR=Qt::green\n\
+F7COLOR=Qt::yellow\n\
+F8COLOR=Qt::blue\n\
+F9COLOR=Qt::green\n\
+F10COLOR=Qt::red\n\
+F11COLOR=Qt::magenta\n\
 F12COLOR=grey\n\
-F13COLOR=cyan\n\
-F14COLOR=green\n\
+F13COLOR=Qt::cyan\n\
+F14COLOR=Qt::green\n\
 F15COLOR=colored\n\
 F16COLOR=colored\n\
 F17COLOR=colored\n\
-F18COLOR=red\n\
-F19COLOR=blue\n\
-F20COLOR=green\n\
+F18COLOR=Qt::red\n\
+F19COLOR=Qt::blue\n\
+F20COLOR=Qt::green\n\
 F1TYPE=std\n\
 F2TYPE=std\n\
 F3TYPE=std\n\
@@ -903,7 +1526,7 @@ F20TYPE=nyquist2d\n");
 		else if(tableType.lower() == "parameter")
 			pref.tableType=TABLEPARAMETER;
 		else if(tableType.lower() == "inequaity")
-			pref.tableType=TABLEINEQUAITY;
+			pref.tableType=TABLEINEQUALITY;
 		else if(tableType.lower() == "3d")
 			pref.tableType=TABLE3D;
 		else if(tableType.lower() == "complex")
@@ -1223,7 +1846,7 @@ void MainObject::writeConfigFile()
 		configuration+="polar";
 	else if(pref.tableType==TABLEPARAMETER)
 		configuration+="parameter";
-	else if(pref.tableType==TABLEINEQUAITY)
+	else if(pref.tableType==TABLEINEQUALITY)
 		configuration+="inequaity";
 	else if(pref.tableType==TABLE3D)
 		configuration+="3d";
@@ -1720,7 +2343,7 @@ void MainObject::writeConstants()
 	fclose(configFile);
 }
 
-void MainObject::tabChangeSlot(QWidget*activeWidget)
+void MainObject::tabChangeSlot(int index)
 {
 	calculator->dockWindowSlot();
 	calculator2->dockWindowSlot();
@@ -1731,9 +2354,8 @@ void MainObject::tabChangeSlot(QWidget*activeWidget)
 	scripting->dockWindowSlot();
 	scriptIO->dockWindowSlot();
 
-
 	
-	if(activeWidget==(QWidget*)calculator || activeWidget==(QWidget*)calculator2)
+	if(index==clientArea->indexOf(calculator) || index==clientArea->indexOf(calculator2))
 	{
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,false);
@@ -1741,7 +2363,7 @@ void MainObject::tabChangeSlot(QWidget*activeWidget)
 		mainMenu->setItemVisible(STATISTICSM,false);
 		
 	}
-	else if(activeWidget==(QWidget*)graph)
+	else if(index==clientArea->indexOf(graph))
 	{
 		mainMenu->setItemVisible(GRAPH,true);
 		mainMenu->setItemVisible(TABLE,false);
@@ -1749,7 +2371,7 @@ void MainObject::tabChangeSlot(QWidget*activeWidget)
 		mainMenu->setItemVisible(STATISTICSM,false);
 
 	}
-	else if(activeWidget==(QWidget*)table)
+	else if(index==clientArea->indexOf(table))
 	{
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,true);
@@ -1757,7 +2379,7 @@ void MainObject::tabChangeSlot(QWidget*activeWidget)
 		mainMenu->setItemVisible(STATISTICSM,false);
 
 	}
-	else if(activeWidget==(QWidget*)matrix)
+	else if(index==clientArea->indexOf(matrix))
 	{
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,false);
@@ -1766,14 +2388,14 @@ void MainObject::tabChangeSlot(QWidget*activeWidget)
 
 		emit matrixEnterSignal();
 	}
-	else if(activeWidget==(QWidget*)scripting || activeWidget==(QWidget*)scriptIO)
+	else if(index==clientArea->indexOf(scripting) || index==clientArea->indexOf(scriptIO))
 	{
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,false);
 		mainMenu->setItemVisible(SCRIPTM,true);
 		mainMenu->setItemVisible(STATISTICSM,false);
 	}
-	else if(activeWidget==(QWidget*)statistics)
+	else if(index==clientArea->indexOf(statistics))
 	{
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,false);
@@ -1782,7 +2404,7 @@ void MainObject::tabChangeSlot(QWidget*activeWidget)
 
 	}
 	
-	if(activeWidget!=(QWidget*)calculator && activeWidget!=(QWidget*)calculator2)
+	if(index!=clientArea->indexOf(calculator) && index!=clientArea->indexOf(calculator2))
 	{
 		if(calcFocus)
 		{
@@ -1820,21 +2442,21 @@ void MainObject::outputMenuSlot(int item)
 	getPref(pref);
 }
 
-void MainObject::calcTypeMenuSlot(int item)
+void MainObject::calcModeMenuSlot(int item)
 {
-	if(item==COMPLEXMENU)
-	{
-		pref.complex=!pref.complex;
-		getPref(pref);
-	}
-	else if(calcFocus || item==SCIENTIFIC)
+	if(calcFocus || item==SCIENTIFIC)
 	{
 		pref.calcType=item;
 		getPref(pref);
 	}
-
-	
 }
+
+void MainObject::calcComplexSlot()
+{
+	pref.complex=!pref.complex;
+	getPref(pref);
+}
+
 void MainObject::baseMenuSlot(int item)
 {
 	if(pref.calcType==BASE)
@@ -1980,17 +2602,20 @@ void MainObject::graphTypeMenuSlot(int item)
 void MainObject::graphSetMenuSlot(int item)
 {
 	writeFunctionFile(pref.currentSet);
-	pref.currentSet=graphSetMenu->text(item);
-	readFunctionFile(QString(getenv("HOME"))+"/"+QString(GRAPHSDIR)+pref.currentSet);
-	int id;
-	for(int c=0; ;c++)
+	QString currentActionName="";
+
+	for(int c=0; c<graphSetActions->actions().size(); c++)
 	{
-		id=graphSetMenu->idAt(c);
-		if(id==-1)
-			break;
-		else graphSetMenu->setItemChecked(id,false);
+		if(graphSetActions->actions()[c]->data()==item)
+		{
+			graphSetActions->actions()[c]->setChecked(true);
+			currentActionName=	graphSetActions->actions()[c]->text();
+		}
+		else graphSetActions->actions()[c]->setChecked(false);
 	}
-	graphSetMenu->setItemChecked(item,true);
+
+	pref.currentSet=currentActionName;
+	readFunctionFile(QString(getenv("HOME"))+"/"+QString(GRAPHSDIR)+pref.currentSet);
 
 }
 
@@ -2230,10 +2855,15 @@ void MainObject::languageMenuSlot(int item)
 	int ret=YesNoCancelBox(tr("Extcalc must be restarted to apply this changes!\n\nRestart now?"));
 	if(ret==0)
 	{
-		QProcess extcalcProcess;
+		Q3Process extcalcProcess;
 		extcalcProcess.addArgument("extcalc");
 		extcalcProcess.start();
 		qApp->closeAllWindows();
+	}
+	else {
+		for(int c=0; c<languageActions->actions().size(); c++)
+			if(languageActions->actions()[c]->data()==pref.language)
+				languageActions->actions()[c]->setChecked(true);
 	}
 }
 
@@ -2246,6 +2876,7 @@ void MainObject::fileMenuSlot(int item)
 
 void MainObject::editMenuSlot(int item)
 {
+	qDebug(QString::number(item));
 	emit editSignal(item);
 }
 
@@ -2254,124 +2885,54 @@ void MainObject::viewMenuSlot(int item)
 
 	bool resetFocus=false;
 
-	
 	switch(item)
 	{
 		case VIEWCALC1:
 			pref.showWindows[0]=!pref.showWindows[0];
+
 			getPref(pref);
-			if(pref.showWindows[0])
-				showPage(calculator);
-			else {
-				
-				resetFocus=true;
-				calculator->hide();
-			}
 			break;
 		case VIEWCALC2:
 			pref.showWindows[1]=!pref.showWindows[1];
 			getPref(pref);
-			if(pref.showWindows[1])
-				showPage(calculator2);
-			else {
-				resetFocus=true;
-				calculator2->hide();
-			}
 			break;
 		case VIEWGRAPH:
 			pref.showWindows[2]=!pref.showWindows[2];
 			getPref(pref);
-			if(pref.showWindows[2])
-				showPage(graph);
-			else {
-				resetFocus=true;
-				graph->hide();
-			}
 			break;
 		case VIEWTABLE:
 			pref.showWindows[3]=!pref.showWindows[3];
 			getPref(pref);
-			if(pref.showWindows[3])
-				showPage(table);
-			else {
-				resetFocus=true;
-				table->hide();
-			}
 			break;
 		case VIEWMATRIX:
 			pref.showWindows[4]=!pref.showWindows[4];
 			getPref(pref);
-			if(pref.showWindows[4])
-				showPage(matrix);
-			else {
-				resetFocus=true;
-				matrix->hide();
-			}
 			break;
 		case VIEWSTATISTICS:
 			pref.showWindows[5]=!pref.showWindows[5];
 			getPref(pref);
-			if(pref.showWindows[5])
-				showPage(statistics);
-			else {
-				resetFocus=true;
-				statistics->hide();
-			}
 			break;
 		case VIEWSCRIPTING:
 			pref.showWindows[6]=!pref.showWindows[6];
 			getPref(pref);
-			if(pref.showWindows[6])
-				showPage(scripting);
-			else {
-				resetFocus=true;
-				scripting->hide();
-			}
 			break;
 		case VIEWSCRIPTIO:
 			pref.showWindows[7]=!pref.showWindows[7];
 			getPref(pref);
-			if(pref.showWindows[7])
-				showPage(scriptIO);
-			else {
-				resetFocus=true;
-				scriptIO->hide();
-			}
 			break;
 	}
-	
-	if(resetFocus)
-	{
-		if(indexOf(calculator)!=-1)
-			showPage(calculator);
-		else if(indexOf(calculator2)!=-1)
-			showPage(calculator2);
-		else if(indexOf(table)!=-1)
-			showPage(table);
-		else if(indexOf(graph)!=-1)
-			showPage(graph);
-		else if(indexOf(matrix)!=-1)
-			showPage(matrix);
-		else if(indexOf(statistics)!=-1)
-			showPage(statistics);
-		else if(indexOf(scripting)!=-1)
-			showPage(scripting);
-		else if(indexOf(scriptIO)!=-1)
-			showPage(scriptIO);
-	}
-	
 }
 
 void MainObject::runScriptSlot(QString*)
 {
-	if(indexOf(scriptIO) == -1)
+	if(!pref.showWindows[7])
 		viewMenuSlot(VIEWSCRIPTIO);
-	else showPage(scriptIO);
+	else clientArea->setCurrentWidget(scriptIO);
 }
 
 void MainObject::changeTabSlot(int num)
 {
-	switch(num)
+/*	switch(num)
 	{
 		case 0:
 			if(!pref.showWindows[0])
@@ -2414,6 +2975,166 @@ void MainObject::changeTabSlot(int num)
 			else showPage(scriptIO);
 			break;
 	}
+  */
+}
+
+void MainObject::getPref(Preferences newPref)
+{
+  static bool running=false;
+
+
+
+  if(newPref.graphType==GRAPHPOLAR)
+  {
+    newPref.xmin=newPref.ymin=-newPref.radiusMax;
+    newPref.xmax=newPref.ymax=newPref.radiusMax;
+    newPref.rasterSizeX=newPref.rasterSizeY=newPref.rasterSizeRadius;
+  }
+  else {
+    if(fabs(newPref.xmax) > fabs(newPref.xmin))
+      newPref.radiusMax=fabs(newPref.xmax);
+    else newPref.radiusMax=fabs(newPref.xmin);
+    newPref.rasterSizeRadius=newPref.rasterSizeX;
+    if(newPref.angle==DEG)
+    {
+      newPref.rasterSizeAngle=15.0;
+      newPref.angleMax=360.0;
+    }
+    else if(newPref.angle==RAD)
+    {
+      newPref.rasterSizeAngle=0.1*PI;
+      newPref.angleMax=2*PI;
+    }
+    else if(newPref.angle==GRA)
+    {
+      newPref.rasterSizeAngle=20.0;
+      newPref.angleMax=400.0;
+    }
+  }
+
+  
+  if(((clientArea->indexOf(calculator)!=-1)!=pref.showWindows[0] ||
+	   (clientArea->indexOf(calculator2)!=-1)!=pref.showWindows[1] ||
+	   (clientArea->indexOf(graph)!=-1)!=pref.showWindows[2] ||
+	   (clientArea->indexOf(table)!=-1)!=pref.showWindows[3] ||
+	   (clientArea->indexOf(matrix)!=-1)!=pref.showWindows[4] || 
+	   (clientArea->indexOf(statistics)!=-1)!=pref.showWindows[5] || 
+	   (clientArea->indexOf(scripting)!=-1)!=pref.showWindows[6] ||
+	   (clientArea->indexOf(scriptIO)!=-1)!=pref.showWindows[7]
+       ) && !running)
+  {
+  running=true;
+  if(clientArea->indexOf(calculator)!=-1)
+	  clientArea->removePage(calculator);
+  if(clientArea->indexOf(calculator2)!=-1)
+	  clientArea->removePage(calculator2);
+  if(clientArea->indexOf(graph)!=-1)
+	  clientArea->removePage(graph);
+  if(clientArea->indexOf(table)!=-1)
+	  clientArea->removePage(table);
+  if(clientArea->indexOf(matrix)!=-1)
+	  clientArea->removePage(matrix);
+  if(clientArea->indexOf(statistics)!=-1)
+	  clientArea->removePage(statistics);
+  if(clientArea->indexOf(scripting)!=-1)
+	  clientArea->removePage(scripting);
+  if(clientArea->indexOf(scriptIO)!=-1)
+	  clientArea->removePage(scriptIO);
+  if(pref.showWindows[0])
+	  clientArea->addTab(calculator,EXTCALCH_STR6);
+  if(pref.showWindows[1])
+	  clientArea->addTab(calculator2,EXTCALCH_STR7);
+  if(pref.showWindows[2])
+	  clientArea->addTab(graph,EXTCALCH_STR8);
+  if(pref.showWindows[3])
+	  clientArea->addTab(table,EXTCALCH_STR9);
+  if(pref.showWindows[4])
+	  clientArea->addTab(matrix,EXTCALCH_MENU73);
+  if(pref.showWindows[5])
+	  clientArea->addTab(statistics,EXTCALCH_MENU74);
+  if(pref.showWindows[6])
+	  clientArea->addTab(scripting,EXTCALCH_STR12);
+  if(pref.showWindows[7])
+	  clientArea->addTab(scriptIO,EXTCALCH_STR13);
+  }
+  running=false; 
+
+      if(!calcFocus && newPref.calcType==BASE)
+      {
+        newPref.calcType=SCIENTIFIC;
+        calcModeChanged=true;
+      }
+      if(calcFocus&&calcModeChanged)
+      {
+        newPref.calcType=BASE;
+        calcModeChanged=false;
+      }
+
+	for(int c=0; c<graphTypeActions->actions().size(); c++)
+		if(graphTypeActions->actions()[c]->data()==newPref.graphType)
+			graphTypeActions->actions()[c]->setChecked(true);
+
+	for(int c=0; c<angleActions->actions().size(); c++)
+		if(angleActions->actions()[c]->data()==newPref.angle)
+			angleActions->actions()[c]->setChecked(true);
+
+	for(int c=0; c<outputActions->actions().size(); c++)
+		if(outputActions->actions()[c]->data()==newPref.outputType)
+			outputActions->actions()[c]->setChecked(true);
+	  
+	for(int c=0; c<floatPointActions->actions().size(); c++)
+		if(floatPointActions->actions()[c]->data()==newPref.outputLength)
+			floatPointActions->actions()[c]->setChecked(true);
+	
+	for(int c=0; c<calcModeActions->actions().size(); c++)
+		if(calcModeActions->actions()[c]->data()==newPref.calcType)
+			calcModeActions->actions()[c]->setChecked(true);
+	
+	for(int c=0; c<baseActions->actions().size(); c++)
+		if(baseActions->actions()[c]->data()==newPref.base)
+			baseActions->actions()[c]->setChecked(true);
+	
+	for(int c=0; c<tableTypeActions->actions().size(); c++)
+		if(tableTypeActions->actions()[c]->data()==newPref.tableType)
+			tableTypeActions->actions()[c]->setChecked(true);
+	
+	for(int c=0; c<languageActions->actions().size(); c++)
+		if(languageActions->actions()[c]->data()==newPref.language)
+			languageActions->actions()[c]->setChecked(true);
+
+	
+    complexAction->setChecked(pref.complex);
+
+
+    scriptMenu->setItemChecked(CLEARMEMALWAYS,true);
+
+    pref=newPref;
+    calculator->setPref(pref);
+    calculator2->setPref(pref);
+    graph->setPref(pref);
+    table->setPref(pref);
+    matrix->setPref(pref);
+    statistics->setPref(pref);
+    scripting->setPref(pref);
+    scriptIO->setPref(pref);
+
+
+    scriptMenu->setItemChecked(CLEARMEMALWAYS,pref.clearScriptMemory);
+    statisticsMenu->setItemChecked(STATAUTOCLEAR,pref.statAutoClear);
+    statisticsMenu->setItemChecked(STATPOINTS,pref.showStatPoints);
+    statisticsMenu->setItemChecked(STATLINES,pref.showStatLines);
+    coordinateMenu->setItemChecked(SHOWAXES,pref.axis);
+    coordinateMenu->setItemChecked(SHOWLABELS,pref.label);
+    coordinateMenu->setItemChecked(SHOWRASTER,pref.raster);
+    coordinateMenu->setItemChecked(CONSTRATIO,pref.autosize);
+    viewMenu->setItemChecked(VIEWCALC1,pref.showWindows[0]);
+    viewMenu->setItemChecked(VIEWCALC2,pref.showWindows[1]);
+    viewMenu->setItemChecked(VIEWGRAPH,pref.showWindows[2]);
+    viewMenu->setItemChecked(VIEWTABLE,pref.showWindows[3]);
+    viewMenu->setItemChecked(VIEWMATRIX,pref.showWindows[4]);
+    viewMenu->setItemChecked(VIEWSTATISTICS,pref.showWindows[5]);
+    viewMenu->setItemChecked(VIEWSCRIPTING,pref.showWindows[6]);
+    viewMenu->setItemChecked(VIEWSCRIPTIO,pref.showWindows[7]);
 }
 
 void MainObject::writeUIState()
@@ -2622,7 +3343,7 @@ void MainObject::readFunctionFile(QString name)
 			
 			if(pref.graphType!=GRAPHSTD && pref.graphType !=GRAPHPOLAR && pref.graphType!=GRAPH3D)
 				pref.graphType=GRAPHSTD;
-			if(pref.tableType!=TABLENORMAL && pref.tableType !=TABLEPOLAR && pref.tableType!=TABLE3D && pref.tableType!=TABLEPARAMETER && pref.tableType !=TABLECOMPLEX && pref.tableType!=TABLEINEQUAITY)
+			if(pref.tableType!=TABLENORMAL && pref.tableType !=TABLEPOLAR && pref.tableType!=TABLE3D && pref.tableType!=TABLEPARAMETER && pref.tableType !=TABLECOMPLEX && pref.tableType!=TABLEINEQUALITY)
 				pref.tableType=TABLENORMAL;
 
 		}
@@ -2861,13 +3582,23 @@ void MainObject::readGraphsDir()
 		dirEntries=graphsDir->entryList(QDir::Files);
 		pref.currentSet="std";
 	}
+
 	graphSetMenu->clear();
-	
+	QAction*tmpAction;
+
 	for(int c=0; c<dirEntries.count(); c++)
 	{
-		int id=graphSetMenu->insertItem(dirEntries[c]);
+		//int id=graphSetMenu->insertItem(dirEntries[c]);
+		tmpAction=graphSetMenu->addAction(dirEntries[c]);
+		tmpAction->setData(QVariant(c));
+		tmpAction->setCheckable(true);
 		if(dirEntries[c]==pref.currentSet)
-			graphSetMenu->setItemChecked(id,true);
+			tmpAction->setChecked(true);
+		
+		connect(tmpAction,SIGNAL(triggered()),graphSetMapper,SLOT(map()));
+		graphSetMapper->setMapping(tmpAction,c);
+		graphSetActions->addAction(tmpAction);
+		//	graphSetMenu->setItemChecked(id,true);
 	}
 }
 
@@ -2876,8 +3607,8 @@ void MainObject::readGraphsDir()
 HelpBrowser::HelpBrowser(QWidget*parent) :QWidget(parent,"Help Browser",Qt::WType_TopLevel)
 {
 	currentSource="";
-	toolBar=new QToolBar();
-	dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
+	toolBar=new Q3ToolBar();
+	dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
 	dockArea->moveDockWindow(toolBar);
 	toolBar->setMovingEnabled(false);
 	
@@ -2886,7 +3617,7 @@ HelpBrowser::HelpBrowser(QWidget*parent) :QWidget(parent,"Help Browser",Qt::WTyp
 	zoominIcon=new QPixmap(INSTALLDIR+QString("/data/zoomin.png"));
 	zoomoutIcon=new QPixmap(INSTALLDIR+QString("/data/zoomout.png"));
 	
-	browser=new QTextBrowser(this);
+	browser=new Q3TextBrowser(this);
 	
 	backButton=new QToolButton(*backIcon,"","",browser,SLOT(backward()),toolBar);	
 	forwardButton=new QToolButton(*forwardIcon,"","",browser,SLOT(forward()),toolBar);

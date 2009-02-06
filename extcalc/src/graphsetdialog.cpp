@@ -1,9 +1,11 @@
 #include "graphsetdialog.h"
 #include <stdio.h>
+//Added by qt3to4:
+#include <QLabel>
 
 
 GraphSetDialog::GraphSetDialog(Preferences p,QWidget*parent) 
-	:QWidget(parent,EXTCALCH_STR14,Qt::WStyle_Dialog | Qt::WType_Dialog)
+	:QWidget(parent,EXTCALCH_STR14,Qt::WType_Dialog | Qt::WType_Dialog)
 {
 	pref=p;
 	dialog=false;
@@ -12,7 +14,7 @@ GraphSetDialog::GraphSetDialog(Preferences p,QWidget*parent)
 	renameButton=new QPushButton(tr("Rename"),this);
 	removeButton=new QPushButton(tr("Remove"),this);
 	mainLabel=new QLabel(tr("Sets"),this);
-	table=new QListBox(this);
+	table=new Q3ListBox(this);
 
 	mainLabel->setGeometry(20,20,150,20);
 	table->setGeometry(20,50,200,150);

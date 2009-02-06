@@ -14,6 +14,9 @@ any later version.
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "graph.h"
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <Q3ValueList>
 
 
 
@@ -108,7 +111,6 @@ void GraphWidget::drawSlot()
 		}
 	}
 
-	
 	if(processStarted)
 		return;
 	drawButton->setEnabled(false);
@@ -166,7 +168,7 @@ void GraphWidget::maximizeSlot()
 		maximized=false;
 		modeBox->show();
 		maximizeButton->setIconSet(*maximizeIcon);
-		QValueList<int> s = horzSplit->sizes();
+		Q3ValueList<int> s = horzSplit->sizes();
 		s[1]=(s[0]+s[1])/2;
 		s[0]=s[1];
 		horzSplit->setSizes(s);
@@ -188,7 +190,7 @@ void GraphWidget::maximizeSlot()
 
 		standardButtons->hide();
 		extButtons->hide();
-		QValueList<int> s = horzSplit->sizes();
+		Q3ValueList<int> s = horzSplit->sizes();
 		s[1]=s[0]+s[1];
 		s[0]=0;
 		horzSplit->setSizes(s);
@@ -254,7 +256,7 @@ void GraphWidget::buttonInputSlot(QString text)
 		functionTable->setText(functionTable->currentRow(),0,inputLine->text());
 		if((inputLine->text().length())<=0)
 		{
-			QCheckTableItem *checkItem=(QCheckTableItem*)functionTable->item(functionTable->currentRow(),2);
+			Q3CheckTableItem *checkItem=(Q3CheckTableItem*)functionTable->item(functionTable->currentRow(),2);
 			checkItem->setChecked(false);
 		}
 	}
@@ -273,7 +275,7 @@ void GraphWidget::buttonInputSlot(QString text)
 		inputLine->setText(fullText);
 		inputLine->setCursorPosition(cursorPos+text.length());
 		functionTable->setText(functionTable->currentRow(),0,inputLine->text());
-		QCheckTableItem *checkItem=(QCheckTableItem*)functionTable->item(functionTable->currentRow(),2);
+		Q3CheckTableItem *checkItem=(Q3CheckTableItem*)functionTable->item(functionTable->currentRow(),2);
 		checkItem->setChecked(true);
 	
 		

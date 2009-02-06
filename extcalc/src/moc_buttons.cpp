@@ -1,266 +1,164 @@
 /****************************************************************************
-** StandardButtons meta object code from reading C++ file 'buttons.h'
+** Meta object code from reading C++ file 'buttons.h'
 **
-** Created: Fri Jun 6 11:52:50 2008
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
+** Created: Wed Dec 31 16:17:52 2008
+**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#undef QT_NO_COMPAT
 #include "buttons.h"
-#include <qmetaobject.h>
-#include <qapplication.h>
-
-#include <private/qucomextra_p.h>
-#if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
-#error "This file was generated using the moc from 3.3.8b. It"
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'buttons.h' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.4.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
-const char *StandardButtons::className() const
+QT_BEGIN_MOC_NAMESPACE
+static const uint qt_meta_data_StandardButtons[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       3,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      17,   16,   16,   16, 0x05,
+      35,   16,   16,   16, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+      59,   16,   16,   16, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_StandardButtons[] = {
+    "StandardButtons\0\0emitText(QString)\0"
+    "prefChange(Preferences)\0buttonSlot(int)\0"
+};
+
+const QMetaObject StandardButtons::staticMetaObject = {
+    { &Q3ButtonGroup::staticMetaObject, qt_meta_stringdata_StandardButtons,
+      qt_meta_data_StandardButtons, 0 }
+};
+
+const QMetaObject *StandardButtons::metaObject() const
 {
-    return "StandardButtons";
+    return &staticMetaObject;
 }
 
-QMetaObject *StandardButtons::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_StandardButtons( "StandardButtons", &StandardButtons::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString StandardButtons::tr( const char *s, const char *c )
+void *StandardButtons::qt_metacast(const char *_clname)
 {
-    if ( qApp )
-	return qApp->translate( "StandardButtons", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString StandardButtons::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "StandardButtons", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* StandardButtons::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QButtonGroup::staticMetaObject();
-    static const QUParameter param_slot_0[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_0 = {"buttonSlot", 1, param_slot_0 };
-    static const QMetaData slot_tbl[] = {
-	{ "buttonSlot(int)", &slot_0, QMetaData::Public }
-    };
-    static const QUParameter param_signal_0[] = {
-	{ 0, &static_QUType_QString, 0, QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"emitText", 1, param_signal_0 };
-    static const QUParameter param_signal_1[] = {
-	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod signal_1 = {"prefChange", 1, param_signal_1 };
-    static const QMetaData signal_tbl[] = {
-	{ "emitText(QString)", &signal_0, QMetaData::Public },
-	{ "prefChange(Preferences)", &signal_1, QMetaData::Public }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"StandardButtons", parentObject,
-	slot_tbl, 1,
-	signal_tbl, 2,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_StandardButtons.setMetaObject( metaObj );
-    return metaObj;
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_StandardButtons))
+        return static_cast<void*>(const_cast< StandardButtons*>(this));
+    return Q3ButtonGroup::qt_metacast(_clname);
 }
 
-void* StandardButtons::qt_cast( const char* clname )
+int StandardButtons::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    if ( !qstrcmp( clname, "StandardButtons" ) )
-	return this;
-    return QButtonGroup::qt_cast( clname );
-}
-
-// SIGNAL emitText
-void StandardButtons::emitText( QString t0 )
-{
-    activate_signal( staticMetaObject()->signalOffset() + 0, t0 );
-}
-
-#include <qobjectdefs.h>
-#include <qsignalslotimp.h>
-
-// SIGNAL prefChange
-void StandardButtons::prefChange( Preferences t0 )
-{
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 1 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_ptr.set(o+1,&t0);
-    activate_signal( clist, o );
-}
-
-bool StandardButtons::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: buttonSlot((int)static_QUType_int.get(_o+1)); break;
-    default:
-	return QButtonGroup::qt_invoke( _id, _o );
+    _id = Q3ButtonGroup::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: emitText((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 1: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 2: buttonSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        }
+        _id -= 3;
     }
-    return TRUE;
+    return _id;
 }
 
-bool StandardButtons::qt_emit( int _id, QUObject* _o )
+// SIGNAL 0
+void StandardButtons::emitText(QString _t1)
 {
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: emitText((QString)static_QUType_QString.get(_o+1)); break;
-    case 1: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    default:
-	return QButtonGroup::qt_emit(_id,_o);
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+
+// SIGNAL 1
+void StandardButtons::prefChange(Preferences _t1)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 1, _a);
+}
+static const uint qt_meta_data_ExtButtons[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       3,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      12,   11,   11,   11, 0x05,
+      30,   11,   11,   11, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+      54,   11,   11,   11, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_ExtButtons[] = {
+    "ExtButtons\0\0emitText(QString)\0"
+    "prefChange(Preferences)\0buttonSlot(int)\0"
+};
+
+const QMetaObject ExtButtons::staticMetaObject = {
+    { &Q3ButtonGroup::staticMetaObject, qt_meta_stringdata_ExtButtons,
+      qt_meta_data_ExtButtons, 0 }
+};
+
+const QMetaObject *ExtButtons::metaObject() const
+{
+    return &staticMetaObject;
+}
+
+void *ExtButtons::qt_metacast(const char *_clname)
+{
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_ExtButtons))
+        return static_cast<void*>(const_cast< ExtButtons*>(this));
+    return Q3ButtonGroup::qt_metacast(_clname);
+}
+
+int ExtButtons::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = Q3ButtonGroup::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: emitText((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 1: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 2: buttonSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        }
+        _id -= 3;
     }
-    return TRUE;
+    return _id;
 }
-#ifndef QT_NO_PROPERTIES
 
-bool StandardButtons::qt_property( int id, int f, QVariant* v)
+// SIGNAL 0
+void ExtButtons::emitText(QString _t1)
 {
-    return QButtonGroup::qt_property( id, f, v);
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
-bool StandardButtons::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
-
-
-const char *ExtButtons::className() const
+// SIGNAL 1
+void ExtButtons::prefChange(Preferences _t1)
 {
-    return "ExtButtons";
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
-
-QMetaObject *ExtButtons::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_ExtButtons( "ExtButtons", &ExtButtons::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString ExtButtons::tr( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "ExtButtons", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString ExtButtons::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "ExtButtons", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* ExtButtons::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QButtonGroup::staticMetaObject();
-    static const QUParameter param_slot_0[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_0 = {"buttonSlot", 1, param_slot_0 };
-    static const QMetaData slot_tbl[] = {
-	{ "buttonSlot(int)", &slot_0, QMetaData::Public }
-    };
-    static const QUParameter param_signal_0[] = {
-	{ 0, &static_QUType_QString, 0, QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"emitText", 1, param_signal_0 };
-    static const QUParameter param_signal_1[] = {
-	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod signal_1 = {"prefChange", 1, param_signal_1 };
-    static const QMetaData signal_tbl[] = {
-	{ "emitText(QString)", &signal_0, QMetaData::Public },
-	{ "prefChange(Preferences)", &signal_1, QMetaData::Public }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"ExtButtons", parentObject,
-	slot_tbl, 1,
-	signal_tbl, 2,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_ExtButtons.setMetaObject( metaObj );
-    return metaObj;
-}
-
-void* ExtButtons::qt_cast( const char* clname )
-{
-    if ( !qstrcmp( clname, "ExtButtons" ) )
-	return this;
-    return QButtonGroup::qt_cast( clname );
-}
-
-// SIGNAL emitText
-void ExtButtons::emitText( QString t0 )
-{
-    activate_signal( staticMetaObject()->signalOffset() + 0, t0 );
-}
-
-// SIGNAL prefChange
-void ExtButtons::prefChange( Preferences t0 )
-{
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 1 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_ptr.set(o+1,&t0);
-    activate_signal( clist, o );
-}
-
-bool ExtButtons::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: buttonSlot((int)static_QUType_int.get(_o+1)); break;
-    default:
-	return QButtonGroup::qt_invoke( _id, _o );
-    }
-    return TRUE;
-}
-
-bool ExtButtons::qt_emit( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: emitText((QString)static_QUType_QString.get(_o+1)); break;
-    case 1: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    default:
-	return QButtonGroup::qt_emit(_id,_o);
-    }
-    return TRUE;
-}
-#ifndef QT_NO_PROPERTIES
-
-bool ExtButtons::qt_property( int id, int f, QVariant* v)
-{
-    return QButtonGroup::qt_property( id, f, v);
-}
-
-bool ExtButtons::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
+QT_END_MOC_NAMESPACE

@@ -6,10 +6,10 @@
 #include <qlineedit.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qinputdialog.h>
 #include <qdir.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qinputdialog.h>
 #include "global.h"
 
@@ -25,7 +25,7 @@
 class GraphSetDialog :public QWidget
 {
 	QPushButton*okButton,*cancelButton,*removeButton,*renameButton;
-	QListBox *table;
+	Q3ListBox *table;
 	QLabel*mainLabel;
 	Preferences pref;
 	QDir *graphsDir;

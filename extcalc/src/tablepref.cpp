@@ -25,7 +25,7 @@ void TablePreferences::saveSlot()
 	else if(typeBox->currentText()==TABLEH_STR5)
 		pref.tableType=TABLEPARAMETER;
 	else if(typeBox->currentText()==TABLEH_STR6)
-		pref.tableType=TABLEINEQUAITY;
+		pref.tableType=TABLEINEQUALITY;
 	else if(typeBox->currentText()==TABLEH_STR7)
 		pref.tableType=TABLE3D;
 	else if(typeBox->currentText()==TABLEH_STR9)

@@ -15,6 +15,11 @@ any later version.
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "graphout.h"
 #include <pthread.h>
+//Added by qt3to4:
+#include <QCustomEvent>
+#include <QPixmap>
+#include <QMouseEvent>
+#include <QWheelEvent>
 
 ////////////////////////////////////////initializeGL/////////////////////////////////////////
 
@@ -51,12 +56,37 @@ void GraphOutput::initializeGL()
 	glDisable(GL_TEXTURE_2D);
 	if(drawScreenshot)
 	{
-		if(hasStatisticsObjects)
-			emit statisticsRedrawSignal();
-		if(hasSolveObjects)
-			emit solveRedrawSignal();
+		int type;
+		//start processing
+		for(int c=0; c<20; c++)
+		{
+			if(pref.activeFunctions[c])
+			{
+				type=pref.functionTypes[c];
+				if(type==GRAPHIEGE)
+					type=GRAPHIEG;
+				else if(type==GRAPHIELE)
+					type=GRAPHIEL;
+				processFunction(pref.functions[c],"",type,pref.functionColors[c],pref.logicFunctions[c],pref.dynamicFunctions[c]);
+				if(type==GRAPHIEL || type==GRAPHIEG)
+					processFunction(pref.functions[c],"",GRAPHSTD,QColor(0,0,0),pref.logicFunctions[c],pref.dynamicFunctions[c]);
+			}
+		}
 		
-		clearGL();
+		//graph calculation (without multithreading)
+		for(int c=0; c<objectInfo.GetLen(); c++)
+		{
+			if(!objectInfo[c].processed)
+			{
+				processGraph(c,threadData,vars);
+				objectInfo[c].processed=true;
+				//objectInfo[c].glCreated
+			}
+		}
+
+		//create gl lists
+		createGLLists();
+		paintGL();
 	}
 }
 
@@ -396,80 +426,76 @@ void GraphOutput::mouseMoveEvent(QMouseEvent*e)
 		int width=geometry().right()-geometry().left();
 		int height=geometry().bottom()-geometry().top();
 
-		previewPen=drawPen*width/TEXTURESIZE;
-		if(previewPen<1)
-			previewPen=1;
-		QPen pen(drawColor,previewPen);
+		QPen pen(drawColor,drawPen);
 		pen.setCapStyle(Qt::RoundCap);
 
-		switch(drawState)
+		if(drawState!=DRAWNONE)
 		{
-			case DRAWNONE:
-				break;
-			case DRAWFREE:
+			switch(drawState)
 			{
-				draw->begin(this);
-				if(drawColor.red()==0 && drawColor.green()==0 && drawColor.blue()==0)
-					pen.setColor(QColor(255,255,255));
-				draw->setPen(pen);
-				draw->drawLine(mouseX,mouseY,e->x(),e->y());
-				draw->end();
-				if(drawColor.red()==0 && drawColor.green()==0 && drawColor.blue()==0)
-					pen.setColor(QColor(0,0,0));
+				case DRAWFREE:
+				{
+			/*		draw->begin(this);
+					if(drawColor.red()==0 && drawColor.green()==0 && drawColor.blue()==0)
+						pen.setColor(QColor(255,255,255));
+					draw->setPen(pen);
+					draw->drawLine(mouseX,mouseY,e->x(),e->y());
+					draw->end();
+				*/	if(drawColor.red()==0 && drawColor.green()==0 && drawColor.blue()==0)
+						pen.setColor(QColor(0,0,0));
+	
+					pen.setWidth(drawPen);
+					draw->begin(drawMap);
+					draw->setPen(pen);
+					draw->drawLine(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width,e->y()*TEXTURESIZE/height);
+					draw->end();
+					mouseX=e->x();
+					mouseY=e->y();
 
-				pen.setWidth(drawPen);
-				draw->begin(drawMap);
-				draw->setPen(pen);
-				draw->drawLine(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width,e->y()*TEXTURESIZE/height);
-				draw->end();
-				mouseX=e->x();
-				mouseY=e->y();
-				break; 
+					break; 
+				}
+				case DRAWLINE:
+				{
+					(*drawMap)=backupDrawMap->copy();
+					draw->begin(drawMap);
+					draw->setPen(pen);
+					draw->drawLine(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width,e->y()*TEXTURESIZE/height);
+					draw->end();
+					break;
+				}
+				case DRAWRECT:
+				{
+					(*drawMap)=backupDrawMap->copy();
+					draw->begin(drawMap);
+					draw->setPen(pen);
+					draw->drawRect(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width-mouseX*TEXTURESIZE/width,e->y()*TEXTURESIZE/height-mouseY*TEXTURESIZE/height);
+					draw->end();
+					break;
+				}
+				case DRAWCIRCLE:
+				{
+					(*drawMap)=backupDrawMap->copy();
+					draw->begin(drawMap);
+					draw->setPen(pen);
+					draw->drawEllipse(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width-mouseX*TEXTURESIZE/width,e->y()*TEXTURESIZE/height-mouseY*TEXTURESIZE/height);
+					draw->end();
+					break;
+				}
+				case DRAWTEXT:
+				{
+					(*drawMap)=backupDrawMap->copy();
+					QFont drawFont=draw->font();
+					draw->begin(drawMap);
+					draw->setPen(pen);
+					drawFont.setPixelSize(8+3*drawPen);
+					draw->setFont(drawFont);
+					draw->drawText(e->x()*TEXTURESIZE/width,e->y()*TEXTURESIZE/height,drawString);
+					draw->end();
+					break;
+				}
 			}
-			case DRAWLINE:
-			{
-				repaint();
-				
-				draw->begin(this);
-				draw->setPen(pen);
-				draw->drawLine(mouseX,mouseY,e->x(),e->y());
-				draw->end();
-				break;
-			}
-			case DRAWRECT:
-			{
-				repaint();
-				draw->begin(this);
-				draw->setPen(pen);
-				draw->drawRect(mouseX,mouseY,e->x()-mouseX,e->y()-mouseY);
-				draw->end();
-				break;
-			}
-			case DRAWCIRCLE:
-			{
-				repaint();
-				draw->begin(this);
-				draw->setPen(pen);
-				draw->drawEllipse(mouseX,mouseY,e->x()-mouseX,e->y()-mouseY);
-				draw->end();
-				break;
-			}
-			case DRAWTEXT:
-			{
-				repaint();
-				QFont drawFont=draw->font();
-				int oldWidth=drawFont.pixelSize();
-				drawFont.setPixelSize((8+3*drawPen)*width/TEXTURESIZE);
-				draw->begin(this);
-				draw->setFont(drawFont);
-				draw->setPen(pen);
-				draw->drawText(e->x(),e->y(),drawString);
-				drawFont.setPixelSize(oldWidth);
-				draw->setFont(drawFont);
-				draw->end();
-				
-				break;
-			}
+			generateTexture();
+			repaint();
 		}
 	}
 	else if(e->state() == Qt::RightButton)
@@ -546,13 +572,13 @@ void GraphOutput::mousePressEvent(QMouseEvent*e)
 		{
 			int width=geometry().right()-geometry().left();
 			int height=geometry().bottom()-geometry().top();
-			
+
 			previewPen=drawPen*width/TEXTURESIZE;
 			if(previewPen<1)
 				previewPen=1;
 			QPen pen(drawColor,previewPen);
 			pen.setCapStyle(Qt::RoundCap);
-			
+
 			if(backMap[BACKSTEPS-1]!=NULL)
 				delete backMap[BACKSTEPS-1];
 			for(int c=BACKSTEPS-1; c>0; c--)
@@ -560,17 +586,10 @@ void GraphOutput::mousePressEvent(QMouseEvent*e)
 			backMap[0]=drawMap;
 			drawMap=new QPixmap(drawMap[0]);
 			backCursor=0;
-			
+
 			switch(drawState)
 			{
 				case DRAWFREE:
-					
-					draw->begin(this);
-					if(drawColor.red()==0 && drawColor.green()==0 && drawColor.blue()==0)
-						pen.setColor(QColor(255,255,255));
-					draw->setPen(pen);
-					draw->drawPoint(e->x(),e->y());
-					draw->end();
 					if(drawColor.red()==0 && drawColor.green()==0 && drawColor.blue()==0)
 						pen.setColor(drawColor);
 					
@@ -582,15 +601,14 @@ void GraphOutput::mousePressEvent(QMouseEvent*e)
 					break;
 				case DRAWLINE:
 				case DRAWRECT:
+				case DRAWTEXT:
 				case DRAWCIRCLE:
-				//	if(overlayMap!=NULL)
-				//		delete overlayMap;
-				//	overlayMap=new QPixmap(*drawMap);
+					backupDrawMap=new QPixmap(drawMap[0]);
 					break;
 			}
 			
 			generateTexture();
-		//	repaint();
+			repaint();
 		}
 		else if(pref.graphType==GRAPHSTD)
 		{
@@ -657,18 +675,21 @@ void GraphOutput::mouseReleaseEvent(QMouseEvent*e)
 					draw->setPen(pen);
 					draw->drawLine(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width,e->y()*TEXTURESIZE/height);
 					draw->end();
+					delete backupDrawMap;
 					break;
 				case DRAWRECT:
 					draw->begin(drawMap);
 					draw->setPen(pen);
 					draw->drawRect(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width-mouseX*TEXTURESIZE/width,e->y()*TEXTURESIZE/height-mouseY*TEXTURESIZE/height);
 					draw->end();
+					delete backupDrawMap;
 					break;
 				case DRAWCIRCLE:
 					draw->begin(drawMap);
 					draw->setPen(pen);
 					draw->drawEllipse(mouseX*TEXTURESIZE/width,mouseY*TEXTURESIZE/height,e->x()*TEXTURESIZE/width-mouseX*TEXTURESIZE/width,e->y()*TEXTURESIZE/height-mouseY*TEXTURESIZE/height);
 					draw->end();
+					delete backupDrawMap;
 					break;
 				case DRAWTEXT:
 				{
@@ -685,7 +706,7 @@ void GraphOutput::mouseReleaseEvent(QMouseEvent*e)
 					drawFont.setPixelSize(oldWidth);
 					draw->setFont(drawFont);
 					draw->end();
-					
+					delete backupDrawMap;
 					break;
 				}
 			}
@@ -1944,7 +1965,7 @@ void GraphOutput::createGLLists()
 			objectInfo[c].glObject=generateGLList(c);
 		}
 	}
-	repaint();
+//	repaint();
 }
 
 void GraphOutput::calculateGraphData()
@@ -2717,8 +2738,8 @@ void GraphOutput::screenshotSlot(int x, int y)
 	scr=renderPixmap(x,y,false);
 	emit screenshotSignal(&scr);
 	drawScreenshot=false;
-	initializeGL();
-	repaint();
+//	initializeGL();
+//	repaint();
 
 }
 

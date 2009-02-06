@@ -14,6 +14,8 @@ any later version.
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "matrixwidget.h"
+//Added by qt3to4:
+#include <QResizeEvent>
 
 
 void MatrixWidget::resizeEvent(QResizeEvent*)
@@ -329,7 +331,7 @@ void MatrixWidget::resetInterface()
 
 void MatrixWidget::setHeader(CalcTable*table)
 {
-	QHeader*tableHeader=table->horizontalHeader();
+	Q3Header*tableHeader=table->horizontalHeader();
 	for(int c=0; c<tableHeader->count(); c++)
 		tableHeader->setLabel(c,QString::number(c));
 	tableHeader->adjustHeaderSize();

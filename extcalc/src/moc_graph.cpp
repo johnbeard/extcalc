@@ -1,350 +1,218 @@
 /****************************************************************************
-** GraphArea meta object code from reading C++ file 'graph.h'
+** Meta object code from reading C++ file 'graph.h'
 **
-** Created: Sun Jun 8 17:17:12 2008
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
+** Created: Fri Feb 6 12:52:18 2009
+**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#undef QT_NO_COMPAT
 #include "graph.h"
-#include <qmetaobject.h>
-#include <qapplication.h>
-
-#include <private/qucomextra_p.h>
-#if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
-#error "This file was generated using the moc from 3.3.8b. It"
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'graph.h' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.4.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
-const char *GraphArea::className() const
+QT_BEGIN_MOC_NAMESPACE
+static const uint qt_meta_data_GraphArea[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       1,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      11,   10,   10,   10, 0x05,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_GraphArea[] = {
+    "GraphArea\0\0sizeChanged()\0"
+};
+
+const QMetaObject GraphArea::staticMetaObject = {
+    { &QWidget::staticMetaObject, qt_meta_stringdata_GraphArea,
+      qt_meta_data_GraphArea, 0 }
+};
+
+const QMetaObject *GraphArea::metaObject() const
 {
-    return "GraphArea";
+    return &staticMetaObject;
 }
 
-QMetaObject *GraphArea::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_GraphArea( "GraphArea", &GraphArea::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString GraphArea::tr( const char *s, const char *c )
+void *GraphArea::qt_metacast(const char *_clname)
 {
-    if ( qApp )
-	return qApp->translate( "GraphArea", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString GraphArea::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "GraphArea", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* GraphArea::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QWidget::staticMetaObject();
-    static const QUMethod signal_0 = {"sizeChanged", 0, 0 };
-    static const QMetaData signal_tbl[] = {
-	{ "sizeChanged()", &signal_0, QMetaData::Protected }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"GraphArea", parentObject,
-	0, 0,
-	signal_tbl, 1,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_GraphArea.setMetaObject( metaObj );
-    return metaObj;
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_GraphArea))
+        return static_cast<void*>(const_cast< GraphArea*>(this));
+    return QWidget::qt_metacast(_clname);
 }
 
-void* GraphArea::qt_cast( const char* clname )
+int GraphArea::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    if ( !qstrcmp( clname, "GraphArea" ) )
-	return this;
-    return QWidget::qt_cast( clname );
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: sizeChanged(); break;
+        }
+        _id -= 1;
+    }
+    return _id;
 }
 
-// SIGNAL sizeChanged
+// SIGNAL 0
 void GraphArea::sizeChanged()
 {
-    activate_signal( staticMetaObject()->signalOffset() + 0 );
+    QMetaObject::activate(this, &staticMetaObject, 0, 0);
+}
+static const uint qt_meta_data_GraphWidget[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+      22,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      13,   12,   12,   12, 0x05,
+      37,   12,   12,   12, 0x05,
+      61,   58,   12,   12, 0x05,
+     101,   12,   12,   12, 0x05,
+     121,   12,   12,   12, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+     154,  146,   12,   12, 0x0a,
+     184,   12,   12,   12, 0x0a,
+     207,   12,   12,   12, 0x0a,
+     218,   12,   12,   12, 0x0a,
+     233,   12,   12,   12, 0x0a,
+     247,   12,   12,   12, 0x0a,
+     273,   12,   12,   12, 0x0a,
+     293,   12,   12,   12, 0x0a,
+     318,   12,   12,   12, 0x0a,
+     337,   12,   12,   12, 0x0a,
+     351,   12,   12,   12, 0x0a,
+     365,   12,   12,   12, 0x0a,
+     381,   12,   12,   12, 0x0a,
+     400,  398,   12,   12, 0x0a,
+     424,   12,   12,   12, 0x0a,
+     462,  454,   12,   12, 0x0a,
+     489,  483,   12,   12, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_GraphWidget[] = {
+    "GraphWidget\0\0prefChange(Preferences)\0"
+    "solveTypeSignal(int)\0,,\0"
+    "drawPointsSignal(long double*,int,bool)\0"
+    "removeLinesSignal()\0statisticsRedrawSignal()\0"
+    "row,col\0selectionChangedSlot(int,int)\0"
+    "tableEditSlot(QString)\0drawSlot()\0"
+    "maximizeSlot()\0modeSlot(int)\0"
+    "inputTextChanged(QString)\0inputTextFinished()\0"
+    "buttonInputSlot(QString)\0solveTypeSlot(int)\0"
+    "editSlot(int)\0catalogSlot()\0graphSizeSlot()\0"
+    "dockWindowSlot()\0,\0inequalitySlot(int,int)\0"
+    "graphProcessingFinishedSlot()\0newPref\0"
+    "getPref(Preferences)\0fType\0"
+    "functionTypeSlot(int)\0"
+};
+
+const QMetaObject GraphWidget::staticMetaObject = {
+    { &QWidget::staticMetaObject, qt_meta_stringdata_GraphWidget,
+      qt_meta_data_GraphWidget, 0 }
+};
+
+const QMetaObject *GraphWidget::metaObject() const
+{
+    return &staticMetaObject;
 }
 
-bool GraphArea::qt_invoke( int _id, QUObject* _o )
+void *GraphWidget::qt_metacast(const char *_clname)
 {
-    return QWidget::qt_invoke(_id,_o);
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_GraphWidget))
+        return static_cast<void*>(const_cast< GraphWidget*>(this));
+    return QWidget::qt_metacast(_clname);
 }
 
-bool GraphArea::qt_emit( int _id, QUObject* _o )
+int GraphWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: sizeChanged(); break;
-    default:
-	return QWidget::qt_emit(_id,_o);
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 1: solveTypeSignal((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 2: drawPointsSignal((*reinterpret_cast< long double*(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
+        case 3: removeLinesSignal(); break;
+        case 4: statisticsRedrawSignal(); break;
+        case 5: selectionChangedSlot((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 6: tableEditSlot((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 7: drawSlot(); break;
+        case 8: maximizeSlot(); break;
+        case 9: modeSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 10: inputTextChanged((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 11: inputTextFinished(); break;
+        case 12: buttonInputSlot((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 13: solveTypeSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 14: editSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 15: catalogSlot(); break;
+        case 16: graphSizeSlot(); break;
+        case 17: dockWindowSlot(); break;
+        case 18: inequalitySlot((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 19: graphProcessingFinishedSlot(); break;
+        case 20: getPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 21: functionTypeSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        }
+        _id -= 22;
     }
-    return TRUE;
+    return _id;
 }
-#ifndef QT_NO_PROPERTIES
 
-bool GraphArea::qt_property( int id, int f, QVariant* v)
+// SIGNAL 0
+void GraphWidget::prefChange(Preferences _t1)
 {
-    return QWidget::qt_property( id, f, v);
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
-bool GraphArea::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
-
-
-const char *GraphWidget::className() const
+// SIGNAL 1
+void GraphWidget::solveTypeSignal(int _t1)
 {
-    return "GraphWidget";
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 
-QMetaObject *GraphWidget::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_GraphWidget( "GraphWidget", &GraphWidget::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString GraphWidget::tr( const char *s, const char *c )
+// SIGNAL 2
+void GraphWidget::drawPointsSignal(long double * _t1, int _t2, bool _t3)
 {
-    if ( qApp )
-	return qApp->translate( "GraphWidget", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString GraphWidget::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "GraphWidget", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* GraphWidget::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QWidget::staticMetaObject();
-    static const QUParameter param_slot_0[] = {
-	{ "row", &static_QUType_int, 0, QUParameter::In },
-	{ "col", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_0 = {"selectionChangedSlot", 2, param_slot_0 };
-    static const QUParameter param_slot_1[] = {
-	{ 0, &static_QUType_QString, 0, QUParameter::In }
-    };
-    static const QUMethod slot_1 = {"tableEditSlot", 1, param_slot_1 };
-    static const QUMethod slot_2 = {"drawSlot", 0, 0 };
-    static const QUMethod slot_3 = {"maximizeSlot", 0, 0 };
-    static const QUParameter param_slot_4[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_4 = {"modeSlot", 1, param_slot_4 };
-    static const QUParameter param_slot_5[] = {
-	{ 0, &static_QUType_QString, 0, QUParameter::In }
-    };
-    static const QUMethod slot_5 = {"inputTextChanged", 1, param_slot_5 };
-    static const QUMethod slot_6 = {"inputTextFinished", 0, 0 };
-    static const QUParameter param_slot_7[] = {
-	{ 0, &static_QUType_QString, 0, QUParameter::In }
-    };
-    static const QUMethod slot_7 = {"buttonInputSlot", 1, param_slot_7 };
-    static const QUParameter param_slot_8[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_8 = {"solveTypeSlot", 1, param_slot_8 };
-    static const QUParameter param_slot_9[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_9 = {"editSlot", 1, param_slot_9 };
-    static const QUMethod slot_10 = {"catalogSlot", 0, 0 };
-    static const QUMethod slot_11 = {"graphSizeSlot", 0, 0 };
-    static const QUMethod slot_12 = {"dockWindowSlot", 0, 0 };
-    static const QUParameter param_slot_13[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In },
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_13 = {"inequalitySlot", 2, param_slot_13 };
-    static const QUMethod slot_14 = {"graphProcessingFinishedSlot", 0, 0 };
-    static const QUParameter param_slot_15[] = {
-	{ "newPref", &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod slot_15 = {"getPref", 1, param_slot_15 };
-    static const QUParameter param_slot_16[] = {
-	{ "fType", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_16 = {"functionTypeSlot", 1, param_slot_16 };
-    static const QMetaData slot_tbl[] = {
-	{ "selectionChangedSlot(int,int)", &slot_0, QMetaData::Public },
-	{ "tableEditSlot(QString)", &slot_1, QMetaData::Public },
-	{ "drawSlot()", &slot_2, QMetaData::Public },
-	{ "maximizeSlot()", &slot_3, QMetaData::Public },
-	{ "modeSlot(int)", &slot_4, QMetaData::Public },
-	{ "inputTextChanged(const QString&)", &slot_5, QMetaData::Public },
-	{ "inputTextFinished()", &slot_6, QMetaData::Public },
-	{ "buttonInputSlot(QString)", &slot_7, QMetaData::Public },
-	{ "solveTypeSlot(int)", &slot_8, QMetaData::Public },
-	{ "editSlot(int)", &slot_9, QMetaData::Public },
-	{ "catalogSlot()", &slot_10, QMetaData::Public },
-	{ "graphSizeSlot()", &slot_11, QMetaData::Public },
-	{ "dockWindowSlot()", &slot_12, QMetaData::Public },
-	{ "inequalitySlot(int,int)", &slot_13, QMetaData::Public },
-	{ "graphProcessingFinishedSlot()", &slot_14, QMetaData::Public },
-	{ "getPref(Preferences)", &slot_15, QMetaData::Public },
-	{ "functionTypeSlot(int)", &slot_16, QMetaData::Public }
-    };
-    static const QUParameter param_signal_0[] = {
-	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"prefChange", 1, param_signal_0 };
-    static const QUParameter param_signal_1[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod signal_1 = {"solveTypeSignal", 1, param_signal_1 };
-    static const QUParameter param_signal_2[] = {
-	{ 0, &static_QUType_ptr, "long double", QUParameter::In },
-	{ 0, &static_QUType_int, 0, QUParameter::In },
-	{ 0, &static_QUType_bool, 0, QUParameter::In }
-    };
-    static const QUMethod signal_2 = {"drawPointsSignal", 3, param_signal_2 };
-    static const QUMethod signal_3 = {"removeLinesSignal", 0, 0 };
-    static const QUMethod signal_4 = {"statisticsRedrawSignal", 0, 0 };
-    static const QMetaData signal_tbl[] = {
-	{ "prefChange(Preferences)", &signal_0, QMetaData::Protected },
-	{ "solveTypeSignal(int)", &signal_1, QMetaData::Protected },
-	{ "drawPointsSignal(long double*,int,bool)", &signal_2, QMetaData::Protected },
-	{ "removeLinesSignal()", &signal_3, QMetaData::Protected },
-	{ "statisticsRedrawSignal()", &signal_4, QMetaData::Protected }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"GraphWidget", parentObject,
-	slot_tbl, 17,
-	signal_tbl, 5,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_GraphWidget.setMetaObject( metaObj );
-    return metaObj;
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)) };
+    QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 
-void* GraphWidget::qt_cast( const char* clname )
-{
-    if ( !qstrcmp( clname, "GraphWidget" ) )
-	return this;
-    return QWidget::qt_cast( clname );
-}
-
-#include <qobjectdefs.h>
-#include <qsignalslotimp.h>
-
-// SIGNAL prefChange
-void GraphWidget::prefChange( Preferences t0 )
-{
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 0 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_ptr.set(o+1,&t0);
-    activate_signal( clist, o );
-}
-
-// SIGNAL solveTypeSignal
-void GraphWidget::solveTypeSignal( int t0 )
-{
-    activate_signal( staticMetaObject()->signalOffset() + 1, t0 );
-}
-
-// SIGNAL drawPointsSignal
-void GraphWidget::drawPointsSignal( long double* t0, int t1, bool t2 )
-{
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 2 );
-    if ( !clist )
-	return;
-    QUObject o[4];
-    static_QUType_ptr.set(o+1,t0);
-    static_QUType_int.set(o+2,t1);
-    static_QUType_bool.set(o+3,t2);
-    activate_signal( clist, o );
-}
-
-// SIGNAL removeLinesSignal
+// SIGNAL 3
 void GraphWidget::removeLinesSignal()
 {
-    activate_signal( staticMetaObject()->signalOffset() + 3 );
+    QMetaObject::activate(this, &staticMetaObject, 3, 0);
 }
 
-// SIGNAL statisticsRedrawSignal
+// SIGNAL 4
 void GraphWidget::statisticsRedrawSignal()
 {
-    activate_signal( staticMetaObject()->signalOffset() + 4 );
+    QMetaObject::activate(this, &staticMetaObject, 4, 0);
 }
-
-bool GraphWidget::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: selectionChangedSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
-    case 1: tableEditSlot((QString)static_QUType_QString.get(_o+1)); break;
-    case 2: drawSlot(); break;
-    case 3: maximizeSlot(); break;
-    case 4: modeSlot((int)static_QUType_int.get(_o+1)); break;
-    case 5: inputTextChanged((const QString&)static_QUType_QString.get(_o+1)); break;
-    case 6: inputTextFinished(); break;
-    case 7: buttonInputSlot((QString)static_QUType_QString.get(_o+1)); break;
-    case 8: solveTypeSlot((int)static_QUType_int.get(_o+1)); break;
-    case 9: editSlot((int)static_QUType_int.get(_o+1)); break;
-    case 10: catalogSlot(); break;
-    case 11: graphSizeSlot(); break;
-    case 12: dockWindowSlot(); break;
-    case 13: inequalitySlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
-    case 14: graphProcessingFinishedSlot(); break;
-    case 15: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 16: functionTypeSlot((int)static_QUType_int.get(_o+1)); break;
-    default:
-	return QWidget::qt_invoke( _id, _o );
-    }
-    return TRUE;
-}
-
-bool GraphWidget::qt_emit( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 1: solveTypeSignal((int)static_QUType_int.get(_o+1)); break;
-    case 2: drawPointsSignal((long double*)static_QUType_ptr.get(_o+1),(int)static_QUType_int.get(_o+2),(bool)static_QUType_bool.get(_o+3)); break;
-    case 3: removeLinesSignal(); break;
-    case 4: statisticsRedrawSignal(); break;
-    default:
-	return QWidget::qt_emit(_id,_o);
-    }
-    return TRUE;
-}
-#ifndef QT_NO_PROPERTIES
-
-bool GraphWidget::qt_property( int id, int f, QVariant* v)
-{
-    return QWidget::qt_property( id, f, v);
-}
-
-bool GraphWidget::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
+QT_END_MOC_NAMESPACE

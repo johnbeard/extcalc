@@ -21,7 +21,7 @@ Graphical results were shown by the graphics window class.
 #define STATISTICS_H
 
 
-#include <qwidget.h>
+#include <QWidget>
 #include <qlineedit.h>
 #include <qcombobox.h>
 #include <qclipboard.h>
@@ -30,11 +30,14 @@ Graphical results were shown by the graphics window class.
 #include <qlabel.h>
 #include <qsplitter.h>
 #include <qpushbutton.h>
-#include <qtoolbar.h>
-#include <qdockarea.h>
-#include <qiconset.h>
-#include <qpopupmenu.h>
+#include <q3toolbar.h>
+#include <q3dockarea.h>
+#include <qicon.h>
+#include <q3popupmenu.h>
 #include <qtooltip.h>
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <QPixmap>
 #include "functiontable.h"
 #include "buttons.h"
 #include "catalog.h"
@@ -66,10 +69,10 @@ class StatisticsWidget :public QWidget
 	Variable*vars;
 	FunctionTable *functionTable;
 	StandardButtons *standardButtons;
-	QTable *lists;
+	Q3Table *lists;
 	QSplitter *horzSplit,*vertSplit;
-	QToolBar*toolBar;
-	QDockArea*dockArea;
+	Q3ToolBar*toolBar;
+	Q3DockArea*dockArea;
 	QPixmap *minimizeIcon,*maximizeIcon,*printIcon,*catalogIcon;
 	Catalog *catalog;
 	QComboBox *typeBox, *functionTypeBox,*copyFunction,*listNumberBox;
@@ -109,14 +112,14 @@ class StatisticsWidget :public QWidget
 			printIcon=new QPixmap(INSTALLDIR+QString("/data/print.png"));
 			catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
 		
-			dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
-			toolBar=new QToolBar();
+			dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
+			toolBar=new Q3ToolBar();
 			dockArea->moveDockWindow(toolBar);
 			
 			drawButton=new QPushButton(*printIcon,STATISTICSH_STR14,toolBar);
 			drawButton->setFixedHeight(25);
 			maximizeButton=new QPushButton(*maximizeIcon,"",toolBar);
-			lists=new QTable(horzSplit);
+			lists=new Q3Table(horzSplit);
 			lists->setNumRows(1);
 			lists->setNumCols(2*LISTCOUNT);
 			typeBox=new QComboBox(toolBar);

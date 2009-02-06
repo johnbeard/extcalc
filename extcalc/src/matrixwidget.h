@@ -19,19 +19,23 @@ Includes the matrix/vector window GUI and all needed math. functions.
 #define MATRIXWIDGET_H
 
 
-#include <qwidget.h>
+#include <QWidget>
 #include <qlineedit.h>
 #include <qcombobox.h>
 #include <qclipboard.h>
 #include <qapplication.h>
 #include <qspinbox.h>
 #include <qlabel.h>
-#include <qtoolbar.h>
-#include <qdockarea.h>
-#include <qiconset.h>
-#include <qpopupmenu.h>
+#include <q3toolbar.h>
+#include <q3dockarea.h>
+#include <qicon.h>
+#include <q3popupmenu.h>
 #include <qtooltip.h>
 #include <qsplitter.h>
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <Q3ValueList>
+#include <QPixmap>
 #include "buttons.h"
 #include "calcinput.h"
 #include "calctable.h"
@@ -58,8 +62,8 @@ class MatrixWidget :public QWidget
 	QLineEdit *input1,*input2,*input3;
 	QPushButton *calcButton,*sizeButton,*catalogButton;
 
-	QToolBar*toolBar;
-	QDockArea*dockArea;
+	Q3ToolBar*toolBar;
+	Q3DockArea*dockArea;
 	QPixmap *catalogIcon;
 	Catalog *catalog;
 	QSplitter *split;
@@ -85,14 +89,14 @@ class MatrixWidget :public QWidget
 			outputTable=new CalcTable(split,0,true);
 			outputTable->setNumRows(10);
 			outputTable->setNumCols(4);
-			
-			
+
+
 			catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX | CATMATRIX,this);
 	
 			catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
 			
-			dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
-			toolBar=new QToolBar();
+			dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
+			toolBar=new Q3ToolBar();
 			dockArea->moveDockWindow(toolBar);
 			
 			
@@ -108,7 +112,7 @@ class MatrixWidget :public QWidget
 			varTable->horizontalHeader()->setLabel(0,MATRIXWIDGETH_STR1);
 			varTable->horizontalHeader()->setLabel(1,MATRIXWIDGETH_STR2);
 			varTable->horizontalHeader()->setLabel(2,MATRIXWIDGETH_STR3);
-			varTable->setSelectionMode(QTable::SingleRow);
+			varTable->setSelectionMode(Q3Table::SingleRow);
 			varTable->selectRow(currentVar);
 			varTable->setColumnReadOnly(0,true);
 			setVarTable();
@@ -145,7 +149,7 @@ class MatrixWidget :public QWidget
 			matrixBox=new QComboBox(this);
 			vectorBox=new QComboBox(this);
 			
-			QValueList<int> s = split->sizes();
+			Q3ValueList<int> s = split->sizes();
 			s[0]=150;
 			s[1]=450;
 			split->setSizes(s);

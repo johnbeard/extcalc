@@ -1,148 +1,94 @@
 /****************************************************************************
-** CalcInput meta object code from reading C++ file 'calcinput.h'
+** Meta object code from reading C++ file 'calcinput.h'
 **
-** Created: Fri Jun 6 11:52:50 2008
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
+** Created: Wed Dec 31 16:18:01 2008
+**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#undef QT_NO_COMPAT
 #include "calcinput.h"
-#include <qmetaobject.h>
-#include <qapplication.h>
-
-#include <private/qucomextra_p.h>
-#if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
-#error "This file was generated using the moc from 3.3.8b. It"
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'calcinput.h' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.4.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
-const char *CalcInput::className() const
+QT_BEGIN_MOC_NAMESPACE
+static const uint qt_meta_data_CalcInput[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       4,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      11,   10,   10,   10, 0x05,
+      35,   10,   10,   10, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+      57,   48,   10,   10, 0x0a,
+      82,   77,   10,   10, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_CalcInput[] = {
+    "CalcInput\0\0prefChange(Preferences)\0"
+    "calcSignal()\0para,pos\0cursorSlot(int,int)\0"
+    "item\0menuSlot(int)\0"
+};
+
+const QMetaObject CalcInput::staticMetaObject = {
+    { &Q3TextEdit::staticMetaObject, qt_meta_stringdata_CalcInput,
+      qt_meta_data_CalcInput, 0 }
+};
+
+const QMetaObject *CalcInput::metaObject() const
 {
-    return "CalcInput";
+    return &staticMetaObject;
 }
 
-QMetaObject *CalcInput::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_CalcInput( "CalcInput", &CalcInput::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString CalcInput::tr( const char *s, const char *c )
+void *CalcInput::qt_metacast(const char *_clname)
 {
-    if ( qApp )
-	return qApp->translate( "CalcInput", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString CalcInput::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "CalcInput", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* CalcInput::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QTextEdit::staticMetaObject();
-    static const QUParameter param_slot_0[] = {
-	{ "para", &static_QUType_int, 0, QUParameter::In },
-	{ "pos", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_0 = {"cursorSlot", 2, param_slot_0 };
-    static const QUParameter param_slot_1[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_1 = {"menuSlot", 1, param_slot_1 };
-    static const QMetaData slot_tbl[] = {
-	{ "cursorSlot(int,int)", &slot_0, QMetaData::Public },
-	{ "menuSlot(int)", &slot_1, QMetaData::Public }
-    };
-    static const QUParameter param_signal_0[] = {
-	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"prefChange", 1, param_signal_0 };
-    static const QUMethod signal_1 = {"calcSignal", 0, 0 };
-    static const QMetaData signal_tbl[] = {
-	{ "prefChange(Preferences)", &signal_0, QMetaData::Public },
-	{ "calcSignal()", &signal_1, QMetaData::Public }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"CalcInput", parentObject,
-	slot_tbl, 2,
-	signal_tbl, 2,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_CalcInput.setMetaObject( metaObj );
-    return metaObj;
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_CalcInput))
+        return static_cast<void*>(const_cast< CalcInput*>(this));
+    return Q3TextEdit::qt_metacast(_clname);
 }
 
-void* CalcInput::qt_cast( const char* clname )
+int CalcInput::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    if ( !qstrcmp( clname, "CalcInput" ) )
-	return this;
-    return QTextEdit::qt_cast( clname );
+    _id = Q3TextEdit::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 1: calcSignal(); break;
+        case 2: cursorSlot((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 3: menuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        }
+        _id -= 4;
+    }
+    return _id;
 }
 
-#include <qobjectdefs.h>
-#include <qsignalslotimp.h>
-
-// SIGNAL prefChange
-void CalcInput::prefChange( Preferences t0 )
+// SIGNAL 0
+void CalcInput::prefChange(Preferences _t1)
 {
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 0 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_ptr.set(o+1,&t0);
-    activate_signal( clist, o );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
-// SIGNAL calcSignal
+// SIGNAL 1
 void CalcInput::calcSignal()
 {
-    activate_signal( staticMetaObject()->signalOffset() + 1 );
+    QMetaObject::activate(this, &staticMetaObject, 1, 0);
 }
-
-bool CalcInput::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: cursorSlot((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
-    case 1: menuSlot((int)static_QUType_int.get(_o+1)); break;
-    default:
-	return QTextEdit::qt_invoke( _id, _o );
-    }
-    return TRUE;
-}
-
-bool CalcInput::qt_emit( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 1: calcSignal(); break;
-    default:
-	return QTextEdit::qt_emit(_id,_o);
-    }
-    return TRUE;
-}
-#ifndef QT_NO_PROPERTIES
-
-bool CalcInput::qt_property( int id, int f, QVariant* v)
-{
-    return QTextEdit::qt_property( id, f, v);
-}
-
-bool CalcInput::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
+QT_END_MOC_NAMESPACE

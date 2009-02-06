@@ -1,388 +1,227 @@
 /****************************************************************************
-** MainObject meta object code from reading C++ file 'extcalc.h'
+** Meta object code from reading C++ file 'extcalc.h'
 **
-** Created: Mon Aug 11 15:13:10 2008
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
+** Created: Fri Feb 6 17:36:39 2009
+**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#undef QT_NO_COMPAT
 #include "extcalc.h"
-#include <qmetaobject.h>
-#include <qapplication.h>
-
-#include <private/qucomextra_p.h>
-#if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
-#error "This file was generated using the moc from 3.3.8b. It"
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'extcalc.h' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.4.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
-const char *MainObject::className() const
+QT_BEGIN_MOC_NAMESPACE
+static const uint qt_meta_data_MainObject[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+      29,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      12,   11,   11,   11, 0x05,
+      28,   11,   11,   11, 0x05,
+      48,   11,   11,   11, 0x05,
+      68,   11,   11,   11, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+     101,   96,   11,   11, 0x0a,
+     119,   96,   11,   11, 0x0a,
+     137,   96,   11,   11, 0x0a,
+     160,  155,   11,   11, 0x0a,
+     179,   96,   11,   11, 0x0a,
+     199,   96,   11,   11, 0x0a,
+     223,   96,   11,   11, 0x0a,
+     246,   96,   11,   11, 0x0a,
+     265,   96,   11,   11, 0x0a,
+     287,   11,   11,   11, 0x0a,
+     305,   96,   11,   11, 0x0a,
+     323,   96,   11,   11, 0x0a,
+     341,   96,   11,   11, 0x0a,
+     359,   96,   11,   11, 0x0a,
+     381,   96,   11,   11, 0x0a,
+     400,   96,   11,   11, 0x0a,
+     420,   96,   11,   11, 0x0a,
+     444,   96,   11,   11, 0x0a,
+     467,   96,   11,   11, 0x0a,
+     489,   96,   11,   11, 0x0a,
+     513,   11,   11,   11, 0x0a,
+     538,   11,   11,   11, 0x0a,
+     562,   11,   11,   11, 0x0a,
+     587,  581,   11,   11, 0x0a,
+     614,  606,   11,   11, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_MainObject[] = {
+    "MainObject\0\0editSignal(int)\0"
+    "runScript(QString*)\0matrixEnterSignal()\0"
+    "removeGraphicsLinesSignal()\0item\0"
+    "fileMenuSlot(int)\0editMenuSlot(int)\0"
+    "viewMenuSlot(int)\0type\0angleMenuSlot(int)\0"
+    "outputMenuSlot(int)\0coordinateMenuSlot(int)\0"
+    "graphTypeMenuSlot(int)\0graphMenuSlot(int)\0"
+    "calcModeMenuSlot(int)\0calcComplexSlot()\0"
+    "baseMenuSlot(int)\0helpMenuSlot(int)\0"
+    "prefMenuSlot(int)\0languageMenuSlot(int)\0"
+    "tableMenuSlot(int)\0scriptMenuSlot(int)\0"
+    "statisticsMenuSlot(int)\0tableTypeMenuSlot(int)\0"
+    "graphSetMenuSlot(int)\0floatPointMenuSlot(int)\0"
+    "updateGraphSetMenuSlot()\0"
+    "runScriptSlot(QString*)\0changeTabSlot(int)\0"
+    "index\0tabChangeSlot(int)\0newPref\0"
+    "getPref(Preferences)\0"
+};
+
+const QMetaObject MainObject::staticMetaObject = {
+    { &QMainWindow::staticMetaObject, qt_meta_stringdata_MainObject,
+      qt_meta_data_MainObject, 0 }
+};
+
+const QMetaObject *MainObject::metaObject() const
 {
-    return "MainObject";
+    return &staticMetaObject;
 }
 
-QMetaObject *MainObject::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_MainObject( "MainObject", &MainObject::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString MainObject::tr( const char *s, const char *c )
+void *MainObject::qt_metacast(const char *_clname)
 {
-    if ( qApp )
-	return qApp->translate( "MainObject", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString MainObject::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "MainObject", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* MainObject::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QTabWidget::staticMetaObject();
-    static const QUParameter param_slot_0[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_0 = {"fileMenuSlot", 1, param_slot_0 };
-    static const QUParameter param_slot_1[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_1 = {"editMenuSlot", 1, param_slot_1 };
-    static const QUParameter param_slot_2[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_2 = {"viewMenuSlot", 1, param_slot_2 };
-    static const QUParameter param_slot_3[] = {
-	{ "type", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_3 = {"angleMenuSlot", 1, param_slot_3 };
-    static const QUParameter param_slot_4[] = {
-	{ 0, &static_QUType_ptr, "QWidget", QUParameter::In }
-    };
-    static const QUMethod slot_4 = {"tabChangeSlot", 1, param_slot_4 };
-    static const QUParameter param_slot_5[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_5 = {"outputMenuSlot", 1, param_slot_5 };
-    static const QUParameter param_slot_6[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_6 = {"coordinateMenuSlot", 1, param_slot_6 };
-    static const QUParameter param_slot_7[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_7 = {"graphTypeMenuSlot", 1, param_slot_7 };
-    static const QUParameter param_slot_8[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_8 = {"graphMenuSlot", 1, param_slot_8 };
-    static const QUParameter param_slot_9[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_9 = {"graphSetMenuSlot", 1, param_slot_9 };
-    static const QUMethod slot_10 = {"updateGraphSetMenuSlot", 0, 0 };
-    static const QUParameter param_slot_11[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_11 = {"floatPointMenuSlot", 1, param_slot_11 };
-    static const QUParameter param_slot_12[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_12 = {"calcTypeMenuSlot", 1, param_slot_12 };
-    static const QUParameter param_slot_13[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_13 = {"baseMenuSlot", 1, param_slot_13 };
-    static const QUParameter param_slot_14[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_14 = {"helpMenuSlot", 1, param_slot_14 };
-    static const QUParameter param_slot_15[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_15 = {"prefMenuSlot", 1, param_slot_15 };
-    static const QUParameter param_slot_16[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_16 = {"languageMenuSlot", 1, param_slot_16 };
-    static const QUParameter param_slot_17[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_17 = {"tableMenuSlot", 1, param_slot_17 };
-    static const QUParameter param_slot_18[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_18 = {"scriptMenuSlot", 1, param_slot_18 };
-    static const QUParameter param_slot_19[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_19 = {"statisticsMenuSlot", 1, param_slot_19 };
-    static const QUParameter param_slot_20[] = {
-	{ "item", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_20 = {"tableTypeMenuSlot", 1, param_slot_20 };
-    static const QUParameter param_slot_21[] = {
-	{ 0, &static_QUType_varptr, "\x03", QUParameter::In }
-    };
-    static const QUMethod slot_21 = {"runScriptSlot", 1, param_slot_21 };
-    static const QUParameter param_slot_22[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_22 = {"changeTabSlot", 1, param_slot_22 };
-    static const QUParameter param_slot_23[] = {
-	{ "newPref", &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod slot_23 = {"getPref", 1, param_slot_23 };
-    static const QMetaData slot_tbl[] = {
-	{ "fileMenuSlot(int)", &slot_0, QMetaData::Public },
-	{ "editMenuSlot(int)", &slot_1, QMetaData::Public },
-	{ "viewMenuSlot(int)", &slot_2, QMetaData::Public },
-	{ "angleMenuSlot(int)", &slot_3, QMetaData::Public },
-	{ "tabChangeSlot(QWidget*)", &slot_4, QMetaData::Public },
-	{ "outputMenuSlot(int)", &slot_5, QMetaData::Public },
-	{ "coordinateMenuSlot(int)", &slot_6, QMetaData::Public },
-	{ "graphTypeMenuSlot(int)", &slot_7, QMetaData::Public },
-	{ "graphMenuSlot(int)", &slot_8, QMetaData::Public },
-	{ "graphSetMenuSlot(int)", &slot_9, QMetaData::Public },
-	{ "updateGraphSetMenuSlot()", &slot_10, QMetaData::Public },
-	{ "floatPointMenuSlot(int)", &slot_11, QMetaData::Public },
-	{ "calcTypeMenuSlot(int)", &slot_12, QMetaData::Public },
-	{ "baseMenuSlot(int)", &slot_13, QMetaData::Public },
-	{ "helpMenuSlot(int)", &slot_14, QMetaData::Public },
-	{ "prefMenuSlot(int)", &slot_15, QMetaData::Public },
-	{ "languageMenuSlot(int)", &slot_16, QMetaData::Public },
-	{ "tableMenuSlot(int)", &slot_17, QMetaData::Public },
-	{ "scriptMenuSlot(int)", &slot_18, QMetaData::Public },
-	{ "statisticsMenuSlot(int)", &slot_19, QMetaData::Public },
-	{ "tableTypeMenuSlot(int)", &slot_20, QMetaData::Public },
-	{ "runScriptSlot(QString*)", &slot_21, QMetaData::Public },
-	{ "changeTabSlot(int)", &slot_22, QMetaData::Public },
-	{ "getPref(Preferences)", &slot_23, QMetaData::Public }
-    };
-    static const QUParameter param_signal_0[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"editSignal", 1, param_signal_0 };
-    static const QUParameter param_signal_1[] = {
-	{ 0, &static_QUType_varptr, "\x03", QUParameter::In }
-    };
-    static const QUMethod signal_1 = {"runScript", 1, param_signal_1 };
-    static const QUMethod signal_2 = {"matrixEnterSignal", 0, 0 };
-    static const QUMethod signal_3 = {"removeGraphicsLinesSignal", 0, 0 };
-    static const QMetaData signal_tbl[] = {
-	{ "editSignal(int)", &signal_0, QMetaData::Public },
-	{ "runScript(QString*)", &signal_1, QMetaData::Public },
-	{ "matrixEnterSignal()", &signal_2, QMetaData::Public },
-	{ "removeGraphicsLinesSignal()", &signal_3, QMetaData::Public }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"MainObject", parentObject,
-	slot_tbl, 24,
-	signal_tbl, 4,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_MainObject.setMetaObject( metaObj );
-    return metaObj;
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_MainObject))
+        return static_cast<void*>(const_cast< MainObject*>(this));
+    return QMainWindow::qt_metacast(_clname);
 }
 
-void* MainObject::qt_cast( const char* clname )
+int MainObject::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    if ( !qstrcmp( clname, "MainObject" ) )
-	return this;
-    return QTabWidget::qt_cast( clname );
+    _id = QMainWindow::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: editSignal((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 1: runScript((*reinterpret_cast< QString*(*)>(_a[1]))); break;
+        case 2: matrixEnterSignal(); break;
+        case 3: removeGraphicsLinesSignal(); break;
+        case 4: fileMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 5: editMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 6: viewMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 7: angleMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 8: outputMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 9: coordinateMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 10: graphTypeMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 11: graphMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 12: calcModeMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 13: calcComplexSlot(); break;
+        case 14: baseMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 15: helpMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 16: prefMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 17: languageMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 18: tableMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 19: scriptMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 20: statisticsMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 21: tableTypeMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 22: graphSetMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 23: floatPointMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 24: updateGraphSetMenuSlot(); break;
+        case 25: runScriptSlot((*reinterpret_cast< QString*(*)>(_a[1]))); break;
+        case 26: changeTabSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 27: tabChangeSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 28: getPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        }
+        _id -= 29;
+    }
+    return _id;
 }
 
-// SIGNAL editSignal
-void MainObject::editSignal( int t0 )
+// SIGNAL 0
+void MainObject::editSignal(int _t1)
 {
-    activate_signal( staticMetaObject()->signalOffset() + 0, t0 );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
-#include <qobjectdefs.h>
-#include <qsignalslotimp.h>
-
-// SIGNAL runScript
-void MainObject::runScript( QString* t0 )
+// SIGNAL 1
+void MainObject::runScript(QString * _t1)
 {
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 1 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_varptr.set(o+1,t0);
-    activate_signal( clist, o );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 
-// SIGNAL matrixEnterSignal
+// SIGNAL 2
 void MainObject::matrixEnterSignal()
 {
-    activate_signal( staticMetaObject()->signalOffset() + 2 );
+    QMetaObject::activate(this, &staticMetaObject, 2, 0);
 }
 
-// SIGNAL removeGraphicsLinesSignal
+// SIGNAL 3
 void MainObject::removeGraphicsLinesSignal()
 {
-    activate_signal( staticMetaObject()->signalOffset() + 3 );
+    QMetaObject::activate(this, &staticMetaObject, 3, 0);
+}
+static const uint qt_meta_data_HelpBrowser[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       3,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // slots: signature, parameters, type, tag, flags
+      13,   12,   12,   12, 0x0a,
+      26,   12,   12,   12, 0x0a,
+      40,   12,   12,   12, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_HelpBrowser[] = {
+    "HelpBrowser\0\0zoominSlot()\0zoomoutSlot()\0"
+    "sourceSlot(QString)\0"
+};
+
+const QMetaObject HelpBrowser::staticMetaObject = {
+    { &QWidget::staticMetaObject, qt_meta_stringdata_HelpBrowser,
+      qt_meta_data_HelpBrowser, 0 }
+};
+
+const QMetaObject *HelpBrowser::metaObject() const
+{
+    return &staticMetaObject;
 }
 
-bool MainObject::qt_invoke( int _id, QUObject* _o )
+void *HelpBrowser::qt_metacast(const char *_clname)
 {
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: fileMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 1: editMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 2: viewMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 3: angleMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 4: tabChangeSlot((QWidget*)static_QUType_ptr.get(_o+1)); break;
-    case 5: outputMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 6: coordinateMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 7: graphTypeMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 8: graphMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 9: graphSetMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 10: updateGraphSetMenuSlot(); break;
-    case 11: floatPointMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 12: calcTypeMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 13: baseMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 14: helpMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 15: prefMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 16: languageMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 17: tableMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 18: scriptMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 19: statisticsMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 20: tableTypeMenuSlot((int)static_QUType_int.get(_o+1)); break;
-    case 21: runScriptSlot((QString*)static_QUType_varptr.get(_o+1)); break;
-    case 22: changeTabSlot((int)static_QUType_int.get(_o+1)); break;
-    case 23: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    default:
-	return QTabWidget::qt_invoke( _id, _o );
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_HelpBrowser))
+        return static_cast<void*>(const_cast< HelpBrowser*>(this));
+    return QWidget::qt_metacast(_clname);
+}
+
+int HelpBrowser::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: zoominSlot(); break;
+        case 1: zoomoutSlot(); break;
+        case 2: sourceSlot((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        }
+        _id -= 3;
     }
-    return TRUE;
+    return _id;
 }
-
-bool MainObject::qt_emit( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: editSignal((int)static_QUType_int.get(_o+1)); break;
-    case 1: runScript((QString*)static_QUType_varptr.get(_o+1)); break;
-    case 2: matrixEnterSignal(); break;
-    case 3: removeGraphicsLinesSignal(); break;
-    default:
-	return QTabWidget::qt_emit(_id,_o);
-    }
-    return TRUE;
-}
-#ifndef QT_NO_PROPERTIES
-
-bool MainObject::qt_property( int id, int f, QVariant* v)
-{
-    return QTabWidget::qt_property( id, f, v);
-}
-
-bool MainObject::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
-
-
-const char *HelpBrowser::className() const
-{
-    return "HelpBrowser";
-}
-
-QMetaObject *HelpBrowser::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_HelpBrowser( "HelpBrowser", &HelpBrowser::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString HelpBrowser::tr( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "HelpBrowser", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString HelpBrowser::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "HelpBrowser", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* HelpBrowser::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QWidget::staticMetaObject();
-    static const QUMethod slot_0 = {"zoominSlot", 0, 0 };
-    static const QUMethod slot_1 = {"zoomoutSlot", 0, 0 };
-    static const QUParameter param_slot_2[] = {
-	{ 0, &static_QUType_QString, 0, QUParameter::In }
-    };
-    static const QUMethod slot_2 = {"sourceSlot", 1, param_slot_2 };
-    static const QMetaData slot_tbl[] = {
-	{ "zoominSlot()", &slot_0, QMetaData::Public },
-	{ "zoomoutSlot()", &slot_1, QMetaData::Public },
-	{ "sourceSlot(const QString&)", &slot_2, QMetaData::Public }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"HelpBrowser", parentObject,
-	slot_tbl, 3,
-	0, 0,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_HelpBrowser.setMetaObject( metaObj );
-    return metaObj;
-}
-
-void* HelpBrowser::qt_cast( const char* clname )
-{
-    if ( !qstrcmp( clname, "HelpBrowser" ) )
-	return this;
-    return QWidget::qt_cast( clname );
-}
-
-bool HelpBrowser::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: zoominSlot(); break;
-    case 1: zoomoutSlot(); break;
-    case 2: sourceSlot((const QString&)static_QUType_QString.get(_o+1)); break;
-    default:
-	return QWidget::qt_invoke( _id, _o );
-    }
-    return TRUE;
-}
-
-bool HelpBrowser::qt_emit( int _id, QUObject* _o )
-{
-    return QWidget::qt_emit(_id,_o);
-}
-#ifndef QT_NO_PROPERTIES
-
-bool HelpBrowser::qt_property( int id, int f, QVariant* v)
-{
-    return QWidget::qt_property( id, f, v);
-}
-
-bool HelpBrowser::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
+QT_END_MOC_NAMESPACE

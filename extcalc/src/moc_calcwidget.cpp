@@ -1,193 +1,114 @@
 /****************************************************************************
-** CalcWidget meta object code from reading C++ file 'calcwidget.h'
+** Meta object code from reading C++ file 'calcwidget.h'
 **
-** Created: Fri Jun 6 11:52:50 2008
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
+** Created: Wed Dec 31 16:17:53 2008
+**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#undef QT_NO_COMPAT
 #include "calcwidget.h"
-#include <qmetaobject.h>
-#include <qapplication.h>
-
-#include <private/qucomextra_p.h>
-#if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
-#error "This file was generated using the moc from 3.3.8b. It"
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'calcwidget.h' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.4.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
-const char *CalcWidget::className() const
+QT_BEGIN_MOC_NAMESPACE
+static const uint qt_meta_data_CalcWidget[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+      12,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      12,   11,   11,   11, 0x05,
+      36,   11,   11,   11, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+      64,   56,   11,   11, 0x0a,
+      85,   11,   11,   11, 0x0a,
+      96,   11,   11,   11, 0x0a,
+     110,   11,   11,   11, 0x0a,
+     125,   11,   11,   11, 0x0a,
+     139,   11,   11,   11, 0x0a,
+     153,   11,   11,   11, 0x0a,
+     167,   11,   11,   11, 0x0a,
+     183,   11,   11,   11, 0x0a,
+     205,  200,   11,   11, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_CalcWidget[] = {
+    "CalcWidget\0\0prefChange(Preferences)\0"
+    "runScript(QString*)\0newPref\0"
+    "getPref(Preferences)\0viewSlot()\0"
+    "baseSlot(int)\0angleSlot(int)\0typeSlot(int)\0"
+    "editSlot(int)\0catalogSlot()\0constantsSlot()\0"
+    "dockWindowSlot()\0text\0processText(QString)\0"
+};
+
+const QMetaObject CalcWidget::staticMetaObject = {
+    { &QWidget::staticMetaObject, qt_meta_stringdata_CalcWidget,
+      qt_meta_data_CalcWidget, 0 }
+};
+
+const QMetaObject *CalcWidget::metaObject() const
 {
-    return "CalcWidget";
+    return &staticMetaObject;
 }
 
-QMetaObject *CalcWidget::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_CalcWidget( "CalcWidget", &CalcWidget::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString CalcWidget::tr( const char *s, const char *c )
+void *CalcWidget::qt_metacast(const char *_clname)
 {
-    if ( qApp )
-	return qApp->translate( "CalcWidget", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString CalcWidget::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "CalcWidget", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* CalcWidget::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QWidget::staticMetaObject();
-    static const QUParameter param_slot_0[] = {
-	{ "newPref", &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod slot_0 = {"getPref", 1, param_slot_0 };
-    static const QUMethod slot_1 = {"viewSlot", 0, 0 };
-    static const QUParameter param_slot_2[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_2 = {"baseSlot", 1, param_slot_2 };
-    static const QUParameter param_slot_3[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_3 = {"angleSlot", 1, param_slot_3 };
-    static const QUParameter param_slot_4[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_4 = {"typeSlot", 1, param_slot_4 };
-    static const QUParameter param_slot_5[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_5 = {"editSlot", 1, param_slot_5 };
-    static const QUMethod slot_6 = {"catalogSlot", 0, 0 };
-    static const QUMethod slot_7 = {"constantsSlot", 0, 0 };
-    static const QUMethod slot_8 = {"dockWindowSlot", 0, 0 };
-    static const QUParameter param_slot_9[] = {
-	{ "text", &static_QUType_QString, 0, QUParameter::In }
-    };
-    static const QUMethod slot_9 = {"processText", 1, param_slot_9 };
-    static const QMetaData slot_tbl[] = {
-	{ "getPref(Preferences)", &slot_0, QMetaData::Public },
-	{ "viewSlot()", &slot_1, QMetaData::Public },
-	{ "baseSlot(int)", &slot_2, QMetaData::Public },
-	{ "angleSlot(int)", &slot_3, QMetaData::Public },
-	{ "typeSlot(int)", &slot_4, QMetaData::Public },
-	{ "editSlot(int)", &slot_5, QMetaData::Public },
-	{ "catalogSlot()", &slot_6, QMetaData::Public },
-	{ "constantsSlot()", &slot_7, QMetaData::Public },
-	{ "dockWindowSlot()", &slot_8, QMetaData::Public },
-	{ "processText(QString)", &slot_9, QMetaData::Public }
-    };
-    static const QUParameter param_signal_0[] = {
-	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"prefChange", 1, param_signal_0 };
-    static const QUParameter param_signal_1[] = {
-	{ 0, &static_QUType_varptr, "\x03", QUParameter::In }
-    };
-    static const QUMethod signal_1 = {"runScript", 1, param_signal_1 };
-    static const QMetaData signal_tbl[] = {
-	{ "prefChange(Preferences)", &signal_0, QMetaData::Public },
-	{ "runScript(QString*)", &signal_1, QMetaData::Public }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"CalcWidget", parentObject,
-	slot_tbl, 10,
-	signal_tbl, 2,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_CalcWidget.setMetaObject( metaObj );
-    return metaObj;
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_CalcWidget))
+        return static_cast<void*>(const_cast< CalcWidget*>(this));
+    return QWidget::qt_metacast(_clname);
 }
 
-void* CalcWidget::qt_cast( const char* clname )
+int CalcWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    if ( !qstrcmp( clname, "CalcWidget" ) )
-	return this;
-    return QWidget::qt_cast( clname );
-}
-
-#include <qobjectdefs.h>
-#include <qsignalslotimp.h>
-
-// SIGNAL prefChange
-void CalcWidget::prefChange( Preferences t0 )
-{
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 0 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_ptr.set(o+1,&t0);
-    activate_signal( clist, o );
-}
-
-// SIGNAL runScript
-void CalcWidget::runScript( QString* t0 )
-{
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 1 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_varptr.set(o+1,t0);
-    activate_signal( clist, o );
-}
-
-bool CalcWidget::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: getPref((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 1: viewSlot(); break;
-    case 2: baseSlot((int)static_QUType_int.get(_o+1)); break;
-    case 3: angleSlot((int)static_QUType_int.get(_o+1)); break;
-    case 4: typeSlot((int)static_QUType_int.get(_o+1)); break;
-    case 5: editSlot((int)static_QUType_int.get(_o+1)); break;
-    case 6: catalogSlot(); break;
-    case 7: constantsSlot(); break;
-    case 8: dockWindowSlot(); break;
-    case 9: processText((QString)static_QUType_QString.get(_o+1)); break;
-    default:
-	return QWidget::qt_invoke( _id, _o );
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 1: runScript((*reinterpret_cast< QString*(*)>(_a[1]))); break;
+        case 2: getPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 3: viewSlot(); break;
+        case 4: baseSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 5: angleSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 6: typeSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 7: editSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 8: catalogSlot(); break;
+        case 9: constantsSlot(); break;
+        case 10: dockWindowSlot(); break;
+        case 11: processText((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        }
+        _id -= 12;
     }
-    return TRUE;
+    return _id;
 }
 
-bool CalcWidget::qt_emit( int _id, QUObject* _o )
+// SIGNAL 0
+void CalcWidget::prefChange(Preferences _t1)
 {
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 1: runScript((QString*)static_QUType_varptr.get(_o+1)); break;
-    default:
-	return QWidget::qt_emit(_id,_o);
-    }
-    return TRUE;
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
-#ifndef QT_NO_PROPERTIES
 
-bool CalcWidget::qt_property( int id, int f, QVariant* v)
+// SIGNAL 1
+void CalcWidget::runScript(QString * _t1)
 {
-    return QWidget::qt_property( id, f, v);
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
-
-bool CalcWidget::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
+QT_END_MOC_NAMESPACE

@@ -23,7 +23,7 @@ Graphics preferences dialog
 #include <qtabwidget.h>
 #include <qtabbar.h>
 #include <qradiobutton.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qspinbox.h>
 #include "global.h"
 
@@ -305,7 +305,7 @@ class DynamicPreferences :public QWidget
 	QLabel *dynamicStepsLabel,*timeLabel;
 	QLineEdit*dynamicStart,*dynamicEnd,*dynamicSteps,*time;
 	QRadioButton*upButton,*upDownButton;
-	QButtonGroup *radioButtons;
+	Q3ButtonGroup *radioButtons;
 	QCheckBox *singleStepBox,*logNyquistBox;
 	QPushButton*standardButton;
 	Variable*vars;
@@ -351,7 +351,7 @@ class DynamicPreferences :public QWidget
 			dynamicSteps=new QLineEdit(QString::number(pref.dynamicSteps),this);
 			time=new QLineEdit(QString::number(pref.dynamicDelay),this);
 
-			radioButtons=new QButtonGroup(this);
+			radioButtons=new Q3ButtonGroup(this);
 			upButton=new QRadioButton(GRAPHPREFH_STR30,radioButtons);
 			upDownButton=new QRadioButton(GRAPHPREFH_STR31,radioButtons);
 
@@ -441,7 +441,7 @@ class GraphPreferences :public QTabWidget
 	Q_OBJECT
 public:
 	GraphPreferences(Preferences p,Variable*v, QWidget*parent)
-	:QTabWidget(parent,GRAPHPREFH_STR1,Qt::WStyle_Dialog | Qt::WType_Dialog)
+	:QTabWidget(parent,GRAPHPREFH_STR1,Qt::WType_Dialog | Qt::WType_Dialog)
 	{
 		pref=p;
 		vars=v;

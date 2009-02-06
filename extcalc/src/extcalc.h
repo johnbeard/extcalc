@@ -38,18 +38,27 @@ dialog, the todo list and the bug list.
 #include <qtabbar.h>
 #include <qstring.h>
 #include <qmenubar.h>
-#include <qprocess.h>
-#include <qtabdialog.h>
+#include <q3process.h>
+#include <q3tabdialog.h>
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <QLabel>
+#include <QPixmap>
+#include <QCloseEvent>
+#include <QCustomEvent>
+#include <Q3PopupMenu>
+#include <QTabWidget>
 #include <float.h>
 #include <qtranslator.h>
 #include <qinputdialog.h>
 #include <locale.h>
-#include <qtextbrowser.h>
-#include <qtoolbar.h>
-#include <qdockarea.h>
-#include <qiconset.h>
+#include <q3textbrowser.h>
+#include <q3toolbar.h>
+#include <q3dockarea.h>
+#include <qicon.h>
 #include <qtoolbutton.h>
 #include <qdir.h>
+#include <QActionGroup>
 
 
 //Unicode characters:
@@ -150,7 +159,10 @@ dialog, the todo list and the bug list.
 //  - mathematic constants list                                                         ok  //
 //  - precise error messages                                                            ok  //
 //  - RPN                                                                                   //
-//  - Port to QT 4                                                                          //
+//  - Port to QT 4                                                                      ok  //
+//                use QMainWindow as main widget                                        ok  //
+//                replace Q3PopupMenu                                                       //
+//                replace Q3ToolBar                                                         //
 //  - use QTranslator for internationalization                                          ok  //
 //  - symbolic calculation for systems of linear equations                                  //
 //  - logic operations for graph drawing                                                ok  //
@@ -159,6 +171,7 @@ dialog, the todo list and the bug list.
 //  - usage of multithreading for graph calculation                                     ok  //
 //  - import/export function for graphs                                                 ok  //
 //  - organize graphs in graph sets with equal settings                                 ok  //
+//  - return error message in calculator mode                                               //
 //                                                                                          //
 ////////////////////////////////////////beta releases/////////////////////////////////////////
 
@@ -211,6 +224,12 @@ dialog, the todo list and the bug list.
 //	- automatic insertion of * operator is not allways correct							ok	//
 //	- different fonts in different windows												ok	//
 //	- segfault when drawing animated graphs												ok	//
+//	- screenshot export does not work													ok	//
+//	- complex operator cant't be used as prefix											ok	//
+//	- faculty of 1 and negative values is wrong											ok	//
+//	- communication between script and console does not work							ok	//
+//	- automatic switching to script console window does not work						ok	//
+
 
 
 //////////////////////////used variables//////////////////////////
@@ -268,12 +287,12 @@ dialog, the todo list and the bug list.
 //process sums:        /      |        \                          //
 //                  2        5*6        6*4+3                     //
 //                 OK       MULT         SUM                      //
-//process multiblications:  /  \         |  \                     //
+//process multiplications:  /  \         |  \                     //
 //                         5    6        |   \                    //
 //process sums:           OK    OK       |    \                   //
 //                                      6*4    3                  //
 //                                     MULT    OK                 //
-//process multiblications:             /  \                       //
+//process multiplications:             /  \                       //
 //                                    6   4                       //
 //                                   OK   OK                      //
 //                                                                //
@@ -282,12 +301,21 @@ dialog, the todo list and the bug list.
 class ImportDialog;
 class HelpBrowser;
 
-class MainObject :public QTabWidget
+class MainObject :public QMainWindow
 {
 	QMenuBar*mainMenu;
-	QPopupMenu *calcMenu,*angleMenu,*helpMenu,*outputMenu,*floatPointMenu,*prefMenu,*graphMenu;
-	QPopupMenu *coordinateMenu,*graphTypeMenu,*calcTypeMenu,*baseMenu,*tableMenu,*tableTypeMenu;
-	QPopupMenu *editMenu,*viewMenu,*fileMenu,*scriptMenu,*statisticsMenu,*languageMenu,*graphSetMenu;
+	Q3PopupMenu *calcMenu,*helpMenu,*prefMenu,*graphMenu;
+	Q3PopupMenu *coordinateMenu,*tableMenu;
+	Q3PopupMenu *viewMenu,*fileMenu,*scriptMenu,*statisticsMenu;
+	QMenu *editMenu,*angleMenu,*floatPointMenu,*outputMenu;
+	QSignalMapper *editMapper,*angleMapper,*floatPointMapper,*outputMapper;
+	QActionGroup*floatPointActions,*angleActions,*outputActions;
+	//new
+	QActionGroup *calcModeActions,*languageActions,*baseActions,*graphTypeActions,*graphSetActions,*tableTypeActions;
+	QSignalMapper *calcModeMapper,*languageMapper,*baseMapper,*graphTypeMapper,*graphSetMapper,*tableTypeMapper;
+	QMenu *calcModeMenu,*languageMenu,*baseMenu,*graphTypeMenu,*graphSetMenu,*tableTypeMenu;
+	QAction *complexAction;
+			
 	QTabBar*tabBar;
 	CalcWidget *calculator,*calculator2;
 	GraphWidget * graph;
@@ -305,9 +333,9 @@ class MainObject :public QTabWidget
 	MatrixWidget*matrix;
 	StatisticsWidget*statistics;
 	Preferences pref;
-	QProcess*helpProcess;
-	QTabDialog*infoDialog;
-	QTextEdit*licenseWidget;
+	Q3Process*helpProcess;
+	Q3TabDialog*infoDialog;
+	Q3TextEdit*licenseWidget;
 	QLabel*authorInfo;
 	QLabel*versionInfo;
 	QPixmap*appIcon;
@@ -318,461 +346,13 @@ class MainObject :public QTabWidget
 	bool calcFocus;
 	bool calcModeChanged;
 	ThreadSync*threadData;
+    QTabWidget *clientArea;
+	QToolBar *toolBar;
+
 
 Q_OBJECT
 public:
-MainObject() :QTabWidget()
-{
-	helpBrowser=NULL;
-	graphsDir=NULL;
-	vars=new Variable [27];
-	for(int c=0; c<27;c++)
-		vars[c]=0.0;
-	Number n0;
-	n0.type=NFLOAT;
-	vecs=new Vector [VARNUM];
-	for(int c=0; c<VARNUM;c++)
-		vecs[c].NewItem(n0);
-	
-	appIcon=new QPixmap(QString(INSTALLDIR)+"/data/icon22.png");
-	if(!appIcon->isNull())
-		setIcon(*appIcon);
-	
-	calcFocus=true;
-	calcModeChanged=false;
-	
-	struct timeval rndTime;
-	gettimeofday(&rndTime,NULL);
-	srand(rndTime.tv_usec*rndTime.tv_sec);
-	
-	setGeometry(10,10,640,630); 
-	setMinimumWidth(640);
-	setMinimumHeight(400);
-	helpProcess=new QProcess(this);
-	
-	infoDialog=new QTabDialog(this,0,true);
-	licenseWidget=new QTextEdit(infoDialog);
-	QString license;
-	FILE*licenseFile;
-	struct stat fileStat;
-	licenseFile = fopen(INSTALLDIR+QString("/data/license.txt"),"r");
-	if(licenseFile == NULL)
-		license=EXTCALCH_STR1;
-	else {
-		if(lstat(INSTALLDIR+QString("/data/license.txt"),&fileStat) !=0)
-			MessageBox(EXTCALCH_MSG2);
-		else
-		{
-			char*cLicenseText=new char[fileStat.st_size+1];
-			cLicenseText[fileStat.st_size]=(char)0;
-			fread((void*)cLicenseText,fileStat.st_size,1,licenseFile);
-			license=EXTCALCH_STR2;
-			license+=QString(cLicenseText);
-			delete[]cLicenseText;
-		}
-		fclose(licenseFile);
-	}
-	licenseWidget->setText(license);
-	licenseWidget->setReadOnly(true);
-	authorInfo=new QLabel(INFOSTRING+QString(AUTHORSTRING),infoDialog);
-	versionInfo=new QLabel(INFOSTRING+QString(VERSIONSTRING),infoDialog);
-	authorInfo->setAlignment(Qt::AlignAuto | Qt::AlignCenter | Qt::ExpandTabs);
-	versionInfo->setAlignment(Qt::AlignAuto | Qt::AlignCenter | Qt::ExpandTabs);
-	infoDialog->addTab(versionInfo,EXTCALCH_STR3);
-	infoDialog->addTab(authorInfo,EXTCALCH_STR4);
-	infoDialog->addTab(licenseWidget,EXTCALCH_STR5);
-
-		
-	
-	
-	grPref=NULL;
-	calcPref=NULL;
-	tablePref=NULL;
-	scriptPref=NULL;
-	importDialog=NULL;
-	exportDialog=NULL;
-	functionDialog=NULL;
-	graphSetDialog=NULL;
-	
-	tabBar = new QTabBar(this);
-	
-	setTabBar(tabBar);
-		
-	
-	mainMenu=new QMenuBar(this);
-
-	
-	//standard preferences
-#ifndef NO_LONG_DOUBLE
-	pref.precision=LDBL_DIG;
-#else 
-	pref.precision=DBL_DIG;
-#endif
-	pref.angle=DEG;
-	pref.outputType=VARIABLENUM;
-	pref.outputLength=10;
-	pref.shift=false;
-	pref.alpha=false;
-	pref.hyp=false;
-	pref.raster=true;
-	pref.axis=true;
-	pref.label=false;
-	pref.complex=false;
-	pref.clearScriptMemory=true;
-	pref.functions=NULL;
-	pref.functionComments=NULL;
-	pref.activeFunctions=new bool[20];
-	for(int c=0; c<20;c++)
-		pref.activeFunctions[c]=false;
-	pref.functionColors=new QColor[20];
-	for(int c=0; c<20; c++)
-		pref.functionColors[c]=QColor(0,0,0);
-	pref.functionTypes=new int[20];
-	for(int c=0; c<20; c++)
-		pref.functionTypes[c]=GRAPHSTD;
-	pref.dynamicFunctions=new bool[20];
-	for(int c=0; c<20; c++)
-		pref.dynamicFunctions[c]=false;
-	pref.logicFunctions=new bool[20];
-	for(int c=0; c<20; c++)
-		pref.logicFunctions[c]=false;
-	pref.xmin=pref.ymin=pref.zmin=-10.0;
-	pref.xmax=pref.ymax=pref.zmax=10.0;
-	pref.rasterSizeX=pref.rasterSizeY=pref.rasterSizeZ=1.0;
-	pref.rasterSizeRadius=1.0;
-	pref.rasterSizeAngle=10.0;
-	pref.radiusMax=10.0;
-	pref.angleMax=360.0;
-	pref.parameterStart=0.0;
-	pref.parameterEnd=10.0;
-	pref.parameterSteps=400;
-	pref.graphType=GRAPHSTD;
-	pref.calcType=SCIENTIFIC;
-	pref.base=DEC;
-	pref.dynamicStart=0.0;
-	pref.dynamicEnd=10.0;
-	pref.nyquistStart=-3.0;
-	pref.nyquistEnd=3.0;
-	pref.nyquistSteps=400;
-	pref.prec2dSteps=400;
-	pref.prec3dSteps=50;
-	pref.solvePrec=1;
-	pref.show3dGrid=true;
-	pref.logNyquistSteps=true;
-	pref.dynamicSteps=10;
-	pref.dynamicDelay=1;
-	pref.moveUpDown=false;
-	pref.tableXStart=pref.tableZStart=0.0;
-	pref.tableXEnd=pref.tableZEnd=10.0;
-	pref.tableAValue=0.0;
-	pref.tableXSteps=pref.tableZSteps=10;
-	pref.tableType=TABLENORMAL;
-	pref.statAutoClear=true;
-	pref.showStatLines=false;
-	pref.showStatPoints=true;
-	pref.showWindows[0]=pref.showWindows[2]=pref.showWindows[3]=pref.showWindows[4]=pref.showWindows[6]=true;
-	pref.showWindows[1]=pref.showWindows[5]=pref.showWindows[7]=false;
-	pref.language=LANG_EN;
-	pref.constList=NULL;
-	pref.constLen=pref.userConstLen=0;
-
-
-	threadData=new ThreadSync;
-	threadData->mutex=NULL;
-	threadData->eventReciver=this;
-	threadData->status=0;
-	threadData->eventCount=0;
-	threadData->exit=false;
-	threadData->usleep=false;
-	threadData->bbreak=false;
-	threadData->bcontinue=false;
-	threadData->calcMode=true;
-	threadData->data=NULL;
-	threadData->sleepTime=1000;
-	threadData->vars=new Number*[VARNUM];
-	for(int c=0; c<VARNUM;c++)
-	{
-		threadData->vars[c]=(Number*)malloc(sizeof(Number));
-		threadData->numlen[c]=1;
-		threadData->vars[c][0].type=NNONE;
-		threadData->vars[c][0].cval=NULL;
-		threadData->vars[c][0].fval=Complex(0.0,0.0);
-		for(int c1=0; c1<VARDIMENSIONS; c1++)
-			threadData->dimension[c][c1]=1;
-	}
-
-
-	angleMenu=new QPopupMenu;
-	angleMenu->insertItem(EXTCALCH_MENU1,DEG);
-	angleMenu->insertItem(EXTCALCH_MENU2,RAD);
-	angleMenu->insertItem(EXTCALCH_MENU3,GRA);
-	QObject::connect(angleMenu,SIGNAL(activated(int)),this,SLOT(angleMenuSlot(int)));
-	
-	floatPointMenu=new QPopupMenu;
-	for(int c=2;c<=pref.precision; c++)
-		floatPointMenu->insertItem(QString::number(c),c);
-
-	QObject::connect(floatPointMenu,SIGNAL(activated(int)),this,SLOT(floatPointMenuSlot(int)));
-
-	outputMenu=new QPopupMenu;
-	outputMenu->insertItem(EXTCALCH_MENU4,FIXEDNUM);
-	outputMenu->insertItem(EXTCALCH_MENU5,VARIABLENUM);
-	outputMenu->insertItem(EXTCALCH_MENU6,EXPSYM);
-	outputMenu->insertItem(EXTCALCH_MENU7,floatPointMenu,FLOATPOINT);
-	QObject::connect(outputMenu,SIGNAL(activated(int)),this,SLOT(outputMenuSlot(int)));
-	floatPointMenu->setItemChecked(pref.outputLength,true);
-	
-	baseMenu=new QPopupMenu;
-	baseMenu->insertItem(EXTCALCH_MENU27,BIN);
-	baseMenu->insertItem(EXTCALCH_MENU28,OCT);
-	baseMenu->insertItem(EXTCALCH_MENU29,DEC);
-	baseMenu->insertItem(EXTCALCH_MENU30,HEX);
-	QObject::connect(baseMenu,SIGNAL(activated(int)),this,SLOT(baseMenuSlot(int)));
-	
-	calcTypeMenu=new QPopupMenu;
-	calcTypeMenu->insertItem(EXTCALCH_MENU31,SCIENTIFIC);
-	calcTypeMenu->insertItem(EXTCALCH_MENU32,BASE);
-	calcTypeMenu->insertItem(EXTCALCH_MENU67,COMPLEXMENU);
-	calcTypeMenu->insertItem(EXTCALCH_MENU33,baseMenu,BASEMENU);
-	QObject::connect(calcTypeMenu,SIGNAL(activated(int)),this,SLOT(calcTypeMenuSlot(int)));
-	baseMenu->setItemChecked(pref.base,true);
-	
-	calcMenu=new QPopupMenu;
-	calcMenu->insertItem(EXTCALCH_MENU8,angleMenu,ANGLE);
-	calcMenu->insertItem(EXTCALCH_MENU9,outputMenu,OUTPUT);
-	calcMenu->insertItem(EXTCALCH_MENU34,calcTypeMenu,MODE);
-	angleMenu->setItemChecked(pref.angle,true);
-	outputMenu->setItemChecked(pref.outputType,true);
-	calcTypeMenu->setItemChecked(pref.calcType,true);
-	
-	coordinateMenu=new QPopupMenu;
-	coordinateMenu->insertItem(EXTCALCH_MENU19,STANDARDCOORDS);
-	coordinateMenu->insertItem(EXTCALCH_MENU20,TRIGONOMETRICCOORDS);
-	coordinateMenu->insertItem(EXTCALCH_MENU21,SHOWAXES);
-	coordinateMenu->insertItem(EXTCALCH_MENU22,SHOWLABELS);
-	coordinateMenu->insertItem(EXTCALCH_MENU23,SHOWRASTER);
-	coordinateMenu->insertItem(EXTCALCH_MENU24,CONSTRATIO);
-	QObject::connect(coordinateMenu,SIGNAL(activated(int)),this,SLOT(coordinateMenuSlot(int)));
-	
-	graphTypeMenu=new QPopupMenu;
-	graphTypeMenu->insertItem(EXTCALCH_MENU35,GRAPHSTD);
-	graphTypeMenu->insertItem(EXTCALCH_MENU36,GRAPHPOLAR);
-	graphTypeMenu->insertItem(EXTCALCH_MENU37,GRAPH3D);
-	QObject::connect(graphTypeMenu,SIGNAL(activated(int)),this,SLOT(graphTypeMenuSlot(int)));
-	
-	graphSetMenu=new QPopupMenu;
-	QObject::connect(graphSetMenu,SIGNAL(activated(int)),this,SLOT(graphSetMenuSlot(int)));	
-	
-	graphMenu=new QPopupMenu;
-	graphMenu->insertItem(EXTCALCH_MENU25,coordinateMenu,COORDINATE);
-	graphMenu->insertItem(EXTCALCH_MENU26,graphTypeMenu,GRAPHTYPE);
-	graphMenu->insertSeparator();
-	graphMenu->insertItem(tr("Choose Current Set"),graphSetMenu,GRAPHSETCH);
-	graphMenu->insertItem(tr("Manage Sets"),GRAPHSETMANAGE);
-	graphMenu->insertItem(tr("Save Current Set As"),GRAPHSAVECURR);
-	graphMenu->insertItem(tr("Create New Set"),GRAPHCREATESET);
-	graphMenu->insertItem(tr("Import Graphs"),GRAPHIMPORT);
-	graphMenu->insertItem(tr("Export Graphs"),GRAPHEXPORT);
-	QObject::connect(graphMenu,SIGNAL(activated(int)),this,SLOT(graphMenuSlot(int)));
-	
-	tableTypeMenu=new QPopupMenu;
-	tableTypeMenu->insertItem(EXTCALCH_MENU38,TABLENORMAL);
-	tableTypeMenu->insertItem(EXTCALCH_MENU39,TABLEPOLAR);
-	tableTypeMenu->insertItem(EXTCALCH_MENU40,TABLEPARAMETER);
-	tableTypeMenu->insertItem(EXTCALCH_MENU41,TABLEINEQUAITY);
-	tableTypeMenu->insertItem(EXTCALCH_MENU42,TABLE3D);
-	tableTypeMenu->insertItem(EXTCALCH_MENU78,TABLECOMPLEX);
-	QObject::connect(tableTypeMenu,SIGNAL(activated(int)),this,SLOT(tableTypeMenuSlot(int)));
-	
-	tableMenu=new QPopupMenu;
-	tableMenu->insertItem(EXTCALCH_MENU43,STANDARDTABLE);
-	tableMenu->insertItem(EXTCALCH_MENU68,RESETTABLE);
-	tableMenu->insertItem(EXTCALCH_MENU44,tableTypeMenu,TABLETYPE);
-	QObject::connect(tableMenu,SIGNAL(activated(int)),this,SLOT(tableMenuSlot(int)));
-
-
-	scriptMenu=new QPopupMenu;
-	scriptMenu->insertItem(EXTCALCH_MENU62,EXPORTSCRIPT);
-	scriptMenu->insertItem(EXTCALCH_MENU63,IMPORTSCRIPT);
-	scriptMenu->insertSeparator();
-	scriptMenu->insertItem(EXTCALCH_MENU64,CLEARMEMALWAYS);
-	scriptMenu->insertItem(EXTCALCH_MENU65,CLEARMEMNOW);
-	QObject::connect(scriptMenu,SIGNAL(activated(int)),this,SLOT(scriptMenuSlot(int)));
-	
-	statisticsMenu=new QPopupMenu;
-	statisticsMenu->insertItem(EXTCALCH_MENU69,STATCLEAR);
-	statisticsMenu->insertItem(EXTCALCH_MENU70,STATAUTOCLEAR);
-	statisticsMenu->insertSeparator();
-	statisticsMenu->insertItem(EXTCALCH_MENU71,STATPOINTS);
-	statisticsMenu->insertItem(EXTCALCH_MENU72,STATLINES);
-	QObject::connect(statisticsMenu,SIGNAL(activated(int)),this,SLOT(statisticsMenuSlot(int)));
-	
-	languageMenu=new QPopupMenu;
-	languageMenu->insertItem(tr("English"),LANG_EN);
-	languageMenu->insertItem(tr("French"),LANG_FR);
-	languageMenu->insertItem(tr("German"),LANG_DE);
-	QObject::connect(languageMenu,SIGNAL(activated(int)),this,SLOT(languageMenuSlot(int)));
-
-	
-	prefMenu=new QPopupMenu;
-	prefMenu->insertItem(EXTCALCH_MENU10,CPREF);
-	prefMenu->insertItem(EXTCALCH_MENU11,GPREF);
-	prefMenu->insertItem(EXTCALCH_MENU45,TPREF);
-	prefMenu->insertItem(EXTCALCH_MENU60,SPREF);
-	prefMenu->insertSeparator();
-	prefMenu->insertItem(tr("Language"),languageMenu,LPREF);
-	
-	helpMenu=new QPopupMenu;
-	helpMenu->insertItem(EXTCALCH_MENU12,EXTHELP);
-	helpMenu->insertItem(EXTCALCH_MENU13,INFO);
-	
-	editMenu=new QPopupMenu;
-	editMenu->insertItem(EXTCALCH_MENU47,EDITUNDO);
-	editMenu->insertItem(EXTCALCH_MENU48,EDITREDO);
-	editMenu->insertItem(EXTCALCH_MENU49,EDITCUT);
-	editMenu->insertItem(EXTCALCH_MENU50,EDITCOPY);
-	editMenu->insertItem(EXTCALCH_MENU51,EDITPASTE);
-	QObject::connect(editMenu,SIGNAL(activated(int)),this,SLOT(editMenuSlot(int)));
-	
-	viewMenu=new QPopupMenu;
-	viewMenu->insertItem(EXTCALCH_MENU52,VIEWCALC1);
-	viewMenu->insertItem(EXTCALCH_MENU53,VIEWCALC2);
-	viewMenu->insertItem(EXTCALCH_MENU54,VIEWGRAPH);
-	viewMenu->insertItem(EXTCALCH_MENU55,VIEWTABLE);
-	viewMenu->insertItem(EXTCALCH_MENU73,VIEWMATRIX);
-	viewMenu->insertItem(EXTCALCH_MENU74,VIEWSTATISTICS);
-	viewMenu->insertItem(EXTCALCH_MENU56,VIEWSCRIPTING);
-	viewMenu->insertItem(EXTCALCH_MENU61,VIEWSCRIPTIO);
-	QObject::connect(viewMenu,SIGNAL(activated(int)),this,SLOT(viewMenuSlot(int)));
-	
-	fileMenu=new QPopupMenu;
-	fileMenu->insertItem(EXTCALCH_MENU57,QUIT);
-	QObject::connect(fileMenu,SIGNAL(activated(int)),this,SLOT(fileMenuSlot(int)));
-	
-
-
-	mainMenu->insertItem(EXTCALCH_MENU14,fileMenu,FILEM);
-	mainMenu->insertItem(EXTCALCH_MENU58,editMenu,EDIT);
-	mainMenu->insertItem(EXTCALCH_MENU59,viewMenu,VIEW);
-	mainMenu->insertItem(EXTCALCH_MENU15,prefMenu,PREFERENCES);
-	mainMenu->insertItem(EXTCALCH_MENU16,calcMenu,CALCULATOR);
-	mainMenu->insertItem(EXTCALCH_MENU17,graphMenu,GRAPH);
-	mainMenu->insertItem(EXTCALCH_MENU46,tableMenu,TABLE);
-	mainMenu->insertItem(EXTCALCH_MENU66,scriptMenu,SCRIPTM);
-	mainMenu->insertItem(EXTCALCH_MENU74,statisticsMenu,STATISTICSM);
-	mainMenu->insertItem(EXTCALCH_MENU18,helpMenu,HELP);
-	
-	
-	QRect tabbarSize=tabBar->geometry();
-	
-	mainMenu->setGeometry(tabbarSize.left(),tabbarSize.bottom(),
-	tabbarSize.right()-tabbarSize.left(),20);
-
-	
-
-	calculator=new CalcWidget(this,pref,vars,threadData,tabbarSize.bottom());
-	calculator2=new CalcWidget(this,pref,vars,threadData,tabbarSize.bottom());
-	graph = new GraphWidget(this,pref,vars,threadData,tabbarSize.bottom());
-	table=new TableWidget(this,pref,vars,threadData,tabbarSize.bottom());
-	scripting=new ScriptWidget(this,pref,vars,tabbarSize.bottom());
-	scriptIO=new ScriptIOWidget(this,pref,vars,graph->getShareContext(),tabbarSize.bottom());
-	matrix=new MatrixWidget(this,pref,vars,threadData);
-	statistics=new StatisticsWidget(this,pref,vars,threadData,tabbarSize.bottom());
-//	addTab(calculator,EXTCALCH_STR6);
-//	addTab(calculator2,EXTCALCH_STR7);
-//	addTab(graph,EXTCALCH_STR8);
-//	addTab(table,EXTCALCH_STR9);
-//	addTab(scripting,"Scripting");
-	calculator->hide();
-	calculator2->hide();
-	graph->hide();
-	table->hide();
-	scripting->hide();
-	scriptIO->hide();
-	matrix->hide();
-	statistics->hide();
-
-	QObject::connect(helpMenu,SIGNAL(activated(int)),this,SLOT(helpMenuSlot(int)));
-	QObject::connect(prefMenu,SIGNAL(activated(int)),this,SLOT(prefMenuSlot(int)));
-	QObject::connect(calculator,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-	QObject::connect(calculator2,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-	QObject::connect(graph,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-	QObject::connect(table,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-	QObject::connect(scripting,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-	QObject::connect(scriptIO,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-	QObject::connect(matrix,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-	QObject::connect(statistics,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-
-//	QObject::connect(statistics,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-	QObject::connect(this,SIGNAL(currentChanged(QWidget*)),this,SLOT(tabChangeSlot(QWidget*)));
-	QObject::connect(this,SIGNAL(editSignal(int)),calculator,SLOT(editSlot(int)));
-	QObject::connect(this,SIGNAL(editSignal(int)),calculator2,SLOT(editSlot(int)));
-	QObject::connect(this,SIGNAL(editSignal(int)),graph,SLOT(editSlot(int)));
-	QObject::connect(this,SIGNAL(editSignal(int)),table,SLOT(editSlot(int)));
-	QObject::connect(this,SIGNAL(editSignal(int)),scripting,SLOT(editSlot(int)));
-	QObject::connect(this,SIGNAL(editSignal(int)),scriptIO,SLOT(editSlot(int)));
-//	QObject::connect(this,SIGNAL(editSignal(int)),matrix,SLOT(editSlot(int)));
-//	QObject::connect(this,SIGNAL(editSignal(int)),statistics,SLOT(editSlot(int)));
-	QObject::connect(scripting,SIGNAL(runScript(QString*)),this,SLOT(runScriptSlot(QString*)));
-	QObject::connect(scripting,SIGNAL(runScript(QString*)),this,SIGNAL(runScript(QString*)));
-	QObject::connect(scripting,SIGNAL(controlScriptMenu(int)),this,SLOT(scriptMenuSlot(int)));
-	QObject::connect(this,SIGNAL(runScript(QString*)),scriptIO,SLOT(runScript(QString*)));
-	QObject::connect(this,SIGNAL(matrixEnterSignal()),matrix,SLOT(enterSlot()));
-	QObject::connect(tableMenu,SIGNAL(activated(int)),table,SLOT(tableMenuSlot(int)));
-	QObject::connect(statistics,SIGNAL(printSignal()),graph,SLOT(drawSlot()));
-	QObject::connect(statistics,SIGNAL(changeTabSignal(int)),this,SLOT(changeTabSlot(int)));
-	QObject::connect(statistics,SIGNAL(drawPointsSignal(long double*,int,bool)),graph,SIGNAL(drawPointsSignal(long double*,int,bool)));
-	QObject::connect(statistics,SIGNAL(removeLinesSignal()),graph,SIGNAL(removeLinesSignal()));
-	QObject::connect(graph,SIGNAL(statisticsRedrawSignal()),statistics,SLOT(redrawGraphSlot()));
-	QObject::connect(this,SIGNAL(removeGraphicsLinesSignal()),graph,SIGNAL(removeLinesSignal()));
-	QObject::connect(graphSetMenu,SIGNAL(aboutToShow()),this,SLOT(updateGraphSetMenuSlot()));
-
-	
-
-	
-	
-	int ret=readConfigFile();
-	if(ret==-1 || ret==1)
-	{
-		if(ret == -1)
-		{
-			//first start
-			ret=YesNoBox(EXTCALCH_MENU75);
-		}
-		else if(ret==1)
-		{
-			ret=YesNoBox(EXTCALCH_MENU76);
-		}
-		pref.scriptPath=getenv("HOME")+QString("/.extcalc/script/");
-		pref.scriptDirName="code";
-		pref.dataDirName="data";
-		if(ret==0)
-		{
-			if(scriptPref != NULL)
-				delete scriptPref;
-			scriptPref=new ScriptPreferences(pref,(QWidget*)this);
-			QObject::connect(scriptPref,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-	
-			scriptPref->show();
-		}
-		else 
-		{
-			if(scriptPref != NULL)
-				delete scriptPref;
-			scriptPref=new ScriptPreferences(pref,(QWidget*)this);
-			QObject::connect(scriptPref,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-			scriptPref->saveSlot();
-			MessageBox(EXTCALCH_MENU77);
-		}
-	}
-	initConstants();
-	readVarFile();
-	readUIState();
-	readGraphsDir();
-	if(pref.currentSet.length()>0)
-		readFunctionFile(QString(getenv("HOME"))+"/"+QString(GRAPHSDIR)+pref.currentSet);
-	
-}
+MainObject();
 
 ~MainObject()
 {
@@ -798,194 +378,100 @@ virtual void customEvent(QCustomEvent*);
 
 public slots:
 void fileMenuSlot(int item);
+  //void quitSlot()
 void editMenuSlot(int item);
+  //void undoSlot()
+  //void redoSlot()
+  //void cutSlot()
+  //void copySlot()
+  //void pasteSlot()
 void viewMenuSlot(int item);
+  //void viewCalc1Slot()
+  //void viewCalc2Slot()
+  //void viewGraphSlot()
+  //void viewTableSlot()
+  //void viewMatrixSlot()
+  //void viewStatisticsSlot()
+  //void viewScriptingSlot()
+  //void viewScriptIOSlot()
 void angleMenuSlot(int type);
-void tabChangeSlot(QWidget*);
+  //void degSlot()
+  //void radSlot()
+  //void graSlot()
 void outputMenuSlot(int item);
+  //void fixedNumSlot()
+  //void variableNumSlot()
+  //void expSymSlot()
 void coordinateMenuSlot(int item);
+  //void standardCoordinateSlot()
+  //void trigonimectricCoordinateSlot()
+  //void showAxesSlot()
+  //void showLabelsSlot()
+  //void showRasterSlot()
+  //void constRationSlot()
 void graphTypeMenuSlot(int item);
+  //void graphStdSlot()
+  //void graphPolarSlot()
+  //void graph3DSlot();
 void graphMenuSlot(int item);
-void graphSetMenuSlot(int item);
-void updateGraphSetMenuSlot();
-void floatPointMenuSlot(int item);
-void calcTypeMenuSlot(int item);
+  //void graphsetManageSlot()
+  //void graphsetSaveSlot()
+  //void graphsetCreateSlot()
+  //void graphsetImportSlot()
+  //void graphsetExportSlot()
+void calcModeMenuSlot(int item);
+void calcComplexSlot();
+  //void calcScientificSlot()
+  //void calcBaseSlot()
+  //void calcComplexSlot()
 void baseMenuSlot(int item);
+  //void baseBinSlot()
+  //void baseOctSlot()
+  //void baseDecSlot()
+  //void baseHexSlot()
 void helpMenuSlot(int item);
+  //void helpSlot()
+  //void infoSlot()
 void prefMenuSlot(int item);
+  //void prefCalculatorSlot()
+  //void prefGraphicsSlot()
+  //void prefTableSlot()
+  //void prefScriptSlot()  
 void languageMenuSlot(int item);
+  //void langEnSlot()
+  //void langFrSlot()
+  //void langDeSlot()
 void tableMenuSlot(int item);
+  //void tableStandardSlot()
+  //void tableResetSlot()
 void scriptMenuSlot(int item);
+  //void scriptExportSlot()
+  //void scriptImportSlot()
+  //void scriptMemAutoSlot()
+  //void scripMemClearSlot()
 void statisticsMenuSlot(int item);
+  //void statClearSlot()
+  //void statAutoclearSlot()
+  //void statPointsSlot()
+  //void statLinesSlot()
 void tableTypeMenuSlot(int item);
+  //void tableNormalSlot()
+  //void tablePolarSlot()
+  //void tableParameterSlot()
+  //void tableInequalitySlot()
+  //void table3dSlot()
+  //void tableComplexSlot()
+
+void graphSetMenuSlot(int item);
+void floatPointMenuSlot(int item);
+void updateGraphSetMenuSlot();
+
 void runScriptSlot(QString*);
 void changeTabSlot(int);
-void getPref(Preferences newPref)
-{
-	static bool running=false;
-	for(int c=2;c<=pref.precision;c++)
-		if(floatPointMenu->isItemChecked(c))
-			floatPointMenu->setItemChecked(c,false);
-	
-	
+void tabChangeSlot(int index);
 
-	if(newPref.graphType==GRAPHPOLAR)
-	{
-		newPref.xmin=newPref.ymin=-newPref.radiusMax;
-		newPref.xmax=newPref.ymax=newPref.radiusMax;
-		newPref.rasterSizeX=newPref.rasterSizeY=newPref.rasterSizeRadius;
-	}
-	else {
-		if(fabs(newPref.xmax) > fabs(newPref.xmin))
-			newPref.radiusMax=fabs(newPref.xmax);
-		else newPref.radiusMax=fabs(newPref.xmin);
-		newPref.rasterSizeRadius=newPref.rasterSizeX;
-		if(newPref.angle==DEG)
-		{
-			newPref.rasterSizeAngle=15.0;
-			newPref.angleMax=360.0;
-		}
-		else if(newPref.angle==RAD)
-		{
-			newPref.rasterSizeAngle=0.1*PI;
-			newPref.angleMax=2*PI;
-		}
-		else if(newPref.angle==GRA)
-		{
-			newPref.rasterSizeAngle=20.0;
-			newPref.angleMax=400.0;
-		}
-	}
-	if(((indexOf(calculator)!=-1)!=pref.showWindows[0] ||
-		   (indexOf(calculator2)!=-1)!=pref.showWindows[1] ||
-		   (indexOf(graph)!=-1)!=pref.showWindows[2] ||
-		   (indexOf(table)!=-1)!=pref.showWindows[3] ||
-		   (indexOf(matrix)!=-1)!=pref.showWindows[4] || 
-			(indexOf(statistics)!=-1)!=pref.showWindows[5] || 
-			(indexOf(scripting)!=-1)!=pref.showWindows[6] ||
-			(indexOf(scriptIO)!=-1)!=pref.showWindows[7]
-	   ) && !running)
-	{
-		running=true;
-		if(indexOf(calculator)!=-1)
-			removePage(calculator);
-		if(indexOf(calculator2)!=-1)
-			removePage(calculator2);
-		if(indexOf(graph)!=-1)
-			removePage(graph);
-		if(indexOf(table)!=-1)
-			removePage(table);
-		if(indexOf(matrix)!=-1)
-			removePage(matrix);
-		if(indexOf(statistics)!=-1)
-			removePage(statistics);
-		if(indexOf(scripting)!=-1)
-			removePage(scripting);
-		if(indexOf(scriptIO)!=-1)
-			removePage(scriptIO);
-		if(pref.showWindows[0])
-			addTab(calculator,EXTCALCH_STR6);
-		if(pref.showWindows[1])
-			addTab(calculator2,EXTCALCH_STR7);
-		if(pref.showWindows[2])
-			addTab(graph,EXTCALCH_STR8);
-		if(pref.showWindows[3])
-			addTab(table,EXTCALCH_STR9);
-		if(pref.showWindows[4])
-			addTab(matrix,EXTCALCH_MENU73);
-		if(pref.showWindows[5])
-			addTab(statistics,EXTCALCH_MENU74);
-		if(pref.showWindows[6])
-			addTab(scripting,EXTCALCH_STR12);
-		if(pref.showWindows[7])
-			addTab(scriptIO,EXTCALCH_STR13);
-	}
-	running=false;
 
-	if(!calcFocus && newPref.calcType==BASE)
-	{
-		newPref.calcType=SCIENTIFIC;
-		calcModeChanged=true;
-	}
-	if(calcFocus&&calcModeChanged)
-	{
-		newPref.calcType=BASE;
-		calcModeChanged=false;
-	}
-
-	graphTypeMenu->setItemChecked(GRAPHSTD,false);
-	graphTypeMenu->setItemChecked(GRAPHPOLAR,false);
-	graphTypeMenu->setItemChecked(GRAPH3D,false);
-
-	angleMenu->setItemChecked(DEG,false);
-	angleMenu->setItemChecked(RAD,false);
-	angleMenu->setItemChecked(GRA,false);
-
-	outputMenu->setItemChecked(FIXEDNUM,false);
-	outputMenu->setItemChecked(VARIABLENUM,false);
-	outputMenu->setItemChecked(EXPSYM,false);
-
-	calcTypeMenu->setItemChecked(SCIENTIFIC,false);
-	calcTypeMenu->setItemChecked(BASE,false);
-	calcTypeMenu->setItemChecked(COMPLEXMENU,false);
-
-	baseMenu->setItemChecked(BIN,false);
-	baseMenu->setItemChecked(OCT,false);
-	baseMenu->setItemChecked(DEC,false);
-	baseMenu->setItemChecked(HEX,false);
-	
-	languageMenu->setItemChecked(LANG_DE,false);
-	languageMenu->setItemChecked(LANG_EN,false);
-	languageMenu->setItemChecked(LANG_FR,false);
-
-	tableTypeMenu->setItemChecked(TABLENORMAL,false);
-	tableTypeMenu->setItemChecked(TABLEPARAMETER,false);
-	tableTypeMenu->setItemChecked(TABLEPOLAR,false);
-	tableTypeMenu->setItemChecked(TABLEINEQUAITY,false);
-	tableTypeMenu->setItemChecked(TABLE3D,false);
-	tableTypeMenu->setItemChecked(TABLECOMPLEX,false);
-
-	
-	scriptMenu->setItemChecked(CLEARMEMALWAYS,true);
-
-	pref=newPref;
-	calculator->setPref(pref);
-	calculator2->setPref(pref);
-	graph->setPref(pref);
-	table->setPref(pref);
-	matrix->setPref(pref);
-	statistics->setPref(pref);
-	scripting->setPref(pref);
-	scriptIO->setPref(pref);
-//	savePref(&pref);
-
-	angleMenu->setItemChecked(pref.angle,true);
-	outputMenu->setItemChecked(pref.outputType,true);
-	floatPointMenu->setItemChecked(pref.outputLength,true);
-	baseMenu->setItemChecked(pref.base,true);
-	calcTypeMenu->setItemChecked(pref.calcType,true);
-	calcTypeMenu->setItemChecked(COMPLEXMENU,pref.complex);
-	calcTypeMenu->setItemEnabled(BASEMENU,calcTypeMenu->isItemChecked(BASE));
-	graphTypeMenu->setItemChecked(pref.graphType,true);
-	tableTypeMenu->setItemChecked(pref.tableType,true);
-	scriptMenu->setItemChecked(CLEARMEMALWAYS,pref.clearScriptMemory);
-	statisticsMenu->setItemChecked(STATAUTOCLEAR,pref.statAutoClear);
-	statisticsMenu->setItemChecked(STATPOINTS,pref.showStatPoints);
-	statisticsMenu->setItemChecked(STATLINES,pref.showStatLines);
-	coordinateMenu->setItemChecked(SHOWAXES,pref.axis);
-	coordinateMenu->setItemChecked(SHOWLABELS,pref.label);
-	coordinateMenu->setItemChecked(SHOWRASTER,pref.raster);
-	coordinateMenu->setItemChecked(CONSTRATIO,pref.autosize);
-	languageMenu->setItemChecked(pref.language,true);
-	viewMenu->setItemChecked(VIEWCALC1,pref.showWindows[0]);
-	viewMenu->setItemChecked(VIEWCALC2,pref.showWindows[1]);
-	viewMenu->setItemChecked(VIEWGRAPH,pref.showWindows[2]);
-	viewMenu->setItemChecked(VIEWTABLE,pref.showWindows[3]);
-	viewMenu->setItemChecked(VIEWMATRIX,pref.showWindows[4]);
-	viewMenu->setItemChecked(VIEWSTATISTICS,pref.showWindows[5]);
-	viewMenu->setItemChecked(VIEWSCRIPTING,pref.showWindows[6]);
-	viewMenu->setItemChecked(VIEWSCRIPTIO,pref.showWindows[7]);
-}
+void getPref(Preferences newPref);
 
 signals:
 	void editSignal(int);
@@ -1000,11 +486,11 @@ signals:
 
 class HelpBrowser :public QWidget
 {
-	QToolBar*toolBar;
-	QDockArea*dockArea;
+	Q3ToolBar*toolBar;
+	Q3DockArea*dockArea;
 	QPixmap *forwardIcon,*backIcon,*zoominIcon,*zoomoutIcon;
 	QToolButton *forwardButton,*backButton,*zoominButton,*zoomoutButton;
-	QTextBrowser *browser;
+	Q3TextBrowser *browser;
 	QString currentSource;
 	Q_OBJECT
 	

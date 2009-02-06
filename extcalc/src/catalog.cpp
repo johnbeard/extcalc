@@ -14,6 +14,8 @@ any later version.
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "catalog.h"
+//Added by qt3to4:
+#include <QLabel>
 
 
 
@@ -456,7 +458,7 @@ ConstantDialog::ConstantDialog(QWidget*parent,QString name,Preferences p) :QDial
 	identifierLine=new QLineEdit(this);
 	identifierLine->setReadOnly(true);
 		
-	variablesBox=new QListBox(this);
+	variablesBox=new Q3ListBox(this);
 		
 	okButton=new QPushButton(tr("OK"),this);
 	cancelButton=new QPushButton(tr("Cancel"),this);
@@ -487,7 +489,7 @@ ConstantDialog::ConstantDialog(QWidget*parent,QString name,Preferences p) :QDial
 	connect(removeButton,SIGNAL(clicked()),this,SLOT(removeSlot()));
 	connect(addButton,SIGNAL(clicked()),this,SLOT(applySlot()));
 	connect(okButton,SIGNAL(clicked()),this,SLOT(accept()));
-	connect(variablesBox,SIGNAL(currentChanged(QListBoxItem*)),this,SLOT(boxSlot()));
+	connect(variablesBox,SIGNAL(currentChanged(Q3ListBoxItem*)),this,SLOT(boxSlot()));
 
 	setPref(pref);
 }

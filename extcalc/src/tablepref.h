@@ -39,7 +39,7 @@ class TablePreferences :public QWidget
 Q_OBJECT
 public:
 	TablePreferences(Preferences p,QWidget*parent) 
-	:QWidget(parent,TABLEPREFH_STR11,Qt::WStyle_Dialog | Qt::WType_Dialog)
+	:QWidget(parent,TABLEPREFH_STR11,Qt::WType_Dialog | Qt::WType_Dialog)
 	{
 		pref=p;
 		topLabel=new QLabel(TABLEPREFH_STR1,this);
@@ -114,7 +114,7 @@ public:
 			typeBox->setCurrentText(TABLEH_STR4);
 		else if(pref.tableType==TABLEPARAMETER)
 			typeBox->setCurrentText(TABLEH_STR5);
-		else if(pref.tableType==TABLEINEQUAITY)
+		else if(pref.tableType==TABLEINEQUALITY)
 			typeBox->setCurrentText(TABLEH_STR6);
 		else if(pref.tableType==TABLE3D)
 			typeBox->setCurrentText(TABLEH_STR7);

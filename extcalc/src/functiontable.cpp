@@ -14,17 +14,19 @@ any later version.
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "functiontable.h"
+//Added by qt3to4:
+#include <QKeyEvent>
 
 
 void FunctionTable::cellChangedSlot(int row,int col)
 {
 	
 	
-	QComboTableItem *colorItem=(QComboTableItem*)item(row,1);
-	QCheckTableItem*activeItem=(QCheckTableItem*)item(row,2);
-	QComboTableItem *typeItem=(QComboTableItem*)item(row,3);
-	QCheckTableItem*dynamicItem=(QCheckTableItem*)item(row,4);
-	QCheckTableItem*logicItem=(QCheckTableItem*)item(row,5);
+	Q3ComboTableItem *colorItem=(Q3ComboTableItem*)item(row,1);
+	Q3CheckTableItem*activeItem=(Q3CheckTableItem*)item(row,2);
+	Q3ComboTableItem *typeItem=(Q3ComboTableItem*)item(row,3);
+	Q3CheckTableItem*dynamicItem=(Q3CheckTableItem*)item(row,4);
+	Q3CheckTableItem*logicItem=(Q3CheckTableItem*)item(row,5);
 		
 	pref.activeFunctions[tableFunctionMap[row]]=activeItem->isChecked();
 	pref.dynamicFunctions[tableFunctionMap[row]]=dynamicItem->isChecked();
@@ -99,11 +101,11 @@ void FunctionTable::setPref(Preferences newPref)
 				if(tableFunctionMap[c]==tableFunctionMap[c-1])
 					continue;
 			insertRows(c,1);
-			setItem(c,2,new QCheckTableItem(this,""));
-			setItem(c,4,new QCheckTableItem(this,""));
-			setItem(c,5,new QCheckTableItem(this,""));
-			setItem(c,1,new QComboTableItem(this,colorList));
-			setItem(c,3,new QComboTableItem(this,graphTypeList));
+			setItem(c,2,new Q3CheckTableItem(this,""));
+			setItem(c,4,new Q3CheckTableItem(this,""));
+			setItem(c,5,new Q3CheckTableItem(this,""));
+			setItem(c,1,new Q3ComboTableItem(this,colorList));
+			setItem(c,3,new Q3ComboTableItem(this,graphTypeList));
 			verticalHeader()->setLabel(c,"x"+QString::number(tableFunctionMap[c]+1)+"(T)");
 			verticalHeader()->setLabel(c+1,"y"+QString::number(tableFunctionMap[c]+1)+"(T)");
 			setRowHeight(c,25);
@@ -135,7 +137,7 @@ void FunctionTable::setPref(Preferences newPref)
 				tableFunctionMap.DeleteItem(c);
 			}
 		}
-		QComboTableItem *typeItem=(QComboTableItem*)item(c,3);
+		Q3ComboTableItem *typeItem=(Q3ComboTableItem*)item(c,3);
 		if(typeItem!=NULL)
 		{
 			switch(pref.functionTypes[tableFunctionMap[c]])
@@ -211,19 +213,19 @@ void FunctionTable::setPref(Preferences newPref)
 	if(pref.activeFunctions!=NULL)
 		for(int c=0; c<tableFunctionMap.GetLen();c++)
 	{
-		QCheckTableItem *checkItem=(QCheckTableItem*)item(c,2);
+		Q3CheckTableItem *checkItem=(Q3CheckTableItem*)item(c,2);
 		if(checkItem!=NULL)
 			checkItem->setChecked(pref.activeFunctions[tableFunctionMap[c]]);
-		checkItem=(QCheckTableItem*)item(c,4);
+		checkItem=(Q3CheckTableItem*)item(c,4);
 		if(checkItem!=NULL)
 			checkItem->setChecked(pref.dynamicFunctions[tableFunctionMap[c]]);
-		checkItem=(QCheckTableItem*)item(c,5);
+		checkItem=(Q3CheckTableItem*)item(c,5);
 		if(checkItem!=NULL)
 			checkItem->setChecked(pref.logicFunctions[tableFunctionMap[c]]);
 	}
 	for(int c=0;c<tableFunctionMap.GetLen(); c++)
 	{
-		QComboTableItem *colorItem=(QComboTableItem*)item(c,1);
+		Q3ComboTableItem *colorItem=(Q3ComboTableItem*)item(c,1);
 		if(colorItem!=NULL)
 		{
 			colorItem->setCurrentItem(getColorName(pref.functionColors[tableFunctionMap[c]]));

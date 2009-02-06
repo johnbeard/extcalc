@@ -14,6 +14,11 @@ any later version.
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "calcinput.h"
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <Q3PopupMenu>
+#include <QKeyEvent>
+#include <QEvent>
 
 void CalcInput::keyPressEvent(QKeyEvent*e)
 {
@@ -147,10 +152,10 @@ void CalcInput::keyPressEvent(QKeyEvent*e)
 }
 
 
-QPopupMenu* CalcInput::createPopupMenu(const QPoint&)
+Q3PopupMenu* CalcInput::createPopupMenu(const QPoint&)
 {
 	
-	QPopupMenu*menu = new QPopupMenu(this);
+	Q3PopupMenu*menu = new Q3PopupMenu(this);
 	menu->insertItem(CALCWIDGETC_MENU1,1);
 	menu->insertItem(CALCWIDGETC_MENU2,2);
 	menu->insertSeparator();

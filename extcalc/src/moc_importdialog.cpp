@@ -1,147 +1,97 @@
 /****************************************************************************
-** ImportDialog meta object code from reading C++ file 'importdialog.h'
+** Meta object code from reading C++ file 'importdialog.h'
 **
-** Created: Fri Jun 6 11:52:50 2008
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
+** Created: Wed Dec 31 16:18:13 2008
+**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#undef QT_NO_COMPAT
 #include "importdialog.h"
-#include <qmetaobject.h>
-#include <qapplication.h>
-
-#include <private/qucomextra_p.h>
-#if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
-#error "This file was generated using the moc from 3.3.8b. It"
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'importdialog.h' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.4.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
-const char *ImportDialog::className() const
+QT_BEGIN_MOC_NAMESPACE
+static const uint qt_meta_data_ImportDialog[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       5,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      14,   13,   13,   13, 0x05,
+      38,   13,   13,   13, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+      62,   13,   13,   13, 0x0a,
+      73,   13,   13,   13, 0x0a,
+      90,   13,   13,   13, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_ImportDialog[] = {
+    "ImportDialog\0\0updateScriptSignal(int)\0"
+    "prefChange(Preferences)\0saveSlot()\0"
+    "openDialogSlot()\0saveDialogSlot()\0"
+};
+
+const QMetaObject ImportDialog::staticMetaObject = {
+    { &QWidget::staticMetaObject, qt_meta_stringdata_ImportDialog,
+      qt_meta_data_ImportDialog, 0 }
+};
+
+const QMetaObject *ImportDialog::metaObject() const
 {
-    return "ImportDialog";
+    return &staticMetaObject;
 }
 
-QMetaObject *ImportDialog::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_ImportDialog( "ImportDialog", &ImportDialog::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString ImportDialog::tr( const char *s, const char *c )
+void *ImportDialog::qt_metacast(const char *_clname)
 {
-    if ( qApp )
-	return qApp->translate( "ImportDialog", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString ImportDialog::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "ImportDialog", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* ImportDialog::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QWidget::staticMetaObject();
-    static const QUMethod slot_0 = {"saveSlot", 0, 0 };
-    static const QUMethod slot_1 = {"openDialogSlot", 0, 0 };
-    static const QUMethod slot_2 = {"saveDialogSlot", 0, 0 };
-    static const QMetaData slot_tbl[] = {
-	{ "saveSlot()", &slot_0, QMetaData::Public },
-	{ "openDialogSlot()", &slot_1, QMetaData::Public },
-	{ "saveDialogSlot()", &slot_2, QMetaData::Public }
-    };
-    static const QUParameter param_signal_0[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"updateScriptSignal", 1, param_signal_0 };
-    static const QUParameter param_signal_1[] = {
-	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod signal_1 = {"prefChange", 1, param_signal_1 };
-    static const QMetaData signal_tbl[] = {
-	{ "updateScriptSignal(int)", &signal_0, QMetaData::Public },
-	{ "prefChange(Preferences)", &signal_1, QMetaData::Public }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"ImportDialog", parentObject,
-	slot_tbl, 3,
-	signal_tbl, 2,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_ImportDialog.setMetaObject( metaObj );
-    return metaObj;
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_ImportDialog))
+        return static_cast<void*>(const_cast< ImportDialog*>(this));
+    return QWidget::qt_metacast(_clname);
 }
 
-void* ImportDialog::qt_cast( const char* clname )
+int ImportDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    if ( !qstrcmp( clname, "ImportDialog" ) )
-	return this;
-    return QWidget::qt_cast( clname );
-}
-
-// SIGNAL updateScriptSignal
-void ImportDialog::updateScriptSignal( int t0 )
-{
-    activate_signal( staticMetaObject()->signalOffset() + 0, t0 );
-}
-
-#include <qobjectdefs.h>
-#include <qsignalslotimp.h>
-
-// SIGNAL prefChange
-void ImportDialog::prefChange( Preferences t0 )
-{
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 1 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_ptr.set(o+1,&t0);
-    activate_signal( clist, o );
-}
-
-bool ImportDialog::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: saveSlot(); break;
-    case 1: openDialogSlot(); break;
-    case 2: saveDialogSlot(); break;
-    default:
-	return QWidget::qt_invoke( _id, _o );
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: updateScriptSignal((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 1: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 2: saveSlot(); break;
+        case 3: openDialogSlot(); break;
+        case 4: saveDialogSlot(); break;
+        }
+        _id -= 5;
     }
-    return TRUE;
+    return _id;
 }
 
-bool ImportDialog::qt_emit( int _id, QUObject* _o )
+// SIGNAL 0
+void ImportDialog::updateScriptSignal(int _t1)
 {
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: updateScriptSignal((int)static_QUType_int.get(_o+1)); break;
-    case 1: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    default:
-	return QWidget::qt_emit(_id,_o);
-    }
-    return TRUE;
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
-#ifndef QT_NO_PROPERTIES
 
-bool ImportDialog::qt_property( int id, int f, QVariant* v)
+// SIGNAL 1
+void ImportDialog::prefChange(Preferences _t1)
 {
-    return QWidget::qt_property( id, f, v);
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
-
-bool ImportDialog::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
+QT_END_MOC_NAMESPACE

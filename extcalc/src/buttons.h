@@ -22,13 +22,15 @@ ExtButtons for scientific functions
 
 #include "global.h"
 #include <qpushbutton.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qstring.h>
 #include <qfont.h>
+//Added by qt3to4:
+#include <QResizeEvent>
 #include <stdio.h>
 
 
-class StandardButtons :public QButtonGroup
+class StandardButtons :public Q3ButtonGroup
 {
 //	QPushButton * buttons;
 	int cols,rows;
@@ -39,7 +41,7 @@ class StandardButtons :public QButtonGroup
 	
 public:
 
-	StandardButtons(QWidget *parent) :QButtonGroup(parent)
+	StandardButtons(QWidget *parent) :Q3ButtonGroup(parent)
 	{
 		cols=5;
 		rows=4;
@@ -139,7 +141,7 @@ public slots:
 };
 
 
-class ExtButtons :public QButtonGroup
+class ExtButtons :public Q3ButtonGroup
 {
 //	QPushButton * buttons;
 	int cols,rows;
@@ -149,7 +151,7 @@ class ExtButtons :public QButtonGroup
 	
 public:
 
-	ExtButtons(QWidget *parent) :QButtonGroup(parent)
+	ExtButtons(QWidget *parent) :Q3ButtonGroup(parent)
 	{
 		cols=6;
 		rows=4;

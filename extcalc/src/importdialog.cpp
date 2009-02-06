@@ -1,8 +1,10 @@
 #include "importdialog.h"
+//Added by qt3to4:
+#include <QLabel>
 
 
 ImportDialog::ImportDialog(Preferences p,QWidget*parent,bool importF,bool func) 
-	:QWidget(parent,EXTCALCH_STR14,Qt::WStyle_Dialog | Qt::WType_Dialog)
+	:QWidget(parent,EXTCALCH_STR14,Qt::WType_Dialog | Qt::WType_Dialog)
 {
 	dialog=false;
 	importFile=importF;
@@ -112,7 +114,7 @@ void ImportDialog::openDialogSlot()
 		startPath=QString(getenv("HOME"));
 	}
 	
-	QString path = QFileDialog::getOpenFileName(
+	QString path = Q3FileDialog::getOpenFileName(
 			startPath,
    QString::null,
    this,
@@ -132,7 +134,7 @@ void ImportDialog::saveDialogSlot()
 	if(importFile)
 		startPath=directory;
 	else startPath=QString(getenv("HOME"));
-	QString path = QFileDialog::getSaveFileName(
+	QString path = Q3FileDialog::getSaveFileName(
 			startPath,
    QString::null,
    this,

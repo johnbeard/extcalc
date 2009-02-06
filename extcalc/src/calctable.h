@@ -19,13 +19,13 @@ Overloaded QTable class that supports colored cells.
 
 
 
-#include <qtable.h>
+#include <q3table.h>
 #include <global.h>
 #include "list.h"
 
 
 
-class CalcTable :public QTable
+class CalcTable :public Q3Table
 {
 	
 	int coloredCol;
@@ -36,7 +36,7 @@ class CalcTable :public QTable
 public:
 	
 	
-	CalcTable(QWidget*parent,int coloredColumn=0,bool isEditable=true) :QTable(parent)
+	CalcTable(QWidget*parent,int coloredColumn=0,bool isEditable=true) :Q3Table(parent)
 	{
 		coloredCol=coloredColumn;
 		editable=isEditable;

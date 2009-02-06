@@ -14,6 +14,13 @@ any later version.
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "scriptio.h"
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <QWheelEvent>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QCustomEvent>
+#include <QPaintEvent>
 
 
 
@@ -462,8 +469,9 @@ void ScriptIOWidget::wheelEvent(QWheelEvent*ev)
 }
 
 
-void ScriptIOWidget::customEvent(QCustomEvent*ev)
+void ScriptIOWidget::customEvent(QEvent*e)
 {
+	QCustomEvent*ev=(QCustomEvent*)e;
 	threadData->eventCount--;
 	if(scriptExec && script!=NULL)
 	{
@@ -1276,7 +1284,7 @@ void ScriptIOWidget::searchScripts(QString*code)
 				struct stat fileStat;
 				char*subFileContent;
 				QString qSubFileContent;
-				filePath=pref.scriptPath+"/"+pref.scriptDirName+QString("/")+scriptName;
+				filePath=pref.scriptPath+QString("/")+pref.scriptDirName+QString("/")+QString(scriptName);
 				if(lstat(filePath,&fileStat)!=0)
 					;
 				else {
@@ -1316,7 +1324,7 @@ void ScriptIOWidget::loadSubScripts()
 	FILE*subFile;
 	for(int c=0; c<threadData->subprogramPath.GetLen(); c++)
 	{
-		filePath=pref.scriptPath+"/"+pref.scriptDirName+QString("/")+threadData->subprogramPath[c];
+		filePath=pref.scriptPath+QString("/")+pref.scriptDirName+QString("/")+QString(threadData->subprogramPath[c]);
 		if(lstat(filePath,&fileStat)!=0)
 			threadData->subprograms.NewItem((Math*)NULL);
 		else {

@@ -1,387 +1,238 @@
 /****************************************************************************
-** GraphSolveWidget meta object code from reading C++ file 'graphsolve.h'
+** Meta object code from reading C++ file 'graphsolve.h'
 **
-** Created: Sat Jun 7 07:08:39 2008
-**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.8   edited Feb 2 14:59 $)
+** Created: Wed Dec 31 16:17:59 2008
+**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#undef QT_NO_COMPAT
 #include "graphsolve.h"
-#include <qmetaobject.h>
-#include <qapplication.h>
-
-#include <private/qucomextra_p.h>
-#if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
-#error "This file was generated using the moc from 3.3.8b. It"
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'graphsolve.h' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.4.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
-const char *GraphSolveWidget::className() const
+QT_BEGIN_MOC_NAMESPACE
+static const uint qt_meta_data_GraphSolveWidget[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+      30,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // signals: signature, parameters, type, tag, flags
+      20,   18,   17,   17, 0x05,
+      46,   44,   17,   17, 0x05,
+      78,   72,   17,   17, 0x05,
+     106,   99,   17,   17, 0x05,
+     128,  124,   17,   17, 0x05,
+     158,  154,   17,   17, 0x05,
+     188,  184,   17,   17, 0x05,
+     214,   17,   17,   17, 0x05,
+     228,   17,   17,   17, 0x05,
+     254,  252,   17,   17, 0x05,
+     290,   17,   17,   17, 0x05,
+     305,  252,   17,   17, 0x05,
+     337,  334,   17,   17, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+     364,   17,   17,   17, 0x0a,
+     382,  252,   17,   17, 0x0a,
+     431,  418,   17,   17, 0x0a,
+     451,  445,   17,   17, 0x0a,
+     472,   17,   17,   17, 0x0a,
+     497,   17,   17,   17, 0x0a,
+     514,   17,   17,   17, 0x0a,
+     532,   17,   17,   17, 0x0a,
+     550,   17,   17,   17, 0x0a,
+     570,   17,   17,   17, 0x0a,
+     587,   17,   17,   17, 0x0a,
+     605,   17,   17,   17, 0x0a,
+     622,   17,   17,   17, 0x0a,
+     639,   17,   17,   17, 0x0a,
+     656,   17,   17,   17, 0x0a,
+     675,   17,   17,   17, 0x0a,
+     694,   17,   17,   17, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_GraphSolveWidget[] = {
+    "GraphSolveWidget\0\0x\0addVerticalLine(double)\0"
+    "y\0addHorizontalLine(double)\0angle\0"
+    "addPolarLine(double)\0radius\0"
+    "addCircle(double)\0y,z\0add3dXLine(double,double)\0"
+    "x,z\0add3dYLine(double,double)\0x,y\0"
+    "add3dZLine(double,double)\0removeLines()\0"
+    "prefChange(Preferences)\0,\0"
+    "drawInequalityIntersection(int,int)\0"
+    "redrawGraphs()\0getScreenshotSignal(int,int)\0"
+    ",,\0drawSignal(int,QColor,int)\0"
+    "solveButtonSlot()\0graphLMButtonPressed(double,double)\0"
+    "newSolveType\0setState(int)\0fType\0"
+    "setFunctionType(int)\0screenshotSlot(QPixmap*)\0"
+    "openButtonSlot()\0colorButtonSlot()\0"
+    "penValueSlot(int)\0forwardButtonSlot()\0"
+    "backButtonSlot()\0clearButtonSlot()\0"
+    "freeButtonSlot()\0lineButtonSlot()\0"
+    "rectButtonSlot()\0circleButtonSlot()\0"
+    "rubberButtonSlot()\0textButtonSlot()\0"
+};
+
+const QMetaObject GraphSolveWidget::staticMetaObject = {
+    { &QWidget::staticMetaObject, qt_meta_stringdata_GraphSolveWidget,
+      qt_meta_data_GraphSolveWidget, 0 }
+};
+
+const QMetaObject *GraphSolveWidget::metaObject() const
 {
-    return "GraphSolveWidget";
+    return &staticMetaObject;
 }
 
-QMetaObject *GraphSolveWidget::metaObj = 0;
-static QMetaObjectCleanUp cleanUp_GraphSolveWidget( "GraphSolveWidget", &GraphSolveWidget::staticMetaObject );
-
-#ifndef QT_NO_TRANSLATION
-QString GraphSolveWidget::tr( const char *s, const char *c )
+void *GraphSolveWidget::qt_metacast(const char *_clname)
 {
-    if ( qApp )
-	return qApp->translate( "GraphSolveWidget", s, c, QApplication::DefaultCodec );
-    else
-	return QString::fromLatin1( s );
-}
-#ifndef QT_NO_TRANSLATION_UTF8
-QString GraphSolveWidget::trUtf8( const char *s, const char *c )
-{
-    if ( qApp )
-	return qApp->translate( "GraphSolveWidget", s, c, QApplication::UnicodeUTF8 );
-    else
-	return QString::fromUtf8( s );
-}
-#endif // QT_NO_TRANSLATION_UTF8
-
-#endif // QT_NO_TRANSLATION
-
-QMetaObject* GraphSolveWidget::staticMetaObject()
-{
-    if ( metaObj )
-	return metaObj;
-    QMetaObject* parentObject = QWidget::staticMetaObject();
-    static const QUMethod slot_0 = {"solveButtonSlot", 0, 0 };
-    static const QUParameter param_slot_1[] = {
-	{ 0, &static_QUType_double, 0, QUParameter::In },
-	{ 0, &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod slot_1 = {"graphLMButtonPressed", 2, param_slot_1 };
-    static const QUParameter param_slot_2[] = {
-	{ "newSolveType", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_2 = {"setState", 1, param_slot_2 };
-    static const QUParameter param_slot_3[] = {
-	{ "fType", &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_3 = {"setFunctionType", 1, param_slot_3 };
-    static const QUParameter param_slot_4[] = {
-	{ 0, &static_QUType_varptr, "\x06", QUParameter::In }
-    };
-    static const QUMethod slot_4 = {"screenshotSlot", 1, param_slot_4 };
-    static const QUMethod slot_5 = {"openButtonSlot", 0, 0 };
-    static const QUMethod slot_6 = {"colorButtonSlot", 0, 0 };
-    static const QUParameter param_slot_7[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod slot_7 = {"penValueSlot", 1, param_slot_7 };
-    static const QUMethod slot_8 = {"forwardButtonSlot", 0, 0 };
-    static const QUMethod slot_9 = {"backButtonSlot", 0, 0 };
-    static const QUMethod slot_10 = {"clearButtonSlot", 0, 0 };
-    static const QUMethod slot_11 = {"freeButtonSlot", 0, 0 };
-    static const QUMethod slot_12 = {"lineButtonSlot", 0, 0 };
-    static const QUMethod slot_13 = {"rectButtonSlot", 0, 0 };
-    static const QUMethod slot_14 = {"circleButtonSlot", 0, 0 };
-    static const QUMethod slot_15 = {"rubberButtonSlot", 0, 0 };
-    static const QUMethod slot_16 = {"textButtonSlot", 0, 0 };
-    static const QMetaData slot_tbl[] = {
-	{ "solveButtonSlot()", &slot_0, QMetaData::Public },
-	{ "graphLMButtonPressed(double,double)", &slot_1, QMetaData::Public },
-	{ "setState(int)", &slot_2, QMetaData::Public },
-	{ "setFunctionType(int)", &slot_3, QMetaData::Public },
-	{ "screenshotSlot(QPixmap*)", &slot_4, QMetaData::Public },
-	{ "openButtonSlot()", &slot_5, QMetaData::Public },
-	{ "colorButtonSlot()", &slot_6, QMetaData::Public },
-	{ "penValueSlot(int)", &slot_7, QMetaData::Public },
-	{ "forwardButtonSlot()", &slot_8, QMetaData::Public },
-	{ "backButtonSlot()", &slot_9, QMetaData::Public },
-	{ "clearButtonSlot()", &slot_10, QMetaData::Public },
-	{ "freeButtonSlot()", &slot_11, QMetaData::Public },
-	{ "lineButtonSlot()", &slot_12, QMetaData::Public },
-	{ "rectButtonSlot()", &slot_13, QMetaData::Public },
-	{ "circleButtonSlot()", &slot_14, QMetaData::Public },
-	{ "rubberButtonSlot()", &slot_15, QMetaData::Public },
-	{ "textButtonSlot()", &slot_16, QMetaData::Public }
-    };
-    static const QUParameter param_signal_0[] = {
-	{ "x", &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod signal_0 = {"addVerticalLine", 1, param_signal_0 };
-    static const QUParameter param_signal_1[] = {
-	{ "y", &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod signal_1 = {"addHorizontalLine", 1, param_signal_1 };
-    static const QUParameter param_signal_2[] = {
-	{ "angle", &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod signal_2 = {"addPolarLine", 1, param_signal_2 };
-    static const QUParameter param_signal_3[] = {
-	{ "radius", &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod signal_3 = {"addCircle", 1, param_signal_3 };
-    static const QUParameter param_signal_4[] = {
-	{ "y", &static_QUType_double, 0, QUParameter::In },
-	{ "z", &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod signal_4 = {"add3dXLine", 2, param_signal_4 };
-    static const QUParameter param_signal_5[] = {
-	{ "x", &static_QUType_double, 0, QUParameter::In },
-	{ "z", &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod signal_5 = {"add3dYLine", 2, param_signal_5 };
-    static const QUParameter param_signal_6[] = {
-	{ "x", &static_QUType_double, 0, QUParameter::In },
-	{ "y", &static_QUType_double, 0, QUParameter::In }
-    };
-    static const QUMethod signal_6 = {"add3dZLine", 2, param_signal_6 };
-    static const QUMethod signal_7 = {"removeLines", 0, 0 };
-    static const QUParameter param_signal_8[] = {
-	{ 0, &static_QUType_ptr, "Preferences", QUParameter::In }
-    };
-    static const QUMethod signal_8 = {"prefChange", 1, param_signal_8 };
-    static const QUParameter param_signal_9[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In },
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod signal_9 = {"drawInequalityIntersection", 2, param_signal_9 };
-    static const QUMethod signal_10 = {"redrawGraphs", 0, 0 };
-    static const QUParameter param_signal_11[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In },
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod signal_11 = {"getScreenshotSignal", 2, param_signal_11 };
-    static const QUParameter param_signal_12[] = {
-	{ 0, &static_QUType_int, 0, QUParameter::In },
-	{ 0, &static_QUType_varptr, "\x0a", QUParameter::In },
-	{ 0, &static_QUType_int, 0, QUParameter::In }
-    };
-    static const QUMethod signal_12 = {"drawSignal", 3, param_signal_12 };
-    static const QMetaData signal_tbl[] = {
-	{ "addVerticalLine(double)", &signal_0, QMetaData::Public },
-	{ "addHorizontalLine(double)", &signal_1, QMetaData::Public },
-	{ "addPolarLine(double)", &signal_2, QMetaData::Public },
-	{ "addCircle(double)", &signal_3, QMetaData::Public },
-	{ "add3dXLine(double,double)", &signal_4, QMetaData::Public },
-	{ "add3dYLine(double,double)", &signal_5, QMetaData::Public },
-	{ "add3dZLine(double,double)", &signal_6, QMetaData::Public },
-	{ "removeLines()", &signal_7, QMetaData::Public },
-	{ "prefChange(Preferences)", &signal_8, QMetaData::Public },
-	{ "drawInequalityIntersection(int,int)", &signal_9, QMetaData::Public },
-	{ "redrawGraphs()", &signal_10, QMetaData::Public },
-	{ "getScreenshotSignal(int,int)", &signal_11, QMetaData::Public },
-	{ "drawSignal(int,QColor,int)", &signal_12, QMetaData::Public }
-    };
-    metaObj = QMetaObject::new_metaobject(
-	"GraphSolveWidget", parentObject,
-	slot_tbl, 17,
-	signal_tbl, 13,
-#ifndef QT_NO_PROPERTIES
-	0, 0,
-	0, 0,
-#endif // QT_NO_PROPERTIES
-	0, 0 );
-    cleanUp_GraphSolveWidget.setMetaObject( metaObj );
-    return metaObj;
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_GraphSolveWidget))
+        return static_cast<void*>(const_cast< GraphSolveWidget*>(this));
+    return QWidget::qt_metacast(_clname);
 }
 
-void* GraphSolveWidget::qt_cast( const char* clname )
+int GraphSolveWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    if ( !qstrcmp( clname, "GraphSolveWidget" ) )
-	return this;
-    return QWidget::qt_cast( clname );
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: addVerticalLine((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 1: addHorizontalLine((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 2: addPolarLine((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 3: addCircle((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 4: add3dXLine((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
+        case 5: add3dYLine((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
+        case 6: add3dZLine((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
+        case 7: removeLines(); break;
+        case 8: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 9: drawInequalityIntersection((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 10: redrawGraphs(); break;
+        case 11: getScreenshotSignal((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 12: drawSignal((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< QColor(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3]))); break;
+        case 13: solveButtonSlot(); break;
+        case 14: graphLMButtonPressed((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
+        case 15: setState((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 16: setFunctionType((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 17: screenshotSlot((*reinterpret_cast< QPixmap*(*)>(_a[1]))); break;
+        case 18: openButtonSlot(); break;
+        case 19: colorButtonSlot(); break;
+        case 20: penValueSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 21: forwardButtonSlot(); break;
+        case 22: backButtonSlot(); break;
+        case 23: clearButtonSlot(); break;
+        case 24: freeButtonSlot(); break;
+        case 25: lineButtonSlot(); break;
+        case 26: rectButtonSlot(); break;
+        case 27: circleButtonSlot(); break;
+        case 28: rubberButtonSlot(); break;
+        case 29: textButtonSlot(); break;
+        }
+        _id -= 30;
+    }
+    return _id;
 }
 
-// SIGNAL addVerticalLine
-void GraphSolveWidget::addVerticalLine( double t0 )
+// SIGNAL 0
+void GraphSolveWidget::addVerticalLine(double _t1)
 {
-    activate_signal( staticMetaObject()->signalOffset() + 0, t0 );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
-// SIGNAL addHorizontalLine
-void GraphSolveWidget::addHorizontalLine( double t0 )
+// SIGNAL 1
+void GraphSolveWidget::addHorizontalLine(double _t1)
 {
-    activate_signal( staticMetaObject()->signalOffset() + 1, t0 );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 
-// SIGNAL addPolarLine
-void GraphSolveWidget::addPolarLine( double t0 )
+// SIGNAL 2
+void GraphSolveWidget::addPolarLine(double _t1)
 {
-    activate_signal( staticMetaObject()->signalOffset() + 2, t0 );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 
-// SIGNAL addCircle
-void GraphSolveWidget::addCircle( double t0 )
+// SIGNAL 3
+void GraphSolveWidget::addCircle(double _t1)
 {
-    activate_signal( staticMetaObject()->signalOffset() + 3, t0 );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 3, _a);
 }
 
-#include <qobjectdefs.h>
-#include <qsignalslotimp.h>
-
-// SIGNAL add3dXLine
-void GraphSolveWidget::add3dXLine( double t0, double t1 )
+// SIGNAL 4
+void GraphSolveWidget::add3dXLine(double _t1, double _t2)
 {
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 4 );
-    if ( !clist )
-	return;
-    QUObject o[3];
-    static_QUType_double.set(o+1,t0);
-    static_QUType_double.set(o+2,t1);
-    activate_signal( clist, o );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    QMetaObject::activate(this, &staticMetaObject, 4, _a);
 }
 
-// SIGNAL add3dYLine
-void GraphSolveWidget::add3dYLine( double t0, double t1 )
+// SIGNAL 5
+void GraphSolveWidget::add3dYLine(double _t1, double _t2)
 {
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 5 );
-    if ( !clist )
-	return;
-    QUObject o[3];
-    static_QUType_double.set(o+1,t0);
-    static_QUType_double.set(o+2,t1);
-    activate_signal( clist, o );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    QMetaObject::activate(this, &staticMetaObject, 5, _a);
 }
 
-// SIGNAL add3dZLine
-void GraphSolveWidget::add3dZLine( double t0, double t1 )
+// SIGNAL 6
+void GraphSolveWidget::add3dZLine(double _t1, double _t2)
 {
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 6 );
-    if ( !clist )
-	return;
-    QUObject o[3];
-    static_QUType_double.set(o+1,t0);
-    static_QUType_double.set(o+2,t1);
-    activate_signal( clist, o );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    QMetaObject::activate(this, &staticMetaObject, 6, _a);
 }
 
-// SIGNAL removeLines
+// SIGNAL 7
 void GraphSolveWidget::removeLines()
 {
-    activate_signal( staticMetaObject()->signalOffset() + 7 );
+    QMetaObject::activate(this, &staticMetaObject, 7, 0);
 }
 
-// SIGNAL prefChange
-void GraphSolveWidget::prefChange( Preferences t0 )
+// SIGNAL 8
+void GraphSolveWidget::prefChange(Preferences _t1)
 {
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 8 );
-    if ( !clist )
-	return;
-    QUObject o[2];
-    static_QUType_ptr.set(o+1,&t0);
-    activate_signal( clist, o );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 8, _a);
 }
 
-// SIGNAL drawInequalityIntersection
-void GraphSolveWidget::drawInequalityIntersection( int t0, int t1 )
+// SIGNAL 9
+void GraphSolveWidget::drawInequalityIntersection(int _t1, int _t2)
 {
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 9 );
-    if ( !clist )
-	return;
-    QUObject o[3];
-    static_QUType_int.set(o+1,t0);
-    static_QUType_int.set(o+2,t1);
-    activate_signal( clist, o );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    QMetaObject::activate(this, &staticMetaObject, 9, _a);
 }
 
-// SIGNAL redrawGraphs
+// SIGNAL 10
 void GraphSolveWidget::redrawGraphs()
 {
-    activate_signal( staticMetaObject()->signalOffset() + 10 );
+    QMetaObject::activate(this, &staticMetaObject, 10, 0);
 }
 
-// SIGNAL getScreenshotSignal
-void GraphSolveWidget::getScreenshotSignal( int t0, int t1 )
+// SIGNAL 11
+void GraphSolveWidget::getScreenshotSignal(int _t1, int _t2)
 {
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 11 );
-    if ( !clist )
-	return;
-    QUObject o[3];
-    static_QUType_int.set(o+1,t0);
-    static_QUType_int.set(o+2,t1);
-    activate_signal( clist, o );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    QMetaObject::activate(this, &staticMetaObject, 11, _a);
 }
 
-// SIGNAL drawSignal
-void GraphSolveWidget::drawSignal( int t0, QColor t1, int t2 )
+// SIGNAL 12
+void GraphSolveWidget::drawSignal(int _t1, QColor _t2, int _t3)
 {
-    if ( signalsBlocked() )
-	return;
-    QConnectionList *clist = receivers( staticMetaObject()->signalOffset() + 12 );
-    if ( !clist )
-	return;
-    QUObject o[4];
-    static_QUType_int.set(o+1,t0);
-    static_QUType_varptr.set(o+2,&t1);
-    static_QUType_int.set(o+3,t2);
-    activate_signal( clist, o );
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)) };
+    QMetaObject::activate(this, &staticMetaObject, 12, _a);
 }
-
-bool GraphSolveWidget::qt_invoke( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: solveButtonSlot(); break;
-    case 1: graphLMButtonPressed((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
-    case 2: setState((int)static_QUType_int.get(_o+1)); break;
-    case 3: setFunctionType((int)static_QUType_int.get(_o+1)); break;
-    case 4: screenshotSlot((QPixmap*)static_QUType_varptr.get(_o+1)); break;
-    case 5: openButtonSlot(); break;
-    case 6: colorButtonSlot(); break;
-    case 7: penValueSlot((int)static_QUType_int.get(_o+1)); break;
-    case 8: forwardButtonSlot(); break;
-    case 9: backButtonSlot(); break;
-    case 10: clearButtonSlot(); break;
-    case 11: freeButtonSlot(); break;
-    case 12: lineButtonSlot(); break;
-    case 13: rectButtonSlot(); break;
-    case 14: circleButtonSlot(); break;
-    case 15: rubberButtonSlot(); break;
-    case 16: textButtonSlot(); break;
-    default:
-	return QWidget::qt_invoke( _id, _o );
-    }
-    return TRUE;
-}
-
-bool GraphSolveWidget::qt_emit( int _id, QUObject* _o )
-{
-    switch ( _id - staticMetaObject()->signalOffset() ) {
-    case 0: addVerticalLine((double)static_QUType_double.get(_o+1)); break;
-    case 1: addHorizontalLine((double)static_QUType_double.get(_o+1)); break;
-    case 2: addPolarLine((double)static_QUType_double.get(_o+1)); break;
-    case 3: addCircle((double)static_QUType_double.get(_o+1)); break;
-    case 4: add3dXLine((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
-    case 5: add3dYLine((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
-    case 6: add3dZLine((double)static_QUType_double.get(_o+1),(double)static_QUType_double.get(_o+2)); break;
-    case 7: removeLines(); break;
-    case 8: prefChange((Preferences)(*((Preferences*)static_QUType_ptr.get(_o+1)))); break;
-    case 9: drawInequalityIntersection((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
-    case 10: redrawGraphs(); break;
-    case 11: getScreenshotSignal((int)static_QUType_int.get(_o+1),(int)static_QUType_int.get(_o+2)); break;
-    case 12: drawSignal((int)static_QUType_int.get(_o+1),(QColor)(*((QColor*)static_QUType_ptr.get(_o+2))),(int)static_QUType_int.get(_o+3)); break;
-    default:
-	return QWidget::qt_emit(_id,_o);
-    }
-    return TRUE;
-}
-#ifndef QT_NO_PROPERTIES
-
-bool GraphSolveWidget::qt_property( int id, int f, QVariant* v)
-{
-    return QWidget::qt_property( id, f, v);
-}
-
-bool GraphSolveWidget::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
-#endif // QT_NO_PROPERTIES
+QT_END_MOC_NAMESPACE

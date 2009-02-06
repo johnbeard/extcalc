@@ -14,6 +14,8 @@ any later version.
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "statistics.h"
+//Added by qt3to4:
+#include <QResizeEvent>
 
 
 
@@ -760,7 +762,7 @@ void StatisticsWidget::buttonInputSlot(QString text)
 		functionTable->setText(functionTable->currentRow(),0,inputLine->text());
 		if((inputLine->text().length())<=0)
 		{
-			QCheckTableItem *checkItem=(QCheckTableItem*)functionTable->item(functionTable->currentRow(),2);
+			Q3CheckTableItem *checkItem=(Q3CheckTableItem*)functionTable->item(functionTable->currentRow(),2);
 			checkItem->setChecked(false);
 		}
 	}
@@ -775,7 +777,7 @@ void StatisticsWidget::buttonInputSlot(QString text)
 		inputLine->setText(fullText);
 		inputLine->setCursorPosition(cursorPos+text.length());
 		functionTable->setText(functionTable->currentRow(),0,inputLine->text());
-		QCheckTableItem *checkItem=(QCheckTableItem*)functionTable->item(functionTable->currentRow(),2);
+		Q3CheckTableItem *checkItem=(Q3CheckTableItem*)functionTable->item(functionTable->currentRow(),2);
 		checkItem->setChecked(true);
 	}
 }

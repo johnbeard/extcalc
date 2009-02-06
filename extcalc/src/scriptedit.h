@@ -17,20 +17,31 @@ The class for the script editor tab window. It does the script file management.
 #ifndef SCRIPTEDITH
 #define SCRIPTEDITH
 
-#include <qwidget.h>
-#include <qtextedit.h>
-#include <qlistview.h>
+#include <QWidget>
+#include <q3textedit.h>
+#include <q3listview.h>
 #include <qsplitter.h>
 #include <qfont.h>
-#include <qpopupmenu.h>
-#include <qtoolbar.h>
-#include <qdockarea.h>
-#include <qfiledialog.h>
+#include <q3popupmenu.h>
+#include <q3toolbar.h>
+#include <q3dockarea.h>
+#include <q3filedialog.h>
 #include <qinputdialog.h>
 #include <qlabel.h>
 #include <qtooltip.h>
-#include <qiconset.h>
+#include <qicon.h>
 #include <qaction.h>
+//Added by qt3to4:
+#include <QContextMenuEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QDragLeaveEvent>
+#include <QWheelEvent>
+#include <QResizeEvent>
+#include <QPixmap>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QDragEnterEvent>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -39,11 +50,11 @@ The class for the script editor tab window. It does the script file management.
 #include "catalog.h"
 
 
-class LineNumberView :public QTextEdit
+class LineNumberView :public Q3TextEdit
 {
 	
 public:
-	LineNumberView(QWidget*parent) :QTextEdit(parent)
+	LineNumberView(QWidget*parent) :Q3TextEdit(parent)
 	{
 	}
 	
@@ -67,8 +78,8 @@ class ScriptWidget :public QWidget
 	StandardButtons* standardButtons;
 	ExtButtons* extButtons;
 	Catalog *catalog;
-	QTextEdit*editor;
-	QListView*fileBrowser;
+	Q3TextEdit*editor;
+	Q3ListView*fileBrowser;
 	LineNumberView*lineNumbers;
 //	QLabel*lineNumbers;
 	QSplitter*splitter;
@@ -76,15 +87,15 @@ class ScriptWidget :public QWidget
 	QFont *stdFont;
 	int fontWidth,fontHeight;
 	int menuBottom;
-	QPopupMenu*fileBrowserMenu;
+	Q3PopupMenu*fileBrowserMenu;
 	QPixmap*modifiedIcon;
 	bool maximized;
 	List <QString> activeFiles;
 	bool currentTextChanged;
-	QListViewItem*activeFileItem;
-	QListViewItem*clickedFileItem;
-	QToolBar*editorToolBar;
-	QDockArea*dockArea;
+	Q3ListViewItem*activeFileItem;
+	Q3ListViewItem*clickedFileItem;
+	Q3ToolBar*editorToolBar;
+	Q3DockArea*dockArea;
 	QPixmap*newIcon,*saveIcon,*saveallIcon,*undoIcon,*redoIcon,*cutIcon,*copyIcon,*pasteIcon,*importIcon,*exportIcon,*runIcon,*minimizeIcon,*catalogIcon;
 //	QAction*newAction,*saveAction,*saveallAction,*undoAction,*redoAction,*cutAction,*copyAction,*pasteAction,*importAction,*exportAction,*runAction,*minimizeAction,*catalogAction;
 	QPushButton *newButton,*saveButton,*saveallButton,*undoButton,*redoButton,*cutButton,*copyButton,*pasteButton,*importButton,*exportButton,*runButton,*minimizeButton,*catalogButton;
@@ -108,20 +119,19 @@ public:
 		extButtons=new ExtButtons(this);
 		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX | CATMATRIX | CATMATHLOGIC | CATSCRIPT,this);
 		splitter=new QSplitter(Qt::Horizontal,this);
-		fileBrowser=new QListView(splitter);
+		fileBrowser=new Q3ListView(splitter);
 		lineNumbers=new LineNumberView(splitter);
-//		lineNumbers=new QLabel("1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15",splitter);
-		editor=new QTextEdit(splitter);
-//		maximizeButton=new QPushButton(SCRIPTEDITH_STR1,this);
-//		runButton=new QPushButton(SCRIPTEDITH_STR2,this);
-//		saveButton=new QPushButton(SCRIPTEDITH_STR3,this);
+		editor=new Q3TextEdit(splitter);
+
 		
+		standardButtons->hide();
+		extButtons->hide();
 
 
-		fileBrowserMenu=new QPopupMenu(fileBrowser);
+		fileBrowserMenu=new Q3PopupMenu(fileBrowser);
 		modifiedIcon=new QPixmap(QString(INSTALLDIR)+"/data/modified.png");
-		dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
-		editorToolBar=new QToolBar();
+		dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
+		editorToolBar=new Q3ToolBar();
 		dockArea->moveDockWindow(editorToolBar);
 		
 	
@@ -222,13 +232,13 @@ public:
 		fontHeight=fm.height();
 		editor->setFont(*stdFont);
 		editor->setTextFormat(Qt::PlainText);
-		editor->setWordWrap(QTextEdit::NoWrap);
+		editor->setWordWrap(Q3TextEdit::NoWrap);
 
 		lineNumbers->setFont(*stdFont);
 		lineNumbers->setTextFormat(Qt::PlainText);
-		lineNumbers->setVScrollBarMode(QScrollView::AlwaysOff);
-		lineNumbers->setHScrollBarMode(QScrollView::AlwaysOff);
-		lineNumbers->setWordWrap(QTextEdit::NoWrap);
+		lineNumbers->setVScrollBarMode(Q3ScrollView::AlwaysOff);
+		lineNumbers->setHScrollBarMode(Q3ScrollView::AlwaysOff);
+		lineNumbers->setWordWrap(Q3TextEdit::NoWrap);
 		lineNumbers->setText(" 1");
 		lineNumbers->setPaper(backgroundBrush());
 		lineNumbers->setFixedWidth(fontWidth*3);
@@ -236,7 +246,7 @@ public:
 
 		
 
-		editor->setWrapPolicy(QTextEdit::AtWordOrDocumentBoundary);
+		editor->setWrapPolicy(Q3TextEdit::AtWordOrDocumentBoundary);
 		splitter->setResizeMode(fileBrowser,QSplitter::KeepSize);
 
 		fileBrowser->addColumn(SCRIPTEDITH_STR11);
@@ -249,8 +259,8 @@ public:
 		QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
 //		QObject::connect(maximizeButton,SIGNAL(released()),this,SLOT(maximizeButtonSlot()));
 //		QObject::connect(runButton,SIGNAL(released()),this,SLOT(runButtonSlot()));		
-		QObject::connect(fileBrowser,SIGNAL(selectionChanged(QListViewItem*)),this,SLOT(showFile(QListViewItem*)));
-		QObject::connect(fileBrowser,SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)),this,SLOT(createFileBrowserMenu(QListViewItem*,const QPoint&,int)));
+		QObject::connect(fileBrowser,SIGNAL(selectionChanged(Q3ListViewItem*)),this,SLOT(showFile(Q3ListViewItem*)));
+		QObject::connect(fileBrowser,SIGNAL(contextMenuRequested(Q3ListViewItem*,const QPoint&,int)),this,SLOT(createFileBrowserMenu(Q3ListViewItem*,const QPoint&,int)));
 		QObject::connect(editor,SIGNAL(contentsMoving (int,int)),this,SLOT(lineNumSlot(int,int)));
 		QObject::connect(fileBrowserMenu,SIGNAL(activated(int)),this,SLOT(fileBrowserMenuSlot(int)));
 		QObject::connect(editor,SIGNAL(textChanged()),this,SLOT(textChangedSlot()));
@@ -275,9 +285,9 @@ public:
 	void setPref(Preferences);
 	
 	void updateFileList();
-	void readDir(QString,QListViewItem*);
-	QString getFileName(QListViewItem*);
-	QListViewItem* getFileItem(QString);
+	void readDir(QString,Q3ListViewItem*);
+	QString getFileName(Q3ListViewItem*);
+	Q3ListViewItem* getFileItem(QString);
 	bool quitProgram();
 	bool saveFile(QString path,QString content);
 	void createNumbers();
@@ -287,8 +297,8 @@ public slots:
 	void buttonInputSlot(QString);
 	void maximizeButtonSlot();
 	void editSlot(int);
-	void showFile(QListViewItem*);
-	void createFileBrowserMenu(QListViewItem*,const QPoint&,int);
+	void showFile(Q3ListViewItem*);
+	void createFileBrowserMenu(Q3ListViewItem*,const QPoint&,int);
 	void fileBrowserMenuSlot(int item);
 	void textChangedSlot();
 	void saveSlot();

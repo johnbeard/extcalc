@@ -14,6 +14,9 @@ any later version.
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "graphsolve.h"
+//Added by qt3to4:
+#include <QPixmap>
+#include <QResizeEvent>
 
 
 
@@ -572,7 +575,7 @@ void GraphSolveWidget::resetDialog()
 		{
 			xLabel->setText(GRAPHSOLVEC_STR28);
 			xLabel->show();
-			xLine->setText(getenv("HOME")+QString("/screenshot.png"));
+			xLine->setText(QString(getenv("HOME"))+QString("/screenshot.png"));
 			xLine->show();
 			x2Label->setText(GRAPHSOLVEC_STR29);
 			x2Label->show();
@@ -613,9 +616,6 @@ void GraphSolveWidget::resetDialog()
 			textButton->show();
 			
 			freeButtonSlot();
-			
-			
-			
 			break;
 		}
 	}
@@ -1700,7 +1700,7 @@ void GraphSolveWidget::screenshotSlot(QPixmap*scr)
 
 void GraphSolveWidget::openButtonSlot()
 {
-	QString path=QFileDialog::getSaveFileName(".",GRAPHSOLVEC_STR36,this,
+	QString path=Q3FileDialog::getSaveFileName(".",GRAPHSOLVEC_STR36,this,
 											  "save dialog",GRAPHSOLVEC_STR37);
 	xLine->setText(path);
 }

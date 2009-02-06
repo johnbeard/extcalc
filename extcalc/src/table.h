@@ -17,17 +17,21 @@ The tab window for function tables
 #ifndef TABLEH
 #define TABLEH 
 
-#include <qwidget.h>
+#include <QWidget>
 #include <qlineedit.h>
 #include <qcombobox.h>
 #include <qclipboard.h>
 #include <qapplication.h>
 #include <qinputdialog.h>
-#include <qtoolbar.h>
-#include <qdockarea.h>
-#include <qiconset.h>
+#include <q3toolbar.h>
+#include <q3dockarea.h>
+#include <qicon.h>
 #include <qtooltip.h>
 #include <qsplitter.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <QResizeEvent>
+#include <Q3ValueList>
 #include "functiontable.h"
 #include "buttons.h"
 #include "catalog.h"
@@ -48,15 +52,15 @@ class TableWidget :public QWidget
 	QPushButton*calculateButton,*maximizeButton,*catalogButton;
 	QPixmap *minimizeIcon,*maximizeIcon,*catalogIcon;
 	QComboBox*typeBox;
-	QToolBar*toolBar;
-	QDockArea*dockArea;
+	Q3ToolBar*toolBar;
+	Q3DockArea*dockArea;
 	Catalog *catalog;
 	QSplitter *horzSplit,*vertSplit;
 	Variable*vars;
 	bool fullscreen;
 	List <double>vertValues;
 	List <double>horzValues;
-	QHeader*horzHeader,*vertHeader;
+	Q3Header*horzHeader,*vertHeader;
 	ThreadSync*threadData;
 	int menuBottom;
 	
@@ -83,8 +87,8 @@ public:
 		horzHeader->setClickEnabled(true);
 		vertHeader->setClickEnabled(true);
 		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX,this);
-		dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
-		toolBar=new QToolBar();
+		dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
+		toolBar=new Q3ToolBar();
 		dockArea->moveDockWindow(toolBar);
 		
 		minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
@@ -110,7 +114,7 @@ public:
 		typeBox->insertItem(TABLEH_STR7);
 		typeBox->insertItem(TABLEH_STR9);
 		
-		QValueList<int> s = horzSplit->sizes();
+		Q3ValueList<int> s = horzSplit->sizes();
 		s[1]=300;
 		s[0]=300;
 		horzSplit->setSizes(s);

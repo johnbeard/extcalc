@@ -22,7 +22,7 @@ file.
 #define GLOBALH
 
 #include <qstring.h>
-#include <qapplication.h>
+#include <QCoreApplication>
 #include <qmessagebox.h>
 #include <qtranslator.h>
 #include <qmutex.h>
@@ -289,7 +289,7 @@ using namespace std;
 #define TABLENORMAL			50
 #define TABLEPOLAR			51
 #define TABLEPARAMETER		52
-#define TABLEINEQUAITY		53
+#define TABLEINEQUALITY		53
 #define TABLE3D				54
 #define TABLECOMPLEX		185
 

@@ -19,7 +19,7 @@ The ScriptGL class provides the 3D-graphics window for scripts with GL commands.
 #define SCRIPTIOH
 
 #include "buttons.h"
-#include <qwidget.h>
+#include <QWidget>
 #include <qpainter.h>
 #include <qclipboard.h>
 #include <qthread.h>
@@ -27,15 +27,24 @@ The ScriptGL class provides the 3D-graphics window for scripts with GL commands.
 #include <qmutex.h>
 #include <qscrollbar.h>
 #include <qtimer.h>
-#include <qtoolbar.h>
-#include <qdockarea.h>
-#include <qiconset.h>
-#include <qpopupmenu.h>
+#include <q3toolbar.h>
+#include <q3dockarea.h>
+#include <qicon.h>
+#include <q3popupmenu.h>
 #include <qtooltip.h>
+#include <QApplication>
+//Added by qt3to4:
+#include <QKeyEvent>
+#include <QCustomEvent>
+#include <QPixmap>
+#include <QResizeEvent>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QWheelEvent>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qgl.h>
 #include "list.h"
 
@@ -318,7 +327,7 @@ class ScriptIOWidget :public QWidget
 	ScriptGL*glWindow;
 	Preferences pref,runningPref;
 	QPushButton*maximizeButton,*killButton,*runButton;
-	QPopupMenu*contextMenu;
+	Q3PopupMenu*contextMenu;
 	
 	bool maximized;
 	int ioFieldWidth,ioFieldHeight,ioFieldX,ioFieldY;
@@ -339,8 +348,8 @@ class ScriptIOWidget :public QWidget
 	int countDifference;
 	bool errorFlag;
 	
-	QToolBar*toolBar;
-	QDockArea*dockArea;
+	Q3ToolBar*toolBar;
+	Q3DockArea*dockArea;
 	
 	bool scriptExec;
 	ScriptThread*script;
@@ -419,8 +428,8 @@ class ScriptIOWidget :public QWidget
 			calcButtons=new  StandardButtons(this);
 			extButtons=new ExtButtons(this);
 			glWindow=new ScriptGL(this,pref,shareContext);
-			toolBar=new QToolBar();
-			dockArea=new QDockArea(Qt::Horizontal,QDockArea::Normal,this);
+			toolBar=new Q3ToolBar();
+			dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
 			dockArea->moveDockWindow(toolBar);
 			runButton=new QPushButton(*runIcon,"",toolBar);
 			killButton=new QPushButton(*killIcon,"",toolBar);
@@ -432,7 +441,7 @@ class ScriptIOWidget :public QWidget
 			killButton->setEnabled(false);
 
 			runButton->setEnabled(false);
-			contextMenu=new QPopupMenu(this);
+			contextMenu=new Q3PopupMenu(this);
 			contextMenu->insertItem(SCRIPTIO_STR12,EDITCOPY);
 			contextMenu->insertItem(SCRIPTIO_STR13,EDITPASTE);
 			contextMenu->insertSeparator();
@@ -449,7 +458,7 @@ class ScriptIOWidget :public QWidget
 			ioFieldWidth=600;
 			ioFieldHeight=310;
 			cursorX=cursorY=0;
-			buffer=new QPixmap(ioFieldWidth,ioFieldHeight,-1,QPixmap::BestOptim);
+			buffer=new QPixmap(ioFieldWidth,ioFieldHeight);//,-1,QPixmap::BestOptim); disabled for qt4 port
 			drawFont=new QFont("Courier");
 			drawFont->setPixelSize(16);
 			drawFont->setFixedPitch(true);
@@ -482,7 +491,7 @@ class ScriptIOWidget :public QWidget
 			
 
 
-			setFocusPolicy(QWidget::StrongFocus);
+//			setFocusPolicy(QWidget::StrongFocus); disabled for qt4 port
 
 			QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
 			QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
@@ -523,7 +532,7 @@ class ScriptIOWidget :public QWidget
 		virtual void resizeEvent(QResizeEvent*);
 		virtual void paintEvent(QPaintEvent*);
 		virtual void keyPressEvent(QKeyEvent*);
-		virtual void customEvent(QCustomEvent*);
+		virtual void customEvent(QEvent*);
 		virtual void mousePressEvent(QMouseEvent*);
 		virtual void mouseReleaseEvent(QMouseEvent*);
 		virtual void mouseMoveEvent(QMouseEvent*);
