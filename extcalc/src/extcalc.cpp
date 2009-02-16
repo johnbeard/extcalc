@@ -114,8 +114,8 @@ MainObject::MainObject() :QMainWindow()
   setMinimumHeight(400);
   helpProcess=new Q3Process(this);
     
-  infoDialog=new Q3TabDialog(this,0,true);
-  licenseWidget=new Q3TextEdit(infoDialog);
+  infoDialog=new InfoDialog(this);
+/*  licenseWidget=new Q3TextEdit(infoDialog);
   QString license;
   FILE*licenseFile;
   struct stat fileStat;
@@ -145,7 +145,7 @@ MainObject::MainObject() :QMainWindow()
   infoDialog->addTab(versionInfo,EXTCALCH_STR3);
   infoDialog->addTab(authorInfo,EXTCALCH_STR4);
   infoDialog->addTab(licenseWidget,EXTCALCH_STR5);
-
+*/
   grPref=NULL;
   calcPref=NULL;
   tablePref=NULL;
@@ -3662,6 +3662,44 @@ void HelpBrowser::resizeEvent(QResizeEvent*)
 {
 	dockArea->setGeometry(0,0,width(),35);
 	browser->setGeometry(0,35,width(),height()-35);
+}
+
+
+InfoDialog::InfoDialog(QWidget*parent) : QDialog(parent)
+{
+	layout=new QGridLayout(this);
+	tabWidget=new QTabWidget(this);
+	layout->addWidget(tabWidget,0,0);
+	licenseWidget=new QTextEdit(tabWidget);
+	QString license;
+	FILE*licenseFile;
+	struct stat fileStat;
+	licenseFile = fopen(INSTALLDIR+QString("/data/license.txt"),"r");
+	if(licenseFile == NULL)
+		license=EXTCALCH_STR1;
+	else {
+		if(lstat(INSTALLDIR+QString("/data/license.txt"),&fileStat) !=0)
+			MessageBox(EXTCALCH_MSG2);
+		else
+		{
+			char*cLicenseText=new char[fileStat.st_size+1];
+			cLicenseText[fileStat.st_size]=(char)0;
+			fread((void*)cLicenseText,fileStat.st_size,1,licenseFile);
+			license=EXTCALCH_STR2;
+			license+=QString(cLicenseText);
+			delete[]cLicenseText;
+		}
+		fclose(licenseFile);
+	}
+	licenseWidget->setText(license);
+	licenseWidget->setReadOnly(true);
+	authorInfo=new QLabel(INFOSTRING+QString(AUTHORSTRING),tabWidget);
+	versionInfo=new QLabel(INFOSTRING+QString(VERSIONSTRING),tabWidget);
+	authorInfo->setAlignment(Qt::AlignAuto | Qt::AlignCenter | Qt::ExpandTabs);
+	versionInfo->setAlignment(Qt::AlignAuto | Qt::AlignCenter | Qt::ExpandTabs);
+	tabWidget->addTab(versionInfo,EXTCALCH_STR3);
+	tabWidget->addTab(authorInfo,EXTCALCH_STR4);
+	tabWidget->addTab(licenseWidget,EXTCALCH_STR5);
 }
 
 

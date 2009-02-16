@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'extcalc.h'
 **
-** Created: Fri Feb 6 17:36:39 2009
+** Created: Mon Feb 16 19:06:02 2009
 **      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -222,6 +222,48 @@ int HelpBrowser::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         }
         _id -= 3;
     }
+    return _id;
+}
+static const uint qt_meta_data_InfoDialog[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       0,    0, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_InfoDialog[] = {
+    "InfoDialog\0"
+};
+
+const QMetaObject InfoDialog::staticMetaObject = {
+    { &QDialog::staticMetaObject, qt_meta_stringdata_InfoDialog,
+      qt_meta_data_InfoDialog, 0 }
+};
+
+const QMetaObject *InfoDialog::metaObject() const
+{
+    return &staticMetaObject;
+}
+
+void *InfoDialog::qt_metacast(const char *_clname)
+{
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_InfoDialog))
+        return static_cast<void*>(const_cast< InfoDialog*>(this));
+    return QDialog::qt_metacast(_clname);
+}
+
+int InfoDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QDialog::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
     return _id;
 }
 QT_END_MOC_NAMESPACE

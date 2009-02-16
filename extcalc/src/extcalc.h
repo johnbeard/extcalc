@@ -59,6 +59,7 @@ dialog, the todo list and the bug list.
 #include <qtoolbutton.h>
 #include <qdir.h>
 #include <QActionGroup>
+#include <QGridLayout>
 
 
 //Unicode characters:
@@ -300,6 +301,7 @@ dialog, the todo list and the bug list.
 
 class ImportDialog;
 class HelpBrowser;
+class InfoDialog;
 
 class MainObject :public QMainWindow
 {
@@ -334,7 +336,7 @@ class MainObject :public QMainWindow
 	StatisticsWidget*statistics;
 	Preferences pref;
 	Q3Process*helpProcess;
-	Q3TabDialog*infoDialog;
+	InfoDialog*infoDialog;
 	Q3TextEdit*licenseWidget;
 	QLabel*authorInfo;
 	QLabel*versionInfo;
@@ -508,7 +510,18 @@ class HelpBrowser :public QWidget
 };
 
 
+class InfoDialog :public QDialog
+{
+	Q_OBJECT
+	QTabWidget *tabWidget;
+	QDialogButtonBox *buttonBox;
+	QTextEdit *licenseWidget;
+	QLabel *authorInfo,*versionInfo;
+	QGridLayout*layout;
 
+	public:
+		InfoDialog(QWidget*parent);
+};
 
 
 
