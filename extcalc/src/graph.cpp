@@ -30,7 +30,7 @@ any later version.
 /////////////////////////////////////////GraphWidget/////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-
+/*
 void GraphWidget::resizeEvent(QResizeEvent*)
 {
 	int width=geometry().right() - geometry().left();
@@ -59,7 +59,7 @@ void GraphWidget::resizeEvent(QResizeEvent*)
 		dockArea->setGeometry(width/2+15,height-220,width/2-30,35);
 	}
 }
-
+*/
 
 
 void GraphWidget::selectionChangedSlot(int row,int)
@@ -95,6 +95,7 @@ void GraphWidget::tableEditSlot(QString string)
 
 void GraphWidget::drawSlot()
 {
+  qDebug("start drawing");
 	if(dynamicStart)
 	{
 		if(pref.dynamicDelay==0)
@@ -110,14 +111,17 @@ void GraphWidget::drawSlot()
 			return;
 		}
 	}
+  qDebug("timer for dynamic graphs initialized");
 
 	if(processStarted)
 		return;
 	drawButton->setEnabled(false);
 	processStarted=true;
+  qDebug("processStarted flag checked");
 	
 	if(functionChanged)
 		inputTextFinished();
+  qDebug("before clearGL");
 	graph->clearGL();
 	dynamicStart=false;
 	int type;
@@ -156,6 +160,7 @@ void GraphWidget::graphProcessingFinishedSlot()
 	graph->createGLLists();
 	qDebug("gl initialization finished");
 	graph->repaint(true);
+  qDebug("initial repaint successful");
 	processStarted=false;
 	drawButton->setEnabled(true);
 }
@@ -163,7 +168,7 @@ void GraphWidget::graphProcessingFinishedSlot()
 
 void GraphWidget::maximizeSlot()
 {
-	if(maximized)
+/*	if(maximized)
 	{
 		maximized=false;
 		modeBox->show();
@@ -200,7 +205,7 @@ void GraphWidget::maximizeSlot()
 		solveWidget->hide();
 		maximizeButton->setIconSet(*minimizeIcon);
 		resizeEvent(NULL);
-	 }
+	 }*/
 }
 
 void GraphWidget::modeSlot(int)
@@ -209,31 +214,43 @@ void GraphWidget::modeSlot(int)
 	{
 		case 0:
 			solveMode=false;
-			standardButtons->show();
-			extButtons->show();
+		//	calcButtons->show();
+		//	extButtons->show();
+			setDockArea(1);
 			solveType->hide();
 			functionType->hide();
-			solveWidget->hide();
+		//	solveWidget->hide();
+		//	replaceSubWidget(calcButtons,0);
+		//	extButtons->show();
+			replaceSubWidget(calcButtons,0);
+			replaceSubWidget(extButtons,1);
 			break;
 	
 		case 1:
 			solveMode=true;
-			standardButtons->hide();
-			extButtons->hide();
+		//	extButtons->hide();
+		//	extButtons->hide();
 			solveType->show();
 			functionType->show();
-			solveWidget->show();
+		//	solveWidget->show();
+			setDockArea(0);
+			replaceSubWidget(solveWidget,0);
+			removeSubWidget(1);
 			solveType->setCurrentItem(0);
 			emit solveTypeSignal(0);
 			break;
 			
 		case 2:
 			solveMode=true;
-			standardButtons->hide();
-			extButtons->hide();
+		//	extButtons->hide();
+			
 			solveType->hide();
 			functionType->hide();
-			solveWidget->show();
+		//	solveWidget->show();
+			setDockArea(0);
+		//	extButtons->hide();
+			replaceSubWidget(solveWidget,0);
+			removeSubWidget(1);
 			emit solveTypeSignal(9);
 			break;
 	}

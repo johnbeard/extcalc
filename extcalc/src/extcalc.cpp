@@ -115,37 +115,8 @@ MainObject::MainObject() :QMainWindow()
   helpProcess=new Q3Process(this);
     
   infoDialog=new InfoDialog(this);
-/*  licenseWidget=new Q3TextEdit(infoDialog);
-  QString license;
-  FILE*licenseFile;
-  struct stat fileStat;
-  licenseFile = fopen(INSTALLDIR+QString("/data/license.txt"),"r");
-  if(licenseFile == NULL)
-    license=EXTCALCH_STR1;
-  else {
-    if(lstat(INSTALLDIR+QString("/data/license.txt"),&fileStat) !=0)
-      MessageBox(EXTCALCH_MSG2);
-    else
-    {
-      char*cLicenseText=new char[fileStat.st_size+1];
-      cLicenseText[fileStat.st_size]=(char)0;
-      fread((void*)cLicenseText,fileStat.st_size,1,licenseFile);
-      license=EXTCALCH_STR2;
-      license+=QString(cLicenseText);
-      delete[]cLicenseText;
-    }
-    fclose(licenseFile);
-  }
-  licenseWidget->setText(license);
-  licenseWidget->setReadOnly(true);
-  authorInfo=new QLabel(INFOSTRING+QString(AUTHORSTRING),infoDialog);
-  versionInfo=new QLabel(INFOSTRING+QString(VERSIONSTRING),infoDialog);
-  authorInfo->setAlignment(Qt::AlignAuto | Qt::AlignCenter | Qt::ExpandTabs);
-  versionInfo->setAlignment(Qt::AlignAuto | Qt::AlignCenter | Qt::ExpandTabs);
-  infoDialog->addTab(versionInfo,EXTCALCH_STR3);
-  infoDialog->addTab(authorInfo,EXTCALCH_STR4);
-  infoDialog->addTab(licenseWidget,EXTCALCH_STR5);
-*/
+
+
   grPref=NULL;
   calcPref=NULL;
   tablePref=NULL;
@@ -156,9 +127,6 @@ MainObject::MainObject() :QMainWindow()
   graphSetDialog=NULL;
 
   mainMenu=menuBar();
-//  toolBar=new QToolBar(this);
-//  addToolBar(toolBar);
-//  toolBar->addAction(new QAction("Test",toolBar));
 
 //standard preferences
 #ifndef NO_LONG_DOUBLE
@@ -608,14 +576,14 @@ MainObject::MainObject() :QMainWindow()
   setCentralWidget(clientArea);
 
 
-  calculator=new CalcWidget(clientArea,pref,vars,threadData,0);
-  calculator2=new CalcWidget(clientArea,pref,vars,threadData,0);
-  graph = new GraphWidget(clientArea,pref,vars,threadData,0);
-  table=new TableWidget(clientArea,pref,vars,threadData,0);
-  scripting=new ScriptWidget(clientArea,pref,vars,0);
-  scriptIO=new ScriptIOWidget(clientArea,pref,vars,graph->getShareContext(),0);
+  calculator=new CalcWidget(clientArea,pref,vars,threadData);
+  calculator2=new CalcWidget(clientArea,pref,vars,threadData);
+  graph = new GraphWidget(clientArea,pref,vars,threadData);
+  table=new TableWidget(clientArea,pref,vars,threadData);
+  scripting=new ScriptWidget(clientArea,pref,vars);
+  scriptIO=new ScriptIOWidget(clientArea,pref,vars,graph->getShareContext());
   matrix=new MatrixWidget(clientArea,pref,vars,threadData);
-  statistics=new StatisticsWidget(clientArea,pref,vars,threadData,0);
+  statistics=new StatisticsWidget(clientArea,pref,vars,threadData);
     
 
   
@@ -918,8 +886,8 @@ F11=F=.01*T^3+1;U=1-A/15;((1+U)*T+(1-U)*F)/2\\((1-U)*T+(1+U)*F)/2\n\
 F12=(1-A/15)*T\\T^3-5*T^2+5*T-2\n\
 F13=F=.05*T^3;if(T>0)U=atan(F/T);elseU=0;R=sqrt(T^2+F^2);cos(pi/30*A+U)*R\\sin(pi/30*A+U)*R\n\
 F14=\n\
-F15=sin(X²)*cos(Z²)\n\
-F16=L=0.01;U=2;K=1e-3;if(X<U)0;else{if(Z>0 && Z<X-U)K*Z*(X-U-Z/2)*(1+L*Z);else if (Z>0) K/2*(X-U)²*(1+L*Z); else 0;}\n\
+F15=sin(X^2)*cos(Z^2)\n\
+F16=L=0.01;U=2;K=1e-3;if(X<U)0;else{if(Z>0 && Z<X-U)K*Z*(X-U-Z/2)*(1+L*Z);else if (Z>0) K/2*(X-U)^2*(1+L*Z); else 0;}\n\
 F17=abs(arg(((X+Zi)^2-1)*((X+Zi)^2-2-i)^2/((X+Zi)^2+2+2i)))\n\
 F18=\n\
 F19=exp(Z*i)\n\
@@ -1741,7 +1709,7 @@ void MainObject::writeConfigFile()
 	configuration+=QString::number(pref.nyquistStart);
 	configuration+="\nNYQUISTEND=";
 	configuration+=QString::number(pref.nyquistEnd);
-	configuration+="\nPARAMETERSTART=";
+        configuration+="\nPARAMETERSTART=";
 	configuration+=QString::number(pref.parameterStart);
 	configuration+="\nPARAMETEREND=";
 	configuration+=QString::number(pref.parameterEnd);

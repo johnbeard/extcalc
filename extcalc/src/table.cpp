@@ -18,6 +18,7 @@ any later version.
 #include <QResizeEvent>
 #include <Q3ValueList>
 
+/*
 void TableWidget::resizeEvent(QResizeEvent*)
 {
 	int width=geometry().right() - geometry().left();
@@ -51,6 +52,7 @@ void TableWidget::resizeEvent(QResizeEvent*)
 		dockArea->setGeometry(width/2+15,height-220,width/2-35,35);
 	}
 }
+*/
 
 
 void TableWidget::setPref(Preferences p)
@@ -105,7 +107,7 @@ void TableWidget::setPref(Preferences p)
 		horzValues[c]=c*tableZStep+pref.tableZStart;
 
 
-	standardButtons->setPref(pref);
+	calcButtons->setPref(pref);
 	extButtons->setPref(pref);
 	functionTable->setPref(pref);
 }
@@ -300,10 +302,20 @@ void TableWidget::calculateButtonSlot()
 
 void TableWidget::maximizeButtonSlot()
 {
-	if(fullscreen)
+	
+	if(isMaximized())
+	{
+		maximizeSlot(false);
+		maximizeButton->setIconSet(*maximizeIcon);
+	}
+	else {
+		maximizeSlot(true);
+		maximizeButton->setIconSet(*minimizeIcon);
+	}
+/*	if(fullscreen)
 	{
 
-		maximizeButton->setIconSet(*maximizeIcon);
+		
 		standardButtons->show();
 		extButtons->show();
 		Q3ValueList<int> s = horzSplit->sizes();
@@ -315,7 +327,7 @@ void TableWidget::maximizeButtonSlot()
 	}
 	else 
 	{
-		maximizeButton->setIconSet(*minimizeIcon);
+		
 		standardButtons->hide();
 		extButtons->hide();
 		Q3ValueList<int> s = horzSplit->sizes();
@@ -327,7 +339,7 @@ void TableWidget::maximizeButtonSlot()
 	}
 	fullscreen=!fullscreen;
 	resizeEvent(NULL);
-	
+	*/
 }
 
 void TableWidget::typeBoxSlot(const QString&str)

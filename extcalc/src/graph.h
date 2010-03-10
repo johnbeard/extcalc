@@ -53,6 +53,7 @@ Class of the graphics tab window
 #include "buttons.h"
 #include "graphsolve.h"
 #include "catalog.h"
+#include "tabwidget.h"
 
 
 class GraphArea :public QWidget
@@ -79,12 +80,12 @@ class GraphArea :public QWidget
 
 
 
-class GraphWidget :public QWidget
+class GraphWidget :public TabWidget
 {
 	GraphOutput*graph;
-	Preferences pref;
-	ExtButtons *extButtons;
-	StandardButtons *standardButtons;
+//	Preferences pref;
+//	ExtButtons *extButtons;
+//	StandardButtons *standardButtons;
 	FunctionTable* functionTable;
 	GraphArea*graphArea;
 
@@ -93,17 +94,17 @@ class GraphWidget :public QWidget
 	GraphSolveWidget *solveWidget;
 	
 	Q3ToolBar*toolBar;
-	Q3DockArea*dockArea;
+//	Q3DockArea*dockArea;
 	QComboBox *solveType,*functionType,*modeBox;
 	QPixmap *minimizeIcon,*maximizeIcon,*printIcon,*catalogIcon;
 	Catalog *catalog;
 	QPushButton *drawButton,*maximizeButton,*catalogButton;
 	QSplitter *horzSplit,*vertSplit;
 	
-	bool maximized;
+//	bool maximized;
 	bool solveMode;
-	Variable*vars;
-	ThreadSync*threadData;
+//	Variable*vars;
+//	ThreadSync*threadData;
 //	List<int>tableFunctionMap;
 //	QStringList colors;
 //	QStringList colorList,graphTypeList;
@@ -115,35 +116,41 @@ class GraphWidget :public QWidget
 	
 Q_OBJECT
 	public:
-	GraphWidget(QWidget*parent,Preferences pr,Variable*va,ThreadSync*td, int mB) :QWidget(parent)
+	GraphWidget(QWidget*parent,Preferences pr,Variable*va,ThreadSync*td) :TabWidget(parent,pr,va,td,false)
 	{
-		pref=pr;
-		vars=va;
-		menuBottom=mB;
-		threadData=td;
-		maximized=false;
+//		pref=pr;
+//		vars=va;
+//		menuBottom=mB;
+//		threadData=td;
+//		maximized=false;
 		solveMode=false;
 		functionChanged=false;
 		changedRow=-1;
 		dynamicStart=false;
 		processStarted=false;
-		
-		
+
+
 		horzSplit=new QSplitter(Qt::Horizontal,this);
 		vertSplit=new QSplitter(Qt::Vertical,horzSplit);
-		standardButtons=new StandardButtons(this);
-		extButtons=new ExtButtons(this);
+//		standardButtons=new StandardButtons(this);
+//		extButtons=new ExtButtons(this);
 		functionTable=new FunctionTable((QWidget*)vertSplit,pref);
 		graphArea=new GraphArea(horzSplit);
 		graph=new GraphOutput(graphArea,vars,threadData);
 		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX,this);
 		
+		setMainWidget(horzSplit);
+		addSubWidget(calcButtons);
+		addSubWidget(extButtons);
+		setDockArea(1);
+		
+
 		minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
 		maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
 		printIcon=new QPixmap(INSTALLDIR+QString("/data/print.png"));
 		catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
-		
-		dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
+
+//		dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
 		toolBar=new Q3ToolBar();
 		dockArea->moveDockWindow(toolBar);
 		
@@ -156,7 +163,7 @@ Q_OBJECT
 		
 		drawButton->setFixedHeight(25);
 		
-		solveType=new QComboBox(this);
+		solveType=new QComboBox(toolBar);
 		functionType=new QComboBox(this);
 		solveWidget=new GraphSolveWidget(this,pref,vars,threadData);
 		solveType->hide();
@@ -168,6 +175,8 @@ Q_OBJECT
 		s[1]=300;
 		s[0]=300;
 		horzSplit->setSizes(s);
+		
+		
 		
 
 		solveType->insertItem(GRAPHH_STR4,-2);
@@ -199,9 +208,9 @@ Q_OBJECT
 		QObject::connect(drawButton,SIGNAL(released()),this,SLOT(drawSlot()));
 		QObject::connect(maximizeButton,SIGNAL(released()),this,SLOT(maximizeSlot()));
 		QObject::connect(modeBox,SIGNAL(activated(int)),this,SLOT(modeSlot(int)));
-		QObject::connect(standardButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
+		QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
 		QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
-		QObject::connect(standardButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+		QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(graph,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(functionTable,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
@@ -267,7 +276,7 @@ void setPref(Preferences newPref)
 	
 
 	graph->setPref(pref);
-	standardButtons->setPref(pref);
+	calcButtons->setPref(pref);
 	extButtons->setPref(pref);
 	solveWidget->setPref(pref);
 	functionTable->setPref(pref);
@@ -319,7 +328,7 @@ public slots:
 
 
 protected:
-	virtual void resizeEvent(QResizeEvent*);
+//	virtual void resizeEvent(QResizeEvent*);
 
 signals:
 	void prefChange(Preferences);

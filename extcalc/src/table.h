@@ -35,17 +35,18 @@ The tab window for function tables
 #include "functiontable.h"
 #include "buttons.h"
 #include "catalog.h"
+#include "tabwidget.h"
 
 
 
 
 
-class TableWidget :public QWidget
+class TableWidget :public TabWidget
 {
 	
-	Preferences pref;
-	ExtButtons *extButtons;
-	StandardButtons *standardButtons;
+//	Preferences pref;
+//	ExtButtons *extButtons;
+//	StandardButtons *standardButtons;
 	FunctionTable* functionTable;
 	QLineEdit*inputLine;
 	CalcTable*outputTable;
@@ -53,28 +54,28 @@ class TableWidget :public QWidget
 	QPixmap *minimizeIcon,*maximizeIcon,*catalogIcon;
 	QComboBox*typeBox;
 	Q3ToolBar*toolBar;
-	Q3DockArea*dockArea;
+//	Q3DockArea*dockArea;
 	Catalog *catalog;
 	QSplitter *horzSplit,*vertSplit;
-	Variable*vars;
-	bool fullscreen;
+//	Variable*vars;
+//	bool fullscreen;
 	List <double>vertValues;
 	List <double>horzValues;
 	Q3Header*horzHeader,*vertHeader;
-	ThreadSync*threadData;
-	int menuBottom;
+//	ThreadSync*threadData;
+//	int menuBottom;
 	
 	Q_OBJECT
 public:
-	TableWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td,int mB) :QWidget(parent)
+	TableWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td) :TabWidget(parent,p,va,td,false)
 	{
-		pref=p;
-		vars=va;
-		threadData=td;
-		menuBottom=mB;
-		fullscreen=false;
-		extButtons=new ExtButtons(this);
-		standardButtons=new StandardButtons(this);
+//		pref=p;
+//		vars=va;
+//		threadData=td;
+//		menuBottom=mB;
+//		fullscreen=false;
+//		extButtons=new ExtButtons(this);
+//		standardButtons=new StandardButtons(this);
 		horzSplit=new QSplitter(Qt::Horizontal,this);
 		vertSplit=new QSplitter(Qt::Vertical,horzSplit);
 		functionTable=new FunctionTable(vertSplit,pref);
@@ -87,9 +88,14 @@ public:
 		horzHeader->setClickEnabled(true);
 		vertHeader->setClickEnabled(true);
 		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX,this);
-		dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
+//		dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
 		toolBar=new Q3ToolBar();
 		dockArea->moveDockWindow(toolBar);
+		
+		setMainWidget(horzSplit);
+		addSubWidget(calcButtons);
+		addSubWidget(extButtons);
+		setDockArea(1);
 		
 		minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
 		maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
@@ -119,7 +125,7 @@ public:
 		s[0]=300;
 		horzSplit->setSizes(s);
 		
-		QObject::connect(standardButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+		QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(functionTable,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(functionTable,SIGNAL(currentChanged(int,int)),this,SLOT(selectionChangedSlot(int,int)));
@@ -128,7 +134,7 @@ public:
 		QObject::connect(inputLine,SIGNAL(lostFocus()),this,SLOT(inputTextChanged()));
 		QObject::connect(calculateButton,SIGNAL(clicked()),this,SLOT(calculateButtonSlot()));
 		QObject::connect(maximizeButton,SIGNAL(clicked()),this,SLOT(maximizeButtonSlot()));
-		QObject::connect(standardButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
+		QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
 		QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
 		QObject::connect(typeBox,SIGNAL(activated(const QString&)),this,SLOT(typeBoxSlot(const QString&)));
 		QObject::connect(horzHeader,SIGNAL(clicked(int)),this,SLOT(horzHeaderSlot(int)));
@@ -155,8 +161,8 @@ public slots:
 	void dockWindowSlot();
 	void catalogSlot();
 	
-protected:
-	virtual void resizeEvent(QResizeEvent*);
+//protected:
+//	virtual void resizeEvent(QResizeEvent*);
 	
 	
 signals:

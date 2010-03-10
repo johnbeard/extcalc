@@ -17,7 +17,7 @@ any later version.
 //Added by qt3to4:
 #include <QResizeEvent>
 
-
+/*
 void MatrixWidget::resizeEvent(QResizeEvent*)
 {
 	int width=geometry().right() - geometry().left();
@@ -95,6 +95,7 @@ void MatrixWidget::resizeEvent(QResizeEvent*)
 			break;
 	}
 }
+*/
 
 void MatrixWidget::setVarTable()
 {
@@ -219,7 +220,7 @@ void MatrixWidget::resetInterface()
 	size2Label->hide();
 	calcButton->hide();
 	calcWidget->hide();
-	standardButtons->hide();
+//	standardButtons->hide();
 	resultTable->hide();
 	sizeButton->hide();
 	label1->hide();
@@ -235,7 +236,7 @@ void MatrixWidget::resetInterface()
 	{
 		case MATCALC:
 			calcWidget->show();
-			standardButtons->show();
+			calcButtons->show();
 			break;
 		case MATLSE:
 			size1Box->setMinValue(1);
@@ -347,7 +348,7 @@ void MatrixWidget::setHeader(CalcTable*table)
 void MatrixWidget::setPref(Preferences p)
 {
 	pref=p;
-	standardButtons->setPref(pref);
+	calcButtons->setPref(pref);
 	calcWidget->setPref(pref);
 }
 

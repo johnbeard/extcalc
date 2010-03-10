@@ -1,8 +1,8 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'scriptedit.h'
 **
-** Created: Fri Feb 6 17:36:41 2009
-**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
+** Created: Wed Mar 10 16:19:12 2010
+**      by: The Qt Meta Object Compiler version 61 (Qt 4.5.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -10,8 +10,8 @@
 #include "scriptedit.h"
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'scriptedit.h' doesn't include <QObject>."
-#elif Q_MOC_OUTPUT_REVISION != 59
-#error "This file was generated using the moc from 4.4.3. It"
+#elif Q_MOC_OUTPUT_REVISION != 61
+#error "This file was generated using the moc from 4.5.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,12 +20,13 @@ QT_BEGIN_MOC_NAMESPACE
 static const uint qt_meta_data_ScriptWidget[] = {
 
  // content:
-       1,       // revision
+       2,       // revision
        0,       // classname
        0,    0, // classinfo
-      20,   10, // methods
+      20,   12, // methods
        0,    0, // properties
        0,    0, // enums/sets
+       0,    0, // constructors
 
  // signals: signature, parameters, type, tag, flags
       14,   13,   13,   13, 0x05,
@@ -70,7 +71,7 @@ static const char qt_meta_stringdata_ScriptWidget[] = {
 };
 
 const QMetaObject ScriptWidget::staticMetaObject = {
-    { &QWidget::staticMetaObject, qt_meta_stringdata_ScriptWidget,
+    { &TabWidget::staticMetaObject, qt_meta_stringdata_ScriptWidget,
       qt_meta_data_ScriptWidget, 0 }
 };
 
@@ -84,12 +85,12 @@ void *ScriptWidget::qt_metacast(const char *_clname)
     if (!_clname) return 0;
     if (!strcmp(_clname, qt_meta_stringdata_ScriptWidget))
         return static_cast<void*>(const_cast< ScriptWidget*>(this));
-    return QWidget::qt_metacast(_clname);
+    return TabWidget::qt_metacast(_clname);
 }
 
 int ScriptWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = QWidget::qt_metacall(_c, _id, _a);
+    _id = TabWidget::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
@@ -114,6 +115,7 @@ int ScriptWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         case 17: exportSlot(); break;
         case 18: dockWindowSlot(); break;
         case 19: catalogSlot(); break;
+        default: ;
         }
         _id -= 20;
     }

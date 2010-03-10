@@ -19,6 +19,106 @@ any later version.
 
 
 
+CalcWidget::CalcWidget(QWidget*parent,Preferences p,Variable *va,ThreadSync*td) :TabWidget(parent,p,va,td,false)
+{
+
+	textEdit=new CalcInput(this,vars,threadData);
+
+	setMainWidget(textEdit);
+	addSubWidget(calcButtons);
+	addSubWidget(extButtons);
+	setDockArea(1);
+
+	minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
+	maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
+	angleIcon=new QPixmap(INSTALLDIR+QString("/data/angle.png"));
+	scientificIcon=new QPixmap(INSTALLDIR+QString("/data/scientific.png"));
+	baseIcon=new QPixmap(INSTALLDIR+QString("/data/binary.png"));
+	catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
+		
+	toolBar=new Q3ToolBar();
+	dockArea->moveDockWindow(toolBar);
+		
+	viewButton=new QPushButton(*maximizeIcon,"",toolBar);
+	viewButton->setFixedWidth(30);
+
+	typeBox=new QComboBox(toolBar);
+	typeBox->insertItem(*scientificIcon,"scientific");
+	typeBox->insertItem(*baseIcon,"base");
+
+	angleBox=new QComboBox(toolBar);
+	angleBox->insertItem(*angleIcon,"DEG");
+	angleBox->insertItem(*angleIcon,"RAD");
+	angleBox->insertItem(*angleIcon,"GRA");
+	if(pref.angle==DEG)	angleBox->setCurrentItem(0);
+	else if(pref.angle==RAD) angleBox->setCurrentItem(1);
+	else angleBox->setCurrentItem(2);
+		
+	baseBox=new QComboBox(toolBar);
+	baseBox->insertItem("BIN");
+	baseBox->insertItem("OCT");
+	baseBox->insertItem("DEC");
+	baseBox->insertItem("HEX");
+	if(pref.base==BIN) baseBox->setCurrentItem(0);
+	else if(pref.base==OCT) baseBox->setCurrentItem(1);
+	else if(pref.base==HEX) baseBox->setCurrentItem(3);
+	else baseBox->setCurrentItem(2);
+		
+	catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX | CATMATRIX | CATMATHLOGIC,toolBar);
+	catalog->show();
+	catalogButton=new QPushButton(*catalogIcon,"",toolBar);
+	catalogButton->setFixedWidth(30);
+		
+	constants=new Catalog(CATCONSTANTS,toolBar,&pref);
+	constants->show();
+	constantsButton=new QPushButton("C",toolBar);
+	constantsButton->setFixedWidth(30);
+		
+		
+	QToolTip::add(viewButton,CALCWIDGETH_STR4);
+	QToolTip::add(typeBox,CALCWIDGETH_STR5);
+	QToolTip::add(baseBox,CALCWIDGETH_STR6);
+	QToolTip::add(angleBox,CALCWIDGETH_STR7);
+	QToolTip::add(catalogButton,CALCWIDGETH_STR8);
+	QToolTip::add(constantsButton,tr("Constants and conversation"));
+
+
+		
+	if(pref.calcType==BASE)
+	{
+		typeBox->setCurrentItem(1);
+		angleBox->hide();
+	}
+	else
+	{
+		typeBox->setCurrentItem(0);
+		baseBox->hide();
+	}
+		
+			
+			
+	textEdit->setGeometry(20,50,600,310);
+	calcButtons->setGeometry(20,380,280,200);
+	extButtons->setGeometry(320,420,300,160);
+		
+	QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
+	QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
+	QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+	QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+	QObject::connect(constants,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+	QObject::connect(textEdit,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+	QObject::connect(viewButton,SIGNAL(clicked()),this,SLOT(viewSlot()));
+	QObject::connect(baseBox,SIGNAL(activated(int)),this,SLOT(baseSlot(int)));
+	QObject::connect(angleBox,SIGNAL(activated(int)),this,SLOT(angleSlot(int)));
+	QObject::connect(typeBox,SIGNAL(activated(int)),this,SLOT(typeSlot(int)));
+	QObject::connect(catalogButton,SIGNAL(clicked()),this,SLOT(catalogSlot()));
+	QObject::connect(constantsButton,SIGNAL(clicked()),this,SLOT(constantsSlot()));
+	QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(processText(QString)));
+	QObject::connect(constants,SIGNAL(menuSignal(QString)),this,SLOT(processText(QString)));
+		
+		
+}
+
 
 void CalcWidget::getPref(Preferences newPref)
 {
@@ -26,44 +126,16 @@ void CalcWidget::getPref(Preferences newPref)
 }
 
 
-void CalcWidget::resizeEvent(QResizeEvent*)
-{
-	int width=geometry().right()-geometry().left();
-	int height=geometry().bottom()-geometry().top();
-
-	if(maximized)
-	{
-		textEdit->setGeometry(20,menuBottom+40,width-40,height-90);
-		dockArea->setGeometry(0,menuBottom,width,35);
-	}
-	else
-	{
-		textEdit->setGeometry(20,50,width-40,height-290);
-		calcButtons->setGeometry(20,height-220,280,200);
-		extButtons->setGeometry(320,height-180,300,160);
-		dockArea->setGeometry(320,height-220,width-340,30);
-	}
-
-} 
-
 void CalcWidget::viewSlot()
 {
-	if(maximized)
+	if(isMaximized())
 	{
+		maximizeSlot(false);
 		viewButton->setIconSet(*maximizeIcon);
-		calcButtons->show();
-		extButtons->show();
-		maximized=false;
-		resizeEvent(NULL);
-
 	}
-	else
-	{
+	else{
+		maximizeSlot(true);
 		viewButton->setIconSet(*minimizeIcon);
-		calcButtons->hide();
-		extButtons->hide();
-		maximized=true;
-		resizeEvent(NULL);
 	}
 }
 

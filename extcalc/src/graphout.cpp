@@ -25,6 +25,10 @@ any later version.
 
 void GraphOutput::initializeGL()
 {
+  QListIterator<ObjectInfo*> i(objectInfo);
+  ObjectInfo*currentObject;
+  int c;
+
 	makeCurrent();
 	glClearColor( 1.0,1.0,1.0,1.0 );
 //	qglClearColor(white ); 
@@ -58,7 +62,7 @@ void GraphOutput::initializeGL()
 	{
 		int type;
 		//start processing
-		for(int c=0; c<20; c++)
+    for(c=0; c<20; c++)
 		{
 			if(pref.activeFunctions[c])
 			{
@@ -74,14 +78,18 @@ void GraphOutput::initializeGL()
 		}
 		
 		//graph calculation (without multithreading)
-		for(int c=0; c<objectInfo.GetLen(); c++)
+    while(i.hasNext())
 		{
-			if(!objectInfo[c].processed)
-			{
-				processGraph(c,threadData,vars);
-				objectInfo[c].processed=true;
-				//objectInfo[c].glCreated
-			}
+      currentObject=i.next();
+
+      for(c=0; c<currentObject->dataLength; c++)
+      {
+        if(!currentObject->objectData[c].processed)
+        {
+          processGraph(currentObject,c,threadData,vars);
+          currentObject->objectData[c].processed=true;
+        }
+      }
 		}
 
 		//create gl lists
@@ -826,9 +834,9 @@ void GraphOutput::customEvent(QCustomEvent*ev)
 
 }
 
-void GraphOutput::processStdFunction(int index,ThreadSync*td,Variable*va)
+void GraphOutput::processStdFunction(ObjectInfo*obj, int index,ThreadSync*td,Variable*va)
 {
-	char*func=objectInfo[index].function;
+  char*func=obj->function;
 
 	double xStart,xStep;
 	Number result;
@@ -837,19 +845,17 @@ void GraphOutput::processStdFunction(int index,ThreadSync*td,Variable*va)
 
 	QString num,num2;
 
-
-
 	struct timeval t1,t2;
 	
 	double* coordinates=new double[PRECISION2D*2+2];
-	objectInfo[index].coordinates=coordinates;
-	objectInfo[index].length=PRECISION2D;
-	if(objectInfo[index].logic)
+  obj->objectData[index].coordinates=coordinates;
+  obj->objectData[index].coordinateLength=PRECISION2D;
+  if(obj->logic)
 	{
 		Script ca1(NULL,func,&pref,va,td);
 		gettimeofday(&t1,NULL);
 		td->vars[0][0].type=NFLOAT;
-		td->vars[0][0].fval=objectInfo[index].dynamicParameter;
+    td->vars[0][0].fval=obj->objectData[index].dynamicParameter;
 		for(int c=0; c<PRECISION2D; c++)
 		{
 			td->vars[23][0].type=NFLOAT;
@@ -866,7 +872,7 @@ void GraphOutput::processStdFunction(int index,ThreadSync*td,Variable*va)
 		Calculate ca1(NULL,func,&pref,va);
 		gettimeofday(&t1,NULL);
 		
-		va[0]=objectInfo[index].dynamicParameter;
+    va[0]=obj->objectData[index].dynamicParameter;
 		for(int c=0; c<PRECISION2D; c++)
 		{
 			va[23]=xStart+(double)c*xStep;
@@ -888,10 +894,10 @@ void GraphOutput::processStdFunction(int index,ThreadSync*td,Variable*va)
 }
 
 
-void GraphOutput::processPolarFunction(int index,ThreadSync*threadData,Variable*vars)
+void GraphOutput::processPolarFunction(ObjectInfo*obj,int index,ThreadSync*threadData,Variable*vars)
 {
 	char*func;
-	func = objectInfo[index].function;
+  func = obj->function;
 
 	double xStart,xStep;
 	xStart=0;
@@ -907,14 +913,14 @@ void GraphOutput::processPolarFunction(int index,ThreadSync*threadData,Variable*
 	}
 
 	double* coordinates=new double[PRECISION2D*2+2];
-	objectInfo[index].coordinates=coordinates;
-	objectInfo[index].length=PRECISION2D+1;
+  obj->objectData[index].coordinates=coordinates;
+  obj->objectData[index].coordinateLength=PRECISION2D+1;
 //	perror("Polar function index: "+QString::number(index));
 
 	float r;
 	QString num,num2;
 	struct timeval t1,t2;
-	if(objectInfo[index].logic)
+  if(obj->logic)
 	{
 		Number r;
 		long double x;
@@ -923,7 +929,7 @@ void GraphOutput::processPolarFunction(int index,ThreadSync*threadData,Variable*
 		gettimeofday(&t1,NULL);
 		
 		threadData->vars[0][0].type=NFLOAT;
-		threadData->vars[0][0].fval=objectInfo[index].dynamicParameter;
+    threadData->vars[0][0].fval=obj->objectData[index].dynamicParameter;
 		for(int c=0; c<=PRECISION2D; c++)
 		{
 			x=xStart+(double)c*xStep;
@@ -932,22 +938,22 @@ void GraphOutput::processPolarFunction(int index,ThreadSync*threadData,Variable*
 
 			r=ca1.exec();
 			convertToFloat(&r);
-			objectInfo[index].coordinates[2*c]  =cos(x*multiplier)*r.fval.real();
-			objectInfo[index].coordinates[2*c+1]=sin(x*multiplier)*r.fval.real();
+      coordinates[2*c]  =cos(x*multiplier)*r.fval.real();
+      coordinates[2*c+1]=sin(x*multiplier)*r.fval.real();
 			
 		}
 		gettimeofday(&t2,NULL);
 	}
 	else {
 		Calculate ca1(NULL,func,&pref,vars);
-		vars[0]=objectInfo[index].dynamicParameter;
+    vars[0]=obj->objectData[index].dynamicParameter;
 		gettimeofday(&t1,NULL);
 		for(int c=0; c<=PRECISION2D; c++)
 		{
 			vars[23]=xStart+(double)c*xStep;
 			r=ca1.calc();
-			objectInfo[index].coordinates[c*2]=cos(vars[23]*multiplier)*r;
-			objectInfo[index].coordinates[c*2+1]=sin(vars[23]*multiplier)*r;
+      coordinates[c*2]=cos(vars[23]*multiplier)*r;
+      coordinates[c*2+1]=sin(vars[23]*multiplier)*r;
 		}
 		gettimeofday(&t2,NULL);
 	}
@@ -963,24 +969,24 @@ void GraphOutput::processPolarFunction(int index,ThreadSync*threadData,Variable*
 //	objectInfo[index].processed=true;
 }
 
-void GraphOutput::processParameterFunction(int index,ThreadSync*threadData,Variable*vars)
+void GraphOutput::processParameterFunction(ObjectInfo*obj,int index,ThreadSync*threadData,Variable*vars)
 {
 	char*func1,*func2;
-	func1 = objectInfo[index].function;
-	func2 = objectInfo[index].function2;
+  func1 = obj->function;
+  func2 = obj->function2;
 
 	double xStart,xStep;
 	xStart=pref.parameterStart;
 	xStep=(pref.parameterEnd-pref.parameterStart)/(double)pref.parameterSteps;
 
 	double* coordinates=new double[pref.parameterSteps*2];
-	objectInfo[index].coordinates=coordinates;
-	objectInfo[index].length=pref.parameterSteps;
+  obj->objectData[index].coordinates=coordinates;
+  obj->objectData[index].coordinateLength=pref.parameterSteps;
 
 	QString num,num2;
 	struct timeval t1,t2;
 	
-	if(objectInfo[index].logic)
+  if(obj->logic)
 	{
 		Number result;
 		Script ca1(NULL,func1,&pref,vars,threadData);
@@ -988,7 +994,7 @@ void GraphOutput::processParameterFunction(int index,ThreadSync*threadData,Varia
 		gettimeofday(&t1,NULL);
 		
 		threadData->vars[0][0].type=NFLOAT;
-		threadData->vars[0][0].fval=objectInfo[index].dynamicParameter;
+    threadData->vars[0][0].fval=obj->objectData[index].dynamicParameter;
 		
 		for(int c=0; c<pref.parameterSteps; c++)
 		{
@@ -996,26 +1002,26 @@ void GraphOutput::processParameterFunction(int index,ThreadSync*threadData,Varia
 			threadData->vars[19][0].fval=xStart+(double)c*xStep;
 			result=ca1.exec();
 			convertToFloat(&result);
-			objectInfo[index].coordinates[2*c]=result.fval.real();
+      coordinates[2*c]=result.fval.real();
 			threadData->vars[19][0].type=NFLOAT;
 			threadData->vars[19][0].fval=xStart+(double)c*xStep;
 			result=ca2.exec();
 			convertToFloat(&result);
-			objectInfo[index].coordinates[2*c+1]=result.fval.real();
+      coordinates[2*c+1]=result.fval.real();
 		}
 	}
 	else {
-	Calculate ca1(NULL,func1,&pref,vars);
-	Calculate ca2(NULL,func2,&pref,vars);
-	vars[0]=objectInfo[index].dynamicParameter;
-	gettimeofday(&t1,NULL);
-	for(int c=0; c<pref.parameterSteps; c++)
-	{
-		vars[19]=xStart+(double)c*xStep;
-		objectInfo[index].coordinates[2*c]=ca1.calc();
-		objectInfo[index].coordinates[2*c+1]=ca2.calc();
-	}
-	gettimeofday(&t2,NULL);
+    Calculate ca1(NULL,func1,&pref,vars);
+    Calculate ca2(NULL,func2,&pref,vars);
+    vars[0]=obj->objectData[index].dynamicParameter;
+    gettimeofday(&t1,NULL);
+    for(int c=0; c<pref.parameterSteps; c++)
+    {
+      vars[19]=xStart+(double)c*xStep;
+      coordinates[2*c]=ca1.calc();
+      coordinates[2*c+1]=ca2.calc();
+    }
+    gettimeofday(&t2,NULL);
 	}
 
 	int seconds,usecs;
@@ -1066,12 +1072,12 @@ void GraphOutput::setGLColor(float y)
 
 
 
-void GraphOutput::process3dFunction(int index,ThreadSync*threadData,Variable*vars)
+void GraphOutput::process3dFunction(ObjectInfo*obj,int index,ThreadSync*threadData,Variable*vars)
 {
 
 
 	char*func;
-	func = objectInfo[index].function;
+  func = obj->function;
 
 
 	double xStart,xStep,zStart,zStep;
@@ -1082,20 +1088,20 @@ void GraphOutput::process3dFunction(int index,ThreadSync*threadData,Variable*var
 
 
 	double*coordinates=new double[PRECISION3D*PRECISION3D];
-	objectInfo[index].coordinates=coordinates;
-	objectInfo[index].length=PRECISION3D;
+  obj->objectData[index].coordinates=coordinates;
+  obj->objectData[index].coordinateLength=PRECISION3D;
 
 	QString num,num2;
 	struct timeval t1,t2;
-	if(objectInfo[index].logic)
+  if(obj->logic)
 	{
 		Number result;
 		Script ca1(NULL,func,&pref,vars,threadData);
 		gettimeofday(&t1,NULL);
-		
+
 		threadData->vars[0][0].type=NFLOAT;
-		threadData->vars[0][0].fval=objectInfo[index].dynamicParameter;
-		
+    threadData->vars[0][0].fval=obj->objectData[index].dynamicParameter;
+
 		for(int c=0; c<PRECISION3D; c++)
 		{
 			threadData->vars[25][0].type=NFLOAT;
@@ -1112,7 +1118,7 @@ void GraphOutput::process3dFunction(int index,ThreadSync*threadData,Variable*var
 	}
 	else {
 		Calculate ca1(NULL,func,&pref,vars);
-		vars[0]=objectInfo[index].dynamicParameter;
+    vars[0]=obj->objectData[index].dynamicParameter;
 		gettimeofday(&t1,NULL);
 	
 		for(int c=0; c<PRECISION3D; c++)
@@ -1143,51 +1149,50 @@ void GraphOutput::process3dFunction(int index,ThreadSync*threadData,Variable*var
 }
 
 
-void GraphOutput::processInequalityFunction(int index,ThreadSync*threadData,Variable*vars)
+void GraphOutput::processInequalityFunction(ObjectInfo*obj,int index,ThreadSync*threadData,Variable*vars)
 {
 	//types:
 	//GRAPHIEG: both greather
 	//GRAPHIEL: both less
 	//GRAPHIEGE: first greather, second less
-	
+
 	char*func,*func2;
-	func = objectInfo[index].function;
-	func2= objectInfo[index].function2;
-	
+  func = obj->function;
+  func2= obj->function2;
+
 	double xStart,xStep;
 	xStart=pref.xmin;
 	xStep=(pref.xmax-pref.xmin)/PRECISION2D;
 	double endLine;
-	
-	if(objectInfo[index].type==GRAPHIEGE || objectInfo[index].type==GRAPHIEG)
+
+  if(obj->type==GRAPHIEGE || obj->type==GRAPHIEG)
 		endLine=pref.ymax;
 	else endLine=pref.ymin;
 	struct timeval t1,t2;
 
-
 	double* coordinates;
-	if(objectInfo[index].type==GRAPHIEG || objectInfo[index].type==GRAPHIEL)
+  if(obj->type==GRAPHIEG || obj->type==GRAPHIEL)
 		coordinates=new double[PRECISION2D*2+2];
 	else coordinates=new double[PRECISION2D*3+3];
-	objectInfo[index].coordinates=coordinates;
-	objectInfo[index].length=PRECISION2D+1;
+  obj->objectData[index].coordinates=coordinates;
+  obj->objectData[index].coordinateLength=PRECISION2D+1;
 
 	float x,y1,y2;
 	QString num,num2;
 	Calculate *ca1=NULL,*ca2=NULL;
 	Script*s1=NULL,*s2=NULL;
 	Number result;
-	if(objectInfo[index].logic)
+  if(obj->logic)
 	{
 		
 		threadData->vars[0][0].type=NFLOAT;
-		threadData->vars[0][0].fval=objectInfo[index].dynamicParameter;
+    threadData->vars[0][0].fval=obj->objectData[index].dynamicParameter;
 		
 		s1=new Script(NULL,func,&pref,vars,threadData);	
 		s2=new Script(NULL,func2,&pref,vars,threadData);	
 	}
 	else {
-		vars[0]=objectInfo[index].dynamicParameter;
+    vars[0]=obj->objectData[index].dynamicParameter;
 
 		ca1=new Calculate(NULL,func,&pref,vars);
 		ca2=new Calculate(NULL,func2,&pref,vars);
@@ -1196,7 +1201,7 @@ void GraphOutput::processInequalityFunction(int index,ThreadSync*threadData,Vari
 	{
 		x=xStart+(double)c*xStep;
 
-		if(objectInfo[index].logic)
+    if(obj->logic)
 		{
 			threadData->vars[23][0].type=NFLOAT;
 			threadData->vars[23][0].fval=x;
@@ -1212,29 +1217,29 @@ void GraphOutput::processInequalityFunction(int index,ThreadSync*threadData,Vari
 			y1=ca1->calc();
 			y2=ca2->calc();
 		}
-		if(objectInfo[index].type==GRAPHIEG)
+    if(obj->type==GRAPHIEG)
 		{
-			objectInfo[index].coordinates[2*c]=x;
+      coordinates[2*c]=x;
 			if(y1>=y2)
-				objectInfo[index].coordinates[2*c+1]=y1;
-			else objectInfo[index].coordinates[2*c+1]=y2;
+        coordinates[2*c+1]=y1;
+      else coordinates[2*c+1]=y2;
 		}
-		else if(objectInfo[index].type==GRAPHIEL)
+    else if(obj->type==GRAPHIEL)
 		{
-			objectInfo[index].coordinates[2*c]=x;
+      coordinates[2*c]=x;
 			if(y1<=y2)
-				objectInfo[index].coordinates[2*c+1]=y1;
-			else objectInfo[index].coordinates[2*c+1]=y2;
+        coordinates[2*c+1]=y1;
+      else coordinates[2*c+1]=y2;
 		}
 		else
 		{
 			if(y1<=y2)
 			{
-				objectInfo[index].coordinates[3*c]=x;
-				objectInfo[index].coordinates[3*c+1]=y1;
-				objectInfo[index].coordinates[3*c+2]=y2;
+        coordinates[3*c]=x;
+        coordinates[3*c+1]=y1;
+        coordinates[3*c+2]=y2;
 			}
-			else objectInfo[index].coordinates[3*c+1]=objectInfo[index].coordinates[3*c+2]=0.0;
+      else coordinates[3*c+1]=coordinates[3*c+2]=0.0;
 		}
 	}
 
@@ -1249,7 +1254,7 @@ void GraphOutput::processInequalityFunction(int index,ThreadSync*threadData,Vari
 		usecs=1000000+usecs;
 	}
 
-	if(objectInfo[index].logic)
+  if(obj->logic)
 	{
 		delete s1;
 		delete s2;	
@@ -1258,18 +1263,16 @@ void GraphOutput::processInequalityFunction(int index,ThreadSync*threadData,Vari
 		delete ca1;
 		delete ca2;
 	}
-	
-//	objectInfo[index].processed=true;
 }
 
-void GraphOutput::processComplexFunction(int index,ThreadSync*threadData,Variable*vars)
+void GraphOutput::processComplexFunction(ObjectInfo*obj,int index,ThreadSync*threadData,Variable*vars)
 {
 	char*func;
-	func = objectInfo[index].function;
+  func = obj->function;
 
 	double zStart,zStep;
 	double* coordinates;
-	if(objectInfo[index].type==GRAPHCOMP3D)
+  if(obj->type==GRAPHCOMP3D)
 	{
 		zStart=pref.zmin;
 		coordinates=new double[pref.nyquistSteps*3+3];
@@ -1289,24 +1292,24 @@ void GraphOutput::processComplexFunction(int index,ThreadSync*threadData,Variabl
 	struct timeval t1,t2;
 	Number result;
 
-	objectInfo[index].coordinates=coordinates;
-	objectInfo[index].length=pref.nyquistSteps;
+  obj->objectData[index].coordinates=coordinates;
+  obj->objectData[index].coordinateLength=pref.nyquistSteps;
 
 	
 	threadData->vars[0][0].type=NFLOAT;
-	threadData->vars[0][0].fval=objectInfo[index].dynamicParameter;
+  threadData->vars[0][0].fval=obj->objectData[index].dynamicParameter;
 	
 	gettimeofday(&t1,NULL);
 	threadData->vars[25][0].type=NFLOAT;
-	if(objectInfo[index].type==GRAPHCOMP3D)
+  if(obj->type==GRAPHCOMP3D)
 	{
 		for(int c=0; c<=pref.nyquistSteps; c++)
 		{
 			threadData->vars[25][0].fval=Complex(zStart+(double)c*zStep,0.0);
 			result=ca1.exec();
-			objectInfo[index].coordinates[3*c+2]  =threadData->vars[25][0].fval.real();
-			objectInfo[index].coordinates[3*c]=result.fval.real();
-			objectInfo[index].coordinates[3*c+1]=result.fval.imag();
+      coordinates[3*c+2]  =threadData->vars[25][0].fval.real();
+      coordinates[3*c]=result.fval.real();
+      coordinates[3*c+1]=result.fval.imag();
 		}
 	}
 	else {
@@ -1316,8 +1319,8 @@ void GraphOutput::processComplexFunction(int index,ThreadSync*threadData,Variabl
 				threadData->vars[25][0].fval=Complex(pow(10,zStart+(double)c*zStep),0.0);
 			else threadData->vars[25][0].fval=Complex(zStart+(double)c*zStep,0.0);
 			result=ca1.exec();
-			objectInfo[index].coordinates[2*c]=result.fval.real();
-			objectInfo[index].coordinates[2*c+1]=result.fval.imag();
+      coordinates[2*c]=result.fval.real();
+      coordinates[2*c+1]=result.fval.imag();
 		}
 	}
 
@@ -1340,6 +1343,8 @@ void GraphOutput::processComplexFunction(int index,ThreadSync*threadData,Variabl
 void GraphOutput::paintGL()
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    QListIterator<ObjectInfo*>i(objectInfo);
+    ObjectInfo*obj;
 
 	glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -1387,20 +1392,21 @@ void GraphOutput::paintGL()
 //		for(int c1=0; c1<drawRules[c][0]; c1++)
 //			perror("DrawRules: "+QString::number(c)+" indices: "+QString::number(drawRules[c][c1+1]));
 //	perror("\n");
-	for(int c=0; c<drawRules.GetLen(); c++)
+  while(i.hasNext())
 	{
-		if(dynamicPos<drawRules[c][0])
+    obj=i.next();
+    if(dynamicPos<obj->dataLength)
 		{
-			if(objectInfo[drawRules[c][dynamicPos+1]].glCreated)
-				glCallList(objectInfo[drawRules[c][dynamicPos+1]].glObject);
+      if(obj->objectData[dynamicPos].glCreated)
+        glCallList(obj->objectData[dynamicPos].glObject);
+      else qDebug("No GL list");
 		}
 		else {
-			if(objectInfo[drawRules[c][1]].glCreated)
-				glCallList(objectInfo[drawRules[c][1]].glObject);
+      if(obj->objectData[0].glCreated)
+        glCallList(obj->objectData[0].glObject);
+      else qDebug("No GL list");
 		}
-
 	}
-
 
 	qglColor(QColor(100,100,255));
 	for(int c=0; c<additionalObjects.GetLen(); c++)
@@ -1529,30 +1535,27 @@ void GraphOutput::resizeGL( int w, int h )
 
 void GraphOutput::clearGL()
 {
+  int c;
+
 	if(graphProcess)
 		return;
 	
 	current3dSteps=pref.prec3dSteps;
 	current2dSteps=pref.prec2dSteps;
-	while(objectInfo.GetLen() > 0)
-	{
-		if(objectInfo[0].processed)
-			delete[]objectInfo[0].coordinates;
-		if(objectInfo[0].glCreated)
-			glDeleteLists(objectInfo[0].glObject,1);
 
-		if(objectInfo[0].function!=NULL)
-			free(objectInfo[0].function);
-		if(objectInfo[0].function2!=NULL)
-			free(objectInfo[0].function2);
-		objectInfo.DeleteItem(0);
-	}
+  while (!objectInfo.isEmpty())
+  {
+    for(c=0; c<objectInfo.first()->dataLength; c++)
+    {
+      delete[] objectInfo.first()->objectData[c].coordinates;
+      if(objectInfo.first()->objectData[c].glCreated)
+        glDeleteLists(objectInfo.first()->objectData[c].glObject,1);
+      else qDebug("data for removal not consistent");
+    }
+    delete[] objectInfo.first()->objectData;
+    delete objectInfo.takeFirst();
+  }
 
-	while(drawRules.GetLen() > 0)
-	{
-		delete[]drawRules[0];
-		drawRules.DeleteItem(0);
-	}
 	isDynamic=false;
 	timer->stop();
 
@@ -1585,6 +1588,10 @@ void GraphOutput::setPref(Preferences newPref)
 
 bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 {
+  QListIterator<ObjectInfo*>i(objectInfo);
+  ObjectInfo*obj;
+  int c;
+
 	if(graphProcess)
 		return false;
 	
@@ -1622,150 +1629,165 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 
 
 
-	for(int c=0; c<objectInfo.GetLen(); c++)
+  while(i.hasNext())
 	{
-		if(objectInfo[c].logic)
-		{
-			threadData->vars[0][0].type=NFLOAT;
-			threadData->vars[0][0].fval=Complex(dynamicStart+c*((dynamicEnd-dynamicStart)/(dynamicSteps)),0.0);
-		}
-		else vars[0]=objectInfo[c].dynamicParameter;
+    obj=i.next();
+
 		if(!ret);
-		else if(objectInfo[c].type == GRAPHSTD)
+    else if(obj->type == GRAPHSTD)
 		{
-//			perror("xStart: "+QString::number(xStart)+" xStep: "+QString::number(xStep)+" shiftRight: "+QString::number(shiftRight)+" function: "+QString(objectInfo[c].function)); 
+      for(c=0; c<obj->dataLength; c++)
+      {
+        if(obj->logic)
+        {
+          threadData->vars[0][0].type=NFLOAT;
+          threadData->vars[0][0].fval=Complex(obj->objectData[c].dynamicParameter,0.0);
+        }
+        else vars[0]=obj->objectData[c].dynamicParameter;
 
-			
-
-			if(shiftRight)
-				for(int c1=steps*2; c1<PRECISION2D*2; c1++)
-					objectInfo[c].coordinates[c1-steps*2]=objectInfo[c].coordinates[c1];
-			else for(int c1=(PRECISION2D)*2+1; c1>=steps*2; c1--)
-						objectInfo[c].coordinates[c1]=objectInfo[c].coordinates[c1-steps*2];
-			if(objectInfo[c].logic)
-			{
-				Number result;
-				Script ca(NULL,objectInfo[c].function,&pref,vars,threadData);
-				for(int c1=0; c1<steps; c1++)
-				{
-					threadData->vars[23][0].type=NFLOAT;
-					threadData->vars[23][0].fval=xStart+c1*xStep;
-					objectInfo[c].coordinates[(startStep+c1)*2]  =threadData->vars[23][0].fval.real();
-					result=ca.exec();
-					convertToFloat(&result);
-					objectInfo[c].coordinates[(startStep+c1)*2+1]=result.fval.real();
-				}
-			}
-			else {
-				Calculate ca(NULL,objectInfo[c].function,&pref,vars);
-				for(int c1=0; c1<steps; c1++)
-				{
-					vars[23]=xStart+c1*xStep;
-					objectInfo[c].coordinates[(startStep+c1)*2]=vars[23];
-					objectInfo[c].coordinates[(startStep+c1)*2+1]=ca.calc();
-				}
-			}
+        if(shiftRight)
+          for(int c1=steps*2; c1<PRECISION2D*2; c1++)
+            obj->objectData[c].coordinates[c1-steps*2]=obj->objectData[c].coordinates[c1];
+        else for(int c1=(PRECISION2D)*2+1; c1>=steps*2; c1--)
+              obj->objectData[c].coordinates[c1]=obj->objectData[c].coordinates[c1-steps*2];
+        if(obj->logic)
+        {
+          Number result;
+          Script ca(NULL,obj->function,&pref,vars,threadData);
+          for(int c1=0; c1<steps; c1++)
+          {
+            threadData->vars[23][0].type=NFLOAT;
+            threadData->vars[23][0].fval=xStart+c1*xStep;
+            obj->objectData[c].coordinates[(startStep+c1)*2]  =threadData->vars[23][0].fval.real();
+            result=ca.exec();
+            convertToFloat(&result);
+            obj->objectData[c].coordinates[(startStep+c1)*2+1]=result.fval.real();
+          }
+        }
+        else {
+          Calculate ca(NULL,obj->function,&pref,vars);
+          for(int c1=0; c1<steps; c1++)
+          {
+            vars[23]=xStart+c1*xStep;
+            obj->objectData[c].coordinates[(startStep+c1)*2]=vars[23];
+            obj->objectData[c].coordinates[(startStep+c1)*2+1]=ca.calc();
+          }
+        }
+      }
 		}
-		else if(objectInfo[c].type == GRAPHIEG || objectInfo[c].type == GRAPHIEL || objectInfo[c].type == GRAPHIEGE || objectInfo[c].type == GRAPHIELE)
+    else if(obj->type == GRAPHIEG || obj->type == GRAPHIEL || obj->type == GRAPHIEGE || obj->type == GRAPHIELE)
 		{
 //			perror("xStart: "+QString::number(xStart)+" xStep: "+QString::number(xStep)+" shiftRight: "+QString::number(shiftRight)+" function: "+QString(objectInfo[c].function)); 
 
 			Calculate *ca1=NULL,*ca2=NULL;
 			Script*s1=NULL,*s2=NULL;
 			Number result;
-			if(objectInfo[c].logic)
-			{
-				
-				s1=new Script(NULL,objectInfo[c].function,&pref,vars,threadData);	
-				s2=new Script(NULL,objectInfo[c].function2,&pref,vars,threadData);	
-			}
-			else {
-				ca1=new Calculate(NULL,objectInfo[c].function,&pref,vars);
-				ca2=new Calculate(NULL,objectInfo[c].function2,&pref,vars);
-			}
-			
-			if(objectInfo[c].type == GRAPHIEG || objectInfo[c].type == GRAPHIEL)
-			{
-			if(shiftRight)
-				for(int c1=steps*2; c1<PRECISION2D*2+2; c1++)
-					objectInfo[c].coordinates[c1-steps*2]=objectInfo[c].coordinates[c1];
-			else for(int c1=(PRECISION2D+1)*2-1; c1>=0; c1--)
-						objectInfo[c].coordinates[c1]=objectInfo[c].coordinates[c1-steps*2];
-			}
-			else {
-				if(shiftRight)
-					for(int c1=steps*3; c1<PRECISION2D*3+3; c1++)
-						objectInfo[c].coordinates[c1-steps*3]=objectInfo[c].coordinates[c1];
-				else for(int c1=(PRECISION2D+1)*3-1; c1>=0; c1--)
-							objectInfo[c].coordinates[c1]=objectInfo[c].coordinates[c1-steps*3];
-			}
-			
-			double x, y1, y2;
-			if(shiftRight)
-				steps++;
-//			perror("full length: "+QString::number(steps+startStep));
-			for(int c1=0; c1<steps; c1++)
-			{
-				x=xStart+(double)c1*xStep;
-				if(objectInfo[c].logic)
-				{
-					threadData->vars[23][0].type=NFLOAT;
-					threadData->vars[23][0].fval=x;
-					result=s1->exec();
-					y1=result.fval.real();
-					threadData->vars[23][0].type=NFLOAT;
-					threadData->vars[23][0].fval=x;
-					result=s2->exec();
-					y2=result.fval.real();
-				}
-				else {
-					vars[23]=x;
-					y1=ca1->calc();
-					y2=ca2->calc();
-				}
-		
-				if(objectInfo[c].type==GRAPHIEG)
-				{
-					objectInfo[c].coordinates[2*(startStep+c1)]=x;
-					if(y1>=y2)
-						objectInfo[c].coordinates[2*(startStep+c1)+1]=y1;
-					else objectInfo[c].coordinates[2*(startStep+c1)+1]=y2;
-				}
-				else if(objectInfo[c].type==GRAPHIEL)
-				{
-					objectInfo[c].coordinates[2*(startStep+c1)]=x;
-					if(y1<=y2)
-						objectInfo[c].coordinates[2*(startStep+c1)+1]=y1;
-					else objectInfo[c].coordinates[2*(startStep+c1)+1]=y2;
-				}
-				else
-				{
-					if(y1<=y2)
-					{
-						objectInfo[c].coordinates[3*(startStep+c1)]=x;
-						objectInfo[c].coordinates[3*(startStep+c1)+1]=y1;
-						objectInfo[c].coordinates[3*(startStep+c1)+2]=y2;
-					}
-					else objectInfo[c].coordinates[3*(startStep+c1)+1]=objectInfo[c].coordinates[3*(startStep+c1)+2]=0.0;
-				}
-			}
-			if(objectInfo[c].logic)
-			{
-				delete s1;
-				delete s2;	
-			}
-			else {
-				delete ca1;
-				delete ca2;
-			}
-			if(shiftRight)
-				steps--;
-		}
-		if(objectInfo[c].type!=GRAPH3D)
-		{
-			glDeleteLists(objectInfo[c].glObject,1);
-			objectInfo[c].glObject=generateGLList(c);
-		}
+
+      for(c=0; c<obj->dataLength; c++)
+      {
+        if(obj->logic)
+        {
+          threadData->vars[0][0].type=NFLOAT;
+          threadData->vars[0][0].fval=Complex(obj->objectData[c].dynamicParameter,0.0);
+        }
+        else vars[0]=obj->objectData[c].dynamicParameter;
+        if(obj->logic)
+        {
+          s1=new Script(NULL,obj->function,&pref,vars,threadData);
+          s2=new Script(NULL,obj->function2,&pref,vars,threadData);
+        }
+        else {
+          ca1=new Calculate(NULL,obj->function,&pref,vars);
+          ca2=new Calculate(NULL,obj->function2,&pref,vars);
+        }
+
+        if(obj->type == GRAPHIEG || obj->type == GRAPHIEL)
+        {
+        if(shiftRight)
+          for(int c1=steps*2; c1<PRECISION2D*2+2; c1++)
+            obj->objectData[c].coordinates[c1-steps*2]=obj->objectData[c].coordinates[c1];
+        else for(int c1=(PRECISION2D+1)*2-1; c1>=0; c1--)
+              obj->objectData[c].coordinates[c1]=obj->objectData[c].coordinates[c1-steps*2];
+        }
+        else {
+          if(shiftRight)
+            for(int c1=steps*3; c1<PRECISION2D*3+3; c1++)
+              obj->objectData[c].coordinates[c1-steps*3]=obj->objectData[c].coordinates[c1];
+          else for(int c1=(PRECISION2D+1)*3-1; c1>=0; c1--)
+                obj->objectData[c].coordinates[c1]=obj->objectData[c].coordinates[c1-steps*3];
+        }
+
+        double x, y1, y2;
+        if(shiftRight)
+          steps++;
+  //			perror("full length: "+QString::number(steps+startStep));
+        for(int c1=0; c1<steps; c1++)
+        {
+          x=xStart+(double)c1*xStep;
+          if(obj->logic)
+          {
+            threadData->vars[23][0].type=NFLOAT;
+            threadData->vars[23][0].fval=x;
+            result=s1->exec();
+            y1=result.fval.real();
+            threadData->vars[23][0].type=NFLOAT;
+            threadData->vars[23][0].fval=x;
+            result=s2->exec();
+            y2=result.fval.real();
+          }
+          else {
+            vars[23]=x;
+            y1=ca1->calc();
+            y2=ca2->calc();
+          }
+
+          if(obj->type==GRAPHIEG)
+          {
+            obj->objectData[c].coordinates[2*(startStep+c1)]=x;
+            if(y1>=y2)
+              obj->objectData[c].coordinates[2*(startStep+c1)+1]=y1;
+            else obj->objectData[c].coordinates[2*(startStep+c1)+1]=y2;
+          }
+          else if(obj->type==GRAPHIEL)
+          {
+            obj->objectData[c].coordinates[2*(startStep+c1)]=x;
+            if(y1<=y2)
+              obj->objectData[c].coordinates[2*(startStep+c1)+1]=y1;
+            else obj->objectData[c].coordinates[2*(startStep+c1)+1]=y2;
+          }
+          else
+          {
+            if(y1<=y2)
+            {
+              obj->objectData[c].coordinates[3*(startStep+c1)]=x;
+              obj->objectData[c].coordinates[3*(startStep+c1)+1]=y1;
+              obj->objectData[c].coordinates[3*(startStep+c1)+2]=y2;
+            }
+            else obj->objectData[c].coordinates[3*(startStep+c1)+1]=obj->objectData[c].coordinates[3*(startStep+c1)+2]=0.0;
+          }
+        }
+        if(obj->logic)
+        {
+          delete s1;
+          delete s2;
+        }
+        else {
+          delete ca1;
+          delete ca2;
+        }
+        if(shiftRight)
+          steps--;
+      }
+    }
+    else if(obj->type!=GRAPH3D)
+    {
+      for(c=0; c<obj->dataLength; c++)
+      {
+        glDeleteLists(obj->objectData[c].glObject,1);
+        obj->objectData[c].glObject=generateGLList(obj,c);
+      }
+    }
+
 	}
 	
 	return ret;
@@ -1773,84 +1795,70 @@ bool GraphOutput::updateFunctions(double oldXMin,double oldXMax)
 
 void GraphOutput::processFunction(QString function,QString function2, int type, QColor color, bool logic, bool dynamic)
 {
+
 	if(graphProcess)
 		return;
-	
-	int ruleIndex=drawRules.GetLen();
 	
 	if((type==GRAPH3D || type==GRAPHCOMP3D) && pref.graphType!=GRAPH3D)
 		return;
 
 
-	ObjectInfo info;
-	info.type=type;
-	info.color=color;
-	info.dynamic=dynamic;
-	info.logic=logic;
-	info.processed=info.glCreated=false;
+  ObjectInfo *info=new ObjectInfo;;
+  info->type=type;
+  info->color=color;
+  info->dynamic=dynamic;
+  info->logic=logic;
+
 	if(type==GRAPHPARAMETER)
 	{
 		int sep=function.find("\\");
 		QString f1=function.left(sep);
 		QString f2=function.right(function.length()-sep-1);
-		info.function=preprocessor(&f1,&pref,false);
-		info.function2=preprocessor(&f2,&pref,false);
+    info->function=preprocessor(&f1,&pref,false);
+    info->function2=preprocessor(&f2,&pref,false);
 	}
 	else if(type==GRAPHIEGE)
 	{
-		info.function=preprocessor(&function,&pref,false);
-		info.function2=preprocessor(&function2,&pref,false);
+    info->function=preprocessor(&function,&pref,false);
+    info->function2=preprocessor(&function2,&pref,false);
 	}
 	else if(type==GRAPHIELE)
 	{
-		info.function=preprocessor(&function2,&pref,false);
-		info.function2=preprocessor(&function,&pref,false);
+    info->function=preprocessor(&function2,&pref,false);
+    info->function2=preprocessor(&function,&pref,false);
 	}
 	else if(type==GRAPHIEL || type==GRAPHIEG)
 	{
-		info.function=preprocessor(&function,&pref,false);
+    info->function=preprocessor(&function,&pref,false);
 		if(function2.length()<=0)
-			info.function2=preprocessor(&function,&pref,false);
-		else info.function2=preprocessor(&function2,&pref,false);
-
+      info->function2=preprocessor(&function,&pref,false);
+    else info->function2=preprocessor(&function2,&pref,false);
 	}
 	else
 	{
-		info.function=preprocessor(&function,&pref,false);
-		info.function2=NULL;
-	}
+    info->function=preprocessor(&function,&pref,false);
+    info->function2=NULL;
+  }
 
 	if(dynamic)
-	{
-		drawRules.NewItem(new int[pref.dynamicSteps+1]);
-		drawRules[ruleIndex][0]=pref.dynamicSteps;
-		for(int c=0; c<pref.dynamicSteps; c++)
-		{
-			info.dynamicParameter=pref.dynamicStart+c*((pref.dynamicEnd-pref.dynamicStart)/(pref.dynamicSteps-1));
-			objectInfo.NewItem(info);
-			if(c>0)
-			{
-				objectInfo[objectInfo.GetLen()-1].function=(char*)malloc(strlen(objectInfo[objectInfo.GetLen()-2].function)+1);
-				memcpy(objectInfo[objectInfo.GetLen()-1].function,objectInfo[objectInfo.GetLen()-2].function,strlen(objectInfo[objectInfo.GetLen()-2].function)+1);
-				if(objectInfo[objectInfo.GetLen()-2].function2!=NULL)
-				{					objectInfo[objectInfo.GetLen()-1].function2=(char*)malloc(strlen(objectInfo[objectInfo.GetLen()-2].function2)+1);
-				memcpy(objectInfo[objectInfo.GetLen()-1].function2,objectInfo[objectInfo.GetLen()-2].function2,strlen(objectInfo[objectInfo.GetLen()-2].function2)+1);
-				}
-			}
-			drawRules[ruleIndex][c+1]=objectInfo.GetLen()-1;
-		}
-		if(pref.dynamicDelay>0)
-			timer->start(pref.dynamicDelay*10,false);
-		isDynamic=true;
-	}
-	else 
-	{
-		drawRules.NewItem(new int[2]);
-		drawRules[ruleIndex][0]=1;
-		objectInfo.NewItem(info);
-		drawRules[ruleIndex][1]=objectInfo.GetLen()-1;
-	}
+  {
+    info->dataLength=pref.dynamicSteps;
+    if(pref.dynamicDelay>0)
+      timer->start(pref.dynamicDelay*10,false);
+    isDynamic=true;
+  }
+  else info->dataLength=1;
 
+  info->objectData=new ObjectData[info->dataLength];
+
+  for(int c=0; c<info->dataLength; c++)
+  {
+    info->objectData[c].dynamicParameter=pref.dynamicStart+c*((pref.dynamicEnd-pref.dynamicStart)/(pref.dynamicSteps-1));
+    info->objectData[c].processed=info->objectData[c].glCreated=false;
+    info->objectData[c].coordinateLength=0;
+    info->objectData[c].coordinates=NULL;
+  }
+  objectInfo.append(info);
 }
 
 inline void GraphOutput::drawTriangle(float x[3],float y[3],float z[3],bool colored)
@@ -1872,9 +1880,9 @@ inline void GraphOutput::drawTriangle(float x[3],float y[3],float z[3],bool colo
 	{
 		return;
 	}
-	else if((y[0]>pref.ymin && y[0]<pref.ymax ||		//at least one vertex inside, at least one outside c s
-				y[1]>pref.ymin && y[1]<pref.ymax ||
-				y[2]>pref.ymin && y[2]<pref.ymax) && 
+  else if(((y[0]>pref.ymin && y[0]<pref.ymax) ||		//at least one vertex inside, at least one outside c s
+        (y[1]>pref.ymin && y[1]<pref.ymax) ||
+        (y[2]>pref.ymin && y[2]<pref.ymax)) &&
 				(y[0]<pref.ymin || y[0]>pref.ymax ||
 				y[1]<pref.ymin || y[1]>pref.ymax ||
 				y[2]<pref.ymin || y[2]>pref.ymax))
@@ -1953,76 +1961,90 @@ inline void GraphOutput::drawTriangle(float x[3],float y[3],float z[3],bool colo
 
 void GraphOutput::createGLLists()
 {
+  QListIterator<ObjectInfo*>i(objectInfo);
+  ObjectInfo*obj;
+  int c;
+
 	if(graphProcess)
 		return;
 	
 	makeCurrent();
-	for(int c=0; c<objectInfo.GetLen(); c++)
+
+  while(i.hasNext())
 	{
-		if(objectInfo[c].processed &&!objectInfo[c].glCreated)
-		{
-//			qDebug("create list "+QString::number(c));
-			objectInfo[c].glObject=generateGLList(c);
-		}
+    obj=i.next();
+    for(c=0; c<obj->dataLength; c++)
+    {
+      if(obj->objectData[c].processed &&!obj->objectData[c].glCreated)
+      {
+        obj->objectData[c].glCreated=true;
+        obj->objectData[c].glObject=generateGLList(obj,c);
+      }
+    }
 	}
-//	repaint();
 }
 
 void GraphOutput::calculateGraphData()
 {
+  QListIterator<ObjectInfo*>i(objectInfo);
+  ObjectInfo*obj;
+  int c;
+
 	graphProcess=true;
 	int threadCount=0;
-	for(int c=0; c<objectInfo.GetLen(); c++)
-	{
-		if(!objectInfo[c].processed)
-		{
-			objectInfo[c].processed=true;
-			threads[threadCount]->setIndex(c);
-			threads[threadCount]->start();
-			threadCount++;
-			if(threadCount>=THREADS)
-				break;
-		}
-	}
+  while(i.hasNext())
+  {
+    obj=i.next();
+    for(c=0; c<obj->dataLength; c++)
+    {
+      if(obj->objectData[c].processed)
+      {
+        obj->objectData[c].processed=true;
+        threads[threadCount]->setObjectData(obj,c);
+        threads[threadCount]->start();
+        threadCount++;
+        if(threadCount>=THREADS)
+          break;
+      }
+    }
+  }
 	threadTimer->start(10);
 	repaint();
 }
 
-void GraphOutput::processGraph(int c,ThreadSync*td,Variable*va)
+void GraphOutput::processGraph(ObjectInfo*o,int c,ThreadSync*td,Variable*va)
 {
+   qDebug("Graph processed: "+QString(o->function)+" dynamic index: "+QString::number(c));
 
-//	if(!objectInfo[c].processed)
-//	{
-		switch(objectInfo[c].type)
+    switch(o->type)
 		{
 			case GRAPHSTD:
-	//			qDebug("Graph Data for Object "+QString::number(c)+" created");
-				processStdFunction(c,td,va);
+        processStdFunction(o,c,td,va);
 				break;
 			case GRAPHPOLAR:
-				processPolarFunction(c,td,va);
+        processPolarFunction(o,c,td,va);
 				break;
 			case GRAPHIEG:
 			case GRAPHIEL:
 			case GRAPHIEGE:
 			case GRAPHIELE:
-				processInequalityFunction(c,td,va);
+        processInequalityFunction(o,c,td,va);
 				break;
 			case GRAPH3D:
-				process3dFunction(c,td,va);
+        process3dFunction(o,c,td,va);
 				break;
 			case GRAPHPARAMETER:
-				processParameterFunction(c,td,va);
+        processParameterFunction(o,c,td,va);
 				break;
 			case GRAPHCOMPLEX:
 			case GRAPHCOMP3D:
-				processComplexFunction(c,td,va);
+        processComplexFunction(o,c,td,va);
 				break;
 		}
 //	}
 }
 
-GLuint GraphOutput::generateGLList(int index)
+GLuint GraphOutput::generateGLList(ObjectInfo*obj,int index)
 {
 
 	
@@ -2038,18 +2060,18 @@ GLuint GraphOutput::generateGLList(int index)
 	lowerMiddle=-height/4.0;
 	upperMiddle=height/4.0;
 
-	if(objectInfo[index].color==QColor(1,1,1))
+  if(obj->color==QColor(1,1,1))
 		colored=1;
-	else qglColor( objectInfo[index].color );
+  else qglColor( obj->color );
 
-	if(objectInfo[index].type==GRAPH3D)
+  if(obj->type==GRAPH3D)
 	{
 
 		double xStart=pref.xmin,xStep=(pref.xmax-pref.xmin)/PRECISION3D;
 		double zStart=pref.zmin,zStep=(pref.zmax-pref.zmin)/PRECISION3D;
 		double z=0.0,y=0.0,x=0.0,lastY;
 
-		if(objectInfo[index].processed)
+    if(obj->objectData[index].processed)
 		{
 			glMatrixMode(GL_MODELVIEW);
 			if(!pref.show3dGrid)
@@ -2069,9 +2091,9 @@ GLuint GraphOutput::generateGLList(int index)
 						xc[1]=x2;
 						xc[2]=x;
 						
-						yc[0]=objectInfo[index].coordinates[(c-1)*PRECISION3D+c1-1];
-						yc[1]=objectInfo[index].coordinates[c*PRECISION3D+c1-1];
-						yc[2]=objectInfo[index].coordinates[(c-1)*PRECISION3D+c1];
+            yc[0]=obj->objectData[index].coordinates[(c-1)*PRECISION3D+c1-1];
+            yc[1]=obj->objectData[index].coordinates[c*PRECISION3D+c1-1];
+            yc[2]=obj->objectData[index].coordinates[(c-1)*PRECISION3D+c1];
 						
 						zc[0]=z2;
 						zc[1]=z;
@@ -2082,9 +2104,9 @@ GLuint GraphOutput::generateGLList(int index)
 						xc[1]=x;
 						xc[2]=x;
 						
-						yc[0]=objectInfo[index].coordinates[c*PRECISION3D+c1-1];
-						yc[1]=objectInfo[index].coordinates[c*PRECISION3D+c1];
-						yc[2]=objectInfo[index].coordinates[(c-1)*PRECISION3D+c1];
+            yc[0]=obj->objectData[index].coordinates[c*PRECISION3D+c1-1];
+            yc[1]=obj->objectData[index].coordinates[c*PRECISION3D+c1];
+            yc[2]=obj->objectData[index].coordinates[(c-1)*PRECISION3D+c1];
 						
 						zc[0]=z;
 						zc[1]=z;
@@ -2101,11 +2123,11 @@ GLuint GraphOutput::generateGLList(int index)
 				{
 					z=zStart+c*zStep;
 					glBegin(GL_LINES);
-					lastY=objectInfo[index].coordinates[c*PRECISION3D];
+          lastY=obj->objectData[index].coordinates[c*PRECISION3D];
 					for(int c1=1; c1<PRECISION3D; c1++)
 					{
 						x=xStart+c1*xStep;
-						y=objectInfo[index].coordinates[c*PRECISION3D+c1];
+            y=obj->objectData[index].coordinates[c*PRECISION3D+c1];
 						
 						if((y > pref.ymin&&y<pref.ymax) || (lastY > pref.ymin && lastY < pref.ymax))
 						{
@@ -2147,11 +2169,11 @@ GLuint GraphOutput::generateGLList(int index)
 				{
 					x=xStart+c*xStep;
 					glBegin(GL_LINES);
-					lastY=objectInfo[index].coordinates[c];
+          lastY=obj->objectData[index].coordinates[c];
 					for(int c1=1; c1<PRECISION3D; c1++)
 					{
 						z=zStart+c1*zStep;
-						y=objectInfo[index].coordinates[c1*PRECISION3D+c];
+            y=obj->objectData[index].coordinates[c1*PRECISION3D+c];
 						
 						if((y > pref.ymin&&y<pref.ymax) || (lastY > pref.ymin && lastY < pref.ymax))
 						{
@@ -2190,78 +2212,69 @@ GLuint GraphOutput::generateGLList(int index)
 					glEnd();
 				}
 			}
-			delete[] objectInfo[index].coordinates;
-			objectInfo[index].processed=false;
+      delete[] obj->objectData[index].coordinates;
+      obj->objectData[index].coordinates=NULL;
+      obj->objectData[index].coordinateLength=0;
+      obj->objectData[index].processed=false;
 		}
-		
 		glEndList();
 	}
-	else if(objectInfo[index].type==GRAPHCOMP3D)
+  else if(obj->type==GRAPHCOMP3D)
 	{
-//		GLuint list;
 		int colored=0;
 
-//		list = glGenLists( 1 );
-//		glNewList( list, GL_COMPILE );
-		
 		double x,y,z;
 		bool end=true;
-	//	if(objectInfo[index].color==QColor(1,1,1))
-	//		colored=1;
-	//	else qglColor(objectInfo[index].color);
 	
 		glMatrixMode(GL_MODELVIEW);
 
-		for(int c=0; c<objectInfo[index].length; c++)
+    for(int c=0; c<obj->objectData[index].coordinateLength; c++)
 		{
-			z=objectInfo[index].coordinates[c*3+2];
-			x=objectInfo[index].coordinates[c*3];
-			y=objectInfo[index].coordinates[c*3+1];
+      z=obj->objectData[index].coordinates[c*3+2];
+      x=obj->objectData[index].coordinates[c*3];
+      y=obj->objectData[index].coordinates[c*3+1];
 			
 			if(!end)
 			{
 				if(x>pref.xmax)
 				{
-					double fakt=(pref.xmax-objectInfo[index].coordinates[(c-1)*3])/(x-objectInfo[index].coordinates[(c-1)*3]);
+          double fakt=(pref.xmax-obj->objectData[index].coordinates[(c-1)*3])/(x-obj->objectData[index].coordinates[(c-1)*3]);
 					x=pref.xmax;
-					y=objectInfo[index].coordinates[(c-1)*3+1]+(y-objectInfo[index].coordinates[(c-1)*3+1])*fakt;
-					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
+          y=obj->objectData[index].coordinates[(c-1)*3+1]+(y-obj->objectData[index].coordinates[(c-1)*3+1])*fakt;
+          z=obj->objectData[index].coordinates[(c-1)*3+2]+(z-obj->objectData[index].coordinates[(c-1)*3+2])*fakt;
 					end=true;
 				}
 				else if(x<pref.xmin)
 				{
-					double fakt=(pref.xmin-objectInfo[index].coordinates[(c-1)*3])/(x-objectInfo[index].coordinates[(c-1)*3]);
+          double fakt=(pref.xmin-obj->objectData[index].coordinates[(c-1)*3])/(x-obj->objectData[index].coordinates[(c-1)*3]);
 					x=pref.xmin;
-					y=objectInfo[index].coordinates[(c-1)*3+1]+(y-objectInfo[index].coordinates[(c-1)*3+1])*fakt;
-					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
+          y=obj->objectData[index].coordinates[(c-1)*3+1]+(y-obj->objectData[index].coordinates[(c-1)*3+1])*fakt;
+          z=obj->objectData[index].coordinates[(c-1)*3+2]+(z-obj->objectData[index].coordinates[(c-1)*3+2])*fakt;
 					end=true;
 				}
 				if(y>pref.ymax)
 				{
-					double fakt=(pref.ymax-objectInfo[index].coordinates[(c-1)*3+1])/(y-objectInfo[index].coordinates[(c-1)*3+1]);
+          double fakt=(pref.ymax-obj->objectData[index].coordinates[(c-1)*3+1])/(y-obj->objectData[index].coordinates[(c-1)*3+1]);
 					y=pref.ymax;
-					x=objectInfo[index].coordinates[(c-1)*3]+(x-objectInfo[index].coordinates[(c-1)*3])*fakt;
-					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
+          x=obj->objectData[index].coordinates[(c-1)*3]+(x-obj->objectData[index].coordinates[(c-1)*3])*fakt;
+          z=obj->objectData[index].coordinates[(c-1)*3+2]+(z-obj->objectData[index].coordinates[(c-1)*3+2])*fakt;
 					end=true;
 				}
 				else if(y<pref.ymin)
 				{
-					double fakt=(pref.ymin-objectInfo[index].coordinates[(c-1)*3+1])/(y-objectInfo[index].coordinates[(c-1)*3+1]);
+          double fakt=(pref.ymin-obj->objectData[index].coordinates[(c-1)*3+1])/(y-obj->objectData[index].coordinates[(c-1)*3+1]);
 					y=pref.ymin;
-					x=objectInfo[index].coordinates[(c-1)*3]+(x-objectInfo[index].coordinates[(c-1)*3])*fakt;
-					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
+          x=obj->objectData[index].coordinates[(c-1)*3]+(x-obj->objectData[index].coordinates[(c-1)*3])*fakt;
+          z=obj->objectData[index].coordinates[(c-1)*3+2]+(z-obj->objectData[index].coordinates[(c-1)*3+2])*fakt;
 					end=true;
 				}
 				if(colored)
 					setGLColor(y);
 
-					
-				
 				glVertex3f(x,y,z);
 				
 				if(end)
 					glEnd();
-				
 			}
 			else if(x>pref.xmin && x<pref.xmax && y>pref.ymin && y<pref.ymax)
 			{
@@ -2270,31 +2283,31 @@ GLuint GraphOutput::generateGLList(int index)
 				double tmpX=x,tmpY=y,tmpZ=z;
 				if(x>pref.xmax)
 				{
-					double fakt=(pref.xmax-objectInfo[index].coordinates[(c-1)*3])/(x-objectInfo[index].coordinates[(c-1)*3]);
+          double fakt=(pref.xmax-obj->objectData[index].coordinates[(c-1)*3])/(x-obj->objectData[index].coordinates[(c-1)*3]);
 					x=pref.xmax;
-					y=objectInfo[index].coordinates[(c-1)*3+1]+(y-objectInfo[index].coordinates[(c-1)*3+1])*fakt;
-					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
+          y=obj->objectData[index].coordinates[(c-1)*3+1]+(y-obj->objectData[index].coordinates[(c-1)*3+1])*fakt;
+          z=obj->objectData[index].coordinates[(c-1)*3+2]+(z-obj->objectData[index].coordinates[(c-1)*3+2])*fakt;
 				}
 				else if(x<pref.xmin)
 				{
-					double fakt=(pref.xmin-objectInfo[index].coordinates[(c-1)*3])/(x-objectInfo[index].coordinates[(c-1)*3]);
+          double fakt=(pref.xmin-obj->objectData[index].coordinates[(c-1)*3])/(x-obj->objectData[index].coordinates[(c-1)*3]);
 					x=pref.xmin;
-					y=objectInfo[index].coordinates[(c-1)*3+1]+(y-objectInfo[index].coordinates[(c-1)*3+1])*fakt;
-					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
+          y=obj->objectData[index].coordinates[(c-1)*3+1]+(y-obj->objectData[index].coordinates[(c-1)*3+1])*fakt;
+          z=obj->objectData[index].coordinates[(c-1)*3+2]+(z-obj->objectData[index].coordinates[(c-1)*3+2])*fakt;
 				}
 				if(y>pref.ymax)
 				{
-					double fakt=(pref.ymax-objectInfo[index].coordinates[(c-1)*3+1])/(y-objectInfo[index].coordinates[(c-1)*3+1]);
+          double fakt=(pref.ymax-obj->objectData[index].coordinates[(c-1)*3+1])/(y-obj->objectData[index].coordinates[(c-1)*3+1]);
 					y=pref.ymax;
-					x=objectInfo[index].coordinates[(c-1)*3]+(x-objectInfo[index].coordinates[(c-1)*3])*fakt;
-					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
+          x=obj->objectData[index].coordinates[(c-1)*3]+(x-obj->objectData[index].coordinates[(c-1)*3])*fakt;
+          z=obj->objectData[index].coordinates[(c-1)*3+2]+(z-obj->objectData[index].coordinates[(c-1)*3+2])*fakt;
 				}
 				else if(y<pref.ymin)
 				{
-					double fakt=(pref.ymin-objectInfo[index].coordinates[(c-1)*3+1])/(y-objectInfo[index].coordinates[(c-1)*3+1]);
+          double fakt=(pref.ymin-obj->objectData[index].coordinates[(c-1)*3+1])/(y-obj->objectData[index].coordinates[(c-1)*3+1]);
 					y=pref.ymin;
-					x=objectInfo[index].coordinates[(c-1)*3]+(x-objectInfo[index].coordinates[(c-1)*3])*fakt;
-					z=objectInfo[index].coordinates[(c-1)*3+2]+(z-objectInfo[index].coordinates[(c-1)*3+2])*fakt;
+          x=obj->objectData[index].coordinates[(c-1)*3]+(x-obj->objectData[index].coordinates[(c-1)*3])*fakt;
+          z=obj->objectData[index].coordinates[(c-1)*3+2]+(z-obj->objectData[index].coordinates[(c-1)*3+2])*fakt;
 				}
 				if(colored)
 					setGLColor(y);
@@ -2309,21 +2322,21 @@ GLuint GraphOutput::generateGLList(int index)
 			glEnd();
 		glEndList();
 	}
-	else if(objectInfo[index].type==GRAPHIEG ||objectInfo[index].type==GRAPHIEL ||
-			   objectInfo[index].type==GRAPHIEGE ||objectInfo[index].type==GRAPHIELE)
+  else if(obj->type==GRAPHIEG ||obj->type==GRAPHIEL ||
+         obj->type==GRAPHIEGE ||obj->type==GRAPHIELE)
 	{
 		bool end=true;
 		double x,y1=0.0,y2=0.0;
-		if(objectInfo[index].type==GRAPHIEG)
+    if(obj->type==GRAPHIEG)
 			y1=pref.ymax;
-		else if(objectInfo[index].type==GRAPHIEL)
+    else if(obj->type==GRAPHIEL)
 			y2=pref.ymin;
-		for(int c=0; c<objectInfo[index].length; c++)
+    for(int c=0; c<obj->objectData[index].coordinateLength; c++)
 		{
-			if(objectInfo[index].type==GRAPHIEG)
+      if(obj->type==GRAPHIEG)
 			{
-				x=objectInfo[index].coordinates[c*2];
-				y2=objectInfo[index].coordinates[c*2+1];
+        x=obj->objectData[index].coordinates[c*2];
+        y2=obj->objectData[index].coordinates[c*2+1];
 				if(y2>pref.ymax)
 					y2=pref.ymax;
 				else if(y2<pref.ymin)
@@ -2331,10 +2344,10 @@ GLuint GraphOutput::generateGLList(int index)
 				if(colored)
 					setGLColor(y2);
 			}
-			else if(objectInfo[index].type==GRAPHIEL)
+      else if(obj->type==GRAPHIEL)
 			{
-				x=objectInfo[index].coordinates[c*2];
-				y1=objectInfo[index].coordinates[c*2+1];
+        x=obj->objectData[index].coordinates[c*2];
+        y1=obj->objectData[index].coordinates[c*2+1];
 				if(y1<pref.ymin)
 					y1=pref.ymin;
 				else if(y1>pref.ymax)
@@ -2343,9 +2356,9 @@ GLuint GraphOutput::generateGLList(int index)
 					setGLColor(y1);
 			}
 			else {
-				x=objectInfo[index].coordinates[c*3];
-				y1=objectInfo[index].coordinates[c*3+1];
-				y2=objectInfo[index].coordinates[c*3+2];
+        x=obj->objectData[index].coordinates[c*3];
+        y1=obj->objectData[index].coordinates[c*3+1];
+        y2=obj->objectData[index].coordinates[c*3+2];
 				if(y1<pref.ymin)
 					y1=pref.ymin;
 				else if(y1>pref.ymax)
@@ -2388,72 +2401,75 @@ GLuint GraphOutput::generateGLList(int index)
 	//	perror("print index="+QString::number(index)+" length="+QString::number(objectInfo[index].length));
 		glBegin(GL_LINE_STRIP);
 		bool end=false;
-		for(int c=0; c<objectInfo[index].length; c++)
+    for(int c=0; c<obj->objectData[index].coordinateLength; c++)
 		{
 			if(end)
 			{
-				if(objectInfo[index].coordinates[c*2+1] >pref.ymin && objectInfo[index].coordinates[c*2+1] < pref.ymax && objectInfo[index].coordinates[c*2]>pref.xmin && objectInfo[index].coordinates[c*2]< pref.xmax)   
+        if(obj->objectData[index].coordinates[c*2+1] >pref.ymin && obj->objectData[index].coordinates[c*2+1] < pref.ymax && obj->objectData[index].coordinates[c*2]>pref.xmin && obj->objectData[index].coordinates[c*2]< pref.xmax)
 				{
 					glBegin(GL_LINE_STRIP);
 					end=false;
 					if(colored)
-						setGLColor(objectInfo[index].coordinates[(c)*2+1]);
+            setGLColor(obj->objectData[index].coordinates[(c)*2+1]);
 				//	glVertex3f(oldx,oldy,0.0f);
 					
 					
-					if(c<objectInfo[index].length-2)
+          if(c<obj->objectData[index].coordinateLength-2)
 					{
-						double delta1=objectInfo[index].coordinates[(c-1)*2+1]-objectInfo[index].coordinates[c*2+1];
-						double delta2=objectInfo[index].coordinates[c*2+1]-objectInfo[index].coordinates[(c+1)*2+1];
+            double delta1=obj->objectData[index].coordinates[(c-1)*2+1]-obj->objectData[index].coordinates[c*2+1];
+            double delta2=obj->objectData[index].coordinates[c*2+1]-obj->objectData[index].coordinates[(c+1)*2+1];
 						if(delta1*delta2>=0.0)
-							glVertex3f(objectInfo[index].coordinates[(c-1)*2],objectInfo[index].coordinates[(c-1)*2+1],0.0f);
+              glVertex3f(obj->objectData[index].coordinates[(c-1)*2],obj->objectData[index].coordinates[(c-1)*2+1],0.0f);
 						else 
 						{
-							glVertex3f(objectInfo[index].coordinates[(c-1)*2],-1.0*objectInfo[index].coordinates[(c-1)*2+1]*HUGE_VAL,0.0f);
+              glVertex3f(obj->objectData[index].coordinates[(c-1)*2],-1.0*obj->objectData[index].coordinates[(c-1)*2+1]*HUGE_VAL,0.0f);
 						}
 					}
-					
-					
-					
-					
+
 					if(colored)
-						setGLColor(objectInfo[index].coordinates[c*2+1]);
-					glVertex3f(objectInfo[index].coordinates[c*2],objectInfo[index].coordinates[c*2+1],0.0f);
+            setGLColor(obj->objectData[index].coordinates[c*2+1]);
+          glVertex3f(obj->objectData[index].coordinates[c*2],obj->objectData[index].coordinates[c*2+1],0.0f);
 				}
 				else {
-					oldx=objectInfo[index].coordinates[c*2];
-					oldy=objectInfo[index].coordinates[c*2+1];
+          oldx=obj->objectData[index].coordinates[c*2];
+          oldy=obj->objectData[index].coordinates[c*2+1];
 				}
 			}
 			else {
-				if(objectInfo[index].coordinates[c*2+1] >pref.ymin && objectInfo[index].coordinates[c*2+1] < pref.ymax && objectInfo[index].coordinates[c*2]>pref.xmin && objectInfo[index].coordinates[c*2]< pref.xmax)   
+
+        ObjectData*tmpObj=&obj->objectData[index];
+
+        if(tmpObj->coordinates[c*2+1] > pref.ymin &&
+           tmpObj->coordinates[c*2+1] < pref.ymax &&
+           tmpObj->coordinates[c*2]   > pref.xmin &&
+           tmpObj->coordinates[c*2]< pref.xmax)
 				{
 					
 					if(colored)
-						setGLColor(objectInfo[index].coordinates[c*2+1]);
-					glVertex3f(objectInfo[index].coordinates[c*2],objectInfo[index].coordinates[c*2+1],0.0f);
+            setGLColor(obj->objectData[index].coordinates[c*2+1]);
+          glVertex3f(obj->objectData[index].coordinates[c*2],obj->objectData[index].coordinates[c*2+1],0.0f);
 				}
 				else {
 					
 					if(colored)
-						setGLColor(objectInfo[index].coordinates[c*2+1]);
+            setGLColor(obj->objectData[index].coordinates[c*2+1]);
 					if(c>2)
 					{
-						double delta1=objectInfo[index].coordinates[(c-2)*2+1]-objectInfo[index].coordinates[(c-1)*2+1];
-						double delta2=objectInfo[index].coordinates[(c-1)*2+1]-objectInfo[index].coordinates[(c)*2+1];
+            double delta1=obj->objectData[index].coordinates[(c-2)*2+1]-obj->objectData[index].coordinates[(c-1)*2+1];
+            double delta2=obj->objectData[index].coordinates[(c-1)*2+1]-obj->objectData[index].coordinates[(c)*2+1];
 						if(delta1*delta2>=0.0)
-							glVertex3f(objectInfo[index].coordinates[c*2],objectInfo[index].coordinates[c*2+1],0.0f);
+              glVertex3f(obj->objectData[index].coordinates[c*2],obj->objectData[index].coordinates[c*2+1],0.0f);
 						else 
 						{
-							glVertex3f(objectInfo[index].coordinates[c*2],-1.0*objectInfo[index].coordinates[c*2+1]*HUGE_VAL,0.0f);
+              glVertex3f(obj->objectData[index].coordinates[c*2],-1.0*obj->objectData[index].coordinates[c*2+1]*HUGE_VAL,0.0f);
 						}
 					}
 					
 					
 					glEnd();
 					end=true;
-					oldx=objectInfo[index].coordinates[c*2];
-					oldy=objectInfo[index].coordinates[c*2+1];
+          oldx=obj->objectData[index].coordinates[c*2];
+          oldy=obj->objectData[index].coordinates[c*2+1];
 				}
 			}
 		}
@@ -2462,7 +2478,6 @@ GLuint GraphOutput::generateGLList(int index)
 		glEndList();
 	//	perror("print end");
 	}
-	objectInfo[index].glCreated=true;
 	return list;
 }
 
@@ -2809,24 +2824,32 @@ void GraphOutput::drawSlot(int state,QColor color,int pen)
 
 void GraphOutput::threadTimerSlot()
 {
-//	qDebug("threadTimer");
+  QListIterator<ObjectInfo*>i(objectInfo);
+  ObjectInfo*obj;
+  int c;
+
 	bool allStarted=true,allFinished=true;
-	for(int c=0; c<objectInfo.GetLen(); c++)
+  while(i.hasNext())
 	{
-		if(!objectInfo[c].processed)
-		{
-			allStarted=false;
-			for(int c1=0; c1<THREADS; c1++)
-			{
-				if(threads[c1]->wait(0))
-				{
-					objectInfo[c].processed=true;
-					threads[c1]->setIndex(c);
-					threads[c1]->start();
-					break;
-				}
-			}
-		}
+    obj=i.next();
+
+    for(c=0; c<obj->dataLength; c++)
+    {
+      if(!obj->objectData[c].processed)
+      {
+        allStarted=false;
+        for(int c1=0; c1<THREADS; c1++)
+        {
+          if(threads[c1]->wait(0))
+          {
+            obj->objectData[c].processed=true;
+            threads[c1]->setObjectData(obj,c);
+            threads[c1]->start();
+            break;
+          }
+        }
+      }
+    }
 	}
 //	qDebug("threadTimer2");
 	if(allStarted)
@@ -2852,15 +2875,10 @@ void GraphOutput::threadTimerSlot()
 
 void GraphicsThread::run()
 {
-//	qDebug("process "+QString::number(index)+" started");
 	if(index>=0)
-		((GraphOutput*)parent)->processGraph(index,threadData,vars);
-//	qDebug("process "+QString::number(index)+" finished");
-//	qDebug("subprocess "+QString::number(pthread_self()));
+    ((GraphOutput*)parent)->processGraph(obj,index,threadData,vars);
 	QCustomEvent *ev=new QCustomEvent(SIGTHREADSYNC);
 	QApplication::postEvent(parent,ev);
-
-
 }
 
 

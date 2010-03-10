@@ -28,10 +28,10 @@ It also includes the interfaces for screenshot generation, drawing functions and
 #include <qpainter.h>
 #include <qinputdialog.h>
 #include <qthread.h>
-//Added by qt3to4:
 #include <QCustomEvent>
 #include <QWheelEvent>
 #include <QMouseEvent>
+#include <QList>
 #include "list.h"
 #include "global.h"
 
@@ -42,52 +42,30 @@ It also includes the interfaces for screenshot generation, drawing functions and
 #define THREADS 4
 
 
-////////////////drawRules//////////////////////////////////////////
-//
-// 
-// drawRules[4] drawRules[0] drawRules[1] drawRules[2] drawRules[3]
-//                  |            |             |            |
-//                  1            3             1            3
-//                  |            |             |            |
-//               object1      object4      object5       object2
-//                               |                          |
-//                            object3                    object7
-//                               |                          |
-//                            object6                    object8
-//
-//
-// objects[8]
-//   GLuint list1
-//   GLuint list2
-//   GLuint list3
-//   GLuint list4
-//   GLuint list5
-//   GLuint list6
-//   GLuint list7
-//   GLuint list8
-//	there exists one objectInfo element and one ObjectCoordinates element for every object. They all have the same index
-//
-// processFunction() creates the ObjectInfo and objects enteries without calculating the data
-// a seperate method walks through all ObjectInfo objects and processes the data when necessary
-// this method creates a new thread for the calculation
-// for better performance, this method should be able to process several objects when needed
-//
+struct ObjectData
+{
+  bool processed;
+  bool glCreated;
+  double dynamicParameter;
+  GLuint glObject;
+  double*coordinates;
+  int coordinateLength;
+};
+
 
 struct ObjectInfo
 {
 	int type;
 	bool dynamic;
 	bool logic;
-	double dynamicParameter;
-	int length;
+  int dataLength;
 	char* function;
 	char* function2;
 	QColor color;
-	bool processed,glCreated;
-	GLuint glObject;
-	double*coordinates;
-	
+  ObjectData*objectData;
 };
+
+
 
 struct DrawData
 {
@@ -100,6 +78,7 @@ struct DrawData
 class GraphicsThread :public QThread
 {
 	int index;
+  ObjectInfo*obj;
 	QGLWidget*parent;
 	ThreadSync*threadData;
 	Variable*vars;
@@ -147,9 +126,10 @@ class GraphicsThread :public QThread
 		free(threadData->vars);
 	}
 	
-	void setIndex(int i)
+  void setObjectData(ObjectInfo*o,int i)
 	{
 		index=i;
+    obj=o;
 	}
 	
 	protected:
@@ -160,12 +140,10 @@ class GraphicsThread :public QThread
 
 class GraphOutput :public QGLWidget
 {
-	
 	GLuint axes;
 	Preferences pref;
 	List <GLuint> additionalObjects;
-	List <int* > drawRules;
-	List <ObjectInfo> objectInfo;
+  QList <ObjectInfo*> objectInfo;
 	Variable*vars;
 	ThreadSync*threadData;
 	int xRotation,yRotation,mouseX,mouseY,zMove;
@@ -240,18 +218,18 @@ public:
 	}
 
 
-	void processStdFunction(int,ThreadSync*,Variable*);
-	void processPolarFunction(int,ThreadSync*,Variable*);
-	void processParameterFunction(int,ThreadSync*,Variable*);
-	void process3dFunction(int,ThreadSync*,Variable*);
-	void processInequalityFunction(int,ThreadSync*,Variable*);
-	void processComplexFunction(int,ThreadSync*,Variable*);
+  void processStdFunction(ObjectInfo*obj,int index,ThreadSync*,Variable*);
+  void processPolarFunction(ObjectInfo*obj,int index,ThreadSync*,Variable*);
+  void processParameterFunction(ObjectInfo*obj,int index,ThreadSync*,Variable*);
+  void process3dFunction(ObjectInfo*obj,int index,ThreadSync*,Variable*);
+  void processInequalityFunction(ObjectInfo*obj,int index,ThreadSync*,Variable*);
+  void processComplexFunction(ObjectInfo*obj, int index,ThreadSync*,Variable*);
 	void processFunction(QString, QString, int, QColor, bool, bool);
 
 	bool updateFunctions(double,double);
-	GLuint generateGLList(int);
+  GLuint generateGLList(ObjectInfo*,int);
 	void calculateGraphData();
-	void processGraph(int i,ThreadSync*,Variable*);
+  void processGraph(ObjectInfo*obj,int index,ThreadSync*,Variable*);
 	void createGLLists();
 	GLuint drawStdAxes();
 	GLuint drawPolarAxes();

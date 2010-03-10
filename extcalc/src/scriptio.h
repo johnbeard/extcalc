@@ -33,7 +33,6 @@ The ScriptGL class provides the 3D-graphics window for scripts with GL commands.
 #include <q3popupmenu.h>
 #include <qtooltip.h>
 #include <QApplication>
-//Added by qt3to4:
 #include <QKeyEvent>
 #include <QCustomEvent>
 #include <QPixmap>
@@ -47,6 +46,7 @@ The ScriptGL class provides the 3D-graphics window for scripts with GL commands.
 #include <q3popupmenu.h>
 #include <qgl.h>
 #include "list.h"
+#include "tabwidget.h"
 
 #define IMDEFAULT		1
 #define IMSCRIPTING		2
@@ -318,18 +318,35 @@ class ScriptGL :public QGLWidget
 		void wheelEvent(QWheelEvent*);
 };
 
-class ScriptIOWidget :public QWidget
+
+class DrawWidget :public QWidget
 {
-	Variable *vars;
+	QPixmap*buffer;
+
+	public:
+		DrawWidget(QWidget*parent);
+
+		QPixmap*getBufferPointer();
+
+	protected:
+		virtual void paintEvent(QPaintEvent*);
+		virtual void resizeEvent(QResizeEvent*);
+};
+
+
+class ScriptIOWidget :public TabWidget
+{
+//	Variable *vars;
 	
-	StandardButtons*calcButtons;
-	ExtButtons*extButtons;
+//	StandardButtons*calcButtons;
+//	ExtButtons*extButtons;
 	ScriptGL*glWindow;
-	Preferences pref,runningPref;
+	QWidget *outputWidget;
+	Preferences runningPref;
 	QPushButton*maximizeButton,*killButton,*runButton;
 	Q3PopupMenu*contextMenu;
 	
-	bool maximized;
+//	bool maximized;
 	int ioFieldWidth,ioFieldHeight,ioFieldX,ioFieldY;
 	QPixmap*buffer;
 	QFont*drawFont;
@@ -343,20 +360,20 @@ class ScriptIOWidget :public QWidget
 	int inputMode;
 	int bufferCursor;
 	char*inputBuffer;
-	
+
 	List <int>semicolonLines;
 	int countDifference;
 	bool errorFlag;
-	
+
 	Q3ToolBar*toolBar;
-	Q3DockArea*dockArea;
-	
+//	Q3DockArea*dockArea;
+
 	bool scriptExec;
 	ScriptThread*script;
 	Script*scriptObject;
-	ThreadSync*threadData;
+//	ThreadSync*threadData;
 	QMutex*mutex;
-	
+
 	QScrollBar * scrollBar;
 	QPixmap *maximizeIcon,*minimizeIcon,*runIcon,*killIcon;
 	
@@ -366,144 +383,14 @@ class ScriptIOWidget :public QWidget
 	int selectStartLine,selectStartRow,selectEndLine,selectEndRow;
 	int displayType;
 	int modeRequest;
-	int menuBottom;
+//	int menuBottom;
 	bool autosize;
 
 	Q_OBJECT
 
 	public:
-		ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWidget*shareContext, int mB) :QWidget(parent)
-		{
-			vars=va;
-			menuBottom=mB;
-			vars=new Variable [VARNUM];
-			for(int c=0; c<VARNUM;c++)
-				vars[c]=0.0;
-			pref=pr;
-			maximized=true;
-			scriptExec=false;
-			script=NULL;
-			inputMode=IMDEFAULT;
-			inputBuffer=(char*)calloc(1,1);
-			bufferCursor=0;
-			scriptObject=NULL;
-			displayType=SCRIPTTEXT;
-			modeRequest=SCRIPTTEXT;
-			autosize=true;
-			
-			mutex=new QMutex();
-			threadData=new ThreadSync;
-			threadData->mutex=mutex;
-			threadData->eventReciver=this;
-			threadData->status=0;
-			threadData->exit=false;
-			threadData->usleep=false;
-			threadData->bbreak=false;
-			threadData->bcontinue=false;
-			threadData->calcMode=false;
-			threadData->data=NULL;
-			threadData->sleepTime=1000;
-			threadData->vars=new Number*[VARNUM];
-			for(int c=0; c<VARNUM;c++)
-			{
-				threadData->vars[c]=(Number*)malloc(sizeof(Number));
-				threadData->numlen[c]=1;
-				threadData->vars[c][0].type=NNONE;
-				threadData->vars[c][0].cval=NULL;
-				for(int c1=0; c1<VARDIMENSIONS; c1++)
-					threadData->dimension[c][c1]=1;
-			}
-			
-			t=new QTimer(this);
-			timerInterval=25;
-			redrawTime=20000;
-			
-			minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
-			maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
-			runIcon=new QPixmap(INSTALLDIR+QString("/data/exec.png"));
-			killIcon=new QPixmap(INSTALLDIR+QString("/data/exit.png"));
+		ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWidget*shareContext);
 
-			selectStartLine=selectStartRow=selectEndLine=selectEndRow=0;
-
-			calcButtons=new  StandardButtons(this);
-			extButtons=new ExtButtons(this);
-			glWindow=new ScriptGL(this,pref,shareContext);
-			toolBar=new Q3ToolBar();
-			dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
-			dockArea->moveDockWindow(toolBar);
-			runButton=new QPushButton(*runIcon,"",toolBar);
-			killButton=new QPushButton(*killIcon,"",toolBar);
-			maximizeButton=new QPushButton(*minimizeIcon,"",toolBar);
-			runButton->setFixedWidth(30);
-			maximizeButton->setFixedWidth(30);
-			killButton->setFixedWidth(30);
-
-			killButton->setEnabled(false);
-
-			runButton->setEnabled(false);
-			contextMenu=new Q3PopupMenu(this);
-			contextMenu->insertItem(SCRIPTIO_STR12,EDITCOPY);
-			contextMenu->insertItem(SCRIPTIO_STR13,EDITPASTE);
-			contextMenu->insertSeparator();
-			contextMenu->insertItem(SCRIPTIO_STR14,EDITSELECTALL);
-			contextMenu->insertSeparator();
-			contextMenu->insertItem(SCRIPTIO_STR15,EDITCUT);
-			
-			QToolTip::add(killButton,"Exit Script");
-			QToolTip::add(runButton,"Run Script");
-			QToolTip::add(maximizeButton,"Change View");
-
-			ioFieldX=20;
-			ioFieldY=50;
-			ioFieldWidth=600;
-			ioFieldHeight=310;
-			cursorX=cursorY=0;
-			buffer=new QPixmap(ioFieldWidth,ioFieldHeight);//,-1,QPixmap::BestOptim); disabled for qt4 port
-			drawFont=new QFont("Courier");
-			drawFont->setPixelSize(16);
-			drawFont->setFixedPitch(true);
-			drawPen=new QPen(QColor(0,0,0));
-			
-			scrollBar=new QScrollBar(Qt::Vertical,this);
-			ioFieldWidth-=20;
-			scrollBar->setValue(0);
-			
-			QFontMetrics fontSize(*drawFont);
-			charWidth=fontSize.size(0,QString("m")).width();
-			charHeight=fontSize.size(0,QString("m")).height();
-			charNum=ioFieldWidth/charWidth;
-			lineNum=ioFieldHeight/charHeight;
-			for(int c=0; c<lineNum; c++)
-				lines.NewItem(QString(""));
-			
-			scrollBar->setMinValue(0);
-			scrollBar->setMaxValue(0);
-			scrollBar->setLineStep(1);
-			scrollBar->setPageStep(lineNum);
-			scrollBar->setGeometry(600,50,20,ioFieldHeight);
-			
-			calcButtons->setGeometry(20,380,280,200);
-			extButtons->setGeometry(320,420,300,160);
-			
-			calcButtons->hide();
-			extButtons->hide();
-			glWindow->hide();
-			
-
-
-//			setFocusPolicy(QWidget::StrongFocus); disabled for qt4 port
-
-			QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
-			QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
-			QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-			QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-			QObject::connect(maximizeButton,SIGNAL(clicked()),this,SLOT(maximizeSlot()));
-			QObject::connect(killButton,SIGNAL(clicked()),this,SLOT(killSlot()));
-			QObject::connect(runButton,SIGNAL(clicked()),this,SLOT(runSlot()));
-			QObject::connect(t,SIGNAL(timeout()),this,SLOT(timerSlot()));
-			QObject::connect(scrollBar,SIGNAL(valueChanged(int)),this,SLOT(scrollbarSlot(int)));
-			QObject::connect(contextMenu,SIGNAL(activated(int)),this,SLOT(contextMenuSlot(int)));
-		}
 		~ScriptIOWidget()
 		{
 			delete[]vars;
@@ -541,7 +428,7 @@ class ScriptIOWidget :public QWidget
 	public slots:
 
 		void getPref(Preferences newPref);
-		void maximizeSlot();
+		void maximizeButtonSlot();
 		void killSlot();
 		void processText(QString text);
 		void runScript(QString*code);

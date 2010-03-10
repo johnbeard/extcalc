@@ -24,6 +24,145 @@ any later version.
 
 
 
+ScriptIOWidget::ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWidget*shareContext) :TabWidget(parent,pr,va,NULL,true)
+{
+//			vars=va;
+//			menuBottom=mB;
+	vars=new Variable [VARNUM];
+	for(int c=0; c<VARNUM;c++)
+		vars[c]=0.0;
+//			pref=pr;
+//			maximized=true;
+	scriptExec=false;
+	script=NULL;
+	inputMode=IMDEFAULT;
+	inputBuffer=(char*)calloc(1,1);
+	bufferCursor=0;
+	scriptObject=NULL;
+	displayType=SCRIPTTEXT;
+	modeRequest=SCRIPTTEXT;
+	autosize=true;
+
+	mutex=new QMutex();
+	threadData=new ThreadSync;
+	threadData->mutex=mutex;
+	threadData->eventReciver=this;
+	threadData->status=0;
+	threadData->exit=false;
+	threadData->usleep=false;
+	threadData->bbreak=false;
+	threadData->bcontinue=false;
+	threadData->calcMode=false;
+	threadData->data=NULL;
+	threadData->sleepTime=1000;
+	threadData->vars=new Number*[VARNUM];
+	for(int c=0; c<VARNUM;c++)
+	{
+		threadData->vars[c]=(Number*)malloc(sizeof(Number));
+		threadData->numlen[c]=1;
+		threadData->vars[c][0].type=NNONE;
+		threadData->vars[c][0].cval=NULL;
+		for(int c1=0; c1<VARDIMENSIONS; c1++)
+			threadData->dimension[c][c1]=1;
+	}
+
+	t=new QTimer(this);
+	timerInterval=25;
+	redrawTime=20000;
+
+	minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
+	maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
+	runIcon=new QPixmap(INSTALLDIR+QString("/data/exec.png"));
+	killIcon=new QPixmap(INSTALLDIR+QString("/data/exit.png"));
+
+	selectStartLine=selectStartRow=selectEndLine=selectEndRow=0;
+
+
+	outputWidget=new QWidget(this);
+	glWindow=new ScriptGL(outputWidget,pref,shareContext);
+	toolBar=new Q3ToolBar();
+
+	setMainWidget(outputWidget);
+	addSubWidget(calcButtons);
+	addSubWidget(extButtons);
+	setDockArea(1);
+
+	dockArea->moveDockWindow(toolBar);
+	runButton=new QPushButton(*runIcon,"",toolBar);
+	killButton=new QPushButton(*killIcon,"",toolBar);
+	maximizeButton=new QPushButton(*minimizeIcon,"",toolBar);
+	runButton->setFixedWidth(30);
+	maximizeButton->setFixedWidth(30);
+	killButton->setFixedWidth(30);
+
+	killButton->setEnabled(false);
+
+	runButton->setEnabled(false);
+	contextMenu=new Q3PopupMenu(this);
+	contextMenu->insertItem(SCRIPTIO_STR12,EDITCOPY);
+	contextMenu->insertItem(SCRIPTIO_STR13,EDITPASTE);
+	contextMenu->insertSeparator();
+	contextMenu->insertItem(SCRIPTIO_STR14,EDITSELECTALL);
+	contextMenu->insertSeparator();
+	contextMenu->insertItem(SCRIPTIO_STR15,EDITCUT);
+
+	QToolTip::add(killButton,"Exit Script");
+	QToolTip::add(runButton,"Run Script");
+	QToolTip::add(maximizeButton,"Change View");
+
+	ioFieldX=20;
+	ioFieldY=50;
+	ioFieldWidth=600;
+	ioFieldHeight=310;
+	cursorX=cursorY=0;
+	buffer=new QPixmap(ioFieldWidth,ioFieldHeight);//,-1,QPixmap::BestOptim); disabled for qt4 port
+	drawFont=new QFont("Courier");
+	drawFont->setPixelSize(16);
+	drawFont->setFixedPitch(true);
+	drawPen=new QPen(QColor(0,0,0));
+
+	scrollBar=new QScrollBar(Qt::Vertical,this);
+	ioFieldWidth-=20;
+	scrollBar->setValue(0);
+
+	QFontMetrics fontSize(*drawFont);
+	charWidth=fontSize.size(0,QString("m")).width();
+	charHeight=fontSize.size(0,QString("m")).height();
+	charNum=ioFieldWidth/charWidth;
+	lineNum=ioFieldHeight/charHeight;
+	for(int c=0; c<lineNum; c++)
+		lines.NewItem(QString(""));
+
+	scrollBar->setMinValue(0);
+	scrollBar->setMaxValue(0);
+	scrollBar->setLineStep(1);
+	scrollBar->setPageStep(lineNum);
+	scrollBar->setGeometry(600,50,20,ioFieldHeight);
+
+	calcButtons->setGeometry(20,380,280,200);
+	extButtons->setGeometry(320,420,300,160);
+
+//			calcButtons->hide();
+//			extButtons->hide();
+	glWindow->hide();
+
+
+
+//			setFocusPolicy(QWidget::StrongFocus); disabled for qt4 port
+
+	QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
+	QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
+	QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+	QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+	QObject::connect(maximizeButton,SIGNAL(clicked()),this,SLOT(maximizeButtonSlot()));
+	QObject::connect(killButton,SIGNAL(clicked()),this,SLOT(killSlot()));
+	QObject::connect(runButton,SIGNAL(clicked()),this,SLOT(runSlot()));
+	QObject::connect(t,SIGNAL(timeout()),this,SLOT(timerSlot()));
+	QObject::connect(scrollBar,SIGNAL(valueChanged(int)),this,SLOT(scrollbarSlot(int)));
+	QObject::connect(contextMenu,SIGNAL(activated(int)),this,SLOT(contextMenuSlot(int)));
+}
+
+
 void ScriptIOWidget::getPref(Preferences newPref)
 {
 	emit prefChange(newPref);
@@ -31,24 +170,16 @@ void ScriptIOWidget::getPref(Preferences newPref)
 
 
 
-void ScriptIOWidget::maximizeSlot()
+void ScriptIOWidget::maximizeButtonSlot()
 {
-	if(maximized)
+	if(isMaximized())
 	{
-		maximized=false;
-		calcButtons->show();
-		extButtons->show();
-//		maximizeButton->setText(CALCWIDGETC_STR1);
-		maximizeButton->setIconSet(*maximizeIcon);
+		maximizeSlot(false);
 		resizeEvent(NULL);
 	}
 	else 
 	{
-		calcButtons->hide();
-		extButtons->hide();
-//		maximizeButton->setText(CALCWIDGETC_STR2);
-		maximizeButton->setIconSet(*minimizeIcon);
-		maximized=true;
+		maximizeSlot(false);
 		resizeEvent(NULL);
 	}
 	repaint();
@@ -170,17 +301,12 @@ void ScriptIOWidget::paintEvent(QPaintEvent*)
 				}
 			}
 		}
-	
-		
-	
-	
-		
-		
+
 		if((hasFocus() && inputMode==IMDEFAULT) || inputMode==IMGETLINE)
 			p.drawLine(charWidth*cursorX,charHeight*(cursorY-scrollbarPos),charWidth*cursorX,charHeight*(cursorY+1-scrollbarPos));
 	
 		p.end();
-		p.begin(this);
+		p.begin(outputWidget);
 
 		p.drawPixmap(ioFieldX,ioFieldY,*buffer);
 		p.end();
@@ -193,7 +319,7 @@ void ScriptIOWidget::paintEvent(QPaintEvent*)
 		p.begin(buffer);
 		p.drawText(100,100,"Hallo");
 		p.end();
-*/		p.begin(this);
+*/		p.begin(outputWidget);
 
 		p.drawPixmap(ioFieldX,ioFieldY,*buffer);
 
@@ -206,40 +332,13 @@ void ScriptIOWidget::paintEvent(QPaintEvent*)
 
 void ScriptIOWidget::resizeEvent(QResizeEvent*)
 {
-	int width=geometry().right()-geometry().left();
-	int height=geometry().bottom()-geometry().top();
 	
-	
-	if(maximized)
-	{
-//		maximizeButton->setGeometry(10,height-45,90,35);
-//		killButton->setGeometry(110,height-45,90,35);
-//		runButton->setGeometry(210,height-45,90,35);
-		
-		dockArea->setGeometry(0,menuBottom,width,35);
-		
-		if(inputMode==IMDEFAULT)
-			scrollBar->setGeometry(width-40,menuBottom+40,20,height-100);
-		ioFieldWidth=width-40;
-		ioFieldHeight=height-100;
-		ioFieldX=20;
-		ioFieldY=menuBottom+40;
-	}
-	else {
-		calcButtons->setGeometry(20,height-220,280,200);
-		extButtons->setGeometry(320,height-180,300,160);
-//		maximizeButton->setGeometry(325,height-220,90,35);
-//		killButton->setGeometry(425,height-220,90,35);
-//		runButton->setGeometry(525,height-220,90,35);
-		dockArea->setGeometry(325,height-220,width-345,35);
+		ioFieldWidth=outputWidget->width();
+		ioFieldHeight=outputWidget->height();
+		ioFieldX=0;
+		ioFieldY=0;
 
-		if(inputMode==IMDEFAULT)
-			scrollBar->setGeometry(width-40,50,20,height-290);
-		ioFieldWidth=width-40;
-		ioFieldHeight=height-290;
-		ioFieldX=20;
-		ioFieldY=50;
-	}
+
 	if(displayType==SCRIPT3D)
 	{
 		int glWidth=ioFieldWidth,glHeight=ioFieldHeight;
@@ -249,10 +348,8 @@ void ScriptIOWidget::resizeEvent(QResizeEvent*)
 				glWidth=glHeight;
 			else glHeight=glWidth;
 		}
-
-		glWindow->setGeometry(10+(width-20-glWidth)/2,ioFieldY,glWidth,glHeight);
-
 	}
+
 	if(inputMode==IMDEFAULT)
 		ioFieldWidth-=20;
 	int oldCharNum=lines[0].length();
@@ -2034,6 +2131,32 @@ void ScriptGL::paintGL()
 		glCallList(drawLists[c]);
 	
 }
+
+
+DrawWidget::DrawWidget(QWidget*parent)
+{
+	buffer=new QPixmap(width(),height());
+}
+
+void DrawWidget::resizeEvent(QResizeEvent*)
+{
+
+	(*buffer)=QPixmap(width(),height());
+}
+
+void DrawWidget::paintEvent(QPaintEvent*)
+{
+	QPainter p;
+	p.begin(this);
+
+	p.drawPixmap(0,0,*buffer);
+}
+
+QPixmap* DrawWidget::getBufferPointer()
+{
+	return buffer;
+}
+
 
 
 

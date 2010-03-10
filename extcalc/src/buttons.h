@@ -53,18 +53,18 @@ public:
 								"0",	".",	"EXP",	"ANS",	"=",
 		};
 
-//		buttons = new QPushButton[20](this);
+
 		for(int c=0; c<20; c++)
 			insert(new QPushButton(buttonName[c],this));
+	
+		setMinimumWidth(280);
+		setMaximumWidth(280);
+		setMinimumHeight(200);
+		setMaximumHeight(200);
+
 		
-/*		for(int c=0; c<cols*rows; c++)
-		{
-			buttons[c].setText(buttonName[c]);
-		}
-*/		QObject::connect(this,SIGNAL(clicked(int)),this,SLOT(buttonSlot(int)));
-	//	stdFont=font();
-	//	stdFont.setPixelSize(15);
-	//	setFont(stdFont);
+		QObject::connect(this,SIGNAL(clicked(int)),this,SLOT(buttonSlot(int)));
+
 
 	}
 	
@@ -167,9 +167,11 @@ public:
 		((QPushButton*)find(0))->setToggleButton(true);
 		((QPushButton*)find(6))->setToggleButton(true);
 		((QPushButton*)find(14))->setToggleButton(true);
-	//	buttons[0].setToggleButton(true);
-	//	buttons[6].setToggleButton(true);
-	//	buttons[14].setToggleButton(true);
+
+		setMinimumWidth(300);
+		setMaximumWidth(300);
+		setMinimumHeight(160);
+		setMaximumHeight(160);
 		
 		QObject::connect(this,SIGNAL(clicked(int)),this,SLOT(buttonSlot(int)));
 

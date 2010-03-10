@@ -48,6 +48,7 @@ The class for the script editor tab window. It does the script file management.
 #include <list.h>
 #include "buttons.h"
 #include "catalog.h"
+#include "tabwidget.h"
 
 
 class LineNumberView :public Q3TextEdit
@@ -71,12 +72,12 @@ protected:
 	virtual void contentsDropEvent(QDropEvent*);
 };
 
-class ScriptWidget :public QWidget
+class ScriptWidget :public TabWidget
 {
-	Preferences pref;
-	Variable * vars;
-	StandardButtons* standardButtons;
-	ExtButtons* extButtons;
+//	Preferences pref;
+//	Variable * vars;
+//	StandardButtons* standardButtons;
+//	ExtButtons* extButtons;
 	Catalog *catalog;
 	Q3TextEdit*editor;
 	Q3ListView*fileBrowser;
@@ -86,16 +87,16 @@ class ScriptWidget :public QWidget
 //	QPushButton*maximizeButton,*runButton,*saveButton;
 	QFont *stdFont;
 	int fontWidth,fontHeight;
-	int menuBottom;
+//	int menuBottom;
 	Q3PopupMenu*fileBrowserMenu;
 	QPixmap*modifiedIcon;
-	bool maximized;
+//	bool maximized;
 	List <QString> activeFiles;
 	bool currentTextChanged;
 	Q3ListViewItem*activeFileItem;
 	Q3ListViewItem*clickedFileItem;
 	Q3ToolBar*editorToolBar;
-	Q3DockArea*dockArea;
+//	Q3DockArea*dockArea;
 	QPixmap*newIcon,*saveIcon,*saveallIcon,*undoIcon,*redoIcon,*cutIcon,*copyIcon,*pasteIcon,*importIcon,*exportIcon,*runIcon,*minimizeIcon,*catalogIcon;
 //	QAction*newAction,*saveAction,*saveallAction,*undoAction,*redoAction,*cutAction,*copyAction,*pasteAction,*importAction,*exportAction,*runAction,*minimizeAction,*catalogAction;
 	QPushButton *newButton,*saveButton,*saveallButton,*undoButton,*redoButton,*cutButton,*copyButton,*pasteButton,*importButton,*exportButton,*runButton,*minimizeButton,*catalogButton;
@@ -105,183 +106,9 @@ class ScriptWidget :public QWidget
 	Q_OBJECT
 public:
 
-	ScriptWidget(QWidget*parent,Preferences p,Variable*va,int mB) :QWidget(parent)
-	{
-		pref=p;
-		vars=va;
-		menuBottom=mB;
-		maximized=true;
-		currentTextChanged=false;
-		activeFileItem=NULL;
-		clickedFileItem=NULL;
-
-		standardButtons=new StandardButtons(this);void scriptSlot(QString*code);
-		extButtons=new ExtButtons(this);
-		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX | CATMATRIX | CATMATHLOGIC | CATSCRIPT,this);
-		splitter=new QSplitter(Qt::Horizontal,this);
-		fileBrowser=new Q3ListView(splitter);
-		lineNumbers=new LineNumberView(splitter);
-		editor=new Q3TextEdit(splitter);
-
-		
-		standardButtons->hide();
-		extButtons->hide();
+	ScriptWidget(QWidget*parent,Preferences p,Variable*va);
 
 
-		fileBrowserMenu=new Q3PopupMenu(fileBrowser);
-		modifiedIcon=new QPixmap(QString(INSTALLDIR)+"/data/modified.png");
-		dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
-		editorToolBar=new Q3ToolBar();
-		dockArea->moveDockWindow(editorToolBar);
-		
-	
-	
-		fileBrowserMenu->insertItem(SCRIPTEDITH_STR4,FILEUPDATE);
-		fileBrowserMenu->insertSeparator();
-		fileBrowserMenu->insertItem(SCRIPTEDITH_STR5,FILENEWSCRIPT);
-		fileBrowserMenu->insertItem(SCRIPTEDITH_STR6,FILENEWDIR);
-		fileBrowserMenu->insertSeparator();
-		fileBrowserMenu->insertItem(SCRIPTEDITH_STR7,FILESAVE);
-		fileBrowserMenu->insertItem(SCRIPTEDITH_STR8,FILESAVEALL);
-		fileBrowserMenu->insertSeparator();
-		fileBrowserMenu->insertItem(SCRIPTEDITH_STR9,FILERENAME);
-		fileBrowserMenu->insertItem(SCRIPTEDITH_STR10,FILEDELETE);
-
-		newIcon=new QPixmap(INSTALLDIR+QString("/data/filenew.png"));
-		saveIcon=new QPixmap(INSTALLDIR+QString("/data/fileexport.png"));
-		saveallIcon=new QPixmap(INSTALLDIR+QString("/data/save_all.png"));
-		undoIcon=new QPixmap(INSTALLDIR+QString("/data/undo.png"));
-		redoIcon=new QPixmap(INSTALLDIR+QString("/data/redo.png"));
-		cutIcon=new QPixmap(INSTALLDIR+QString("/data/editcut.png"));
-		copyIcon=new QPixmap(INSTALLDIR+QString("/data/editcopy.png"));
-		pasteIcon=new QPixmap(INSTALLDIR+QString("/data/editpaste.png"));
-		importIcon=new QPixmap(INSTALLDIR+QString("/data/fileimport.png"));
-		exportIcon=new QPixmap(INSTALLDIR+QString("/data/filesaveas.png"));
-		runIcon=new QPixmap(INSTALLDIR+QString("/data/exec.png"));
-		minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
-		catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
-		
-
-		newButton=new QPushButton(*newIcon,"",editorToolBar);
-		importButton=new QPushButton(*importIcon,"",editorToolBar);
-		exportButton=new QPushButton(*exportIcon,"",editorToolBar);
-		editorToolBar->addSeparator();
-		saveButton=new QPushButton(*saveIcon,"",editorToolBar);
-		saveallButton=new QPushButton(*saveallIcon,"",editorToolBar);
-		editorToolBar->addSeparator();
-		undoButton=new QPushButton(*undoIcon,"",editorToolBar);
-		redoButton=new QPushButton(*redoIcon,"",editorToolBar);
-		cutButton=new QPushButton(*cutIcon,"",editorToolBar);
-		copyButton=new QPushButton(*copyIcon,"",editorToolBar);
-		pasteButton=new QPushButton(*pasteIcon,"",editorToolBar);
-		editorToolBar->addSeparator();
-		catalogButton=new QPushButton(*catalogIcon,"",editorToolBar);
-		minimizeButton=new QPushButton(*minimizeIcon,"",editorToolBar);
-		editorToolBar->addSeparator();
-		runButton=new QPushButton(*runIcon,"",editorToolBar);
-		
-		newButton->setFixedWidth(30);
-		saveButton->setFixedWidth(30);
-		saveallButton->setFixedWidth(30);
-		undoButton->setFixedWidth(30);
-		redoButton->setFixedWidth(30);
-		cutButton->setFixedWidth(30);
-		copyButton->setFixedWidth(30);
-		pasteButton->setFixedWidth(30);
-		importButton->setFixedWidth(30);
-		exportButton->setFixedWidth(30);
-		runButton->setFixedWidth(30);
-		minimizeButton->setFixedWidth(30);
-		catalogButton->setFixedWidth(30);
-		
-		newButton->setFlat(true);
-		saveButton->setFlat(true);
-		saveallButton->setFlat(true);
-		undoButton->setFlat(true);
-		redoButton->setFlat(true);
-		cutButton->setFlat(true);
-		copyButton->setFlat(true);
-		pasteButton->setFlat(true);
-		importButton->setFlat(true);
-		exportButton->setFlat(true);
-		runButton->setFlat(true);
-		minimizeButton->setFlat(true);
-		catalogButton->setFlat(true);
-		
-		QToolTip::add(newButton,SCRIPTEDITH_STR12);
-		QToolTip::add(saveButton,SCRIPTEDITH_STR13);
-		QToolTip::add(saveallButton,SCRIPTEDITH_STR14);
-		QToolTip::add(undoButton,SCRIPTEDITH_STR15);
-		QToolTip::add(redoButton,SCRIPTEDITH_STR16);
-		QToolTip::add(cutButton,SCRIPTEDITH_STR17);
-		QToolTip::add(copyButton,SCRIPTEDITH_STR18);
-		QToolTip::add(pasteButton,SCRIPTEDITH_STR19);
-		QToolTip::add(importButton,SCRIPTEDITH_STR20);
-		QToolTip::add(exportButton,SCRIPTEDITH_STR21);
-		QToolTip::add(runButton,SCRIPTEDITH_STR22);
-		QToolTip::add(minimizeButton,SCRIPTEDITH_STR23);
-		QToolTip::add(catalogButton,SCRIPTEDITH_STR24);
-		
-		
-		
-		stdFont=new QFont("Courier");
-		stdFont->setPixelSize(16);
-		stdFont->setFixedPitch(true);
-		QFontMetrics fm(*stdFont);
-		fontWidth=fm.maxWidth();
-		fontHeight=fm.height();
-		editor->setFont(*stdFont);
-		editor->setTextFormat(Qt::PlainText);
-		editor->setWordWrap(Q3TextEdit::NoWrap);
-
-		lineNumbers->setFont(*stdFont);
-		lineNumbers->setTextFormat(Qt::PlainText);
-		lineNumbers->setVScrollBarMode(Q3ScrollView::AlwaysOff);
-		lineNumbers->setHScrollBarMode(Q3ScrollView::AlwaysOff);
-		lineNumbers->setWordWrap(Q3TextEdit::NoWrap);
-		lineNumbers->setText(" 1");
-		lineNumbers->setPaper(backgroundBrush());
-		lineNumbers->setFixedWidth(fontWidth*3);
-		lineNumbers->setReadOnly(true);
-
-		
-
-		editor->setWrapPolicy(Q3TextEdit::AtWordOrDocumentBoundary);
-		splitter->setResizeMode(fileBrowser,QSplitter::KeepSize);
-
-		fileBrowser->addColumn(SCRIPTEDITH_STR11);
-		fileBrowser->setRootIsDecorated(true);
-		
-
-		QObject::connect(standardButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-		QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-		QObject::connect(standardButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
-		QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
-//		QObject::connect(maximizeButton,SIGNAL(released()),this,SLOT(maximizeButtonSlot()));
-//		QObject::connect(runButton,SIGNAL(released()),this,SLOT(runButtonSlot()));		
-		QObject::connect(fileBrowser,SIGNAL(selectionChanged(Q3ListViewItem*)),this,SLOT(showFile(Q3ListViewItem*)));
-		QObject::connect(fileBrowser,SIGNAL(contextMenuRequested(Q3ListViewItem*,const QPoint&,int)),this,SLOT(createFileBrowserMenu(Q3ListViewItem*,const QPoint&,int)));
-		QObject::connect(editor,SIGNAL(contentsMoving (int,int)),this,SLOT(lineNumSlot(int,int)));
-		QObject::connect(fileBrowserMenu,SIGNAL(activated(int)),this,SLOT(fileBrowserMenuSlot(int)));
-		QObject::connect(editor,SIGNAL(textChanged()),this,SLOT(textChangedSlot()));
-//		QObject::connect(saveButton,SIGNAL(released()),this,SLOT(saveSlot()));
-		QObject::connect(saveButton,SIGNAL(clicked()),this,SLOT(saveSlot()));
-		QObject::connect(minimizeButton,SIGNAL(clicked()),this,SLOT(maximizeButtonSlot()));
-		QObject::connect(runButton,SIGNAL(clicked()),this,SLOT(runButtonSlot()));
-		QObject::connect(saveallButton,SIGNAL(clicked()),this,SLOT(saveallSlot()));
-		QObject::connect(newButton,SIGNAL(clicked()),this,SLOT(newSlot()));
-		QObject::connect(importButton,SIGNAL(clicked()),this,SLOT(importSlot()));
-		QObject::connect(exportButton,SIGNAL(clicked()),this,SLOT(exportSlot()));
-		QObject::connect(copyButton,SIGNAL(clicked()),editor,SLOT(copy()));
-		QObject::connect(pasteButton,SIGNAL(clicked()),editor,SLOT(paste()));
-		QObject::connect(cutButton,SIGNAL(clicked()),editor,SLOT(cut()));
-		QObject::connect(undoButton,SIGNAL(clicked()),editor,SLOT(undo()));
-		QObject::connect(redoButton,SIGNAL(clicked()),editor,SLOT(redo()));
-		QObject::connect(catalogButton,SIGNAL(clicked()),this,SLOT(catalogSlot()));
-		QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(buttonInputSlot(QString)));
-	}
-	
-	
 	void setPref(Preferences);
 	
 	void updateFileList();
@@ -312,7 +139,7 @@ public slots:
 	void catalogSlot();
 
 protected:
-virtual void resizeEvent(QResizeEvent*);
+//virtual void resizeEvent(QResizeEvent*);
 	
 signals:
 	void prefChange(Preferences);

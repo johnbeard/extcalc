@@ -1,8 +1,8 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'graphpref.h'
 **
-** Created: Wed Dec 31 16:17:57 2008
-**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
+** Created: Wed Mar 10 16:19:05 2010
+**      by: The Qt Meta Object Compiler version 61 (Qt 4.5.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -10,8 +10,8 @@
 #include "graphpref.h"
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'graphpref.h' doesn't include <QObject>."
-#elif Q_MOC_OUTPUT_REVISION != 59
-#error "This file was generated using the moc from 4.4.3. It"
+#elif Q_MOC_OUTPUT_REVISION != 61
+#error "This file was generated using the moc from 4.5.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,12 +20,13 @@ QT_BEGIN_MOC_NAMESPACE
 static const uint qt_meta_data_CoordinatePreferences[] = {
 
  // content:
-       1,       // revision
+       2,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   10, // methods
+       5,   12, // methods
        0,    0, // properties
        0,    0, // enums/sets
+       0,    0, // constructors
 
  // signals: signature, parameters, type, tag, flags
       23,   22,   22,   22, 0x05,
@@ -75,6 +76,7 @@ int CoordinatePreferences::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         case 2: angleButtonSlot(); break;
         case 3: graphTypeSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 4: getPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        default: ;
         }
         _id -= 5;
     }
@@ -90,12 +92,13 @@ void CoordinatePreferences::prefChange(Preferences _t1)
 static const uint qt_meta_data_PerformancePreferences[] = {
 
  // content:
-       1,       // revision
+       2,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   10, // methods
+       5,   12, // methods
        0,    0, // properties
        0,    0, // enums/sets
+       0,    0, // constructors
 
  // signals: signature, parameters, type, tag, flags
       24,   23,   23,   23, 0x05,
@@ -145,6 +148,7 @@ int PerformancePreferences::qt_metacall(QMetaObject::Call _c, int _id, void **_a
         case 2: lowButtonSlot(); break;
         case 3: standardButtonSlot(); break;
         case 4: highButtonSlot(); break;
+        default: ;
         }
         _id -= 5;
     }
@@ -160,12 +164,13 @@ void PerformancePreferences::prefChange(Preferences _t1)
 static const uint qt_meta_data_DynamicPreferences[] = {
 
  // content:
-       1,       // revision
+       2,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   10, // methods
+       3,   12, // methods
        0,    0, // properties
        0,    0, // enums/sets
+       0,    0, // constructors
 
  // signals: signature, parameters, type, tag, flags
       20,   19,   19,   19, 0x05,
@@ -211,6 +216,7 @@ int DynamicPreferences::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         case 0: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
         case 1: getPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
         case 2: standardButtonSlot(); break;
+        default: ;
         }
         _id -= 3;
     }
@@ -226,12 +232,13 @@ void DynamicPreferences::prefChange(Preferences _t1)
 static const uint qt_meta_data_GraphPreferences[] = {
 
  // content:
-       1,       // revision
+       2,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   10, // methods
+       3,   12, // methods
        0,    0, // properties
        0,    0, // enums/sets
+       0,    0, // constructors
 
  // signals: signature, parameters, type, tag, flags
       18,   17,   17,   17, 0x05,
@@ -276,6 +283,7 @@ int GraphPreferences::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         case 0: prefChange((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
         case 1: saveButtonSlot(); break;
         case 2: getPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        default: ;
         }
         _id -= 3;
     }

@@ -18,8 +18,128 @@ any later version.
 #include <QResizeEvent>
 
 
+StatisticsWidget::StatisticsWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td) :TabWidget(parent,p,va,td,false)
+{
+
+        functionChanged=false;
+        type=STATAPPROX;
+        print=false;
+        changedRow=-1;
+
+        horzSplit=new QSplitter(Qt::Horizontal,this);
+        vertSplit=new QSplitter(Qt::Vertical,horzSplit);
+        functionTable=new FunctionTable(vertSplit,pref);
+        catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX,this);
+
+        toolFrame=new QFrame(this);
+		toolFrame->setFixedHeight(170);
+        toolFrameLayout=new QGridLayout(toolFrame);
+		toolFrameLayout->setColumnMinimumWidth(0,90);
+		toolFrameLayout->setColumnMinimumWidth(1,90);
+		toolFrameLayout->setColumnMinimumWidth(2,90);
+		toolFrameLayout->setRowMinimumHeight(0,20);
+		toolFrameLayout->setRowMinimumHeight(1,20);
+		toolFrameLayout->setRowMinimumHeight(2,20);
+		toolFrameLayout->setRowMinimumHeight(3,20);
+		toolFrameLayout->setRowMinimumHeight(4,20);
+		toolFrameLayout->setColumnStretch(0,1);
+		toolFrameLayout->setVerticalSpacing(2);
+		extButtons->hide();
 
 
+        minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
+        maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
+        printIcon=new QPixmap(INSTALLDIR+QString("/data/print.png"));
+        catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
+
+        setMainWidget(horzSplit);
+        addSubWidget(calcButtons);
+        addSubWidget(toolFrame);
+        setDockArea(1);
+
+        toolBar=new Q3ToolBar();
+        dockArea->moveDockWindow(toolBar);
+
+        drawButton=new QPushButton(*printIcon,STATISTICSH_STR14,toolBar);
+        drawButton->setFixedHeight(25);
+        maximizeButton=new QPushButton(*maximizeIcon,"",toolBar);
+        lists=new Q3Table(horzSplit);
+        lists->setNumRows(1);
+        lists->setNumCols(2*LISTCOUNT);
+        typeBox=new QComboBox(toolBar);
+        functionTypeLabel=new QLabel(STATISTICSH_STR1,toolFrame);
+        functionTypeBox=new QComboBox(toolFrame);
+        listNumber=new QSpinBox(1,LISTCOUNT,1,toolFrame);
+        listNumberLabel=new QLabel(STATISTICSH_STR2,toolFrame);
+        resultLabel=new QLabel(STATISTICSH_STR3,toolFrame);
+        result=new QLineEdit(toolFrame);
+        inputLine=new QLineEdit(vertSplit);
+        inputLine->setFixedHeight(25);
+        for(int c=0; c<5; c++)
+        {
+                lists->horizontalHeader()->setLabel(2*c,"X"+QString::number(c+1));
+                lists->horizontalHeader()->setLabel(2*c+1,"Y"+QString::number(c+1));
+        }
+
+        copyFunctionLabel=new QLabel(STATISTICSH_STR4,toolFrame);
+        copyFunction=new QComboBox(toolFrame);
+        copyButton=new QPushButton(STATISTICSH_STR5,toolFrame);
+        for(int c=0; c<20; c++)
+                copyFunction->insertItem("f"+QString::number(c+1)+"(x)");
+
+        listNumberBox=new QComboBox(toolFrame);
+        for(int c=0; c<LISTCOUNT; c++)
+        {
+                listNumberBox->insertItem("X"+QString::number(c+1));
+                listNumberBox->insertItem("Y"+QString::number(c+1));
+        }
+
+        functionTypeBox->insertItem("const");
+        functionTypeBox->insertItem("a*x+b");
+        functionTypeBox->insertItem("a*x^2+b*x+c");
+        functionTypeBox->insertItem("a*e^(b*x)");
+        functionTypeBox->insertItem("a*b^x");
+
+        typeBox->insertItem(STATISTICSH_STR6);
+        typeBox->insertItem(STATISTICSH_STR7);
+        typeBox->insertItem(STATISTICSH_STR8);
+        typeBox->insertItem(STATISTICSH_STR9);
+        typeBox->insertItem(STATISTICSH_STR10);
+
+        stepsBox=new QSpinBox(1,100,1,toolFrame);
+        stepsBox->setValue(10);
+        stepsLabel=new QLabel(STATISTICSH_STR11,toolFrame);
+
+
+        calculateButton=new QPushButton(STATISTICSH_STR12,toolFrame);
+        catalogButton=new QPushButton(*catalogIcon,"",toolBar);
+        catalogButton->setFixedWidth(30);
+        maximizeButton->setFixedWidth(30);
+        typeBox->setFixedWidth(120);
+
+        readListsFile();
+
+        typeBoxSlot(0);
+        QObject::connect(functionTable,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+        QObject::connect(maximizeButton,SIGNAL(clicked()),this,SLOT(maximizeButtonSlot()));
+        QObject::connect(calculateButton,SIGNAL(clicked()),this,SLOT(calculateButtonSlot()));
+        QObject::connect(copyButton,SIGNAL(clicked()),this,SLOT(copyButtonSlot()));
+        QObject::connect(drawButton,SIGNAL(clicked()),this,SLOT(printButtonSlot()));
+        QObject::connect(typeBox,SIGNAL(activated(int)),this,SLOT(typeBoxSlot(int)));
+        QObject::connect(lists,SIGNAL(valueChanged(int,int)),this,SLOT(itemChangedSlot(int,int)));
+        QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
+        QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+        QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(buttonInputSlot(QString)));
+        QObject::connect(catalogButton,SIGNAL(clicked()),this,SLOT(catalogSlot()));
+        QObject::connect(functionTable,SIGNAL(currentChanged(int,int)),this,SLOT(selectionChangedSlot(int,int)));
+        QObject::connect(functionTable,SIGNAL(textEditStarted(QString)),this,SLOT(tableEditSlot(QString)));
+        QObject::connect(inputLine,SIGNAL(returnPressed()),this,SLOT(inputTextFinished()));
+        QObject::connect(inputLine,SIGNAL(textChanged(const QString&)),this,SLOT(inputTextChanged(const QString&)));
+}
+
+
+
+/*
 void StatisticsWidget::resizeEvent(QResizeEvent*)
 {
 	int width=geometry().right() - geometry().left();
@@ -110,12 +230,12 @@ void StatisticsWidget::resizeEvent(QResizeEvent*)
 		}
 	}
 }
-
+*/
 
 void StatisticsWidget::setPref(Preferences p)
 {
 	pref=p;
-	standardButtons->setPref(pref);
+        calcButtons->setPref(pref);
 //	calcWidget->setPref(pref);
 	functionTable->setPref(pref);
 }
@@ -129,25 +249,22 @@ void StatisticsWidget::getPref(Preferences p)
 
 void StatisticsWidget::maximizeButtonSlot()
 {
-	fullscreen=!fullscreen;
-
-	if(fullscreen)
+	if(!isMaximized())
 	{
-	//	maximizeButton->setText(STATISTICSC_STR1);
 		maximizeButton->setIconSet(*minimizeIcon);
-		standardButtons->hide();
+		calcButtons->hide();
 		typeBox->hide();
 		typeBoxSlot(-1);
+		maximizeSlot(true);
 	}
 	else 
 	{
-//		maximizeButton->setText(STATISTICSH_STR13);
 		maximizeButton->setIconSet(*maximizeIcon);
 		typeBoxSlot(typeBox->currentItem());
-		standardButtons->show();
+		calcButtons->show();
 		typeBox->show();
+		maximizeSlot(false);
 	}
-	resizeEvent(NULL);
 }
 
 void StatisticsWidget::calculateButtonSlot()
@@ -486,6 +603,22 @@ void StatisticsWidget::calculateButtonSlot()
 	
 void StatisticsWidget::typeBoxSlot(int index)
 {
+	toolFrameLayout->removeWidget(functionTypeBox);
+	toolFrameLayout->removeWidget(functionTypeLabel);
+	toolFrameLayout->removeWidget(listNumberBox);
+	toolFrameLayout->removeWidget(copyFunction);
+	toolFrameLayout->removeWidget(listNumber);
+	toolFrameLayout->removeWidget(resultLabel);
+	toolFrameLayout->removeWidget(copyFunctionLabel);
+	toolFrameLayout->removeWidget(result);
+	toolFrameLayout->removeWidget(listNumberLabel);
+	toolFrameLayout->removeWidget(copyButton);
+	toolFrameLayout->removeWidget(stepsBox);
+	toolFrameLayout->removeWidget(copyButton);
+	toolFrameLayout->removeWidget(stepsLabel);
+	toolFrameLayout->removeWidget(calculateButton);
+
+
 	functionTypeBox->hide();
 	functionTypeLabel->hide();
 	listNumberBox->hide();
@@ -499,9 +632,6 @@ void StatisticsWidget::typeBoxSlot(int index)
 	copyButton->hide();
 	stepsBox->hide();
 	stepsLabel->hide();
-	
-	if(fullscreen)
-		index=-1;
 	
 	switch(index)
 	{
@@ -517,6 +647,18 @@ void StatisticsWidget::typeBoxSlot(int index)
 			listNumberLabel->show();
 			result->show();
 			copyButton->show();
+
+			toolFrameLayout->addWidget(functionTypeLabel,0,0,1,2);
+			toolFrameLayout->addWidget(functionTypeBox,0,2,1,1);
+			toolFrameLayout->addWidget(listNumberLabel,1,0,1,2);
+			toolFrameLayout->addWidget(listNumber,1,2,1,1);
+			toolFrameLayout->addWidget(calculateButton,2,2,1,1);
+			toolFrameLayout->addWidget(resultLabel,3,0,1,3);
+			toolFrameLayout->addWidget(result,4,0,1,3);
+			toolFrameLayout->addWidget(copyFunctionLabel,5,0,1,1);
+			toolFrameLayout->addWidget(copyFunction,5,1,1,1);
+			toolFrameLayout->addWidget(copyButton,5,2,1,1);
+
 			break;
 		case 1:
 			type=STATINTERPOL;
@@ -528,11 +670,23 @@ void StatisticsWidget::typeBoxSlot(int index)
 			listNumberLabel->show();
 			result->show();
 			copyButton->show();
+
+			toolFrameLayout->addWidget(listNumberLabel,0,0,1,2);
+			toolFrameLayout->addWidget(listNumber,0,2,1,1);
+			toolFrameLayout->addWidget(calculateButton,1,2,1,1);
+			toolFrameLayout->addWidget(resultLabel,2,0,1,3);
+			toolFrameLayout->addWidget(result,3,0,1,3);
+			toolFrameLayout->addWidget(copyFunctionLabel,4,0,1,1);
+			toolFrameLayout->addWidget(copyFunction,4,1,1,1);
+			toolFrameLayout->addWidget(copyButton,4,2,1,1);
 			break;
 		case 2:
 			type=STATLINEGRAPH;
 			listNumber->show();
 			listNumberLabel->show();
+
+			toolFrameLayout->addWidget(listNumberLabel,0,0,1,2);
+			toolFrameLayout->addWidget(listNumber,0,2,1,1);
 			break;
 		case 3:
 			type=STATNORMAL;
@@ -544,6 +698,16 @@ void StatisticsWidget::typeBoxSlot(int index)
 			copyFunctionLabel->show();
 			copyFunction->show();
 			calculateButton->show();
+
+			toolFrameLayout->addWidget(listNumberLabel,0,0,1,2);
+			toolFrameLayout->addWidget(listNumberBox,0,2,1,1);
+			toolFrameLayout->addWidget(calculateButton,1,2,1,1);
+			toolFrameLayout->addWidget(resultLabel,2,0,1,3);
+			toolFrameLayout->addWidget(result,3,0,1,3);
+			toolFrameLayout->addWidget(copyFunctionLabel,4,0,1,1);
+			toolFrameLayout->addWidget(copyFunction,4,1,1,1);
+			toolFrameLayout->addWidget(copyButton,4,2,1,1);
+
 			break;
 		case 4:
 			type=STATBARGRAPH;
@@ -551,11 +715,16 @@ void StatisticsWidget::typeBoxSlot(int index)
 			listNumberLabel->show();
 			stepsBox->show();
 			stepsLabel->show();
+
+
+			toolFrameLayout->addWidget(listNumberLabel,0,0,1,2);
+			toolFrameLayout->addWidget(listNumberBox,0,2,1,1);
+			toolFrameLayout->addWidget(stepsLabel,1,0,1,2);
+			toolFrameLayout->addWidget(stepsBox,1,2,1,1);
 			break;
 		default:
 			break;
 	}
-	resizeEvent(NULL);
 }
 
 void StatisticsWidget::copyButtonSlot()

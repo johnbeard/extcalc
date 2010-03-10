@@ -1,8 +1,8 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'calcinput.h'
 **
-** Created: Wed Dec 31 16:18:01 2008
-**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
+** Created: Wed Mar 10 16:19:08 2010
+**      by: The Qt Meta Object Compiler version 61 (Qt 4.5.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -10,8 +10,8 @@
 #include "calcinput.h"
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'calcinput.h' doesn't include <QObject>."
-#elif Q_MOC_OUTPUT_REVISION != 59
-#error "This file was generated using the moc from 4.4.3. It"
+#elif Q_MOC_OUTPUT_REVISION != 61
+#error "This file was generated using the moc from 4.5.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,12 +20,13 @@ QT_BEGIN_MOC_NAMESPACE
 static const uint qt_meta_data_CalcInput[] = {
 
  // content:
-       1,       // revision
+       2,       // revision
        0,       // classname
        0,    0, // classinfo
-       4,   10, // methods
+       4,   12, // methods
        0,    0, // properties
        0,    0, // enums/sets
+       0,    0, // constructors
 
  // signals: signature, parameters, type, tag, flags
       11,   10,   10,   10, 0x05,
@@ -73,6 +74,7 @@ int CalcInput::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         case 1: calcSignal(); break;
         case 2: cursorSlot((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         case 3: menuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        default: ;
         }
         _id -= 4;
     }

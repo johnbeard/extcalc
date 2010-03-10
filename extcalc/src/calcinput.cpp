@@ -50,7 +50,7 @@ void CalcInput::keyPressEvent(QKeyEvent*e)
 				content.remove(startPos,endPos-startPos);
 				pos=startPos;
 				if(e->ascii()==8 || e->ascii()==127)
-					noCheck=true;
+                                        noCheck=true;
 			}
 		}
 

@@ -2310,9 +2310,9 @@ int Script::parse(char* line,int start,int end)
 	}
 	
 
-//	QString outLine(line);
-//	outLine=outLine.mid(start,end-start);
-//	qDebug(outLine);
+        QString outLine(line);
+        outLine=outLine.mid(start,end-start);
+   //     qDebug(outLine);
 	
 	int pos1;
 //	perror(line);
@@ -3410,7 +3410,7 @@ int Script::parse(char* line,int start,int end)
 			operation=SFAIL;
 			return -1;
 		}
-		vertObj4=new Script(this,line,start+4,pos1,pref,vars,eventReciver);
+                vertObj4=new Script(this,line,start+3,pos1,pref,vars,eventReciver);
 		vertObj=new Script(this,line,pos1+1,end-1,pref,vars,eventReciver);
 		return -1;
 	}

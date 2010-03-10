@@ -40,17 +40,19 @@ Includes the matrix/vector window GUI and all needed math. functions.
 #include "calcinput.h"
 #include "calctable.h"
 #include "catalog.h"
+#include "tabwidget.h"
+#include <QFrame>
 
 
 
 
 
-class MatrixWidget :public QWidget
+class MatrixWidget :public TabWidget
 {
-	Preferences pref;
-	ThreadSync*threadData;
-	Variable*vars;
-	StandardButtons *standardButtons;
+//	Preferences pref;
+//	ThreadSync*threadData;
+//	Variable*vars;
+//	StandardButtons *standardButtons;
 	CalcTable*outputTable;
 	CalcTable*varTable;
 	CalcTable*resultTable;
@@ -63,28 +65,29 @@ class MatrixWidget :public QWidget
 	QPushButton *calcButton,*sizeButton,*catalogButton;
 
 	Q3ToolBar*toolBar;
-	Q3DockArea*dockArea;
+//	Q3DockArea*dockArea;
 	QPixmap *catalogIcon;
 	Catalog *catalog;
 	QSplitter *split;
+	QFrame*leftFrame,*rightFrame;
 
 	CalcInput*calcWidget;
 	int currentVar;
 	int state;
-	bool fullscreen;
+//	bool fullscreen;
 
 	Q_OBJECT
 	public:
-		MatrixWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td) :QWidget(parent)
+		MatrixWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td) :TabWidget(parent,p,va,td,false)
 		{
-			pref=p;
-			threadData=td;
-			vars=va;
+//			pref=p;
+//			threadData=td;
+//			vars=va;
 			currentVar=0;
 			state=MATCALC;
-			
+
 			split=new QSplitter(Qt::Horizontal,this);
-			standardButtons=new StandardButtons(this);
+//			standardButtons=new StandardButtons(this);
 			varTable=new CalcTable(split,0,true);
 			outputTable=new CalcTable(split,0,true);
 			outputTable->setNumRows(10);
@@ -95,9 +98,12 @@ class MatrixWidget :public QWidget
 	
 			catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
 			
-			dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
+//			dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
 			toolBar=new Q3ToolBar();
 			dockArea->moveDockWindow(toolBar);
+			
+			setMainWidget(split);
+                        addSubWidget(calcButtons);
 			
 			
 			varTable->setNumRows(27);
@@ -116,14 +122,13 @@ class MatrixWidget :public QWidget
 			varTable->selectRow(currentVar);
 			varTable->setColumnReadOnly(0,true);
 			setVarTable();
-			
+
 			operationBox=new QComboBox(toolBar);
 			sprodButton=new QPushButton(getUnicode(DEGREESTRING),toolBar);
 			invertButton=new QPushButton(getUnicode(8315)+getUnicode(185),toolBar);
 			detButton=new QPushButton("det",toolBar);
 			catalogButton=new QPushButton(*catalogIcon,"",toolBar);
-			
-			
+
 			operationBox->insertItem(MATRIXWIDGETH_STR4);
 			operationBox->insertItem(MATRIXWIDGETH_STR5);
 			operationBox->insertItem(MATRIXWIDGETH_STR6);
@@ -177,13 +182,13 @@ class MatrixWidget :public QWidget
 
 
 
-			QObject::connect(standardButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+			QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 			QObject::connect(sprodButton,SIGNAL(clicked()),this,SLOT(sprodButtonSlot()));
 			QObject::connect(invertButton,SIGNAL(clicked()),this,SLOT(invertButtonSlot()));
 			QObject::connect(detButton,SIGNAL(clicked()),this,SLOT(detButtonSlot()));
 			QObject::connect(operationBox,SIGNAL(activated(int)),this,SLOT(operationBoxSlot(int)));
 			QObject::connect(calcWidget,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-			QObject::connect(standardButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
+			QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
 			QObject::connect(varTable,SIGNAL(currentChanged(int,int)),this,SLOT(varSelectionSlot(int,int)));
 			QObject::connect(varTable,SIGNAL(valueChanged(int,int)),this,SLOT(varChangedSlot(int,int)));
 			QObject::connect(outputTable,SIGNAL(valueChanged(int,int)),this,SLOT(outputChangedSlot(int,int)));
@@ -227,8 +232,8 @@ class MatrixWidget :public QWidget
 		void dockWindowSlot();
 		void catalogSlot();
 	
-	protected:
-		virtual void resizeEvent(QResizeEvent*);
+//	protected:
+//		virtual void resizeEvent(QResizeEvent*);
 	
 	
 	signals:

@@ -1,8 +1,8 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'catalog.h'
 **
-** Created: Wed Dec 31 16:18:12 2008
-**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
+** Created: Wed Mar 10 16:19:17 2010
+**      by: The Qt Meta Object Compiler version 61 (Qt 4.5.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -10,8 +10,8 @@
 #include "catalog.h"
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'catalog.h' doesn't include <QObject>."
-#elif Q_MOC_OUTPUT_REVISION != 59
-#error "This file was generated using the moc from 4.4.3. It"
+#elif Q_MOC_OUTPUT_REVISION != 61
+#error "This file was generated using the moc from 4.5.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,12 +20,13 @@ QT_BEGIN_MOC_NAMESPACE
 static const uint qt_meta_data_ConstantDialog[] = {
 
  // content:
-       1,       // revision
+       2,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   10, // methods
+       5,   12, // methods
        0,    0, // properties
        0,    0, // enums/sets
+       0,    0, // constructors
 
  // signals: signature, parameters, type, tag, flags
       16,   15,   15,   15, 0x05,
@@ -75,6 +76,7 @@ int ConstantDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         case 2: applySlot(); break;
         case 3: removeSlot(); break;
         case 4: setPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        default: ;
         }
         _id -= 5;
     }
@@ -90,12 +92,13 @@ void ConstantDialog::prefChange(Preferences _t1)
 static const uint qt_meta_data_Catalog[] = {
 
  // content:
-       1,       // revision
+       2,       // revision
        0,       // classname
        0,    0, // classinfo
-      14,   10, // methods
+      14,   12, // methods
        0,    0, // properties
        0,    0, // enums/sets
+       0,    0, // constructors
 
  // signals: signature, parameters, type, tag, flags
        9,    8,    8,    8, 0x05,
@@ -168,6 +171,7 @@ int Catalog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         case 11: scriptFileSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 12: constantsSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 13: getPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        default: ;
         }
         _id -= 14;
     }
