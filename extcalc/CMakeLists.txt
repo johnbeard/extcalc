@@ -65,6 +65,7 @@ SET(moc_h
 	src/calctable.h
 	src/graph.h
 	src/importdialog.h
+	src/tabwidget.h
 	src/statistics.h)
 
 SET(src_h
@@ -90,6 +91,7 @@ SET(src_h
 	src/graph.h
 	src/importdialog.h
 	src/statistics.h
+	src/tabwidget.h
 	src/list.h
 	src/calclocale.h
 	src/global.h
@@ -118,6 +120,7 @@ SET(src_cxx
 	src/graph.cpp
 	src/importdialog.cpp
 	src/statistics.cpp
+	src/tabwidget.cpp
 	src/global.cpp
 )
 
