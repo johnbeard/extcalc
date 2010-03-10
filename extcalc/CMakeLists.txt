@@ -143,7 +143,7 @@ SET(DOCDIR "share/extcalc/doc")
 SET(DESKTOPDIR "/usr/share/applications")
 SET(ICONDIR "/usr/share/icons")
 SET(MANDIR "/usr/man")
-
+SET(BINDIR "bin")
 
 
 #installer data
@@ -255,6 +255,11 @@ INSTALL(FILES
 	doc/table.jpg
 	doc/usevar.jpg
 	DESTINATION ${DOCDIR}
+)
+
+INSTALL(TARGETS
+	extcalc
+	DESTINATION ${BINDIR}
 )
 
 
