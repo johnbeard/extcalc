@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'graph.h'
 **
-** Created: Wed Mar 10 16:19:03 2010
+** Created: Sun Mar 28 18:03:55 2010
 **      by: The Qt Meta Object Compiler version 61 (Qt 4.5.3)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -82,7 +82,7 @@ static const uint qt_meta_data_GraphWidget[] = {
        2,       // revision
        0,       // classname
        0,    0, // classinfo
-      22,   12, // methods
+      21,   12, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -99,19 +99,18 @@ static const uint qt_meta_data_GraphWidget[] = {
      184,   12,   12,   12, 0x0a,
      207,   12,   12,   12, 0x0a,
      218,   12,   12,   12, 0x0a,
-     233,   12,   12,   12, 0x0a,
-     247,   12,   12,   12, 0x0a,
-     273,   12,   12,   12, 0x0a,
-     293,   12,   12,   12, 0x0a,
-     318,   12,   12,   12, 0x0a,
-     337,   12,   12,   12, 0x0a,
-     351,   12,   12,   12, 0x0a,
-     365,   12,   12,   12, 0x0a,
-     381,   12,   12,   12, 0x0a,
-     400,  398,   12,   12, 0x0a,
-     424,   12,   12,   12, 0x0a,
-     462,  454,   12,   12, 0x0a,
-     489,  483,   12,   12, 0x0a,
+     232,   12,   12,   12, 0x0a,
+     258,   12,   12,   12, 0x0a,
+     278,   12,   12,   12, 0x0a,
+     303,   12,   12,   12, 0x0a,
+     322,   12,   12,   12, 0x0a,
+     336,   12,   12,   12, 0x0a,
+     350,   12,   12,   12, 0x0a,
+     366,   12,   12,   12, 0x0a,
+     385,  383,   12,   12, 0x0a,
+     409,   12,   12,   12, 0x0a,
+     447,  439,   12,   12, 0x0a,
+     474,  468,   12,   12, 0x0a,
 
        0        // eod
 };
@@ -123,10 +122,10 @@ static const char qt_meta_stringdata_GraphWidget[] = {
     "removeLinesSignal()\0statisticsRedrawSignal()\0"
     "row,col\0selectionChangedSlot(int,int)\0"
     "tableEditSlot(QString)\0drawSlot()\0"
-    "maximizeSlot()\0modeSlot(int)\0"
-    "inputTextChanged(QString)\0inputTextFinished()\0"
-    "buttonInputSlot(QString)\0solveTypeSlot(int)\0"
-    "editSlot(int)\0catalogSlot()\0graphSizeSlot()\0"
+    "modeSlot(int)\0inputTextChanged(QString)\0"
+    "inputTextFinished()\0buttonInputSlot(QString)\0"
+    "solveTypeSlot(int)\0editSlot(int)\0"
+    "catalogSlot()\0graphSizeSlot()\0"
     "dockWindowSlot()\0,\0inequalitySlot(int,int)\0"
     "graphProcessingFinishedSlot()\0newPref\0"
     "getPref(Preferences)\0fType\0"
@@ -166,23 +165,22 @@ int GraphWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         case 5: selectionChangedSlot((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         case 6: tableEditSlot((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 7: drawSlot(); break;
-        case 8: maximizeSlot(); break;
-        case 9: modeSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 10: inputTextChanged((*reinterpret_cast< const QString(*)>(_a[1]))); break;
-        case 11: inputTextFinished(); break;
-        case 12: buttonInputSlot((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 13: solveTypeSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 14: editSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 15: catalogSlot(); break;
-        case 16: graphSizeSlot(); break;
-        case 17: dockWindowSlot(); break;
-        case 18: inequalitySlot((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 19: graphProcessingFinishedSlot(); break;
-        case 20: getPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
-        case 21: functionTypeSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 8: modeSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 9: inputTextChanged((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 10: inputTextFinished(); break;
+        case 11: buttonInputSlot((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 12: solveTypeSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 13: editSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 14: catalogSlot(); break;
+        case 15: graphSizeSlot(); break;
+        case 16: dockWindowSlot(); break;
+        case 17: inequalitySlot((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 18: graphProcessingFinishedSlot(); break;
+        case 19: getPref((*reinterpret_cast< Preferences(*)>(_a[1]))); break;
+        case 20: functionTypeSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
         default: ;
         }
-        _id -= 22;
+        _id -= 21;
     }
     return _id;
 }

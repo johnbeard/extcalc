@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/usr/share/extcalc" >
+        <file>data/circle.png</file>
+        <file>data/free.png</file>
+        <file>data/line.png</file>
+        <file>data/rect.png</file>
+        <file>data/rubber.png</file>
+        <file>data/text.png</file>
+        <file>data/open.png</file>
+    </qresource>
+</RCC>

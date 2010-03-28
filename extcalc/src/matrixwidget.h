@@ -49,10 +49,7 @@ Includes the matrix/vector window GUI and all needed math. functions.
 
 class MatrixWidget :public TabWidget
 {
-//	Preferences pref;
-//	ThreadSync*threadData;
-//	Variable*vars;
-//	StandardButtons *standardButtons;
+
 	CalcTable*outputTable;
 	CalcTable*varTable;
 	CalcTable*resultTable;
@@ -78,7 +75,7 @@ class MatrixWidget :public TabWidget
 
 	Q_OBJECT
 	public:
-		MatrixWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td) :TabWidget(parent,p,va,td,false)
+    MatrixWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td) :TabWidget(parent,p,va,td,false)
 		{
 //			pref=p;
 //			threadData=td;
@@ -87,7 +84,7 @@ class MatrixWidget :public TabWidget
 			state=MATCALC;
 
 			split=new QSplitter(Qt::Horizontal,this);
-//			standardButtons=new StandardButtons(this);
+
 			varTable=new CalcTable(split,0,true);
 			outputTable=new CalcTable(split,0,true);
 			outputTable->setNumRows(10);
@@ -98,12 +95,12 @@ class MatrixWidget :public TabWidget
 	
 			catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
 			
-//			dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
+
 			toolBar=new Q3ToolBar();
 			dockArea->moveDockWindow(toolBar);
 			
 			setMainWidget(split);
-                        addSubWidget(calcButtons);
+      addSubWidget(calcButtons);
 			
 			
 			varTable->setNumRows(27);
@@ -128,6 +125,7 @@ class MatrixWidget :public TabWidget
 			invertButton=new QPushButton(getUnicode(8315)+getUnicode(185),toolBar);
 			detButton=new QPushButton("det",toolBar);
 			catalogButton=new QPushButton(*catalogIcon,"",toolBar);
+      operationBox->hide();
 
 			operationBox->insertItem(MATRIXWIDGETH_STR4);
 			operationBox->insertItem(MATRIXWIDGETH_STR5);
@@ -136,6 +134,11 @@ class MatrixWidget :public TabWidget
 			operationBox->insertItem(MATRIXWIDGETH_STR8);
 
 			calcWidget=new CalcInput(this,vars,threadData,true);
+      addSubWidget(calcWidget);
+      calcWidget->setFixedHeight(160);
+
+
+
 			size1Box=new QSpinBox(1,20,1,this);
 			size2Box=new QSpinBox(1,20,1,this);
 			size1Label=new QLabel(" ",this);
@@ -178,6 +181,9 @@ class MatrixWidget :public TabWidget
 			typeBox->insertItem(MATRIXWIDGETH_STR16);
 			typeBox->insertItem(MATRIXWIDGETH_STR17);
 			typeBox->insertItem(MATRIXWIDGETH_STR18);
+
+      setDockArea(1);
+
 			resetInterface();
 
 

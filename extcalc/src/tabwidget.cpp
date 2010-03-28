@@ -40,7 +40,8 @@ TabWidget::TabWidget(QWidget*parent,Preferences p,Variable *va,ThreadSync*td, bo
 		maximizeSlot(max);
 	maximizeLayout->setRowStretch(0,0);
 	maximizeLayout->setRowStretch(1,1);
-	
+  mainLayout->setRowStretch(0,1);
+  mainLayout->setRowStretch(1,0);
 }
 
 

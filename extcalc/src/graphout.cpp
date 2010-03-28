@@ -25,7 +25,7 @@ any later version.
 
 void GraphOutput::initializeGL()
 {
-  QListIterator<ObjectInfo*> i(objectInfo);
+
   ObjectInfo*currentObject;
   int c;
 
@@ -77,7 +77,8 @@ void GraphOutput::initializeGL()
 			}
 		}
 		
-		//graph calculation (without multithreading)
+    //graph calculation (without multithreading)
+    QListIterator<ObjectInfo*> i(objectInfo);
     while(i.hasNext())
 		{
       currentObject=i.next();
@@ -94,7 +95,6 @@ void GraphOutput::initializeGL()
 
 		//create gl lists
 		createGLLists();
-		paintGL();
 	}
 }
 
@@ -1404,7 +1404,7 @@ void GraphOutput::paintGL()
 		else {
       if(obj->objectData[0].glCreated)
         glCallList(obj->objectData[0].glObject);
-      else qDebug("No GL list");
+      else qDebug("No GL list created");
 		}
 	}
 
@@ -2014,7 +2014,7 @@ void GraphOutput::calculateGraphData()
 
 void GraphOutput::processGraph(ObjectInfo*o,int c,ThreadSync*td,Variable*va)
 {
-   qDebug("Graph processed: "+QString(o->function)+" dynamic index: "+QString::number(c));
+//   qDebug("Graph processed: "+QString(o->function)+" dynamic index: "+QString::number(c));
 
     switch(o->type)
 		{

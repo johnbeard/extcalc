@@ -79,8 +79,7 @@ class CalcInput :public Q3TextEdit
 			scriptExec=false;
 			autoBrace=aB;
 //			script=NULL;
-			stdFont=new QFont("Courier");
-			stdFont->setPixelSize(16);
+      stdFont=new QFont("monospace",10);
 			stdFont->setFixedPitch(true);
 			setFont(*stdFont);
 			setTextFormat(Qt::PlainText);

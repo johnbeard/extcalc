@@ -43,6 +43,11 @@ ScriptIOWidget::ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWid
 	modeRequest=SCRIPTTEXT;
 	autosize=true;
 
+  drawFont=new QFont("monospace",10);
+  drawFont->setFixedPitch(true);
+  drawFont->setItalic(false);
+  drawFont->setBold(false);
+
 	mutex=new QMutex();
 	threadData=new ThreadSync;
 	threadData->mutex=mutex;
@@ -75,17 +80,14 @@ ScriptIOWidget::ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWid
 	runIcon=new QPixmap(INSTALLDIR+QString("/data/exec.png"));
 	killIcon=new QPixmap(INSTALLDIR+QString("/data/exit.png"));
 
-	selectStartLine=selectStartRow=selectEndLine=selectEndRow=0;
+  selectStartColumn=selectStartRow=selectEndColumn=selectEndRow=0;
 
 
-	outputWidget=new QWidget(this);
-	glWindow=new ScriptGL(outputWidget,pref,shareContext);
+  output2D=new ScriptDisplay(this);
+  glWindow=new ScriptGL(output2D,pref,shareContext);
 	toolBar=new Q3ToolBar();
 
-	setMainWidget(outputWidget);
-	addSubWidget(calcButtons);
-	addSubWidget(extButtons);
-	setDockArea(1);
+
 
 	dockArea->moveDockWindow(toolBar);
 	runButton=new QPushButton(*runIcon,"",toolBar);
@@ -110,45 +112,32 @@ ScriptIOWidget::ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWid
 	QToolTip::add(runButton,"Run Script");
 	QToolTip::add(maximizeButton,"Change View");
 
-	ioFieldX=20;
-	ioFieldY=50;
-	ioFieldWidth=600;
-	ioFieldHeight=310;
+
 	cursorX=cursorY=0;
-	buffer=new QPixmap(ioFieldWidth,ioFieldHeight);//,-1,QPixmap::BestOptim); disabled for qt4 port
-	drawFont=new QFont("Courier");
-	drawFont->setPixelSize(16);
-	drawFont->setFixedPitch(true);
-	drawPen=new QPen(QColor(0,0,0));
+  drawPen=new QPen(QColor(0,0,0));
 
-	scrollBar=new QScrollBar(Qt::Vertical,this);
-	ioFieldWidth-=20;
-	scrollBar->setValue(0);
 
-	QFontMetrics fontSize(*drawFont);
-	charWidth=fontSize.size(0,QString("m")).width();
-	charHeight=fontSize.size(0,QString("m")).height();
-	charNum=ioFieldWidth/charWidth;
-	lineNum=ioFieldHeight/charHeight;
-	for(int c=0; c<lineNum; c++)
-		lines.NewItem(QString(""));
 
-	scrollBar->setMinValue(0);
-	scrollBar->setMaxValue(0);
-	scrollBar->setLineStep(1);
-	scrollBar->setPageStep(lineNum);
-	scrollBar->setGeometry(600,50,20,ioFieldHeight);
+  scrollArea=new QScrollArea(this);
+  scrollArea->setWidget(output2D);
+  scrollArea->setWidgetResizable(true);
+  scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  output2D->setRows(BUFFER_LENGTH);
 
-	calcButtons->setGeometry(20,380,280,200);
-	extButtons->setGeometry(320,420,300,160);
 
-//			calcButtons->hide();
-//			extButtons->hide();
+  setMainWidget(scrollArea);
+  addSubWidget(calcButtons);
+  addSubWidget(extButtons);
+  setDockArea(1);
+
+
+
+
 	glWindow->hide();
 
 
 
-//			setFocusPolicy(QWidget::StrongFocus); disabled for qt4 port
 
 	QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
 	QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
@@ -158,8 +147,9 @@ ScriptIOWidget::ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWid
 	QObject::connect(killButton,SIGNAL(clicked()),this,SLOT(killSlot()));
 	QObject::connect(runButton,SIGNAL(clicked()),this,SLOT(runSlot()));
 	QObject::connect(t,SIGNAL(timeout()),this,SLOT(timerSlot()));
-	QObject::connect(scrollBar,SIGNAL(valueChanged(int)),this,SLOT(scrollbarSlot(int)));
+//	QObject::connect(scrollBar,SIGNAL(valueChanged(int)),this,SLOT(scrollbarSlot(int)));
 	QObject::connect(contextMenu,SIGNAL(activated(int)),this,SLOT(contextMenuSlot(int)));
+  QObject::connect(output2D,SIGNAL(pointVisibleSignal(int,int)),this,SLOT(scrollPointSlot(int,int)));
 }
 
 
@@ -173,15 +163,10 @@ void ScriptIOWidget::getPref(Preferences newPref)
 void ScriptIOWidget::maximizeButtonSlot()
 {
 	if(isMaximized())
-	{
 		maximizeSlot(false);
-		resizeEvent(NULL);
-	}
 	else 
-	{
-		maximizeSlot(false);
-		resizeEvent(NULL);
-	}
+    maximizeSlot(true);
+
 	repaint();
 }
 
@@ -199,13 +184,13 @@ void ScriptIOWidget::killSlot()
 			ErrorBox(SCRIPTIO_STR2);
 		}
 		else {
-			insert(QString(SCRIPTIO_STR3));
+      output2D->insertText(QString(SCRIPTIO_STR3));
 			scriptExec=false;
 			delete script;
 			script=NULL;
 			inputMode=IMDEFAULT;
 			killButton->setEnabled(false);
-			scrollBar->show();
+//			scrollBar->show();
 			resizeEvent(NULL);
 			if(pref.clearScriptMemory)
 				clearMemSlot();
@@ -226,105 +211,10 @@ void ScriptIOWidget::clearMemSlot()
 
 void ScriptIOWidget::paintEvent(QPaintEvent*)
 {
-	if(displayType==SCRIPTTEXT)
-	{
-		buffer->fill();
-		QPainter p;
-		p.begin(buffer);
-		p.setFont(*drawFont);
-		p.setBackgroundMode(Qt::OpaqueMode);
-		int lineMemLen=lines.GetLen();
-		int scrollbarPos;
-		
-		if(inputMode==IMSCRIPTING)
-		{
-			scrollbarPos=lineMemLen-lineNum;
-			for(int c=scrollbarPos; c<scrollbarPos+lineNum; c++)
-			p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c]);
-		}
-		else {
-			if(inputMode!=IMDEFAULT)
-				scrollbarPos=lineMemLen-lineNum;
-			else scrollbarPos=scrollBar->value();
-			
-			int startRow,startLine,endRow,endLine;
-			if(selectStartLine> selectEndLine || selectStartLine==selectEndLine && selectStartRow>selectEndRow)
-			{
-				startRow=selectEndRow;
-				startLine=selectEndLine;
-				endRow=selectStartRow;
-				endLine=selectStartLine;
-			}
-			else{
-				startRow=selectStartRow;
-				startLine=selectStartLine;
-				endRow=selectEndRow;
-				endLine=selectEndLine;
-			}
-			if(startLine<scrollbarPos && endLine>=scrollbarPos)
-			{
-				p.setBackgroundColor(QColor(0,0,0));
-				p.setPen(QColor(255,255,255));
-			}
-			
-			for(int c=scrollbarPos; c<scrollbarPos+lineNum; c++)
-			{
-				if(c!=startLine &&c!=endLine)
-					p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c]);
-				else if(startLine==endLine)
-				{
-					p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c].left(startRow));
-					p.setBackgroundColor(QColor(0,0,0));
-					p.setPen(QColor(255,255,255));
-					p.drawText(startRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].mid(startRow,startRow-endRow));
-					p.setBackgroundColor(QColor(255,255,255));
-					p.setPen(QColor(0,0,0));
-					p.drawText(endRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].right(lines[c].length()-endRow));
-		
-				}
-				else {
-					
-					if(c==startLine)
-					{
-						p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c].left(startRow));
-						p.setBackgroundColor(QColor(0,0,0));
-						p.setPen(QColor(255,255,255));
-						p.drawText(startRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].right(lines[c].length()-startRow));
-					}
-					if(c==endLine)
-					{
-						p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c].left(endRow));
-						p.setBackgroundColor(QColor(255,255,255));
-						p.setPen(QColor(0,0,0));
-						p.drawText(endRow*charWidth,charHeight*(c+1-scrollbarPos),lines[c].right(lines[c].length()-endRow));
-					}
-				}
-			}
-		}
 
-		if((hasFocus() && inputMode==IMDEFAULT) || inputMode==IMGETLINE)
-			p.drawLine(charWidth*cursorX,charHeight*(cursorY-scrollbarPos),charWidth*cursorX,charHeight*(cursorY+1-scrollbarPos));
-	
-		p.end();
-		p.begin(outputWidget);
-
-		p.drawPixmap(ioFieldX,ioFieldY,*buffer);
-		p.end();
-	}
-	else if(displayType==SCRIPT3D)
+  if(displayType==SCRIPT3D)
 		glWindow->repaint(true);
-	else {
-		QPainter p;
-/*		buffer->fill();
-		p.begin(buffer);
-		p.drawText(100,100,"Hallo");
-		p.end();
-*/		p.begin(outputWidget);
-
-		p.drawPixmap(ioFieldX,ioFieldY,*buffer);
-
-		p.end();
-	}
+  else output2D->update();
 
 }
 
@@ -332,12 +222,7 @@ void ScriptIOWidget::paintEvent(QPaintEvent*)
 
 void ScriptIOWidget::resizeEvent(QResizeEvent*)
 {
-	
-		ioFieldWidth=outputWidget->width();
-		ioFieldHeight=outputWidget->height();
-		ioFieldX=0;
-		ioFieldY=0;
-
+  QRect windowSize;
 
 	if(displayType==SCRIPT3D)
 	{
@@ -349,39 +234,12 @@ void ScriptIOWidget::resizeEvent(QResizeEvent*)
 			else glHeight=glWidth;
 		}
 	}
+  else {
+    windowSize=scrollArea->contentsRect();
+    output2D->setGeometry(windowSize);
+    qDebug("Requested Size: "+QString::number(windowSize.width())+" "+QString::number(windowSize.height()));
+  }
 
-	if(inputMode==IMDEFAULT)
-		ioFieldWidth-=20;
-	int oldCharNum=lines[0].length();
-	charNum=ioFieldWidth/charWidth;
-	lineNum=ioFieldHeight/charHeight;
-	if(charNum<1)
-		charNum=1;
-	if(lineNum<1)
-		lineNum=1;
-	if(charNum>oldCharNum)
-	{
-		QString appString;
-		appString.fill(' ',charNum-oldCharNum);
-		for(int c=0; c<lines.GetLen(); c++)
-			lines[c].append(appString);
-	}
-	
-	while(lineNum>lines.GetLen())
-	{
-		QString str;
-		str.fill(' ',charNum);
-		lines.NewItem(str);
-	}
-	scrollBar->setMaxValue(lines.GetLen()-lineNum);
-	
-
-	buffer->resize(ioFieldWidth,ioFieldHeight);
-//	buffer->fill();
-	if(cursorX>charNum)
-		cursorX=charNum;
-	if(cursorY<scrollBar->value())
-		cursorY=scrollBar->value();
 }
 
 void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
@@ -390,7 +248,7 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 	{
 		case 13:
 			if(inputMode==IMDEFAULT)
-				insert("\n");
+        output2D->insertText("\n");
 			else if(inputMode==IMSCRIPTING)
 			{
 				if(inputBuffer!=NULL)
@@ -421,28 +279,28 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 			break;
 		case 8:
 			if(inputMode==IMDEFAULT)
-				backKey();
+        output2D->backKey();
 			else if(inputMode==IMGETLINE)
 			{
 				int bufLen;
 				if((bufLen=strlen(inputBuffer))>0 && bufferCursor>0)
 				{
 					inputBuffer[bufLen-1]=(char)0;
-					backKey();
+          output2D->backKey();
 					bufferCursor--;
 				}
 			}
 			break;
 		case 127:
 			if(inputMode==IMDEFAULT)
-				deleteKey();
+        output2D->deleteKey();
 			else if(inputMode==IMGETLINE)
 			{
 				if(bufferCursor<(signed)strlen(inputBuffer))
 				{
 					for(int c=bufferCursor; inputBuffer[c]!=(char)0; c++)
 						inputBuffer[c]=inputBuffer[c+1];
-					deleteKey();
+          output2D->deleteKey();
 				}
 			}
 			break;
@@ -453,11 +311,12 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 					cursorX++;
 				if(e->key() == Qt::Key_Left && cursorX>0)
 					cursorX--;
-				if(e->key() == Qt::Key_Up && cursorY>scrollBar->value())
+        if(e->key() == Qt::Key_Up )
 					cursorY--;
-				if(e->key() == Qt::Key_Down && cursorY<scrollBar->value()+lineNum)
+        if(e->key() == Qt::Key_Down && cursorY<lineNum)
 					cursorY++;
-				repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
+        output2D->setCursor(cursorY,cursorX);
+        output2D->repaint();
 			}
 			else if(inputMode==IMGETLINE)
 			{
@@ -466,7 +325,7 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 					bufferCursor++;
 					if(cursorX<charNum-1)
 						cursorX++;
-					else if(cursorY<lines.GetLen()-1)
+          else if(cursorY<output2D->getColumns()-1)
 					{
 						cursorX=0;
 						cursorY++;
@@ -477,13 +336,14 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 					bufferCursor--;
 					if(cursorX>0)
 						cursorX--;
-					else if(cursorY>lines.GetLen()-lineNum)
+          else if(cursorY>output2D->getRows()-lineNum)
 					{
 						cursorY--;
 						cursorX=charNum-1;
 					}
 				}
-				repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
+        output2D->setCursor(cursorY,cursorX);
+        output2D->repaint();
 			}
 			break;
 		default:
@@ -506,7 +366,7 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 			else
 			{
 				if(inputMode==IMDEFAULT)
-					insert(e->text());
+          output2D->insertText(e->text());
 				else if(inputMode==IMSCRIPTING || inputMode==IMGETLINE)
 				{
 					
@@ -531,12 +391,13 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 					bufferCursor++;
 					if(inputMode==IMGETLINE)
 					{
-						insert(e->text());
+            output2D->insertText(e->text());
 						int cx=cursorX,cy=cursorY;
-						insert(&inputBuffer[bufferCursor],false);
+            output2D->insertText(&inputBuffer[bufferCursor]);
 						cursorX=cx;
 						cursorY=cy;
-						repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
+            output2D->setCursor(cursorY,cursorX);
+            output2D->repaint();
 					}
 				}
 				else if(inputMode==IMGETKEY)
@@ -561,8 +422,8 @@ void ScriptIOWidget::keyPressEvent(QKeyEvent*e)
 
 void ScriptIOWidget::wheelEvent(QWheelEvent*ev)
 {
-	if(inputMode==IMDEFAULT)
-		scrollBar->setValue(scrollBar->value()-ev->delta()/40);
+//	if(inputMode==IMDEFAULT)
+//		scrollBar->setValue(scrollBar->value()-ev->delta()/40);
 }
 
 
@@ -585,7 +446,7 @@ void ScriptIOWidget::customEvent(QEvent*e)
 					if(!t->isActive())
 						t->start(30,true);
 				}
-				insert(text,false);
+        output2D->insertText(text,false);
 				free(ev->data());
 				break;
 			}
@@ -710,6 +571,7 @@ void ScriptIOWidget::customEvent(QEvent*e)
 			}
 			case SIGDRAW:
 			{
+        QPixmap*buffer=output2D->getBufferPointer();
 				if(displayType==SCRIPT2D)
 				{
 					char*data=(char*)ev->data();
@@ -778,7 +640,7 @@ void ScriptIOWidget::customEvent(QEvent*e)
 			case SIGCLEARTEXT:
 			{
 				
-				clearAll();
+        output2D->clearText();
 
 				if(!t->isActive())
 					t->start(30,true);
@@ -844,11 +706,12 @@ void ScriptIOWidget::customEvent(QEvent*e)
 			case SIGSETTEXTPOS:
 			{
 				int*pos=(int*)ev->data();
-				if(pos[1] >=0 && pos[1]<lineNum&&
-				  pos[0]>=0 && pos[0]<charNum)
+        if(pos[1] >=0 && pos[1]<output2D->getRows()&&
+          pos[0]>=0 && pos[0]<output2D->getColumns())
 				{
 					cursorX=pos[0];
-					cursorY=pos[1]+lines.GetLen()-lineNum;
+          cursorY=pos[1];
+          output2D->setCursor(cursorY,cursorX);
 				}
 				free(ev->data());
 				break;
@@ -962,13 +825,13 @@ void ScriptIOWidget::customEvent(QEvent*e)
 				}
 //				MessageBox("Time: "+QString::number(secs)+"."+QString::number(usecs));
 				t->stop();
-				insert(QString(SCRIPTIO_STR4));
+        output2D->insertText(QString(SCRIPTIO_STR4));
 				scriptExec=false;
 				script->wait();
 				delete script;
 				script=NULL;
 				inputMode=IMDEFAULT;
-				scrollBar->show();
+//				scrollBar->show();
 				resizeEvent(NULL);
 				killButton->setEnabled(false);
 				if(pref.clearScriptMemory)
@@ -990,214 +853,38 @@ void ScriptIOWidget::customEvent(QEvent*e)
 			
 			int*index=(int*)ev->data();
 			if(*index >=semicolonLines.GetLen())
-				insert("\nEnd of File            ");
+        output2D->insertText("\nEnd of File            ");
 			else 
 			{
 				if((*index>0) && semicolonLines[*index-1]< semicolonLines[*index]-1)
-					insert("\nBefore or in line ");
-				else insert("\nIn line           ");
+          output2D->insertText("\nBefore or in line ");
+        else output2D->insertText("\nIn line           ");
 	
 				QString lineNum=QString::number(semicolonLines[*index]);
 				while(lineNum.length()<5)lineNum.insert(0," ");
 	
-				insert(lineNum);
+        output2D->insertText(lineNum);
 			}
 			char*text=(char*)ev->data()+4;
-			insert(": ");
-			insert(text);
+      output2D->insertText(": ");
+      output2D->insertText(text);
 			
 			free(ev->data());
 		}
 	}
 }
 
-void ScriptIOWidget::mousePressEvent(QMouseEvent*e)
-{	
-	if(e->button()==Qt::RightButton)
-	{
-		if(inputMode!=IMSCRIPTING)
-		{
-			QPoint menuPos=e->pos();
-			menuPos=mapToGlobal(menuPos);
-			contextMenu->popup(menuPos,EDITCOPY);
-		}
-		return;
-	}
-	int scrollbarPos=scrollBar->value();
-	selectEndLine=selectStartLine=(e->y()-ioFieldY)/charHeight+scrollbarPos;
-	selectEndRow=selectStartRow=(e->x()-ioFieldX)/charWidth;
-	
-	if(inputMode!=IMDEFAULT)
-		return;
-	int mouseX=e->x()-ioFieldX,mouseY=e->y()-ioFieldY;
-
-	if(mouseX>=0 && mouseX <=ioFieldWidth && mouseY>=0 && mouseY<=ioFieldHeight)
-	{
-		cursorX=(mouseX+charWidth/2)/charWidth;
-		cursorY=(mouseY)/charHeight+scrollBar->value();
-		if(cursorX>charNum)
-			cursorX=charNum;
-		if(cursorY>scrollBar->value()+lineNum)
-			cursorY=scrollBar->value()+lineNum;
-	}
-	
-
-
-	repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
-}
-void ScriptIOWidget::mouseReleaseEvent(QMouseEvent*me)
-{
-	int scrollbarPos=scrollBar->value();
-//	p.drawText(0,charHeight*(c+1-scrollbarPos),lines[c]);
-	selectEndLine=(me->y()-ioFieldY)/charHeight+scrollbarPos;
-	selectEndRow=(me->x()-ioFieldX)/charWidth;
-	repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
-}
-void ScriptIOWidget::mouseMoveEvent(QMouseEvent*me)
-{
-	int scrollbarPos=scrollBar->value();
-	int oldEndLine=selectEndLine,oldEndRow=selectEndRow;
-	selectEndLine=(me->y()-ioFieldY)/charHeight+scrollbarPos;
-	selectEndRow=(me->x()-ioFieldX)/charWidth;
-	if(selectEndRow<0)
-		selectEndRow=0;
-	if(selectEndLine<0)
-		selectEndLine=0;
-	if(selectEndLine<scrollbarPos)
-		scrollBar->setValue(selectEndLine);
-	else if(selectEndLine>scrollbarPos+lineNum)
-		scrollBar->setValue(selectEndLine-lineNum);
-//	perror(QString::number(selectStartLine)+" "+QString::number(selectStartRow)+" "+QString::number(selectEndLine)+" "+QString::number(selectEndRow));
-	if(oldEndRow!=selectEndRow || oldEndLine!=selectEndLine)
-		repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
-}
-
-
-void ScriptIOWidget::insert(QString text,bool redraw)
-{
-	int len=text.length();
-	int pos1=0,pos2=0,tabpos=0;
-	while((pos2=text.find("\n",pos1)+1)>0)
-	{
-		if(charNum-cursorX<pos2-pos1-1)
-		{
-			pos2=pos1+charNum-cursorX;
-			lines[cursorY].replace(cursorX,pos2-pos1-1,text.mid(pos1,pos2-pos1-1));
-			pos1=pos2-1;
-		}
-		else {
-			lines[cursorY].replace(cursorX,pos2-pos1-1,text.mid(pos1,pos2-pos1-1));
-			pos1=pos2;
-		}
-		while((tabpos=lines[cursorY].find('\t'))!=-1)
-		{
-			lines[cursorY].remove(tabpos,1);
-			for(int c=0; c<(8-tabpos%8); c++)
-				lines[cursorY].insert(tabpos,' ');
-		}
-		if(cursorY >= lines.GetLen()-1)
-		{
-			lines.NewItem(QString());
-			lines[lines.GetLen()-1].fill(' ',charNum);
-			if(lines.GetLen() > BUFFER_LENGTH)
-				lines.DeleteItem(0);
-			else {
-				scrollBar->setMaxValue(lines.GetLen()-lineNum);
-				scrollBar->setValue(lines.GetLen()-lineNum);
-				cursorY++;
-			}
-		}
-		else cursorY++;
-		cursorX=0;
-	}
-
-	
-	if(charNum-cursorX<len-pos1)
-	{
-		while((pos2=pos1+charNum-cursorX)<len)
-		{
-			lines[cursorY].replace(cursorX,charNum-cursorX,text.mid(pos1,charNum-cursorX));
-			pos1=pos2;
-			while((tabpos=lines[cursorY].find('\t'))!=-1)
-			{
-				lines[cursorY].remove(tabpos,1);
-				for(int c=0; c<(8-tabpos%8); c++)
-					lines[cursorY].insert(tabpos,' ');
-			}
-			if(cursorY >= lines.GetLen()-1)
-			{
-				lines.NewItem(QString());
-				lines[lines.GetLen()-1].fill(' ',charNum);
-				if(lines.GetLen() > BUFFER_LENGTH)
-					lines.DeleteItem(0);
-				else {
-					scrollBar->setMaxValue(lines.GetLen()-lineNum);
-					scrollBar->setValue(lines.GetLen()-lineNum);
-					cursorY++;
-				}
-			}
-			else cursorY++;
-			cursorX=0;
-		}
-	//	pos1--;
-	}
-	
-	lines[cursorY].replace(cursorX,len-pos1,text.mid(pos1,len-pos1));
-	cursorX+=len-pos1;
-	while((tabpos=lines[cursorY].find('\t'))!=-1)
-	{
-		lines[cursorY].remove(tabpos,1);
-		for(int c=0; c<(8-tabpos%8); c++)
-			lines[cursorY].insert(tabpos,' ');
-		cursorX+=(8-tabpos%8)-1;
-	}
-	
-	if(redraw)
-		repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
-
-}
-
-
-void ScriptIOWidget::backKey()
-{
-	if(cursorX>0)
-	{
-		lines[cursorY].remove(cursorX-1,1);
-		cursorX--;
-		repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
-	}
-}
-
-void ScriptIOWidget::deleteKey()
-{
-		lines[cursorY].remove(cursorX,1);
-		repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
-}
-
-
-
-void ScriptIOWidget::clearAll()
-{
-	cursorX=0;
-	cursorY=lines.GetLen()-lineNum;
-	for(int c=0; c<lines.GetLen(); c++)
-	{
-		lines[c].fill(' ',charNum);
-	}
-	repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
-}
-
 
 void ScriptIOWidget::processText(QString text)
 {
 	if(text == "calculate")
-		insert("\n");
+    output2D->insertText("\n");
 	else if(text == "backkey")
-		backKey();
+    output2D->backKey();
 	else if(text == "clearall")
-		clearAll();
+    output2D->clearText();
 	else 
-		insert(text);
+    output2D->insertText(text);
 }   
 
 
@@ -1282,10 +969,10 @@ void ScriptIOWidget::runScript(QString*code)
 	if(modeRequest==SCRIPT3D)
 		glWindow->setPref(runningPref);
 	delete scriptObject;
-	insert(SCRIPTIO_STR8);
+  output2D->insertText(SCRIPTIO_STR8);
 	if(cleanString==NULL)
 	{
-		insert("\nPreprocessor Error\n");
+    output2D->insertText("\nPreprocessor Error\n");
 		return;
 	}
 	scriptObject=new Script(NULL,cleanString,&runningPref,vars,threadData);
@@ -1314,7 +1001,7 @@ void ScriptIOWidget::runSlot()
 	threadData->bcontinue=false;
 	
 
-	insert(QString(SCRIPTIO_STR6));
+  output2D->insertText(QString(SCRIPTIO_STR6));
 	if(inputBuffer!=NULL)
 		if(strlen(inputBuffer)>0)
 		{
@@ -1329,7 +1016,7 @@ void ScriptIOWidget::runSlot()
 	script=new ScriptThread(scriptObject,this);
 
 	killButton->setEnabled(true);
-	scrollBar->hide();
+//	scrollBar->hide();
 	if(modeRequest==SCRIPT3D)
 		setDisplayMode(SCRIPT3D);
 	else if(modeRequest==SCRIPT2D)
@@ -1439,11 +1126,11 @@ void ScriptIOWidget::loadSubScripts()
 				initDebugging(&qSubFileContent);
 				cleanSubFileContent=preprocessor(&qSubFileContent,&tmpPref,true);
 				qApp->processEvents();
-				insert(SCRIPTIO_STR9);
-				insert(threadData->subprogramPath[c]);
+        output2D->insertText(SCRIPTIO_STR9);
+        output2D->insertText(threadData->subprogramPath[c]);
 				if(cleanSubFileContent==NULL)
 				{
-					insert("\nPreprocessor Error\n");
+          output2D->insertText("\nPreprocessor Error\n");
 					subScript=NULL;
 				}
 				else 
@@ -1459,11 +1146,11 @@ void ScriptIOWidget::loadSubScripts()
 	qApp->processEvents();
 	if(!errorFlag)
 	{
-		insert(SCRIPTIO_STR10);
+    output2D->insertText(SCRIPTIO_STR10);
 		runButton->setEnabled(true);
 	}
 	else {
-		insert(SCRIPTIO_STR11);
+    output2D->insertText(SCRIPTIO_STR11);
 		runButton->setEnabled(false);
 	}
 }
@@ -1716,38 +1403,12 @@ void ScriptIOWidget::editSlot(int type)
 }
 
 
-void ScriptIOWidget::scrollbarSlot(int)
-{
-	paintEvent(NULL);
-	
-}
 
 
 void ScriptIOWidget::timerSlot()
 {
-	/*
-	if(qApp->hasPendingEvents())
-	{
-		redrawTime+=2000;
-		timerInterval=1;
-		t->changeInterval(timerInterval);
-		threadData->sleepTime+=2000;
-		threadData->usleep=true;
-//		QApplication::sendPostedEvents();
-		perror("waiting "+QString::number(threadData->sleepTime));
-	}
-	else {
-		redrawTime=20000;
-		if(timerInterval!=25)
-		{
-			timerInterval=25;
-			t->changeInterval(timerInterval);
-			threadData->sleepTime=1000;
-		}
-		threadData->usleep=true;
-	}
-	*/
-	repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
+
+  output2D->repaint();
 }
 
 
@@ -1759,38 +1420,9 @@ void ScriptIOWidget::contextMenuSlot(int item)
 		{
 			QClipboard*board=QApplication::clipboard();
 			QString copyText;
-			int startRow,startLine,endRow,endLine;
-			if(selectStartLine> selectEndLine || selectStartLine==selectEndLine && selectStartRow>selectEndRow)
-			{
-				startRow=selectEndRow;
-				startLine=selectEndLine;
-				endRow=selectStartRow;
-				endLine=selectStartLine;
-			}
-			else{
-				startRow=selectStartRow;
-				startLine=selectStartLine;
-				endRow=selectEndRow;
-				endLine=selectEndLine;
-			}
-			if(startLine==endLine)
-				copyText=lines[startLine].mid(startRow,endRow-startRow);
-			else {
-				for(int c = startLine; c<=endLine; c++)
-				{
-					if(c==startLine)
-						copyText=lines[c].right(lines[c].length()-startRow);
-					else if(c==endLine)
-					{
-						copyText+="\n";
-						copyText+=lines[c].left(endRow);
-					}
-					else{
-						copyText+="\n";
-						copyText+=lines[c];
-					}
-				}
-			}
+
+      copyText=output2D->getSelectedText();
+
 			if(copyText.length()>0)
 				board->setText(copyText,QClipboard::Clipboard);
 			break;
@@ -1798,7 +1430,7 @@ void ScriptIOWidget::contextMenuSlot(int item)
 		case EDITPASTE:
 		{
 			QClipboard*board=QApplication::clipboard();
-			insert(board->text(QClipboard::Clipboard));
+      output2D->insertText(board->text(QClipboard::Clipboard));
 			int bufLen=strlen(inputBuffer);
 			if(inputMode==IMGETLINE)
 			{
@@ -1813,26 +1445,22 @@ void ScriptIOWidget::contextMenuSlot(int item)
 				}
 				else {
 					int cx=cursorX,cy=cursorY;
-					insert(&inputBuffer[bufferCursor],false);
+          output2D->insertText(&inputBuffer[bufferCursor]);
 					cursorX=cx;
 					cursorY=cy;
 					memmove(&inputBuffer[bufferCursor+strlen(clipText)],&inputBuffer[bufferCursor],strlen(inputBuffer)-bufferCursor+1);
 					memcpy(&inputBuffer[bufferCursor],clipText,strlen(clipText));
 					bufferCursor+=strlen(clipText);
-					repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
+          repaint();
 				}
 			}
 			break;
 		}
 		case EDITCUT:
-			clearAll();
+      output2D->clearText();
 			break;
 		case EDITSELECTALL:
-			selectStartRow=0;
-			selectStartLine=0;
-			selectEndLine=lines.GetLen()-1;
-			selectEndRow=lines[selectEndLine].length()-1;
-			repaint(ioFieldX,ioFieldY,ioFieldWidth,ioFieldHeight,false);
+      output2D->setSelection(0,0,output2D->getRows()-1,output2D->getColumns()-1);
 			break;
 	}
 }
@@ -1842,6 +1470,12 @@ void ScriptIOWidget::dockWindowSlot()
 	dockArea->moveDockWindow(toolBar);
 }
 
+void ScriptIOWidget::scrollPointSlot(int x, int y)
+{
+  scrollArea->ensureVisible(x,y);
+
+}
+
 void ScriptIOWidget::setDisplayMode(int mode)
 {
 	displayType=mode;
@@ -1849,6 +1483,9 @@ void ScriptIOWidget::setDisplayMode(int mode)
 	if(mode==SCRIPT3D)
 	{
 		glWindow->show();
+    output2D->hide();
+    scrollArea->takeWidget();
+    scrollArea->setWidget(glWindow);
 		glWindow->scrReset();
 		glWindow->resetRotation();
 		resizeEvent(NULL);
@@ -1856,21 +1493,26 @@ void ScriptIOWidget::setDisplayMode(int mode)
 		
 	}
 	else {
+    output2D->show();
+    glWindow->hide();
+    scrollArea->takeWidget();
+    scrollArea->setWidget(output2D);
 		if(mode==SCRIPT2D)
 		{
+      QPixmap*buffer=output2D->getBufferPointer();
 			drawPen->setColor(QColor(0,0,0));
 			buffer->fill();
+      output2D->setTextMode(false);
 		}
+    else output2D->setTextMode(true);
 		glWindow->hide();
 		repaint(true);
 	}
-	
 }
 
 
 GLuint ScriptGL::draw3dAxes()
 {
-	
 	double xSize=pref.xmax-pref.xmin,ySize=pref.ymax-pref.ymin,zSize=pref.zmax-pref.zmin;
 	int xSteps=(int)(xSize/pref.rasterSizeX);
 	if(xSteps>200)
@@ -2130,31 +1772,6 @@ void ScriptGL::paintGL()
 	for(int c=0; c<drawLists.GetLen(); c++)
 		glCallList(drawLists[c]);
 	
-}
-
-
-DrawWidget::DrawWidget(QWidget*parent)
-{
-	buffer=new QPixmap(width(),height());
-}
-
-void DrawWidget::resizeEvent(QResizeEvent*)
-{
-
-	(*buffer)=QPixmap(width(),height());
-}
-
-void DrawWidget::paintEvent(QPaintEvent*)
-{
-	QPainter p;
-	p.begin(this);
-
-	p.drawPixmap(0,0,*buffer);
-}
-
-QPixmap* DrawWidget::getBufferPointer()
-{
-	return buffer;
 }
 
 

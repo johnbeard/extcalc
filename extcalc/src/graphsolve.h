@@ -33,13 +33,10 @@ functions.
 #include "global.h"
 
 
-
-
 #define INTEGRAL3DSTEPS	(250<<pref.solvePrec)
 #define TEXTURESIZE	(256<<pref.solvePrec)
 #define ANALYSESTEPS (1000<<pref.solvePrec)
 #define EXACTANALYSESTEPS (100<<pref.solvePrec)
-
 
 
 class GraphSolveWidget :public QWidget
@@ -166,7 +163,6 @@ public:
 		resetDialog();
 	}
 	
-
 	void resetDialog();
 //	void updateFunctions(QString*,int);
 	void setPref(Preferences newPref);
@@ -217,20 +213,6 @@ signals:
 	void drawSignal(int,QColor,int);
 	
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif
 

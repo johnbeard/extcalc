@@ -166,47 +166,6 @@ void GraphWidget::graphProcessingFinishedSlot()
 }
 
 
-void GraphWidget::maximizeSlot()
-{
-/*	if(maximized)
-	{
-		maximized=false;
-		modeBox->show();
-		maximizeButton->setIconSet(*maximizeIcon);
-		Q3ValueList<int> s = horzSplit->sizes();
-		s[1]=(s[0]+s[1])/2;
-		s[0]=s[1];
-		horzSplit->setSizes(s);
-		if(solveMode)
-		{
-			solveMode=false;
-			modeSlot(0);
-		}
-		else
-		{
-			standardButtons->show();
-			extButtons->show();
-		}
-		resizeEvent(NULL);
-	}
-	else
-	{
-		maximized=true;
-
-		standardButtons->hide();
-		extButtons->hide();
-		Q3ValueList<int> s = horzSplit->sizes();
-		s[1]=s[0]+s[1];
-		s[0]=0;
-		horzSplit->setSizes(s);
-		modeBox->hide();
-		solveType->hide();
-		functionType->hide();
-		solveWidget->hide();
-		maximizeButton->setIconSet(*minimizeIcon);
-		resizeEvent(NULL);
-	 }*/
-}
 
 void GraphWidget::modeSlot(int)
 {
@@ -214,47 +173,23 @@ void GraphWidget::modeSlot(int)
 	{
 		case 0:
 			solveMode=false;
-		//	calcButtons->show();
-		//	extButtons->show();
-			setDockArea(1);
-			solveType->hide();
-			functionType->hide();
-		//	solveWidget->hide();
-		//	replaceSubWidget(calcButtons,0);
-		//	extButtons->show();
-			replaceSubWidget(calcButtons,0);
-			replaceSubWidget(extButtons,1);
+      screenshotDialog->hide();
 			break;
 	
 		case 1:
-			solveMode=true;
-		//	extButtons->hide();
-		//	extButtons->hide();
-			solveType->show();
-			functionType->show();
-		//	solveWidget->show();
-			setDockArea(0);
-			replaceSubWidget(solveWidget,0);
-			removeSubWidget(1);
-			solveType->setCurrentItem(0);
-			emit solveTypeSignal(0);
+      solveMode=true;
+      screenshotDialog->show();
 			break;
 			
 		case 2:
 			solveMode=true;
-		//	extButtons->hide();
-			
 			solveType->hide();
 			functionType->hide();
-		//	solveWidget->show();
 			setDockArea(0);
-		//	extButtons->hide();
-			replaceSubWidget(solveWidget,0);
 			removeSubWidget(1);
 			emit solveTypeSignal(9);
 			break;
 	}
-	resizeEvent(NULL);
 
 }
 
@@ -420,6 +355,7 @@ void GraphWidget::functionTypeSlot(int fType)
 	solveTypeSlot(solveType->currentItem());
 }
 
+
 void GraphWidget::inputTextFinished()
 {
 	if(functionChanged)
@@ -429,6 +365,7 @@ void GraphWidget::inputTextFinished()
 	}
 	inputLine->clearFocus();
 }
+
 
 void GraphWidget::inputTextChanged(const QString&)
 {
@@ -466,6 +403,7 @@ void GraphWidget::editSlot(int type)
 	}
 }
 
+
 void GraphWidget::catalogSlot()
 {
 	catalog->exec(toolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));
@@ -474,6 +412,12 @@ void GraphWidget::catalogSlot()
 void GraphWidget::dockWindowSlot()
 {
 	dockArea->moveDockWindow(toolBar);
+
+  if(solveMode)
+  {
+    modeBox->setCurrentIndex(0);
+    modeSlot(0);
+  }
 }
 
 

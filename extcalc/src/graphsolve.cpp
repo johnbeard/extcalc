@@ -1721,6 +1721,7 @@ void GraphSolveWidget::colorButtonSlot()
 	emit drawSignal(drawState,paintColor,spinBox3->value());
 }
 
+
 void GraphSolveWidget::penValueSlot(int value)
 {
 	if(drawState==DRAWTEXT)
@@ -1730,21 +1731,28 @@ void GraphSolveWidget::penValueSlot(int value)
 	else emit drawSignal(drawState,paintColor,value);
 }
 
+
 void GraphSolveWidget::forwardButtonSlot()
 {
 //	drawState=DRAWFORWARD;
 	emit drawSignal(DRAWFORWARD,paintColor,spinBox3->value());
 }
+
+
 void GraphSolveWidget::backButtonSlot()
 {
 //	drawState=DRAWBACK;
 	emit drawSignal(DRAWBACK,paintColor,spinBox3->value());
 }
+
+
 void GraphSolveWidget::clearButtonSlot()
 {
 //	drawState=DRAWCLEAR;
 	emit drawSignal(DRAWCLEAR,paintColor,spinBox3->value());
 }
+
+
 void GraphSolveWidget::freeButtonSlot()
 {
 	drawState=DRAWFREE;
@@ -1757,6 +1765,8 @@ void GraphSolveWidget::freeButtonSlot()
 	textButton->setOn(false);
 	emit drawSignal(DRAWFREE,paintColor,spinBox3->value());
 }
+
+
 void GraphSolveWidget::lineButtonSlot()
 {
 	drawState=DRAWLINE;
@@ -1769,6 +1779,8 @@ void GraphSolveWidget::lineButtonSlot()
 	textButton->setOn(false);
 	emit drawSignal(DRAWLINE,paintColor,spinBox3->value());
 }
+
+
 void GraphSolveWidget::rectButtonSlot()
 {
 	drawState=DRAWRECT;
@@ -1781,6 +1793,8 @@ void GraphSolveWidget::rectButtonSlot()
 	textButton->setOn(false);
 	emit drawSignal(DRAWRECT,paintColor,spinBox3->value());
 }
+
+
 void GraphSolveWidget::circleButtonSlot()
 {
 	drawState=DRAWCIRCLE;

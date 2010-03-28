@@ -50,7 +50,7 @@ using namespace std;
 #define UIFILE ".extcalc/ui.conf"
 #define GRAPHSDIR ".extcalc/graphs/"
 
-#define VERSIONSTRING "Version: 0.9.3\n2010-03-10\n\n"+QString(DEVVERSION)
+#define VERSIONSTRING "Version: 0.9.3\n2010-03-28\n\n"+QString(DEVVERSION)
 
 
 #define AUTHORSTRING "Homepage:\nhttp://extcalc-linux.sourceforge.net\n\n"+QString(GLOBALH_STR1)

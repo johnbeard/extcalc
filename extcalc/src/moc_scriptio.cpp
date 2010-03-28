@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'scriptio.h'
 **
-** Created: Wed Mar 10 16:19:14 2010
+** Created: Sun Mar 28 18:04:06 2010
 **      by: The Qt Meta Object Compiler version 61 (Qt 4.5.3)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -84,9 +84,9 @@ static const uint qt_meta_data_ScriptIOWidget[] = {
      166,   15,   15,   15, 0x0a,
      178,   15,   15,   15, 0x0a,
      188,   15,   15,   15, 0x0a,
-     207,   15,   15,   15, 0x0a,
-     222,   15,   15,   15, 0x0a,
-     239,   15,   15,   15, 0x0a,
+     203,   15,   15,   15, 0x0a,
+     220,   15,   15,   15, 0x0a,
+     243,  241,   15,   15, 0x0a,
 
        0        // eod
 };
@@ -97,8 +97,8 @@ static const char qt_meta_stringdata_ScriptIOWidget[] = {
     "maximizeButtonSlot()\0killSlot()\0text\0"
     "processText(QString)\0code\0runScript(QString*)\0"
     "editSlot(int)\0timerSlot()\0runSlot()\0"
-    "scrollbarSlot(int)\0clearMemSlot()\0"
-    "dockWindowSlot()\0contextMenuSlot(int)\0"
+    "clearMemSlot()\0dockWindowSlot()\0"
+    "contextMenuSlot(int)\0,\0scrollPointSlot(int,int)\0"
 };
 
 const QMetaObject ScriptIOWidget::staticMetaObject = {
@@ -135,10 +135,10 @@ int ScriptIOWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         case 6: editSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 7: timerSlot(); break;
         case 8: runSlot(); break;
-        case 9: scrollbarSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 10: clearMemSlot(); break;
-        case 11: dockWindowSlot(); break;
-        case 12: contextMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 9: clearMemSlot(); break;
+        case 10: dockWindowSlot(); break;
+        case 11: contextMenuSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 12: scrollPointSlot((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         default: ;
         }
         _id -= 13;

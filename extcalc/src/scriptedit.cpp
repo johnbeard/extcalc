@@ -147,8 +147,7 @@ ScriptWidget::ScriptWidget(QWidget*parent,Preferences p,Variable*va) :TabWidget(
 
 
 
-	stdFont=new QFont("Courier");
-	stdFont->setPixelSize(16);
+  stdFont=new QFont("monospace",10);
 	stdFont->setFixedPitch(true);
 	QFontMetrics fm(*stdFont);
 	fontWidth=fm.maxWidth();

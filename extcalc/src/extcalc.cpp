@@ -576,18 +576,21 @@ MainObject::MainObject() :QMainWindow()
   setCentralWidget(clientArea);
 
 
+  screenshotDialog=new ScreenshotDialog(this);
+  this->addDockWidget(Qt::BottomDockWidgetArea,screenshotDialog,Qt::Horizontal);
+  screenshotDialog->setFloating(true);
+  screenshotDialog->hide();
+
   calculator=new CalcWidget(clientArea,pref,vars,threadData);
   calculator2=new CalcWidget(clientArea,pref,vars,threadData);
-  graph = new GraphWidget(clientArea,pref,vars,threadData);
+  graph = new GraphWidget(clientArea,pref,vars,threadData,screenshotDialog);
   table=new TableWidget(clientArea,pref,vars,threadData);
   scripting=new ScriptWidget(clientArea,pref,vars);
   scriptIO=new ScriptIOWidget(clientArea,pref,vars,graph->getShareContext());
   matrix=new MatrixWidget(clientArea,pref,vars,threadData);
   statistics=new StatisticsWidget(clientArea,pref,vars,threadData);
-    
 
-  
-  
+
   clientArea->addTab(calculator,tr("Calculator"));
   clientArea->addTab(calculator2,tr("Another Calculator"));
   clientArea->addTab(graph,tr("Graphics"));
@@ -596,16 +599,9 @@ MainObject::MainObject() :QMainWindow()
   clientArea->addTab(scriptIO,tr("Script Console"));
   clientArea->addTab(matrix,tr("Matrix/Vector"));
   clientArea->addTab(statistics,tr("Statistics"));
+
+
     
-/*  calculator->setWindowTitle(tr("Calculator"));
-  calculator2->setWindowTitle(tr("Another Calculator"));
-  graph->setWindowTitle(tr("Graphics"));
-  table->setWindowTitle(tr("Tables"));
-  scripting->setWindowTitle(tr("Script Editor"));
-  scriptIO->setWindowTitle(tr("Script Console"));
-  matrix->setWindowTitle(tr("Matrix/Vector"));
-  statistics->setWindowTitle(tr("Statistics"));
-*/
 
   QObject::connect(helpMenu,SIGNAL(activated(int)),this,SLOT(helpMenuSlot(int)));
   QObject::connect(prefMenu,SIGNAL(activated(int)),this,SLOT(prefMenuSlot(int)));
@@ -625,8 +621,6 @@ MainObject::MainObject() :QMainWindow()
   QObject::connect(this,SIGNAL(editSignal(int)),table,SLOT(editSlot(int)));
   QObject::connect(this,SIGNAL(editSignal(int)),scripting,SLOT(editSlot(int)));
   QObject::connect(this,SIGNAL(editSignal(int)),scriptIO,SLOT(editSlot(int)));
-//  QObject::connect(this,SIGNAL(editSignal(int)),matrix,SLOT(editSlot(int)));
-//  QObject::connect(this,SIGNAL(editSignal(int)),statistics,SLOT(editSlot(int)));
   QObject::connect(scripting,SIGNAL(runScript(QString*)),this,SLOT(runScriptSlot(QString*)));
   QObject::connect(scripting,SIGNAL(runScript(QString*)),this,SIGNAL(runScript(QString*)));
   QObject::connect(scripting,SIGNAL(controlScriptMenu(int)),this,SLOT(scriptMenuSlot(int)));
@@ -2124,7 +2118,7 @@ void MainObject::initConstants()
 	pref.constList[3].description=new QString(tr("vacuum light speed c0 [m/s]"));
 	pref.constList[3].value=new QString("299792458");
 		
-	pref.constList[4].identifier=new QString("c_g");
+	pref.constList[4].identifier=new QString("c_g0");
 	pref.constList[4].description=new QString(tr("standard acceleration of gravity g [m/s^2]"));
 	pref.constList[4].value=new QString("9.80665");
 			
@@ -2184,7 +2178,7 @@ void MainObject::initConstants()
 	pref.constList[18].description=new QString(tr("Avogadro constant [1/mol]"));
 	pref.constList[18].value=new QString("6.02214179 e23");	
 	
-	pref.constList[19].identifier=new QString("c_k");
+	pref.constList[19].identifier=new QString("c_k0");
 	pref.constList[19].description=new QString(tr("Boltzmann constant k [J/K]"));
 	pref.constList[19].value=new QString("1.3806504e-23");	
 	
@@ -2857,36 +2851,51 @@ void MainObject::viewMenuSlot(int item)
 	{
 		case VIEWCALC1:
 			pref.showWindows[0]=!pref.showWindows[0];
-
-			getPref(pref);
+      getPref(pref);
+      if(pref.showWindows[0])
+        clientArea->setCurrentWidget(calculator);
 			break;
 		case VIEWCALC2:
 			pref.showWindows[1]=!pref.showWindows[1];
-			getPref(pref);
+      getPref(pref);
+      if(pref.showWindows[1])
+        clientArea->setCurrentWidget(calculator2);
 			break;
 		case VIEWGRAPH:
 			pref.showWindows[2]=!pref.showWindows[2];
-			getPref(pref);
+      getPref(pref);
+      if(pref.showWindows[2])
+        clientArea->setCurrentWidget(graph);
 			break;
 		case VIEWTABLE:
 			pref.showWindows[3]=!pref.showWindows[3];
-			getPref(pref);
+      getPref(pref);
+      if(pref.showWindows[3])
+        clientArea->setCurrentWidget(table);
 			break;
 		case VIEWMATRIX:
 			pref.showWindows[4]=!pref.showWindows[4];
-			getPref(pref);
+      getPref(pref);
+      if(pref.showWindows[4])
+        clientArea->setCurrentWidget(matrix);
 			break;
 		case VIEWSTATISTICS:
 			pref.showWindows[5]=!pref.showWindows[5];
-			getPref(pref);
+      getPref(pref);
+      if(pref.showWindows[5])
+        clientArea->setCurrentWidget(statistics);
 			break;
 		case VIEWSCRIPTING:
 			pref.showWindows[6]=!pref.showWindows[6];
-			getPref(pref);
+      getPref(pref);
+      if(pref.showWindows[6])
+        clientArea->setCurrentWidget(scripting);
 			break;
 		case VIEWSCRIPTIO:
 			pref.showWindows[7]=!pref.showWindows[7];
-			getPref(pref);
+      getPref(pref);
+      if(pref.showWindows[7])
+        clientArea->setCurrentWidget(scriptIO);
 			break;
 	}
 }
@@ -2900,50 +2909,49 @@ void MainObject::runScriptSlot(QString*)
 
 void MainObject::changeTabSlot(int num)
 {
-/*	switch(num)
+  switch(num)
 	{
 		case 0:
 			if(!pref.showWindows[0])
 				viewMenuSlot(VIEWCALC1);
-			else showPage(calculator);
+      clientArea->setCurrentWidget(calculator);
 			break;
 		case 1:
 			if(!pref.showWindows[1])
 				viewMenuSlot(VIEWCALC2);
-			else showPage(calculator2);
+      clientArea->setCurrentWidget(calculator2);
 			break;
 		case 2:
 			if(!pref.showWindows[2])
 				viewMenuSlot(VIEWGRAPH);
-			else showPage(graph);
+      clientArea->setCurrentWidget(graph);
 			break;
 		case 3:
 			if(!pref.showWindows[3])
 				viewMenuSlot(VIEWTABLE);
-			else showPage(table);
+      clientArea->setCurrentWidget(table);
 			break;
 		case 4:
 			if(!pref.showWindows[4])
 				viewMenuSlot(VIEWMATRIX);
-			else showPage(matrix);
+      clientArea->setCurrentWidget(matrix);
 			break;
 		case 5:
 			if(!pref.showWindows[5])
 				viewMenuSlot(VIEWSTATISTICS);
-			else showPage(statistics);
+      clientArea->setCurrentWidget(statistics);
 			break;
 		case 6:
 			if(!pref.showWindows[6])
 				viewMenuSlot(VIEWSCRIPTING);
-			else showPage(scripting);
+      clientArea->setCurrentWidget(scripting);
 			break;
 		case 7:
 			if(!pref.showWindows[7])
 				viewMenuSlot(VIEWSCRIPTIO);
-			else showPage(scriptIO);
+      clientArea->setCurrentWidget(scriptIO);
 			break;
 	}
-  */
 }
 
 void MainObject::getPref(Preferences newPref)

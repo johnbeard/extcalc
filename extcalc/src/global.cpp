@@ -1877,7 +1877,7 @@ int Calculate::split(char* line, int start, int end)
 			return 0;
 		}
 	}
-	else if((pos=bracketFind(line,"%")) != -1)
+  else if((pos=bracketFind(line,"%",start,end)) != -1)
 	{
 		operation=MODULO;
 		vertObj=new Calculate(this,line,start,pos,pref,vars);
@@ -2312,7 +2312,7 @@ int Script::parse(char* line,int start,int end)
 
         QString outLine(line);
         outLine=outLine.mid(start,end-start);
-   //     qDebug(outLine);
+//        qDebug(outLine);
 	
 	int pos1;
 //	perror(line);

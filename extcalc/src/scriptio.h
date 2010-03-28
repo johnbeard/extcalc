@@ -25,7 +25,7 @@ The ScriptGL class provides the 3D-graphics window for scripts with GL commands.
 #include <qthread.h>
 #include <qevent.h>
 #include <qmutex.h>
-#include <qscrollbar.h>
+#include <QScrollArea>
 #include <qtimer.h>
 #include <q3toolbar.h>
 #include <q3dockarea.h>
@@ -39,6 +39,7 @@ The ScriptGL class provides the 3D-graphics window for scripts with GL commands.
 #include <QResizeEvent>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QStringList>
 #include <QWheelEvent>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -47,6 +48,7 @@ The ScriptGL class provides the 3D-graphics window for scripts with GL commands.
 #include <qgl.h>
 #include "list.h"
 #include "tabwidget.h"
+#include "scriptdisplay.h"
 
 #define IMDEFAULT		1
 #define IMSCRIPTING		2
@@ -319,42 +321,45 @@ class ScriptGL :public QGLWidget
 };
 
 
-class DrawWidget :public QWidget
-{
-	QPixmap*buffer;
 
-	public:
-		DrawWidget(QWidget*parent);
-
-		QPixmap*getBufferPointer();
-
-	protected:
-		virtual void paintEvent(QPaintEvent*);
-		virtual void resizeEvent(QResizeEvent*);
-};
-
-
+/**
+ * @class ScriptIOWidget
+ * @brief This class controls the execution of script programs and provides an interface to the output windows
+ *
+ * To execute a script, the script source code is handed to this class which runs the script parser and does
+ * the initialization. This is done by calling the runScript() method. The script is executed by pressing
+ * the run butten which is connected to The runSlot() slot.
+ * An event-based interface for graphics output and text input and output as well as file input and output
+ * is also provided by this class via the customEvent() event handler method.
+ *
+ */
 class ScriptIOWidget :public TabWidget
 {
 //	Variable *vars;
-	
-//	StandardButtons*calcButtons;
-//	ExtButtons*extButtons;
+
+  /// GL outputrendering widget
 	ScriptGL*glWindow;
-	QWidget *outputWidget;
+  /// 2D-Graphics and text input/output widget
+  ScriptDisplay *output2D;
+  /// Copy of the preferences for a running script. This is necessary to provied fixed settings for a running script code.
 	Preferences runningPref;
-	QPushButton*maximizeButton,*killButton,*runButton;
+  /// PushButton for maximizeing and minimizing the script display widget
+  QPushButton*maximizeButton;
+  /// Kill button to stop a running script
+  QPushButton*killButton;
+  /// Start button to execute script
+  QPushButton*runButton;
+  /// Context menu for text area
 	Q3PopupMenu*contextMenu;
 	
-//	bool maximized;
-	int ioFieldWidth,ioFieldHeight,ioFieldX,ioFieldY;
-	QPixmap*buffer;
+  ///
+  int ioFieldWidth;
+  int ioFieldHeight;
 	QFont*drawFont;
 	QPen*drawPen;
 	int charWidth,charHeight;
 	int lineNum,charNum;
 	
-	List <QString> lines;
 	int cursorX,cursorY;
 	
 	int inputMode;
@@ -366,7 +371,6 @@ class ScriptIOWidget :public TabWidget
 	bool errorFlag;
 
 	Q3ToolBar*toolBar;
-//	Q3DockArea*dockArea;
 
 	bool scriptExec;
 	ScriptThread*script;
@@ -374,13 +378,13 @@ class ScriptIOWidget :public TabWidget
 //	ThreadSync*threadData;
 	QMutex*mutex;
 
-	QScrollBar * scrollBar;
+  QScrollArea * scrollArea;
 	QPixmap *maximizeIcon,*minimizeIcon,*runIcon,*killIcon;
 	
 	QTimer*t;
 	int timerInterval,redrawTime;
 	struct timeval drawTime,currentTime,startTime;
-	int selectStartLine,selectStartRow,selectEndLine,selectEndRow;
+  int selectStartColumn,selectStartRow,selectEndColumn,selectEndRow;
 	int displayType;
 	int modeRequest;
 //	int menuBottom;
@@ -403,10 +407,6 @@ class ScriptIOWidget :public TabWidget
 			extButtons->setPref(pref);
 		}
 
-		void insert(QString text,bool redraw=true);
-		void backKey();
-		void deleteKey();
-		void clearAll();
 		void searchScripts(QString*code);
 		void loadSubScripts();
 		void initDebugging(QString *code);
@@ -420,13 +420,9 @@ class ScriptIOWidget :public TabWidget
 		virtual void paintEvent(QPaintEvent*);
 		virtual void keyPressEvent(QKeyEvent*);
 		virtual void customEvent(QEvent*);
-		virtual void mousePressEvent(QMouseEvent*);
-		virtual void mouseReleaseEvent(QMouseEvent*);
-		virtual void mouseMoveEvent(QMouseEvent*);
 		virtual void wheelEvent(QWheelEvent*);
 
 	public slots:
-
 		void getPref(Preferences newPref);
 		void maximizeButtonSlot();
 		void killSlot();
@@ -435,10 +431,11 @@ class ScriptIOWidget :public TabWidget
 		void editSlot(int);
 		void timerSlot();
 		void runSlot();
-		void scrollbarSlot(int);
+//		void scrollbarSlot(int);
 		void clearMemSlot();
 		void dockWindowSlot();
 		void contextMenuSlot(int);
+    void scrollPointSlot(int, int);
 
 	signals:
 		void prefChange(Preferences);

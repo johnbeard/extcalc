@@ -51,9 +51,9 @@ Class of the graphics tab window
 #include "functiontable.h"
 #include "graphout.h"
 #include "buttons.h"
-#include "graphsolve.h"
 #include "catalog.h"
 #include "tabwidget.h"
+#include "screenshotdialog.h"
 
 
 class GraphArea :public QWidget
@@ -83,31 +83,22 @@ class GraphArea :public QWidget
 class GraphWidget :public TabWidget
 {
 	GraphOutput*graph;
-//	Preferences pref;
-//	ExtButtons *extButtons;
-//	StandardButtons *standardButtons;
 	FunctionTable* functionTable;
 	GraphArea*graphArea;
 
 	QLineEdit *inputLine;
 
-	GraphSolveWidget *solveWidget;
-	
+//	GraphSolveWidget *solveWidget;
+  ScreenshotDialog *screenshotDialog;
+
 	Q3ToolBar*toolBar;
-//	Q3DockArea*dockArea;
 	QComboBox *solveType,*functionType,*modeBox;
 	QPixmap *minimizeIcon,*maximizeIcon,*printIcon,*catalogIcon;
 	Catalog *catalog;
 	QPushButton *drawButton,*maximizeButton,*catalogButton;
 	QSplitter *horzSplit,*vertSplit;
-	
-//	bool maximized;
+
 	bool solveMode;
-//	Variable*vars;
-//	ThreadSync*threadData;
-//	List<int>tableFunctionMap;
-//	QStringList colors;
-//	QStringList colorList,graphTypeList;
 	int changedRow;
 	bool functionChanged;
 	bool dynamicStart;
@@ -116,13 +107,9 @@ class GraphWidget :public TabWidget
 	
 Q_OBJECT
 	public:
-	GraphWidget(QWidget*parent,Preferences pr,Variable*va,ThreadSync*td) :TabWidget(parent,pr,va,td,false)
+  GraphWidget(QWidget*parent,Preferences pr,Variable*va,ThreadSync*td,ScreenshotDialog *sd) :TabWidget(parent,pr,va,td,false)
 	{
-//		pref=pr;
-//		vars=va;
-//		menuBottom=mB;
-//		threadData=td;
-//		maximized=false;
+
 		solveMode=false;
 		functionChanged=false;
 		changedRow=-1;
@@ -132,43 +119,45 @@ Q_OBJECT
 
 		horzSplit=new QSplitter(Qt::Horizontal,this);
 		vertSplit=new QSplitter(Qt::Vertical,horzSplit);
-//		standardButtons=new StandardButtons(this);
-//		extButtons=new ExtButtons(this);
 		functionTable=new FunctionTable((QWidget*)vertSplit,pref);
 		graphArea=new GraphArea(horzSplit);
 		graph=new GraphOutput(graphArea,vars,threadData);
 		catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX,this);
+    screenshotDialog=sd;
 		
 		setMainWidget(horzSplit);
 		addSubWidget(calcButtons);
 		addSubWidget(extButtons);
 		setDockArea(1);
 		
-
 		minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
 		maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
 		printIcon=new QPixmap(INSTALLDIR+QString("/data/print.png"));
 		catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
 
-//		dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
 		toolBar=new Q3ToolBar();
 		dockArea->moveDockWindow(toolBar);
 		
 		drawButton=new QPushButton(*printIcon,GRAPHH_STR1,toolBar);
 		maximizeButton=new QPushButton(*maximizeIcon,"",toolBar);
 		modeBox=new QComboBox(toolBar);
+//    modeBox->hide();
 		catalogButton=new QPushButton(*catalogIcon,"",toolBar);
 		catalogButton->setFixedWidth(30);
 		maximizeButton->setFixedWidth(30);
+
 		
 		drawButton->setFixedHeight(25);
 		
 		solveType=new QComboBox(toolBar);
 		functionType=new QComboBox(this);
-		solveWidget=new GraphSolveWidget(this,pref,vars,threadData);
+//		solveWidget=new GraphSolveWidget(this,pref,vars,threadData);
+//    screenshotDialog=new ScreenshotDialog(parent);
+//    screenshotDialog->hide();
+
 		solveType->hide();
 		functionType->hide();
-		solveWidget->hide();
+//		solveWidget->hide();
 		inputLine=new QLineEdit(vertSplit);
 		inputLine->setFixedHeight(25);
 		Q3ValueList<int> s = horzSplit->sizes();
@@ -195,9 +184,8 @@ Q_OBJECT
 		functionType->insertItem(TABLEH_STR6);
 		functionType->insertItem(TABLEH_STR7);
 		functionType->insertItem(GRAPHH_STR30);
-		modeBox->insertItem(GRAPHH_STR27);
-		modeBox->insertItem(GRAPHH_STR28);
-		modeBox->insertItem(GRAPHH_STR29);
+    modeBox->insertItem(tr("Edit"));
+    modeBox->insertItem(tr("Screenshot"));
 		modeBox->setCurrentItem(0);
 
 
@@ -206,7 +194,6 @@ Q_OBJECT
 		QObject::connect(drawButton,SIGNAL(released()),graph,SLOT(resetRotation()));
 		QObject::connect(drawButton,SIGNAL(released()),graph,SLOT(removeLines()));
 		QObject::connect(drawButton,SIGNAL(released()),this,SLOT(drawSlot()));
-		QObject::connect(maximizeButton,SIGNAL(released()),this,SLOT(maximizeSlot()));
 		QObject::connect(modeBox,SIGNAL(activated(int)),this,SLOT(modeSlot(int)));
 		QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
 		QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
@@ -214,28 +201,28 @@ Q_OBJECT
 		QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(graph,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(functionTable,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-		QObject::connect(solveWidget,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+//		QObject::connect(solveWidget,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
 		QObject::connect(inputLine,SIGNAL(returnPressed()),this,SLOT(inputTextFinished()));
 		QObject::connect(inputLine,SIGNAL(textChanged(const QString&)),this,SLOT(inputTextChanged(const QString&)));
-		QObject::connect(graph,SIGNAL(leftMButtonPressed(double,double)),solveWidget,SLOT(graphLMButtonPressed(double,double)));
-		QObject::connect(solveWidget,SIGNAL(addHorizontalLine(double)),graph,SLOT(drawHorizontalLine(double)));
-		QObject::connect(solveWidget,SIGNAL(addVerticalLine(double)),graph,SLOT(drawVerticalLine(double)));
-		QObject::connect(solveWidget,SIGNAL(addPolarLine(double)),graph,SLOT(drawPolarLine(double)));
-		QObject::connect(solveWidget,SIGNAL(addCircle(double)),graph,SLOT(drawCircle(double)));
-		QObject::connect(solveWidget,SIGNAL(add3dXLine(double,double)),graph,SLOT(draw3dXLine(double,double)));
-		QObject::connect(solveWidget,SIGNAL(add3dYLine(double,double)),graph,SLOT(draw3dYLine(double,double)));
-		QObject::connect(solveWidget,SIGNAL(add3dZLine(double,double)),graph,SLOT(draw3dZLine(double,double)));
-		QObject::connect(solveWidget,SIGNAL(removeLines()),graph,SLOT(removeLines()));
+//		QObject::connect(graph,SIGNAL(leftMButtonPressed(double,double)),solveWidget,SLOT(graphLMButtonPressed(double,double)));
+//		QObject::connect(solveWidget,SIGNAL(addHorizontalLine(double)),graph,SLOT(drawHorizontalLine(double)));
+//		QObject::connect(solveWidget,SIGNAL(addVerticalLine(double)),graph,SLOT(drawVerticalLine(double)));
+//		QObject::connect(solveWidget,SIGNAL(addPolarLine(double)),graph,SLOT(drawPolarLine(double)));
+//		QObject::connect(solveWidget,SIGNAL(addCircle(double)),graph,SLOT(drawCircle(double)));
+//		QObject::connect(solveWidget,SIGNAL(add3dXLine(double,double)),graph,SLOT(draw3dXLine(double,double)));
+//		QObject::connect(solveWidget,SIGNAL(add3dYLine(double,double)),graph,SLOT(draw3dYLine(double,double)));
+//		QObject::connect(solveWidget,SIGNAL(add3dZLine(double,double)),graph,SLOT(draw3dZLine(double,double)));
+//		QObject::connect(solveWidget,SIGNAL(removeLines()),graph,SLOT(removeLines()));
 		QObject::connect(solveType,SIGNAL(activated(int)),this,SLOT(solveTypeSlot(int)));
-		QObject::connect(this,SIGNAL(solveTypeSignal(int)),solveWidget,SLOT(setState(int)));
-		QObject::connect(functionType,SIGNAL(activated(int)),solveWidget,SLOT(setFunctionType(int)));
+//		QObject::connect(this,SIGNAL(solveTypeSignal(int)),solveWidget,SLOT(setState(int)));
+//		QObject::connect(functionType,SIGNAL(activated(int)),solveWidget,SLOT(setFunctionType(int)));
 		QObject::connect(functionType,SIGNAL(activated(int)),this,SLOT(functionTypeSlot(int)));
-		QObject::connect(solveWidget,SIGNAL(drawInequalityIntersection(int, int)),this,SLOT(inequalitySlot(int,int)));
-		QObject::connect(solveWidget,SIGNAL(redrawGraphs()),this,SLOT(drawSlot()));
+//		QObject::connect(solveWidget,SIGNAL(drawInequalityIntersection(int, int)),this,SLOT(inequalitySlot(int,int)));
+    QObject::connect(screenshotDialog,SIGNAL(redrawGraphs()),this,SLOT(drawSlot()));
 		QObject::connect(graph,SIGNAL(redrawSignal()),this,SLOT(drawSlot()));
-		QObject::connect(graph,SIGNAL(screenshotSignal(QPixmap*)),solveWidget,SLOT(screenshotSlot(QPixmap*)));
-		QObject::connect(solveWidget,SIGNAL(getScreenshotSignal(int,int)),graph,SLOT(screenshotSlot(int,int)));
-		QObject::connect(solveWidget,SIGNAL(drawSignal(int,QColor,int)),graph,SLOT(drawSlot(int,QColor,int)));
+    QObject::connect(graph,SIGNAL(screenshotSignal(QPixmap*)),screenshotDialog,SLOT(screenshotSlot(QPixmap*)));
+    QObject::connect(screenshotDialog,SIGNAL(getScreenshotSignal(int,int)),graph,SLOT(screenshotSlot(int,int)));
+    QObject::connect(screenshotDialog,SIGNAL(drawSignal(int,QColor,int)),graph,SLOT(drawSlot(int,QColor,int)));
 		QObject::connect(this,SIGNAL(drawPointsSignal(long double*,int,bool)),graph,SLOT(drawPoints(long double*,int,bool)));
 		QObject::connect(this,SIGNAL(removeLinesSignal()),graph,SLOT(removeLines()));
 		QObject::connect(graph,SIGNAL(statisticsRedrawSignal()),this,SIGNAL(statisticsRedrawSignal()));
@@ -255,19 +242,19 @@ void setPref(Preferences newPref)
 				functionType->currentItem() == 2 ||
 				functionType->currentItem() == 3) && pref.graphType==GRAPHSTD)
 		{
-			solveWidget->setFunctionType(0);
+//			solveWidget->setFunctionType(0);
 			functionType->setCurrentItem(0);
 			functionTypeSlot(0);
 		}
 		else if(functionType->currentItem() != 1 && pref.graphType==GRAPHPOLAR)
 		{
-			solveWidget->setFunctionType(1);
+//			solveWidget->setFunctionType(1);
 			functionType->setCurrentItem(1);
 			functionTypeSlot(1);
 		}
 		else if(functionType->currentItem() != 4 && pref.graphType==GRAPH3D)
 		{
-			solveWidget->setFunctionType(4);
+//			solveWidget->setFunctionType(4);
 			functionType->setCurrentItem(4);
 			functionTypeSlot(4);
 		}
@@ -278,7 +265,7 @@ void setPref(Preferences newPref)
 	graph->setPref(pref);
 	calcButtons->setPref(pref);
 	extButtons->setPref(pref);
-	solveWidget->setPref(pref);
+//	solveWidget->setPref(pref);
 	functionTable->setPref(pref);
 	
 
@@ -308,7 +295,6 @@ public slots:
 	void selectionChangedSlot(int row,int col);
 	void tableEditSlot(QString);
 	void drawSlot();
-	void maximizeSlot();
 	void modeSlot(int);
 	void inputTextChanged(const QString&);
 	void inputTextFinished();
