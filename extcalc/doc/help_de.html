@@ -6,7 +6,7 @@
   </head>
   <body>
   <h1> Extcalc - wissenschaftlicher Taschenrechner </h1>
-  Version 0.9.2
+  Version 0.9.3
   <br>
   <br>
   <h3>Inhalt</h3>
@@ -36,26 +36,25 @@
   <a name="introduction"><h2>1. Einleitung</h2></a>
   Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner. Extcalc kann zum berechen komplizierter mathematischer Ausdr&uuml;cke,
   zum Zeichnen von Funktionsgraphen, und zum Auswerten von Funktionen benutzt werden. Es enth&auml;lt auch eine C-&auml;hnliche Script-Sprache.<br>
-  Diese Hilfe wurde f&uuml;r die Version 0.9.2 von Extcalc geschrieben.
+  Diese Hilfe wurde f&uuml;r die Version 0.9.3 von Extcalc geschrieben.<br>
+  <br>
+  Wegen der Portierung von Extcalc auf eine neue Version der Qt-Bibliothek, sind Teile der grafischen OberflÃ¤che in  Version 0.9.3
+  nicht erreichbar. Dies betrifft haupts&auml;chlich die Auswertung von Graphen und die Matrix- und Vektorrechnungsfunktionen.
   <br>
   <br>
   <br>
   <a name="install"><h2>2. Installation</h2></a>
   Dies ist die Beschreibung zur Installation von Extcalc aus dem Quellcode-Paket. Vorkompilierte Pakete m&uuml;ssen mit dem Paketmanager der jeweiligen
   Distribution installiert werden.<br><br>
-  - Paket auspacken (tar -xzf extcalc-0.9.2.tar.gz)<br>
-  - ins Verzeichnis wechseln (cd extcalc-0.9.2)<br>
-  - konfigurieren (./configure --enable-language_de)<br>
+  - Paket auspacken (tar -xzf extcalc-0.9.3.tar.gz)<br>
+  - ins Verzeichnis wechseln (cd extcalc-0.9.3)<br>
+  - konfigurieren (cmake .)<br>
   - kompilieren (make)<br>
   - root-rechte erlangen (su)<br>
   - installieren (make install)<br> 
-  <h5>Sprachunterst&uuml;tzung:</h5>
-  Um das Programm in Englisch zu installieren muss zur konfiguration nur "./configure" aufgerufen werden.
-  F&uuml;r die deutsche Version muss "./configure --enable-language_de" aufgerufen werden.<br>
-  F&uumlr die Installation in franz&ouml;sischer Spracher muss "./configure --enable-language_fr" aufgerufen werden.<br>
   <a name="use"><h2>3. Bedienung</h2></a>
   Da dies noch eine Enticklungsversion von Extcalc ist, kann sich die Bedienoberfl&auml;che noch
-  stark &auml;ndern. Diese Informationen beziehen sich auf die Version 0.9.2. Mit dem Reiter unter der
+  stark &auml;ndern. Diese Informationen beziehen sich auf die Version 0.9.3. Mit dem Reiter unter der
   Men&uuml;leiste kann man zwischen den einzelnen Komponenten umschalten.Dies sind  ein Taschenrechner, ein Grafik-Fenster
   zum Zeichnen und analysieren verschiedner Typen von Graphen, ein Tabellen-Fenster, ein Script-Editor und eine Script-Konsole zum
   Ausf&uuml;hren von Scripten.
@@ -87,20 +86,20 @@
   Da es nicht m&ouml;glich ist, mit der Tastatur alle Rechenzeichen einzugeben, ist es manchmal
   n&ouml;tig, die integrierten Tasten zu ben&uuml;tzen.<br>
   <h5>2. Eingabe &uuml;ber die Rechner-Tasten</h5>
-  Mit der integrierten Tastatur k&ouml;nnen die meisten unterstützten Rechenfunktionen eingegeben werden.
+  Mit der integrierten Tastatur k&ouml;nnen die meisten unterstï¿½tzten Rechenfunktionen eingegeben werden.
   Um die Eingabe zu starten, ist es ebenfalls n&ouml;tig, dass man mit der Maus in das Eingabefenster
   klickt. Anschlie&szlig;end kann man mit den jeweiligen Tasten die Rechnung eingeben. Zum Ausf&uuml;hren 
   der Berechnung dr&uuml;ckt man die "="-Taste. Es ist auch m&ouml;glich, vorher eingegebene Rechnungen zu
   ver&auml;ndern und erneut berechnen zu lassen. Dazu muss man ebenfalls mit der Maus in die
   entsprechende Zeile klicken und kann anschlie&szlig;end die Rechnung beliebeg ver&auml;ndern.<br>
   <h5>3. Eingabe &uuml;ber den Funktionskatalog</h5>
-  Durch drücken des Katalog-Knopfes <img src="catalogbutton.jpg"></img> erhält man eine Liste aller in Extcalc
-  verfügbaren Operationen und Befehle. Die Befehle sind zur Übersicht in Gruppen gegliedert. Beim Auswählen eines
+  Durch dr&uuml;cken des Katalog-Knopfes <img src="catalogbutton.jpg"></img> erh&auml;lt man eine Liste aller in Extcalc
+  verf&uuml;gbaren Operationen und Befehle. Die Befehle sind zur &Uuml;bersicht in Gruppen gegliedert. Beim Ausw&auml;hlen eines
   Befehls oder einer Operation wird der entsprechende Text in das Eingabefenster kopiert.<br>
   <h5>3. Konstanten und Umrechnung</h5>
-  Durch Drücken des Konstanten-Knopfes erhält man ein Menü, in dem aus einer Liste von verschiedenen mathematischen
-  und physikalischen Konstanten Einträge ausgewählt werden können. Außerdem können eigene Konstanten zur Liste 
-  hinzugefügt werden können.
+  Durch Dr&uuml;cken des Konstanten-Knopfes erh&auml;lt man ein Men&uuml;, in dem aus einer Liste von verschiedenen mathematischen
+  und physikalischen Konstanten Eintr&auml;ge ausgew&auml;hlt werden k&ouml;nnen. Au&szlig;erdem k&ouml;nnen eigene Konstanten zur Liste 
+  hinzugef&uuml;gt werden k&ouml;nnen.
   <br>
   <h5>Besondere Tasten:</h5>
   DEL<br>
@@ -284,8 +283,8 @@
   Graphen ist allerdings sehr rechenintensiv. F&uuml;r dynamische 3D-Graphik ist eine 3D-Graphikkarte ist n&ouml;tig.
   <br>
   <h5>Logikfunktionen</h5>
-  Wenn diese Option aktiviert ist, ist es möglich, in den Funktionen logische Ausdrücke wie z. B. X&gt;0 oder Script-Befehle
-  wie z. B. if else zu verwenden. Diese Option sollte nur ausgewählt werden, wenn auch Script-Befehle oder logische Ausdrücke verwendet
+  Wenn diese Option aktiviert ist, ist es m&ouml;glich, in den Funktionen logische Ausdr&uuml;cke wie z. B. X&gt;0 oder Script-Befehle
+  wie z. B. if else zu verwenden. Diese Option sollte nur ausgew&auml;hlt werden, wenn auch Script-Befehle oder logische Ausdr&uuml;cke verwendet
   werden, weil die Berechnung wesentlich mehr Zeit erfordert.<br>
   <h4>Koordinatensysteme</h4>
   <h5>Standard-Koordinatensystem</h5>
@@ -331,55 +330,56 @@
 <h5>Beispiele</h5>
 <table border>
 <tr><th>Typ</th><th>Funktion</th><th>Beschreibung</th></tr>
-<tr><td rowspan=3>Normal</td>                      <td>sinX</td>                                     <td>Sinusfunktion<br>Koordinatensystem: Standard<br>Größe: Standard trigonometrisch</td></tr>
-<tr>                                               <td>(X+5)^2-4</td>                                <td>Parabel<br>Koordinatensystem: Standard, Standardgröße</td></tr>
-<tr>                                               <td>if(A<=10) (1-A/5)*x^2; else if(A<=20) -(x+5*(A-10)/10)^2; else -(x+5)^2-4*(A-20)/10;</td>                                <td>Animierte Parabel<br>Koordinatensystem: Standard, Standardgröße<br>dynamsisch an mit A von 0 bis 30<br>Logikfunctionen an</td></tr>
-<tr><td rowspan=3>Polar</td>                       <td>X+2</td>                                      <td>Archimedische Spirale<br>Koordinatensystem: Polar, Standardgröße</td></tr>
-<tr>                                               <td>5*sin(4X)</td>                                <td>Sinusfunktion<br>Koordinatensystem: Polar, Standardgröße</td></tr>
+<tr><td rowspan=3>Normal</td>                      <td>sinX</td>                                     <td>Sinusfunktion<br>Koordinatensystem: Standard<br>Gr&ouml;&szlig;e: Standard trigonometrisch</td></tr>
+<tr>                                               <td>(X+5)^2-4</td>                                <td>Parabel<br>Koordinatensystem: Standard, Standardgr&ouml;&szlig;e</td></tr>
+<tr>                                               <td>if(A<=10) (1-A/5)*x^2; else if(A<=20) -(x+5*(A-10)/10)^2; else -(x+5)^2-4*(A-20)/10;</td>                                <td>Animierte Parabel<br>Koordinatensystem: Standard, Standardgr&ouml;&szlig;e<br>dynamsisch an mit A von 0 bis 30<br>Logikfunctionen an</td></tr>
+<tr><td rowspan=3>Polar</td>                       <td>X+2</td>                                      <td>Archimedische Spirale<br>Koordinatensystem: Polar, Standardgr&ouml;&szlig;e</td></tr>
+<tr>                                               <td>5*sin(4X)</td>                                <td>Sinusfunktion<br>Koordinatensystem: Polar, Standardgr&ouml;&szlig;e</td></tr>
 <tr>                                               <td>2/(1+0.7cosX)</td>                            <td>Ellipse<br>Koordinatensystem: Standard</td></tr>
-<tr><td rowspan=10>Parameter</td>                  <td>T</td>                                        <td rowspan=2>Parabel<br>Koordinatensystem: Standard, Standardgröße<br>T von -10 bis 10</td></tr>
+<tr><td rowspan=10>Parameter</td>                  <td>T</td>                                        <td rowspan=2>Parabel<br>Koordinatensystem: Standard, Standardgr&ouml;&szlig;e<br>T von -10 bis 10</td></tr>
 <tr>                                               <td>T^2</td>                                      </tr>
 <tr>                                               <td>sinT*(exp(cosT)-2*cos(4T)-(sin(T/12))^5)</td> <td rowspan=2>Butterfly Kurve<br>Koordinatensystem: Polar, max. Radius=5<br> T von 0 bis 20</td></tr>
 <tr>                                               <td>cosT*(exp(cosT)-2*cos(4T)-(sin(T/12))^5)</td> </tr>
-<tr>                                               <td>F=.01*T^3+1;U=1-A/15;((1+U)*T+(1-U)*F)/2</td> <td rowspan=2>Inverse Funktion<br>Koordinatensystem: Standard, Standardgröße, T von -10 bis 10<br> dynamisch an mit A von 0 bis 30<br>Logikfunktionen an</td></tr>
+<tr>                                               <td>F=.01*T^3+1;U=1-A/15;((1+U)*T+(1-U)*F)/2</td> <td rowspan=2>Inverse Funktion<br>Koordinatensystem: Standard, Standardgr&ouml;&szlig;e, T von -10 bis 10<br> dynamisch an mit A von 0 bis 30<br>Logikfunktionen an</td></tr>
 <tr>                                               <td>((1-U)*T+(1+U)*F)/2</td>                      </tr>
-<tr>                                               <td>(1-A/15)*T</td>                               <td rowspan=2>Spiegelung<br>Koordinatensystem: Standard, Standardgröße, T von -10 bis 10<br> dynamisch an mit A von 0 bis 30<br>Logikfunktionen an</td></tr>
+<tr>                                               <td>(1-A/15)*T</td>                               <td rowspan=2>Spiegelung<br>Koordinatensystem: Standard, Standardgr&ouml;&szlig;e, T von -10 bis 10<br> dynamisch an mit A von 0 bis 30<br>Logikfunktionen an</td></tr>
 <tr>                                               <td>T^3-5*T^2+5*T-2</td>                          </tr>
-<tr>                                               <td>F=.05*T^3;U=atan(F/T);R=sqrt(T^2+F^2);cos(pi/30*A+U)*R</td> <td rowspan=2>Punktsymmestrische Funktion<br>Koordinatensystem: Standard, Standardgröße, T von 0 bis 10<br> dynamisch an mit A von 0 bis 30<br>Logikfunktionen an</td></tr>
+<tr>                                               <td>F=.05*T^3;U=atan(F/T);R=sqrt(T^2+F^2);cos(pi/30*A+U)*R</td> <td rowspan=2>Punktsymmestrische Funktion<br>Koordinatensystem: Standard, Standardgr&ouml;&szlig;e, T von 0 bis 10<br> dynamisch an mit A von 0 bis 30<br>Logikfunktionen an</td></tr>
 <tr>                                               <td>sin(pi/30*A+U)*R</td>                         </tr>
-<tr><td rowspan=3>3D</td>                          <td>sin(X²)*cos(Z²)</td>                          <td>Koordinatensystem: 3D, X, Y und Z von -3 bis 3</td></tr>
-<tr>                                               <td>L=0.01;U=2;K=1e-3;if(X&lt;U)0;else{if(Z&gt;0 &amp;&amp; Z&lt;X-U)K*Z*(X-U-Z/2)*(1+L*Z);else if (Z>0) K/2*(X-U)²*(1+L*Z); else 0;}</td>         <td>MOSFET-Kollektorstrom<br>Koordinatensystem: 3D, X und Z von 0 bis 10,Y von -0.01 bis 0.04<br>Logikfunktionen an</td></tr>
-<tr>                                               <td>abs(arg(((X+Zi)^2-1)*((X+Zi)^2-2-i)^2/((X+Zi)^2+2+2i)))</td>         <td>Komplexer Graph in 3D (X=Realteil,Z=Imaginärteil)<br>Koordinatensystem: 3D, X und Z von -2 bis 2,Y von 0 bis 5<br>Logikfunktionen an, Komplexe Rechnung im Rechner eingeschaltet</td></tr>
-<tr><td>Komplexer Graph</td>                         <td>exp(Z*i)</td>                                 <td>Koordinatensystem: 3D, Standardgröße</td></tr>
-<tr><td>Ortskurve</td>                          <td>10/(1+Z*i)</td>                               <td>Koordinatensystem: Standard, Standardgröße</td></tr>
+<tr><td rowspan=3>3D</td>                          <td>sin(X^2)*cos(Z^2)</td>                          <td>Koordinatensystem: 3D, X, Y und Z von -3 bis 3</td></tr>
+<tr>                                               <td>L=0.01;U=2;K=1e-3;if(X&lt;U)0;else{if(Z&gt;0 &amp;&amp; Z&lt;X-U)K*Z*(X-U-Z/2)*(1+L*Z);else if (Z>0) K/2*(X-U)^2*(1+L*Z); else 0;}</td>         <td>MOSFET-Kollektorstrom<br>Koordinatensystem: 3D, X und Z von 0 bis 10,Y von -0.01 bis 0.04<br>Logikfunktionen an</td></tr>
+<tr>                                               <td>abs(arg(((X+Zi)^2-1)*((X+Zi)^2-2-i)^2/((X+Zi)^2+2+2i)))</td>         <td>Komplexer Graph in 3D (X=Realteil,Z=Imagin&auml;rteil)<br>Koordinatensystem: 3D, X und Z von -2 bis 2,Y von 0 bis 5<br>Logikfunktionen an, Komplexe Rechnung im Rechner eingeschaltet</td></tr>
+<tr><td>Komplexer Graph</td>                         <td>exp(Z*i)</td>                                 <td>Koordinatensystem: 3D, Standardgr&ouml;&szlig;e</td></tr>
+<tr><td>Ortskurve</td>                          <td>10/(1+Z*i)</td>                               <td>Koordinatensystem: Standard, Standardgr&ouml;&szlig;e</td></tr>
 </table>
 <h5>Import und Export von Graphen</h5>
-Es ist möglich, die Funktionen der Graphen zu Exportieren oder Importieren. Dazu werden die Funktionen in einer Datei abgespeichert.<br>
-Die vom Export erzeugten Dateien können ausgetauscht oder archiviert werden. Mit der Import-Funktion können die Funktionen wieder
+Es ist m&ouml;glich, die Funktionen der Graphen zu Exportieren oder Importieren. Dazu werden die Funktionen in einer Datei abgespeichert.<br>
+Die vom Export erzeugten Dateien k&ouml;nnen ausgetauscht oder archiviert werden. Mit der Import-Funktion k&ouml;nnen die Funktionen wieder
 in Extcalc geladen werden.<br>
-Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bzw. Grafik -> Graphen exportieren aufgerufen werden.<br>
+Die entsprechenden Dialoge k&ouml;nnen &uuml;ber das Men&uuml; Grafik -> Graphen importieren bzw. Grafik -> Graphen exportieren aufgerufen werden.<br>
   <br>
   
     <a name="graphmanage"><h3>3.2.2 Funktionen verwalten</h3></a>
-  In der Funktionstabelle von Extcalc können maximal 20 Funktionen verwaltet werden. Wenn mehr Funktionen benötigt werden, oder
+  In der Funktionstabelle von Extcalc k&ouml;nnen maximal 20 Funktionen verwaltet werden. Wenn mehr Funktionen ben&ouml;tigt werden, oder
   wenn die Funktionen in mehreren Gruppen sortiert werden sollen, dann kann die Funktionsverwaltung verwendet werden.
   <br><br>
-  Extcalc erstellt bei der Installation automatisch eine Gruppe, die einige Beispielfunktionen enthält. Wenn eine
-  neue Gruppe angelegt werden soll, so kann im Menü Grafik über den Punkt Neue Gruppe der entsprechende Dialog geöffnet werden.
+  Extcalc erstellt bei der Installation automatisch eine Gruppe, die einige Beispielfunktionen enth&auml;lt. Wenn eine
+  neue Gruppe angelegt werden soll, so kann im Men&uuml; Grafik &uuml;ber den Punkt Neue Gruppe der entsprechende Dialog ge&ouml;ffnet werden.
   <br><br>
-  Mit dem Menüpunkt Grafik -> Aktuelle Gruppe kann die aktuelle Gruppe angezeigt oder eine andere Gruppe ausgewählt werden.
-  Wird dort eine andere Gruppe gewählt, dann lädt Extcalc automatsich die deuen Funktionen in die Funktionstabelle und speichert die alte Gruppe ab. Damit die Einstellungen nach dem Laden der neuen Gruppe nicht an die entsprechenden Funktionen angepasst werden m&uuml;ssen, werden alle relevanten Einstellungen ebenfalls entsprechend der neuen Gruppe aktualisiert.
+  Mit dem Men&uuml;punkt Grafik -> Aktuelle Gruppe kann die aktuelle Gruppe angezeigt oder eine andere Gruppe ausgew&auml;hlt werden.
+  Wird dort eine andere Gruppe gew&auml;hlt, dann l&auml;dt Extcalc automatsich die deuen Funktionen in die Funktionstabelle und speichert die alte Gruppe ab. Damit die Einstellungen nach dem Laden der neuen Gruppe nicht an die entsprechenden Funktionen angepasst werden m&uuml;ssen, werden alle relevanten Einstellungen ebenfalls entsprechend der neuen Gruppe aktualisiert.
   <br><br>
-  Im Dialog Grafik -> Gruppen verwalten können die Funktionsgruppen umbenannt oder gelöscht werden. Mit Grafik -> Gruppe speichern unter
+  Im Dialog Grafik -> Gruppen verwalten k&ouml;nnen die Funktionsgruppen umbenannt oder gel&ouml;scht werden. Mit Grafik -> Gruppe speichern unter
   kann die aktuelle Gruppe mit einem neuen Namen gespeichert werden.
   <br><br>
-  Jede Gruppe wird in einer eigenen Datei im Extcalc-Konfigurationsverzeichnis abgelegt. Diese Dateien können auch exportiert
-  und importiert werden, damit die mathematischen Funktionen archiviert oder mit Anderen ausgetauscht werden können.
+  Jede Gruppe wird in einer eigenen Datei im Extcalc-Konfigurationsverzeichnis abgelegt. Diese Dateien k&ouml;nnen auch exportiert
+  und importiert werden, damit die mathematischen Funktionen archiviert oder mit Anderen ausgetauscht werden k&ouml;nnen.
   Auf der Extcalc-Homepage werden einige Beispiel-Dateien zum Download angeboten.
   <br><br>
   
   
   <a name="graphsolve"><h3>3.2.3 Graphen auswerten</h3></a>
+  <h2>Die beschriebenen Funktionen sind in v0.9.3 nicht enthalten!</h2>
   <img src="analyse.jpg"></img>
   <br>
   Durch dr&uuml;cken des "Analysieren"-Knopfes kann man den Rechner in den Analysemodus versetzen.
@@ -566,7 +566,7 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   m&ouml;glich, dass das Abbrechen-Signal nicht rechtzeitig vom Script empfangen wird. Man muss dann den Abbrechen-Knopf noch einmal dr&uuml;cken, um
   das Programm korrekt zu Beenden.<br>
   <a name="scriptsyntax"><h3>3.4.3 Die Script-Sprache</h3></a>
-  In Version 0.9.2 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. N&auml;here Informationen zu den geplaten
+  In Version 0.9.3 von Extcalc sind noch nicht alle geplanten Befehle und Funktionen implementiert. N&auml;here Informationen zu den geplaten
   Funktionen finden Sie im <a href="#else">Kapitel 4</a>.<br>
   <h5>Probleme:</h5>
   In der folgenden Liste sind Probleme aufgef&uuml;hrt, die im Script-Interpreter noch vorhanden sind.<br><br>
@@ -574,7 +574,7 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   Da die Programme von einem Interpreter abgearbeitet werden, laufen diese auch wesentlich langsamer, als kompilierte Programme.
   Der Interpreter wird aber in sp&auml;teren Versionen noch weiter optimiert.<br><br>
   2. Variablen:<br>
-  Es k&ouml;nnen nur die Gro&szlig;buchstaben von A bis Z als Variablen verwendet werden. Jede Variable kann auch als Array benutzt werden. Will man anstatt der Buchstaben symbolische Namen für die Variablen verwenden, so kann man sich entsprechende Makros definieren, z. B. "#define counter C".<br><br>
+  Es k&ouml;nnen nur die Gro&szlig;buchstaben von A bis Z als Variablen verwendet werden. Jede Variable kann auch als Array benutzt werden. Will man anstatt der Buchstaben symbolische Namen fï¿½r die Variablen verwenden, so kann man sich entsprechende Makros definieren, z. B. "#define counter C".<br><br>
   3. Geringere M&ouml;glichkeiten<br>
   In dieser Version ist nur ein Teil der geplanten Funktionalit&auml;ten bereits aktiviert. Deshalb ist es nicht m&ouml;glich, komplexe Probleme mit den
   Script-Programmen zu l&ouml;sen. Die Sprache wird in sp&auml;teren Versionen noch so weit wie m&ouml;glich ausgebaut. Sie ist aber trotzdem nur zum L&ouml;sen oder
@@ -623,7 +623,7 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   <br>
   Wird einer Variable ein Komma-Zahl oder das Ergebnis einer Rechnung zugewiesen, so nimmt sie automatisch den Typ float an.
   Wird einer Variable eine Ganzzahl zugewiesen, nimmt Sie den Typ int an.
-  Ergebnisse aus Vergleichsoperationen haben standardm&auml;&szlig;íg den Typ bool.
+  Ergebnisse aus Vergleichsoperationen haben standardm&auml;&szlig;ï¿½g den Typ bool.
   Text, auch Benutzereingaben haben den Type string.
   Schl&auml;gt eine Operation fehl, liefert sie eine Variable vom Typ none.<br>
   Egal welchen Typ eine Variable hat, der float-Teil der Variable enth&auml;lt immer einen zum Inhalt passenden Wert.<br>
@@ -652,7 +652,7 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   <TD>Vectorsumme. Jeweils die Elemente der Vektoren mit gleichem Index werden addiert.
   </TD>
   <TR>
-  <TD>Skalarprodukt: Vektor°Vektor</TD>
+  <TD>Skalarprodukt: Vektorï¿½Vektor</TD>
   <TD>Multiplikation zweier Vektoren mit einem Skalar als Ergebnis.
   </TD>
   <TR>
@@ -888,11 +888,11 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   <pre>
   readfile( Dateiname );
   </pre>
-  Liest die Datei mit dem Namen Dateiname und gibt den Inhalt als String zurück.<br>
-  Die Dateien, die gelesen werden sollen, müssen sich im Script-Daten Verzeichnis befinden. Unterverzeichnisse werden
-  nicht untestützt.<br>
+  Liest die Datei mit dem Namen Dateiname und gibt den Inhalt als String zurï¿½ck.<br>
+  Die Dateien, die gelesen werden sollen, mï¿½ssen sich im Script-Daten Verzeichnis befinden. Unterverzeichnisse werden
+  nicht untestï¿½tzt.<br>
   Dateiname muss vom Typ String sein. Ist dies nicht der Fall, oder existiert die Datei nicht, so wird ein leerer String
-  zurückgegeben.<br><br><br>
+  zurï¿½ckgegeben.<br><br><br>
   
   <LI>writefile<br>
   Syntax: <br>
@@ -900,8 +900,8 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   writefile(Dateiname , Inhalt);
   </pre>
   Dieser Befehl schreibt den gegebenen Inhalt in eine Datei mit dem angegebenen Dateinamen.<br>
-  Die Datei wird erstellt, falls sie nicht existiert. Falls sie existiert, wird der Inhalt überschrieben.<br>
-  Der Dateiname muss ein String sein. Wie bei readfile, werden keine Unterverzeichnisse unterstützt.<br>
+  Die Datei wird erstellt, falls sie nicht existiert. Falls sie existiert, wird der Inhalt ï¿½berschrieben.<br>
+  Der Dateiname muss ein String sein. Wie bei readfile, werden keine Unterverzeichnisse unterstï¿½tzt.<br>
   <br><br><br>
   
   
@@ -910,10 +910,10 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   <pre>
   appendfile(Dateiname , Inhalt);
   </pre>
-  Genauso wie writefile, nur dass der Inhalt der Datei angehängt wird, falls diese schon existiert.<br>
+  Genauso wie writefile, nur dass der Inhalt der Datei angehï¿½ngt wird, falls diese schon existiert.<br>
   Beispiel:
   <pre>
-  removefile("count.txt");             //Datei löschen, falls sie existiert
+  removefile("count.txt");             //Datei lï¿½schen, falls sie existiert
   for(C=0; C&lt;100; C++)              //Schleife von 0 bis 99
 {
     apendfile("count.txt",C);          //Nummern von 0 bis 99 in Datei schreiben
@@ -927,7 +927,7 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   <pre>
   removefile(Dateiname);
   </pre>
-  Löscht die Datei mit dem angegebenen Namen aus dem Script-Datenverzeichnis.<br><br><br>
+  Lï¿½scht die Datei mit dem angegebenen Namen aus dem Script-Datenverzeichnis.<br><br><br>
   
   
   <LI>glshow<br>
@@ -943,7 +943,7 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   <pre>
   glclear;
   </pre>
-  Dieser Befhel löscht das GL-Anzeigefenster<br><br><br>
+  Dieser Befhel lï¿½scht das GL-Anzeigefenster<br><br><br>
   
   
   <LI>glbegin<br>
@@ -951,9 +951,9 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   <pre>
   glbegin( typ );
   </pre>
-  Mit diesem Befehl werden Zeichenoperationen begonnen. Er muss auch beim Erstellen von Display-Lists benützt werden.<br>
+  Mit diesem Befehl werden Zeichenoperationen begonnen. Er muss auch beim Erstellen von Display-Lists benï¿½tzt werden.<br>
   Als Parameter wird die Art der Zeichenoperation angegeben.<br>
-  Die folgenden Typen können ausgewählt werden:<br>
+  Die folgenden Typen kï¿½nnen ausgewï¿½hlt werden:<br>
   points<br>
   lines<br>
   linestrip<br>
@@ -990,7 +990,7 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   glendlist;
   </pre>
   Mit diesem Befehl wird die Aufnahme der Display-List beendet.<br>
-  Der Rückgabewert ist die Listen-ID als Integer.<br>
+  Der Rï¿½ckgabewert ist die Listen-ID als Integer.<br>
   <br><br><br>
   
   
@@ -999,7 +999,7 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   <pre>
   glcalllist;
   </pre>
-  Mit diesem Befehl wird eine Display-List aufgerufen und die Zeichenbefehle werden ausgeführt.<br>
+  Mit diesem Befehl wird eine Display-List aufgerufen und die Zeichenbefehle werden ausgefï¿½hrt.<br>
   Die Benutzung von Display-Lists ist wesentlich schneller, als das direkte Zeichnen.<br><br>
   Example:<br>
   <pre>
@@ -1013,7 +1013,7 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   glpoint(5,-5,0);
   glpoint(0,5,0);
   glend;                //Zeichnen beenden
-  L=glendlist;          //Liste abschließen und Listen-ID abspeichern
+  L=glendlist;          //Liste abschlieï¿½en und Listen-ID abspeichern
 
   glclear;
   glmove(0,0,1);        //Objekte verschieben
@@ -1040,7 +1040,7 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   glcolor(r,g,b);
   </pre>
   Mit diesem Befehl wird die Zeichenfarbe gesetzt.<br>
-  Die Parameter sind Ganzzahlen und müssen zwischen 0 und 255 liegen.<br><br><br>
+  Die Parameter sind Ganzzahlen und mï¿½ssen zwischen 0 und 255 liegen.<br><br><br>
   
   
   <LI>glmove<br>
@@ -1050,8 +1050,8 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   </pre>
   Mit diesem Befehl kann ein GL-Objekt verschoben werden.<br>
   Die Parameter sind die Verschiebekoordinaten als float.<br>
-  Alle GL-Transformationen werden zu einer Transformationsmatrix aufmultipliziert. Dies führt dazu, dass die 
-  letzte Transformation als erstes ausgefürt wird.<br><br><br>
+  Alle GL-Transformationen werden zu einer Transformationsmatrix aufmultipliziert. Dies fï¿½hrt dazu, dass die 
+  letzte Transformation als erstes ausgefï¿½rt wird.<br><br><br>
   
   
   <LI>glrotate<br>
@@ -1059,9 +1059,9 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   <pre>
   glrotate(Winkel,x,y,z);
   </pre>
-  Dies ist der GL-Drehbefehl. Die Parameter sind der Drehwinkel, und die Werte für einen Vektor, der als Drehachse dient.<br>
-  Alle GL-Transformationen werden zu einer Transformationsmatrix aufmultipliziert. Dies führt dazu, dass die 
-  letzte Transformation als erstes ausgefürt wird.<br><br><br>
+  Dies ist der GL-Drehbefehl. Die Parameter sind der Drehwinkel, und die Werte fï¿½r einen Vektor, der als Drehachse dient.<br>
+  Alle GL-Transformationen werden zu einer Transformationsmatrix aufmultipliziert. Dies fï¿½hrt dazu, dass die 
+  letzte Transformation als erstes ausgefï¿½rt wird.<br><br><br>
   
   
   <LI>glscale<br>
@@ -1069,9 +1069,9 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
   <pre>
   glscale(x,y,z);
   </pre>
-  Mit diesem Befehl kann ein GL-Objekt vergrößert und verkleinert werden.<br>
-    Alle GL-Transformationen werden zu einer Transformationsmatrix aufmultipliziert. Dies führt dazu, dass die 
-  letzte Transformation als erstes ausgefürt wird.<br>
+  Mit diesem Befehl kann ein GL-Objekt vergrï¿½ï¿½ert und verkleinert werden.<br>
+    Alle GL-Transformationen werden zu einer Transformationsmatrix aufmultipliziert. Dies fï¿½hrt dazu, dass die 
+  letzte Transformation als erstes ausgefï¿½rt wird.<br>
   Beispiel:<br>
   <pre>
 #config gl              //GL initialisierung
@@ -1079,7 +1079,7 @@ Die entsprechenden Dialoge können über das Menü Grafik -> Graphen importieren bz
 #config rasteroff
 #config labelsoff
 
-glstartlist;            //Dislplay-Liste für einen Würfel erzeugen
+glstartlist;            //Dislplay-Liste fï¿½r einen Wï¿½rfel erzeugen
 glbegin(quads);
 glpoint(-1,-1,-1);
 glpoint(1,-1,-1);
@@ -1118,19 +1118,19 @@ R=0;                     //Drehwinkel
 while(1)
 {
   R=R+1;
-  glclear;              //Fenster löschen
-                        //In dieser Befehlsreihenfolge rotiert der Würfel um seine eigen Y-Achse, die Kantenlänge ist 4,
+  glclear;              //Fenster lï¿½schen
+                        //In dieser Befehlsreihenfolge rotiert der Wï¿½rfel um seine eigen Y-Achse, die Kantenlï¿½nge ist 4,
                         //die Drehachse ist bei 12-0-0
-  glscale(4,4,4);       //vergrößern
+  glscale(4,4,4);       //vergrï¿½ï¿½ern
   glmove(3,0,0);        //verschieben
   glrotate(R,0,1,0);    //drehen
   glcolor(30,30,200);
   glcalllist(L);
   
   glloadidentity;
-                        //In diser Reihenfolge dreht sich der Würfel um den Koordinatenursprung, hat die Kantenlänge 3 und
+                        //In diser Reihenfolge dreht sich der Wï¿½rfel um den Koordinatenursprung, hat die Kantenlï¿½nge 3 und
                         //den Drehradius 9
-  glscale(3,3,3);       //vergrößern
+  glscale(3,3,3);       //vergrï¿½ï¿½ern
   glrotate(R,0,1,0);    //drehen
   glmove(3,0,0);        //verschieben
   glcolor(200,30,20);
@@ -1147,7 +1147,7 @@ while(1)
   <pre>
   glloadidentity;
   </pre>
-  Mit diesem Befehl werden alle Transformationen zurückgesetzt.<br><br><br>
+  Mit diesem Befehl werden alle Transformationen zurï¿½ckgesetzt.<br><br><br>
   
   
   <LI>glstring<br>
@@ -1165,7 +1165,7 @@ while(1)
   <pre>
   drawpoint(x,y);
   </pre>
-  Dieser Befehl zeichnet einen eizelnen Punkt in der aktuell ausgewählten Farbe in das 2D-Anzeigefenster des
+  Dieser Befehl zeichnet einen eizelnen Punkt in der aktuell ausgewï¿½hlten Farbe in das 2D-Anzeigefenster des
   Script-Interpreters.
   Der Koordinatenursprung ist die linke, obere Ecke des Anzeigefensters. Die Koordinaten werden als Ganzzahlen angegeben.
   <br><br><br>
@@ -1175,7 +1175,7 @@ while(1)
   <pre>
   drawline(xstart,ystart,xend,yend);
   </pre>
-  Dieser Befehl zeichnet eine Linie vom gegebenen Startpunkt zum gegebenen Endpunkt in der aktuell gewählten Farbe.
+  Dieser Befehl zeichnet eine Linie vom gegebenen Startpunkt zum gegebenen Endpunkt in der aktuell gewï¿½hlten Farbe.
   Alle Koordinaten werden als Integer-Ganzzahlen angegeben.
   <br><br><br>
   
@@ -1209,8 +1209,8 @@ while(1)
   <pre>
   drawcolor(r,g,b);
   </pre>
-  Mit diesem Befehl wird die aktuelle Zeichenfarbe für die 2D-Grafik des Script-Interpreters gesetzt. Die Farbe wird als
-  Rot- Grün- und Blau-Anteil angegeben, wobei die Werte Ganzzahlen in einem Bereich von 0 bis 255 sein müssen.
+  Mit diesem Befehl wird die aktuelle Zeichenfarbe fï¿½r die 2D-Grafik des Script-Interpreters gesetzt. Die Farbe wird als
+  Rot- Grï¿½n- und Blau-Anteil angegeben, wobei die Werte Ganzzahlen in einem Bereich von 0 bis 255 sein mï¿½ssen.
   <br><br><br>
   
   <LI>drawclear<br>
@@ -1218,7 +1218,7 @@ while(1)
   <pre>
   drawclear;
   </pre>
-  Löscht das 2D-Anzeigefenster.
+  Lï¿½scht das 2D-Anzeigefenster.
   <br><br><br>
   
 
@@ -1318,11 +1318,11 @@ while(1)
 
 #config clearmemory           //Array-Speicher vor dem Start l&ouml;schen
 
-#config gl                    //Aktiviert den GL-Modus für 3D-Grafik
-                              //Diese Option muss aktiviert sein, um 3D-Grafikbefehle verwenden zu können
+#config gl                    //Aktiviert den GL-Modus fï¿½r 3D-Grafik
+                              //Diese Option muss aktiviert sein, um 3D-Grafikbefehle verwenden zu kï¿½nnen
 
 #config graphics              //Aktiviert den 2D-Grafikmodus
-                              //Diese Option muss aktiviert sein, um 2D-Grafikbefehle verwenden zu können
+                              //Diese Option muss aktiviert sein, um 2D-Grafikbefehle verwenden zu kï¿½nnen
 
 #config axeson                //Aktiviert oder deaktiviert die Koordinatenachsen im 3D-Modus
 #config axesoff
@@ -1483,122 +1483,123 @@ while(1)
   
   
   <a name="matrixvector"><h2>3.5 Matrix-, Vektorrechnung</h2></a>
+  <h2>Die beschriebenen Funktionen sind in v0.9.3 nicht enthalten!</h2>
   <img src="matvec.jpg"></img><br><br>
-  Mit dem Matrix/Vektor-Fenster von Extcalc können verschiedenen Matrix- und Vektorberechnungen durchgeführt werden.
-  Das Fenster enthält immer eine Variablen-Liste, in der zu jeder Variable die Größe und der Typ verzeichnet ist.
-  Außerdem wird zur aktuell ausgewählten Variable in der Tabelle der Inhalt angezeigt.<br>
-  Der Speicher, der für die Variablen verwendet wird, ist der selbe wie der Speicher des normalen Rechners.
+  Mit dem Matrix/Vektor-Fenster von Extcalc kï¿½nnen verschiedenen Matrix- und Vektorberechnungen durchgefï¿½hrt werden.
+  Das Fenster enthï¿½lt immer eine Variablen-Liste, in der zu jeder Variable die Grï¿½ï¿½e und der Typ verzeichnet ist.
+  Auï¿½erdem wird zur aktuell ausgewï¿½hlten Variable in der Tabelle der Inhalt angezeigt.<br>
+  Der Speicher, der fï¿½r die Variablen verwendet wird, ist der selbe wie der Speicher des normalen Rechners.
   <br>
-  In der Variablen-List kann die Größe einer Variable geändert werden. Wenn man den Inhalt einer Varialbe ändern will,
-  dann kann man die Variable auswählen und in der angezeigten Tabelle den Inhalt eintragen.<br>
+  In der Variablen-List kann die Grï¿½ï¿½e einer Variable geï¿½ndert werden. Wenn man den Inhalt einer Varialbe ï¿½ndern will,
+  dann kann man die Variable auswï¿½hlen und in der angezeigten Tabelle den Inhalt eintragen.<br>
   <br>
   <h3>Module</h3>
   Eine Liste der enthaltenen Rechenmodule<br>
   <h4>Rechner</h4>
   Dieses Modul hat die gleichen Funktionen wie der Standard-Rechner. Das Rechner-Fenster wird rechts unten eingeblendet.
-  Dort können alle Berechnungen durchgeführt werden, die auch im normalen Rechnerfenster möglich sind.
+  Dort kï¿½nnen alle Berechnungen durchgefï¿½hrt werden, die auch im normalen Rechnerfenster mï¿½glich sind.
   <h4>Lineares Gleichungssystem</h4>
-  Dieses Modul dient zum Lösen von linearen Gleichungssystemen.<br>
-  Es gibt zwei Möglichkeiten, die Parameter der linearen Gleichungen anzugeben.<br>
-  - Nur eine Matrix der Größe n x (n+1) auswählen:<br>
+  Dieses Modul dient zum Lï¿½sen von linearen Gleichungssystemen.<br>
+  Es gibt zwei Mï¿½glichkeiten, die Parameter der linearen Gleichungen anzugeben.<br>
+  - Nur eine Matrix der Grï¿½ï¿½e n x (n+1) auswï¿½hlen:<br>
   Beispiel:<br>
-  Das zu Lösende Gleichungssystem lautet:
+  Das zu Lï¿½sende Gleichungssystem lautet:
   <pre>
   4x - 2y  =  9
  -2x + 5y  = -2
   </pre>
-  Die Matrix-Größe wäre dann 2 x 3<br>
-  Der Inhalt der Matrix wäre:
+  Die Matrix-Grï¿½ï¿½e wï¿½re dann 2 x 3<br>
+  Der Inhalt der Matrix wï¿½re:
   <pre>
    4 -2  9
   -2  5 -2
   </pre>
-  - Eine Matrix der Größe n x n und einen Vektor der Größe n auswählen:<br>
+  - Eine Matrix der Grï¿½ï¿½e n x n und einen Vektor der Grï¿½ï¿½e n auswï¿½hlen:<br>
   Beispiel mit den selben Gleichungen wie oben:<br>
-  Der Inhalt der 2 x 2 Matrix wäre:
+  Der Inhalt der 2 x 2 Matrix wï¿½re:
   <pre>
    4 -2
   -2  5
   </pre>
-  Der Inhalt des Vektors der Größe 2 wäre:
+  Der Inhalt des Vektors der Grï¿½ï¿½e 2 wï¿½re:
   <pre>
    9
   -2
   </pre>
-  Die Anzahl der Unbekannten kann in der "Unbekannte"-Box geändert werden. Die Größe von Vektor und Matrix wird beim Drücken des
+  Die Anzahl der Unbekannten kann in der "Unbekannte"-Box geï¿½ndert werden. Die Grï¿½ï¿½e von Vektor und Matrix wird beim Drï¿½cken des
   Ok-Knopfes angepasst.<br>
-  Die Tabelle unten rechts zeigt nach dem Drücken des "Berechnen"-Knopfes das Ergebnis an.<br>
-  Im obigen Beispiel wäre die Lösung x=2.25 und y=0.75.<br>
-  Die Tabelle würde folgende Werte zeigen:
+  Die Tabelle unten rechts zeigt nach dem Drï¿½cken des "Berechnen"-Knopfes das Ergebnis an.<br>
+  Im obigen Beispiel wï¿½re die Lï¿½sung x=2.25 und y=0.75.<br>
+  Die Tabelle wï¿½rde folgende Werte zeigen:
   <pre>
   2.25
   0.75
   </pre>
-  Wenn das Gleichungssystem keine Lösung oder unendlich viele Lösungen hat, dann wird der letzte Schritt des Gauß-Algorithmus,
+  Wenn das Gleichungssystem keine Lï¿½sung oder unendlich viele Lï¿½sungen hat, dann wird der letzte Schritt des Gauï¿½-Algorithmus,
   der zur Berechnung verwendet wird, angezeigt.<br>
-  Diese Werte können dann für weitere Berechnungen verwendet werden.<br>
+  Diese Werte kï¿½nnen dann fï¿½r weitere Berechnungen verwendet werden.<br>
   <h4>Erstellen</h4>
-  Mit diesem Modul können besondere Matrizen und Vektoren erstellt werden.<br>
-  Zuerst muss immer der Matrix- bzw. Vektor-Typ und die zu verwendende Variable ausgewählt werden.<br>
-  Die folgenden Inhalte können erzeugt werden:<br>
+  Mit diesem Modul kï¿½nnen besondere Matrizen und Vektoren erstellt werden.<br>
+  Zuerst muss immer der Matrix- bzw. Vektor-Typ und die zu verwendende Variable ausgewï¿½hlt werden.<br>
+  Die folgenden Inhalte kï¿½nnen erzeugt werden:<br>
     <TABLE BORDER>
-  <TR><TH>Typ</TH><TH>Erklärung</TH>
+  <TR><TH>Typ</TH><TH>Erklï¿½rung</TH>
   <TR>
   <TD>Einheitsmatrix</TD>
-  <TD>Größen n x n; Hauptdiagonale gleich 1; Alle anderen Elemente gleich 0
+  <TD>Grï¿½ï¿½en n x n; Hauptdiagonale gleich 1; Alle anderen Elemente gleich 0
   </TD>
     <TR>
   <TD>Nullmatrix</TD>
-  <TD>Größe beliebig; Alle Elemente gleich 0
+  <TD>Grï¿½ï¿½e beliebig; Alle Elemente gleich 0
   </TD>
     <TR>
   <TD>Nullvektor</TD>
-  <TD>Vektor beliebiger Größe; Alle Elemente gleich 0
+  <TD>Vektor beliebiger Grï¿½ï¿½e; Alle Elemente gleich 0
   </TD>
     <TR>
   <TD>- X-, Y-, Z-Drehmatrix</TD>
-  <TD>Größe 2x2 oder 3x3; Drehmatrix mit dem angegebenen Winkel
+  <TD>Grï¿½ï¿½e 2x2 oder 3x3; Drehmatrix mit dem angegebenen Winkel
   </TD>
     <TR>
   <TD>Skalierungsmatrix</TD>
-  <TD>Größe 2 x 2 oder 3 x 3. Erstellt Skalierungsmatrix mit den gegebenen Parametern
+  <TD>Grï¿½ï¿½e 2 x 2 oder 3 x 3. Erstellt Skalierungsmatrix mit den gegebenen Parametern
   </TD>
   </TABLE>
 
   <h4>Analysieren</h4>
-  Dieses Modul zeigt einige Informationen über die ausgewählte Variable an.
+  Dieses Modul zeigt einige Informationen ï¿½ber die ausgewï¿½hlte Variable an.
   <h4>Inverse Matrix</h4>
   Die Funktion dieses Moduls entspricht der Rechneroperation X[][]^-1.<br>
-  Die inverse Matrix wird, sofern möglich, berechnet und in der Tabelle angezeigt.<br>
+  Die inverse Matrix wird, sofern mï¿½glich, berechnet und in der Tabelle angezeigt.<br>
   
   
   <a name="stat"><h2>3.6 Statistik</h2></a>
   <img src="stat2.jpg"></img><img src="stat1.jpg"></img><br><br>
-  Im Statistik-Fenster können Näherungsrechnungen und statistische Auswertungen von Wertetabellen durchgeführt werden.
-  Dazu werden verschiedene Module bereitgestellt. Alle Module bieten die Möglichkeit, das jeweilige Ergebnis grafisch darzustellen,
-  indem man den Zeichnen-Knopf drückt. Meistens können zusätzlich zur stetigen Funktion noch die Stützpunkte angezeigt werden.
+  Im Statistik-Fenster kï¿½nnen Nï¿½herungsrechnungen und statistische Auswertungen von Wertetabellen durchgefï¿½hrt werden.
+  Dazu werden verschiedene Module bereitgestellt. Alle Module bieten die Mï¿½glichkeit, das jeweilige Ergebnis grafisch darzustellen,
+  indem man den Zeichnen-Knopf drï¿½ckt. Meistens kï¿½nnen zusï¿½tzlich zur stetigen Funktion noch die Stï¿½tzpunkte angezeigt werden.
   
   <h4>Approximation</h4>
-  Mit diesem Modul können aus einer Menge von Stützpunkten mathematische Funktionen angenähert werden.
-  Dazu stehen mehrere Funktions-Grundtypen zur Verfügung, die in einer Box ausgewählt werden können.
-  Außerdem muss noch ausgewählt werden, welche Koordinatenliste zur Berechnung verwendet werden soll.
-  Die Funktion wird in der Ergebnis-Zeile angezeigt, wenn man den Berechnen-Knopf drückt. Die Funktion kann von dort in die allgemeine
-  Funktions-Liste übernommen werden. Über den Zeichnen-Knopf kann die Funktion direkt angezeigt werden. Zusätzlich können auch die
-  Stützpunkte für die Näherung eingeblendet werden.
-  Folgende Funktionen stehen zur Verfügung:
+  Mit diesem Modul kï¿½nnen aus einer Menge von Stï¿½tzpunkten mathematische Funktionen angenï¿½hert werden.
+  Dazu stehen mehrere Funktions-Grundtypen zur Verfï¿½gung, die in einer Box ausgewï¿½hlt werden kï¿½nnen.
+  Auï¿½erdem muss noch ausgewï¿½hlt werden, welche Koordinatenliste zur Berechnung verwendet werden soll.
+  Die Funktion wird in der Ergebnis-Zeile angezeigt, wenn man den Berechnen-Knopf drï¿½ckt. Die Funktion kann von dort in die allgemeine
+  Funktions-Liste ï¿½bernommen werden. ï¿½ber den Zeichnen-Knopf kann die Funktion direkt angezeigt werden. Zusï¿½tzlich kï¿½nnen auch die
+  Stï¿½tzpunkte fï¿½r die Nï¿½herung eingeblendet werden.
+  Folgende Funktionen stehen zur Verfï¿½gung:
   <TABLE BORDER>
-  <TR><TH>Funktion</TH><TH>Erklärung</TH>
+  <TR><TH>Funktion</TH><TH>Erklï¿½rung</TH>
   <TR>
   <TD>konst</TD>
   <TD>Konstante. Es wird der arithmetische Mittelwert der Y-Koordinaten berechnet.
   </TD>
     <TR>
   <TD>a*x+b</TD>
-  <TD>Geradennäherung. Eine genäherte Gerade nach dem Prinzip der kleinsten Quadrate.
+  <TD>Geradennï¿½herung. Eine genï¿½herte Gerade nach dem Prinzip der kleinsten Quadrate.
   </TD>
     <TR>
   <TD>a*x^2+b*x+c</TD>
-  <TD>Quadratische Näherung. Eine Parabel als Näherungsfunktion. Ebenfalls nach dem Prinzip der kleinsten Quadrate berechnet.
+  <TD>Quadratische Nï¿½herung. Eine Parabel als Nï¿½herungsfunktion. Ebenfalls nach dem Prinzip der kleinsten Quadrate berechnet.
   </TD>
     <TR>
   <TD> a*e^(bx)</TD>
@@ -1611,22 +1612,22 @@ while(1)
   </TABLE>
   <h4>Interpolation</h4>
   Dieses Modul dient zum Berechnen einer Interpolations-Funktion. Es wird eine Polynom-Funktion berechnet, die durch alle gegebenen
-  Punkte führt. Da der Grad des Polynoms der Anzahl der Punkte entspricht, kann die Funktion unter Umständen sehr lang werden.
+  Punkte fï¿½hrt. Da der Grad des Polynoms der Anzahl der Punkte entspricht, kann die Funktion unter Umstï¿½nden sehr lang werden.
   Wie bei der Approximation, kann die Ergebnis-Funktion mit dem Zeichnen-Knopf direkt angezeigt werden, oder mit dem Berechen-Knopf
-  berechnet werden und anschließend an eine beliebige Stelle in die Funktionsliste kopiert werden.
+  berechnet werden und anschlieï¿½end an eine beliebige Stelle in die Funktionsliste kopiert werden.
 
   <h4>Linien-Graph anzeigen</h4>
   Dieses Modul dient zur Veranschaulichung der eingegebenen Daten. Es zeigt alle eingegebenen Punkte, verbunden mit Linien, an.
-  Der Graph wird angezeigt, wenn man den Zeichnen-Knopf drückt.
+  Der Graph wird angezeigt, wenn man den Zeichnen-Knopf drï¿½ckt.
 
   <h4>Normalverteilungskurve berechnen</h4>
-  Hier wird aus Liste von Werten (keine Punkte!) die passende, Gauß'sche Normalverteilungskurve berechnet. Die Ergebnis-Funktion kann wie
-  bei Iterpolation und Approximation weiterverarbeitet werden. Zur weiteren Auswertung können die Analyse-Möglichkeiten im Grafik-Fenster 
-  benutzt werden, wenn die Funktion in die Funktionsliste übertragen wurde.
+  Hier wird aus Liste von Werten (keine Punkte!) die passende, Gauï¿½'sche Normalverteilungskurve berechnet. Die Ergebnis-Funktion kann wie
+  bei Iterpolation und Approximation weiterverarbeitet werden. Zur weiteren Auswertung kï¿½nnen die Analyse-Mï¿½glichkeiten im Grafik-Fenster 
+  benutzt werden, wenn die Funktion in die Funktionsliste ï¿½bertragen wurde.
   
   <h4>Verteilungs-Graph anzeigen</h4>
-  Mit diesem Modul kann die Verteilung von Werten (keine Punkte!) angezeigt werden. Die Anzahl der Stützpunkte kann eingestellt werden.
-  Das Ergebnis wird angezeigt, wenn man den Zeichnen-Knopf drückt.
+  Mit diesem Modul kann die Verteilung von Werten (keine Punkte!) angezeigt werden. Die Anzahl der Stï¿½tzpunkte kann eingestellt werden.
+  Das Ergebnis wird angezeigt, wenn man den Zeichnen-Knopf drï¿½ckt.
 
 
   
@@ -1692,11 +1693,11 @@ while(1)
   <br>
   <a name="else"><h2>4. Sonstiges</h2></a>
   <h5> Version</h5>
-  Extcalc Version 0.9.2<br>
+  Extcalc Version 0.9.3<br>
   Dies ist eine Betaversion von Extcalc!<br>
-  Im Programm können noch einige Fehler enthalten sein, weil die zahlreichen neuen Features, die in den letzten Versionen
-  integriert wurden, noch ausreichend getestet werden müssen.<br>
-  Zusätzliche Informationen zur Betaversion werden auf der <a href="http://extcalc-linux.sourceforge.net">Projekt-Homepage</a>
+  Im Programm k&uuml;nnen noch einige Fehler enthalten sein, weil die zahlreichen neuen Features, die in den letzten Versionen
+  integriert wurden, noch ausreichend getestet werden m&uuml;ssen.<br>
+  Zus&auml;tzliche Informationen zur Betaversion werden auf der <a href="http://extcalc-linux.sourceforge.net">Projekt-Homepage</a>
   bereitgestellt.<br>
   <h5>Rechengenauigkeit:</h5>
   Aufgrund des Aufbaus eines PC-Prozessors und der verwendeten Variablen vom Typ long double (80 Bit)
@@ -1732,8 +1733,8 @@ while(1)
   das Grafikfenster bleibt schwarz und kann nichts anzeigen.<br>
   Wenn dieser Fehler auftritt, m&uuml;ssen die X-Server und OpenGL-Pakete aktualisiert werden.<br>
   <h5>FreeBSD 6.2:</h5>
-  Das Programm kann unter FreeBSD 6.2 installliert werden, wenn die Entwicklungspakete für Qt 3 und OpenGL installiert sind.
-  Es ist möglicherweise nötig, die Umgebungsvariable QTDIR auf den Installationspfad von Qt zu setzen.
+  Das Programm kann unter FreeBSD 6.2 installliert werden, wenn die Entwicklungspakete fï¿½r Qt 3 und OpenGL installiert sind.
+  Es ist mï¿½glicherweise nï¿½tig, die Umgebungsvariable QTDIR auf den Installationspfad von Qt zu setzen.
   
   
   <h5>Hardwareanforderungen:</h5>
