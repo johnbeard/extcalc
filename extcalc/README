@@ -21,28 +21,20 @@ mathmatical functions, draw graphs and work with functions. You can also calcula
 
 
 2. INSTALLATION
-- unpack archive (tar -xzf extcalc-0.9.2.tar.gz)
-- switch to directory (cd extcalc-0.9.2)
-- run configure (./configure)
+- unpack archive (tar -xzf extcalc-0.9.3.tar.gz)
+- switch to directory (cd extcalc-0.9.3)
+- run configure (cmake .)
 - compile (make)
 - become root (su)
 - install (make install)
 
-Languages:
-To install the german version of the calculator, type "./configure --enable-language_de" instead of
-"./configure"
-
-For the french version, type "./configure --enable-language_fr"
-
-
-
 3. CONTENT
-The following things should be in this packet:
+This packet contains the following files and directories:
 
 README                       this readme
 LIESMICH                     german readme
-configure                    configure script
-...                          other files for automake
+CMakeLists.txt               CMake configuration file
+...                          other files for installation
 src/                         the complete sourcecode
     ...
 share/                       files needed for installation
@@ -56,11 +48,14 @@ doc/                         documentation
 	   
 	   
 4. VERSION
-Version 0.9.2
+Version 0.9.3
 
 This is a beta release.
 For information, how to report a bug, please visit the
 project home page http://extcalc-linux.sourceforge.net/.
+
+Due to major changes in the user interface codes, parts
+of the user interface are not accessible in v0.9.3 of Extcalc.
 
 done:
 User Interface for Calculator
@@ -99,39 +94,19 @@ beta test
 This is a beta version. The program may have some bugs.
 
 Tested Distributions:
-Suse Linux 8.2         ok
-Suse Linux 9.2         ok
-Suse Linux 10.2        ok
-Suse Linux 10.0        ok
-Debian 3.1 Sarge       update needed
-Debian Etch            ok
-Mandriva 2007          ok
-Fedora Core 2          ok
-Fedora Core 3 (64Bit)  ok
-Fedora Core 4          update needed
-Fedora Core 5          ok
-Ubuntu Linux 5.10      ok
-Ubuntu Linux 6.06      ok
-Mepis Linux 6.0        ok
-
-Debian 3.1 Sarge
-             The program builds without errors, but if you want to use 
-             the graphics window, it is black and you can't draw graphs
-             If this happans on your system,  please install the
-             updates for X and OpenGL to fix this bug.
-             
-Fedora Core 4        
-             installation runs without errors
-             programm stops immediately with segmentation fault 
-             The linker of the standard version of FC4 doesn't generate
-             a working ELF header for this program.
-             To fix this bug, please update gcc and g++.
+Suse Linux 11.2        ok
+Debian Lenny           ok
+Mandriva 2010          ok
+Fedora Core 12         ok
+Ubuntu Linux 9.10      ok
 
 Software Requirements:
 Linux
-GCC 3 or GCC 4 (doesn't run with gcc 2.xx)
-QT3.1 or higher
-OpenGL 
+GCC 4
+QT4.3 or higher
+OpenGL
+cmake
+
 
 Hardware Requirements:
 CPU at about 1GHz (32Bit or 64Bit)

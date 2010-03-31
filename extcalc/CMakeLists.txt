@@ -66,7 +66,10 @@ SET(moc_h
 	src/graph.h
 	src/importdialog.h
 	src/tabwidget.h
-	src/statistics.h)
+	src/statistics.h
+        src/scriptdisplay.h
+        src/screenshotdialog.h
+)
 
 SET(src_h
 	src/buttons.h
@@ -95,6 +98,8 @@ SET(src_h
 	src/list.h
 	src/calclocale.h
 	src/global.h
+        src/scriptdisplay.h
+        src/screenshotdialog.h
 )
 	
 SET(src_cxx 
@@ -122,18 +127,21 @@ SET(src_cxx
 	src/statistics.cpp
 	src/tabwidget.cpp
 	src/global.cpp
+        src/scriptdisplay.cpp
+        src/screenshotdialog.cpp
 )
 
+SET(src_ui src/screenshotdialog.ui
+)
+
+SET(src_qrc share/icons.qrc)
 
 
+QT4_ADD_RESOURCES(qrc_cxx ${src_qrc})
 
 QT4_WRAP_CPP(moc_cxx ${moc_h})
 
-
-
-
-ADD_EXECUTABLE(extcalc WIN32 ${src_cxx} ${src_h} ${moc_cxx})
-TARGET_LINK_LIBRARIES(extcalc ${QT_LIBRARIES})
+QT4_WRAP_UI(ui_h ${src_ui})
 
 
 
@@ -180,6 +188,7 @@ INSTALL(FILES
 	share/free.png
 	share/circle.png
 	share/line.png
+	share/icons.qrc
 	DESTINATION ${SHAREDIR}
 	)
 INSTALL(FILES
@@ -257,10 +266,13 @@ INSTALL(FILES
 	DESTINATION ${DOCDIR}
 )
 
-INSTALL(TARGETS
-	extcalc
-	DESTINATION ${BINDIR}
-)
+ADD_EXECUTABLE(extcalc WIN32 ${src_cxx} ${src_h} ${moc_cxx} ${moc_ui_cxx} ${src_ui_cxx} ${ui_h} ${qrc_cxx})
+TARGET_LINK_LIBRARIES(extcalc ${QT_LIBRARIES})
+
+  INSTALL(TARGETS extcalc RUNTIME DESTINATION bin
+      PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+		  GROUP_EXECUTE GROUP_READ
+		  WORLD_EXECUTE WORLD_READ)
 
 
 

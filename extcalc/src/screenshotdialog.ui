@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>305</width>
+    <width>312</width>
     <height>325</height>
    </rect>
   </property>
@@ -37,7 +37,7 @@
      <rect>
       <x>0</x>
       <y>10</y>
-      <width>291</width>
+      <width>306</width>
       <height>281</height>
      </rect>
     </property>
@@ -120,7 +120,7 @@
          </property>
          <property name="icon">
           <iconset>
-           <normalon>:/usr/share/extcalc/data/free.png</normalon>
+           <normalon>:/drawfree</normalon>
           </iconset>
          </property>
         </widget>
@@ -138,7 +138,7 @@
          </property>
          <property name="icon">
           <iconset>
-           <normalon>:/usr/share/extcalc/data/line.png</normalon>
+           <normalon>:/drawline</normalon>
           </iconset>
          </property>
         </widget>
@@ -156,7 +156,7 @@
          </property>
          <property name="icon">
           <iconset>
-           <normalon>:/usr/share/extcalc/data/rect.png</normalon>
+           <normalon>:/drawrect</normalon>
           </iconset>
          </property>
         </widget>
@@ -174,7 +174,7 @@
          </property>
          <property name="icon">
           <iconset>
-           <normalon>:/usr/share/extcalc/data/circle.png</normalon>
+           <normalon>:/drawcircle</normalon>
           </iconset>
          </property>
         </widget>
@@ -192,7 +192,7 @@
          </property>
          <property name="icon">
           <iconset>
-           <normalon>:/usr/share/extcalc/data/text.png</normalon>
+           <normalon>:/drawtext</normalon>
           </iconset>
          </property>
         </widget>
@@ -210,7 +210,7 @@
          </property>
          <property name="icon">
           <iconset>
-           <normalon>:/usr/share/extcalc/data/rubber.png</normalon>
+           <normalon>:/drawrubber</normalon>
           </iconset>
          </property>
         </widget>
@@ -345,7 +345,7 @@
          </property>
          <property name="icon">
           <iconset>
-           <normalon>:/usr/share/extcalc/data/open.png</normalon>
+           <normalon>:/openfile</normalon>
           </iconset>
          </property>
         </widget>

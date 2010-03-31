@@ -312,7 +312,7 @@ void ScriptDisplay::insertText(QString text,bool update)
 }
 
 /// Sets the selected text area
-int ScriptDisplay::setSelection(int startRow,int startCol,int endRow,int endCol)
+void ScriptDisplay::setSelection(int startRow,int startCol,int endRow,int endCol)
 {
   selectStartColumn=startCol;
   selectEndColumn=endCol;

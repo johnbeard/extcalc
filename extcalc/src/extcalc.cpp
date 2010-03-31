@@ -50,6 +50,9 @@ int main( int argc, char **argv ) {
 			fclose(configFile);
 		}
 	}
+
+  Q_INIT_RESOURCE(icons);
+
 	QApplication a( argc, argv );
 	
 	if(language==LANG_DE)
@@ -287,6 +290,8 @@ MainObject::MainObject() :QMainWindow()
   outputMapper->setMapping(tmpAction,EXPSYM);
   QObject::connect(outputMapper,SIGNAL(mapped(int)),this,SLOT(outputMenuSlot(int)));
   outputMenu->addMenu(floatPointMenu);
+
+
 
     
   baseMapper=new QSignalMapper(this);

@@ -20,25 +20,20 @@ Extcalc ist ein wissenschaftlicher, grafischer Taschenrechner für Linux. Er unte
 
 
 2. INSTALLATION
-- auspacken (tar -xzf extcalc-0.9.2.tar.gz)
-- in Verzeichnis wechseln (cd extcalc-0.9.2)
-- konfigurieren (./configure --enable-language_de)
+- auspacken (tar -xzf extcalc-0.9.3.tar.gz)
+- in Verzeichnis wechseln (cd extcalc-0.9.3)
+- konfigurieren (cmake .)
 - kompilieren (make)
 - root werden (su)
 - installieren (make install)
-
-Sprachunterstützung:
-Um extcalc in englisch zu installieren muss nur "./configure" ausgeführt werden.
-Zur Installation in deutsch mus "./configure --enable-language_de" ausgeführt werden.
-
 
 
 3. INHALT DES PAKETS
 Folgende Dateien sind in diesem Paket enthalten:
 README               engliche Readme
 LIESMICH             deutsche Readme
-configure            Konfigurationsscript
-...                  Dateien für Automake
+CMakeLists.txt       Konfigurationsdatei für CMake
+...                  Dateien für die Installation
 src/                 der gesamte Sourcecode
     ...
 share/               Installationsdaten
@@ -50,11 +45,14 @@ doc/                 Dokumentation
    
 	   
 4. VERSION
-Version 0.9.2
+Version 0.9.3
 
 Dies ist eine beta-Version von Extcalc.
 Wenn Sie einen Fehler melden wollen, folgen Sie bitte den Anweisungen
 auf der Projekt-Homepage http://extcalc-linux.sourceforge.net.
+
+Bedingt durch größere Änderungen an der grafischen Oberfläche sind
+Teile des Programms in Version 0.9.3 deaktiviert
 
 Fertig:
 Grafische Oberfläche Rechner
@@ -88,32 +86,18 @@ Beta-Tests
 
 Benötigte Pakete:
 Linux
-GCC 3 oder GCC 4 (läuft nicht mit gcc 2.xx)
-QT Version 3.1 oder höher
+GCC 4 (läuft nicht mit gcc 2.xx)
+QT Version 4.3 oder höher
 OpenGL 
+CMake 
 
 Getestete Distributionen:
-Suse Linux 8.2:            getestet, ok
-Suse Linux 9.2:            getestet, ok
-Suse Linux 10.2:           getestet, ok
-Debian 3.1 Sarge:          Update benötigt
-Debian Etch:               getestet, ok
-Ubuntu Linux 6.06          getestet, ok
-Ubuntu Linux 6.10          getestet, ok
-Mandriva 2006:             getestet, ok
-Fedora Core 2:             getestet, ok
-Fedora Core 3 (64Bit):     getestet, ok
-Fedora Core 5:             Update benötigt
-Fedora Core 6:             getestet, ok
-Mepis Linux 6.0            getestet, ok
+Suse Linux 11.2:           getestet, ok
+Debian Lenny:              getestet, ok
+Ubuntu Linux 9.10          getestet, ok
+Mandriva 2010:             getestet, ok
+Fedora Core 12:            getestet, ok
 
-Debian 3.1 Sarge:
-              Das Programm lässt sich fehlerfrei kompilieren, aber das
-              Grafik-Anzeigefenster ist schwarz und es können keine Graphen
-              gezeichnet werden. Wenn dieses Problem auftritt, muss das Update
-              für X-Server und OpenGL installiert werden.
-
-  
 
 Hardwareanforderungen:
 Prozessor mit ca. 1GHz (32Bit oder 64Bit)

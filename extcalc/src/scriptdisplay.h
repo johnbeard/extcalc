@@ -82,7 +82,7 @@ public:
   void setRows(int);
   int getRows();
   int getColumns();
-  int setSelection(int,int,int,int);
+  void setSelection(int,int,int,int);
   QString getSelectedText();
   void insertText(QString,bool update=true);
   void setChar(int row,int col,char c);

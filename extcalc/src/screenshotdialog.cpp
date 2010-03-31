@@ -22,6 +22,16 @@ ScreenshotDialog::ScreenshotDialog(QWidget*parent) :QDockWidget(tr("Screenshot")
     screenshotUi.formatBox->insertItem("BMP");
     screenshotUi.formatBox->insertItem("XPM");
 
+    // without this code, the icons were not shown in some cases
+    // seems to be a bug in Qt
+    screenshotUi.freeButton->setIcon(QIcon(":/drawfree"));
+    screenshotUi.lineButton->setIcon(QIcon(":/drawline"));
+    screenshotUi.rectButton->setIcon(QIcon(":/drawrect"));
+    screenshotUi.ellipseButton->setIcon(QIcon(":/drawcircle"));
+    screenshotUi.rubberButton->setIcon(QIcon(":/drawrubber"));
+    screenshotUi.textButton->setIcon(QIcon(":/drawtext"));
+    screenshotUi.pathButton->setIcon(QIcon(":/openfile"));
+
     QObject::connect(screenshotUi.pathButton,SIGNAL(clicked()),this,SLOT(openButtonSlot()));
     QObject::connect(screenshotUi.colorButton,SIGNAL(clicked()),this,SLOT(colorButtonSlot()));
     QObject::connect(screenshotUi.penBox,SIGNAL(valueChanged(int)),this,SLOT(penValueSlot(int)));
