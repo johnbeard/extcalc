@@ -15,9 +15,11 @@ any later version.
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 #include "global.h"
 //Added by qt3to4:
+
+
+
+#ifndef CONSOLE
 #include <QCustomEvent>
-
-
 QString cleanConfigString(QString prefName,QString par)
 {
 	QString parameter=par;
@@ -352,6 +354,7 @@ QString getColorName(QColor col)
 	
 }
 
+
 long double runCalc(QString line,Preferences*pref,Variable*vars)
 {
 
@@ -470,6 +473,7 @@ int YesNoBox(QString text)
 	mb.exec();
 
 }
+#endif
 /*
 char*checkString(QString input,Preferences*pref)
 {
@@ -530,6 +534,8 @@ char* preprocessor(char*input,Preferences*pref,bool script)
 		
 	return ret;	
 }
+
+#ifndef CONSOLE
 char* preprocessor(QString *input,Preferences*pref,bool script)
 {
 	if(!script)
@@ -570,11 +576,13 @@ char* removeUnicode(QString*input)
 	return output;
 }
 
+
 void replaceConstants(QString *input,Preferences*pref)
 {
 	for(int c=0; c<pref->constLen; c++)
 		input->replace(*(pref->constList[c].identifier),"("+*(pref->constList[c].value)+")");
 }
+#endif
 
 char* removeComments(char*input)
 {
@@ -2310,8 +2318,8 @@ int Script::parse(char* line,int start,int end)
 	}
 	
 
-        QString outLine(line);
-        outLine=outLine.mid(start,end-start);
+//        QString outLine(line);
+//        outLine=outLine.mid(start,end-start);
 //        qDebug(outLine);
 	
 	int pos1;
@@ -7098,7 +7106,32 @@ bool invertMatrix(int size,long double*matrix)
 }
 
 
+#ifdef CONSOLE
+void printError(const char*string,int semicolonCount,ThreadSync*data)
+{
+	data->error=true;
+	if(data->calcMode)
+		return;
+	
+	int index=semicolonCount-data->countDifference;
+	if(index>=data->semicolonLines.GetLen())
+		fprintf(stderr,"End of File            : ");
+	else 
+	{
+		if((index>0) && data->semicolonLines[index-1]< data->semicolonLines[index]-1)
+			fprintf(stderr,"Before or in line ");
+		else fprintf(stderr,"In line           ");
+	
+		fprintf(stderr,"%5i: ",(data->semicolonLines)[index]);
 
+
+	}
+	
+	
+	fprintf(stderr,string);
+	fprintf(stderr,"\n");
+}
+#else
 void printError(const char*text,int num,ThreadSync*eventReciver)
 {
 		QCustomEvent*debugEvent=new QCustomEvent(SIGDEBUG);
@@ -7108,6 +7141,6 @@ void printError(const char*text,int num,ThreadSync*eventReciver)
 		debugEvent->setData(debugData);
 		QCoreApplication::postEvent(eventReciver->eventReciver,debugEvent);
 }
-
+#endif
 
 

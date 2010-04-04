@@ -2,13 +2,14 @@
 #include <QWidget>
 #include <QFileDialog>
 #include <QColorDialog>
+#include <QPixmap>
 #include "global.h"
 
 
 /// ScreenshotDialog constructor to initialize ui and window
 ScreenshotDialog::ScreenshotDialog(QWidget*parent) :QDockWidget(tr("Screenshot"),parent,Qt::Window)
 {
-  screenshotUi.setupUi(this);
+    screenshotUi.setupUi(this);
 
     colorIcon=new QPixmap(20,20);
     paintColor.setRgb(255,0,0);

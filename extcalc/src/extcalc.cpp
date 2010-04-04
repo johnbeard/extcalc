@@ -580,7 +580,6 @@ MainObject::MainObject() :QMainWindow()
   clientArea=new QTabWidget(this);
   setCentralWidget(clientArea);
 
-
   screenshotDialog=new ScreenshotDialog(this);
   this->addDockWidget(Qt::BottomDockWidgetArea,screenshotDialog,Qt::Horizontal);
   screenshotDialog->setFloating(true);

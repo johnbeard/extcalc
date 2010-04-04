@@ -23,15 +23,14 @@ INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR}
                     src/
                     .)
 
-
-
+SET(CPACK_INSTALL_CMAKE_PROJECTS "/home/user/Projekte/extcalc;Extcalc;ALL;/")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Scientific Graphic Calculator")
 SET(CPACK_PACKAGE_VENDOR "")
 SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
-SET(CPACK_PACKAGE_VERSION_MAJOR "0")
-SET(CPACK_PACKAGE_VERSION_MINOR "93")
-SET(CPACK_PACKAGE_VERSION_PATCH "0")
+SET(CPACK_PACKAGE_VERSION "0.93")
+SET(CPACK_PACKAGE_NAME "extcalc")
+
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "CMake ${CMake_VERSION_MAJOR}.${CMake_VERSION_MINOR}")
 SET(CPACK_STRIP_FILES "bin/extcalc")
 SET(CPACK_SOURCE_STRIP_FILES "")
@@ -39,6 +38,20 @@ SET(CPACK_PACKAGE_EXECUTABLES "extcalc;extcalc")
 SET(CPACK_GENERATOR "TGZ")
 SET(CPACK_SOURCE_GENERATOR "TGZ")
 SET(CPACK_SOURCE_IGNORE_FILES "CVS/")
+#Debian speciefic
+SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "i386")
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 , libgcc1, libgl1-mesa-glx | libgl1, libglu1-mesa | libglu1, libqtcore4, libqt4-qt3support , libstdc++6, libx11-6, libxext6, libxft2")
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Rainer Strobel <rainer1223@users.sourceforge.net>")
+SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Extcalc is a multifunctional scientific graphic calculator for Linux with features like graph drawing, graph analysis and calculation of scientific functions. Extcalc also provides an integrated programming language.")
+SET(CPACK_DEBIAN_PACKAGE_SECTION "math")
+SET(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+
+SET(CPACK_RPM_PACKAGE_ARCHITECTURE "i386")
+SET(CPACK_RPM_PACKAGE_LICENSE "GPL")
+SET(CPACK_RPM_PACKAGE_GROUP "Productivity/Schientific/Math")
+SET(CPACK_RPM_PACKAGE_VENDOR "Rainer Strobel <rainer1223@users.sourceforge.net>")
+SET(CPACK_RPM_PACKAGE_DESCRIPTION "Extcalc is a multifunctional scientific graphic calculator for Linux with features like graph drawing, graph analysis and calculation of scientific functions. Extcalc also provides an integrated programming language.")
+
 
 INCLUDE(CPack)
 
@@ -145,13 +158,14 @@ QT4_WRAP_UI(ui_h ${src_ui})
 
 
 
-SET(CMAKE_INSTALL_PREFIX "/usr/local")
+SET(CMAKE_INSTALL_PREFIX "/usr")
 SET(SHAREDIR "share/extcalc/data")
 SET(DOCDIR "share/extcalc/doc")
-SET(DESKTOPDIR "/usr/share/applications")
-SET(ICONDIR "/usr/share/icons")
+SET(DESKTOPDIR "share/applications")
+SET(ICONDIR "share/icons")
 SET(MANDIR "/usr/man")
 SET(BINDIR "bin")
+ADD_DEFINITIONS(-DINSTALLDIR=\"\\\"${CMAKE_INSTALL_PREFIX}/share/extcalc\\\"\")
 
 
 #installer data
