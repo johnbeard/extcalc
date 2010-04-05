@@ -1,3 +1,4 @@
+#!/usr/bin/env xdg-open
 [Desktop Entry]
 Encoding=UTF-8
 Name=Extcalc
@@ -5,4 +6,4 @@ Exec=extcalc
 Terminal=false
 Type=Application
 Categories=Qt;Utility
-Icon=/usr/share/icons/icon48.png
+Icon=extcalc48.png
