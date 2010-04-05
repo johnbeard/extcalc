@@ -1,5 +1,517 @@
-#include "global.h"
+/*/////////////////////////////////////////Extcalc////////////////////////////////////////////
+/////////////////////////////////Scientific Graphic Calculator////////////////////////////////
 
+File:         global.cpp
+Author:       Rainer Strobel
+Email:        rainer1223@users.sourceforge.net
+Homepage:     http://extcalc-linux.sourceforge.net
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+
+////////////////////////////////////////////////////////////////////////////////////////////*/
+#include "global.h"
+//Added by qt3to4:
+
+
+
+#ifndef CONSOLE
+#include <QCustomEvent>
+QString cleanConfigString(QString prefName,QString par)
+{
+	QString parameter=par;
+	QString sign(QChar((unsigned short)ROOTSTRING));
+	parameter.replace(sign,"root");
+	sign=(QChar((unsigned short)PISTRING));
+	parameter.replace(sign,"pi");
+	sign=(QChar((unsigned short)EULERSTRING));
+	parameter.replace(sign,"euler");
+	sign=(QChar((unsigned short)INTEGRALSTRING));
+	parameter.replace(sign,"integral");
+	sign=(QChar((unsigned short)DELTASTRING));
+	parameter.replace(sign,"differential");
+	sign=(QChar((unsigned short)MEGASTRING));
+	parameter.replace(sign,"mega");
+	sign=(QChar((unsigned short)GIGASTRING));
+	parameter.replace(sign,"giga");
+	sign=(QChar((unsigned short)TERASTRING));
+	parameter.replace(sign,"tera");
+	if(prefName.length() <=0)
+		return parameter;
+	else return prefName+"="+parameter+"\n";
+}
+
+QString resetConfigString(QString str)
+{
+	QString retObject=str;
+	QString sign(QChar((unsigned short)ROOTSTRING));
+	retObject.replace("root",sign);
+	sign=(QChar((unsigned short)PISTRING));
+	retObject.replace("pi",sign);
+	sign=(QChar((unsigned short)EULERSTRING));
+	retObject.replace("euler",sign);
+	sign=(QChar((unsigned short)INTEGRALSTRING));
+	retObject.replace("integral",sign);
+	sign=(QChar((unsigned short)DELTASTRING));
+	retObject.replace("differential",sign);
+	sign=(QChar((unsigned short)MEGASTRING));
+	retObject.replace("mega",sign);
+	sign=(QChar((unsigned short)GIGASTRING));
+	retObject.replace("giga",sign);
+	sign=(QChar((unsigned short)TERASTRING));
+	retObject.replace("tera",sign);
+	
+	return retObject;
+}
+
+QString getConfigString(QString * configFile,QString objectName)
+{
+	QString retObject="";
+	int pos=0;
+	pos=configFile->find(objectName+"=");
+	if(pos != -1)
+		pos+=objectName.length()+1;
+	else return QString("");
+
+	while((*configFile)[pos] != '\n' && (*configFile)[pos] != '\t' && !((*configFile)[pos-1] == '\\' && (*configFile)[pos] == '\\'))
+	{
+		
+		retObject+=(*configFile)[pos];
+		pos++;
+		if(pos > (int)configFile->length())
+			return QString("");
+	}
+	
+	return retObject;
+}
+
+
+QString getUnicode(int code)
+{
+	QString retString;
+	QChar cCode((unsigned short)code);
+	retString.setUnicode(&cCode,1);	
+
+	return retString;
+}
+
+
+QString formatOutput(long double num,Preferences*pref)
+{
+	QString ret;
+	char*outString=new char[pref->precision+20];
+	
+	if(pref->calcType==SCIENTIFIC)
+	{
+		switch(pref->outputType)
+		{
+			case FIXEDNUM:
+			{
+				sprintf(outString,"%.*Le",pref->outputLength,num);
+				ret=QString(outString);
+				break;
+			}
+		
+			case VARIABLENUM:
+			{
+				sprintf(outString,"%.*Lg",pref->outputLength,num);
+				ret=QString(outString);
+				break;
+			}
+			case EXPSYM:
+			{
+				if(num < 1e-12 && num > -1e-12)
+				{
+					num*=1e15;
+					ret="f";
+				}
+				else if(num < 1e-9 && num > -1e-9)
+				{
+					num*=1e12;
+					ret="p";
+				}			
+				else if(num < 1e-6 && num > -1e-6)
+				{
+					num*=1e9;
+					ret="n";
+				}
+				else if(num < 1e-3 && num > -1e-3)
+				{
+					num*=1e6;
+					ret="\xb5";
+				}
+				else if(num < 1 && num > -1)
+				{
+					num*=1e3;
+					ret="m";
+				}
+				else if(num < 1e3 && num > -1e3)
+				{
+					ret="";
+				}
+				else if(num < 1e6 && num > -1e6)
+				{
+					num/=1e3;
+					ret="k";
+				}
+				else if(num < 1e9 && num > -1e9)
+				{
+					num/=1e6;
+					ret=getUnicode(MEGASTRING);
+				}
+				else if(num < 1e12 && num > -1e12)
+				{
+					num/=1e9;
+					ret=getUnicode(GIGASTRING);
+				}
+				else
+				{
+					num/=1e12;
+					ret=getUnicode(TERASTRING);
+				}
+				sprintf(outString,"%.*Lg",pref->outputLength,num);
+				ret=QString(outString)+ret;
+				break;
+			}
+		}
+	}
+	else {
+		long long iNum=(long long)num;
+#if QT_VERSION < 0x030200
+			char*buffer=new char[66];
+			if(pref->base==DEC)
+			{
+				sprintf(buffer,"%lli",iNum);
+				ret=QString(buffer);
+			}
+			else if(pref->base==HEX)
+			{
+				sprintf(buffer,"%llX",iNum);
+				ret=QString(buffer);
+			}
+			else if(pref->base==OCT)
+			{
+				sprintf(buffer,"%llo",iNum);
+				ret=QString(buffer);
+			}
+			else
+			{
+				unsigned int hipart=(uint)(iNum>>32);
+				unsigned int lowpart=(uint)(iNum&0xFFFFFFFF);
+
+				if(hipart>0)
+					ret=QString(QString::number(hipart,2));
+				else ret="";
+				ret+=QString::number(lowpart,2);
+			}
+#else
+		int base;
+		if(pref->base==DEC)
+			base=10;
+		else if(pref->base==HEX)
+			base=16;
+		else if(pref->base==OCT)
+			base=8;
+		else base=2;
+
+		ret=QString(QString::number(iNum,base)).upper();
+#endif
+	}
+	delete[] outString;
+	return ret;
+}
+
+QString formatOutput(Number num,Preferences*pref,ThreadSync*varData)
+{
+	QString ret;
+	switch(num.type)
+	{
+		case NINT:
+			ret=formatOutput((long double)num.ival,pref);
+//			ret+="(int)";
+			break;
+		case NFLOAT:
+		case NCOMPLEX:
+			ret=formatOutput(num.fval.real(),pref);
+			if(num.fval.imag()!=0.0 && pref->complex)
+			{
+				if(num.fval.imag()>0.0)
+					ret+=" +";
+				else ret+=" ";
+				ret+=formatOutput(imag(num.fval),pref);
+				ret+="i";
+			}
+//			ret+="(float)";
+			break;
+		case NBOOL:
+			ret=formatOutput((long double)num.bval,pref);
+//			ret+="(bool)";
+			break;
+		case NCHAR:
+			ret+=QString(num.cval);
+//			ret+="(string)";
+			break;
+		case NVECTOR:
+			if(varData==NULL)
+				ret=formatOutput((long double)num.ival,pref);
+			else {
+				if(num.ival<0 || num.ival >=VARNUM)
+				{
+					ret=QString("invalid");
+					break;
+				}
+				int end=varData->dimension[num.ival][0];
+				ret=QString("");
+				for(int c=0; c<end;c++)
+				{
+					if(varData->vars[num.ival][c].type!=NVECTOR && varData->vars[num.ival][c].type!=NMATRIX)
+						ret+=formatOutput(varData->vars[num.ival][c],pref);
+					ret+=" ";
+				}
+			}
+			break;
+		case NMATRIX:
+		{
+			int effIndex;
+			for(int c=0; c<varData->dimension[num.ival][0];c++)
+			{
+				for(int c1=0; c1<varData->dimension[num.ival][1];c1++)
+				{
+					effIndex=c1*varData->dimension[num.ival][0]+c;
+					if(effIndex<=varData->numlen[num.ival] && varData->vars[num.ival][effIndex].type!=NMATRIX && varData->vars[num.ival][effIndex].type!=NVECTOR)
+						ret+=formatOutput(varData->vars[num.ival][effIndex],pref);
+					else ret+="invalid";
+					ret+=" ";
+				}
+				ret+="\n";
+			}
+			break;
+	}
+		default:
+			ret=("invalid");
+			break;
+	}
+	return ret;
+}
+
+
+QColor getColor(QString colorName)
+{
+	if(colorName == GRAPHH_COL1)
+		return QColor(0,0,0);					//red
+	else if(colorName == GRAPHH_COL3)
+		return QColor(205,135,15);				//brown
+	else if(colorName == GRAPHH_COL5)
+		return QColor(0,0,255);					//blue
+	else if(colorName == GRAPHH_COL4)
+		return QColor(0,220,0);					//green
+	else if(colorName == GRAPHH_COL6)
+		return QColor(255,0,255);				//violet
+	else if(colorName == GRAPHH_COL7)
+		return QColor(255,192,0);				//orange
+	else if(colorName == GRAPHH_COL8)
+		return QColor(255,0,0);					//red
+	else if(colorName == GRAPHH_COL9)
+		return QColor(255,255,0);				//yellow
+	else if(colorName == GRAPHH_COL10)
+		return QColor(0,220,220);				//magenta
+	else if(colorName == GRAPHH_COL2)
+		return QColor(150,150,150);				//grey
+	else if(colorName == GRAPHH_COL11)
+		return QColor(1,1,1);
+	else return QColor(0,0,0);
+}
+
+
+QString getColorName(QColor col)
+{
+	if(col == QColor(0,0,0))
+		return QString(GRAPHH_COL1);					//red
+	else if(col == QColor(205,135,15))
+		return QString(GRAPHH_COL3);				//brown
+	else if(col == QColor(0,0,255))
+		return QString(GRAPHH_COL5);					//blue
+	else if(col == QColor(0,220,0))
+		return QString(GRAPHH_COL4);					//green
+	else if(col == QColor(255,0,255))
+		return QString(GRAPHH_COL6);				//violet
+	else if(col == QColor(255,192,0))
+		return QString(GRAPHH_COL7);				//orange
+	else if(col == QColor(255,0,0))
+		return QString(GRAPHH_COL8);					//red
+	else if(col == QColor(255,255,0))
+		return QString(GRAPHH_COL9);				//yellow
+	else if(col == QColor(0,220,220))
+		return QString(GRAPHH_COL10);				//magenta
+	else if(col == QColor(150,150,150))
+		return QString(GRAPHH_COL2);				//grey
+	else if(col == QColor(1,1,1))
+		return QString(GRAPHH_COL11);
+	else return QString(GRAPHH_COL1);
+	
+}
+
+
+long double runCalc(QString line,Preferences*pref,Variable*vars)
+{
+
+	char*cleanString=preprocessor(&line,pref,false);
+	if(cleanString==NULL)
+		return NAN;
+	else 
+	{
+		Calculate ca(NULL,cleanString,0,strlen(cleanString),pref,vars);
+		double result= ca.calc();
+		free(cleanString);
+		return (long double)result;
+	}
+}
+
+QString getErrorMessage()
+{
+	int er=errno;
+	switch(er)
+	{
+		case EACCES:
+			return(QString("Permission denied"));
+		case EBADF:
+			return(QString("Bad file descriptor"));
+		case EBUSY:
+			return(QString("Device or resource busy"));
+		case ECANCELED:
+			return(QString("Operation canceled"));
+		case EEXIST:
+			return(QString("File exists"));
+		case EFAULT:
+			return(QString("Bad address"));
+		case EFBIG:
+			return(QString("File too large"));
+		case EINVAL:
+			return(QString("Invalid argument"));
+		case EIO:
+			return(QString("Input/output error"));
+		case EISDIR:
+			return(QString("Is a directory"));
+		case EMFILE:
+			return(QString("Too many open files"));
+		case ENAMETOOLONG:
+			return(QString("Filename too long"));
+		case ENOENT:
+			return(QString("No such file or directory"));
+		case ENOMEM:
+			return(QString("Not enough space"));
+		case ENOTDIR:
+			return(QString("Not a directory"));
+		case ENOTEMPTY:
+			return(QString("Directory not empty"));
+		case EPERM:
+			return(QString("Operation not permitted"));
+		case EROFS:
+			return(QString("Read-only file system"));
+		case EUSERS:
+			return(QString("Too many users"));
+		default:
+			return(QString("Unknown error"));
+	}
+}
+
+void MessageBox(QString text)
+{
+	QMessageBox mb("Extcalc",text,
+				   QMessageBox::Information,QMessageBox::Ok ,QMessageBox::NoButton,QMessageBox::NoButton);
+	mb.exec();
+} 
+
+
+int YesNoBox(QString text)
+{
+	QMessageBox mb("Extcalc",text,
+				   QMessageBox::Information ,QMessageBox::Yes ,QMessageBox::No,QMessageBox::NoButton);
+	switch(mb.exec())
+	{
+		case QMessageBox::Yes:
+			return 0;
+		default:
+		{
+			return 1;
+		}
+	}
+}
+
+ int YesNoCancelBox(QString text)
+{
+	QMessageBox mb("Develop",text,
+				   QMessageBox::Information ,QMessageBox::Yes ,QMessageBox::No,QMessageBox::Cancel);
+	switch(mb.exec())
+	{
+		case QMessageBox::Yes:
+			return 0;
+		case QMessageBox::No:
+			return 1;
+		default:
+		{
+			return -1;
+		}
+	}
+}
+
+ void WarningBox(QString text)
+{
+	QMessageBox mb("Develop",text,
+				   QMessageBox::Warning,QMessageBox::Ok ,QMessageBox::NoButton,QMessageBox::NoButton);
+	mb.exec();
+
+}
+
+ void ErrorBox(QString text)
+{
+	QMessageBox mb("Develop",text,
+				   QMessageBox::Critical,QMessageBox::Ok ,QMessageBox::NoButton,QMessageBox::NoButton);
+	mb.exec();
+
+}
+#endif
+/*
+char*checkString(QString input,Preferences*pref)
+{
+
+	if(input.length()<=0)
+		return NULL;
+	
+	QString qstr=input;
+	qstr.replace("\xb2"+getUnicode(ROOTSTRING),"sqrt");
+	qstr.replace("2"+getUnicode(ROOTSTRING),"sqrt");
+	qstr.replace("\xb3"+getUnicode(ROOTSTRING),"curt");
+	qstr.replace("3"+getUnicode(ROOTSTRING),"curt");
+	qstr.replace(getUnicode(ROOTSTRING),"root");
+	qstr.replace(getUnicode(DEGREESTRING),"sprod");
+
+	qstr.replace(getUnicode(PISTRING),"pi");
+	qstr.replace(getUnicode(EULERSTRING),"eu");
+	qstr.replace(getUnicode(INTEGRALSTRING),"integ");
+	qstr.replace("\xb2","^(2)");
+	qstr.replace("\xb3","^(3)");
+
+	qstr.replace(getUnicode(MEGASTRING),"e6");
+	qstr.replace(getUnicode(GIGASTRING),"e9");
+	qstr.replace(getUnicode(TERASTRING),"e12");
+
+
+	char*output=new char[qstr.length()+1];
+	output[qstr.length()]=(char)0;
+	for(int c=0; c<(signed)qstr.length();c++)
+	{
+		output[c]=qstr[c].latin1();
+		//make all changes here
+	}
+	char*ret=checkStringAnsi(output,pref);
+	delete[]output;
+	return ret;
+}
+*/
 char* preprocessor(char*input,Preferences*pref,bool script)
 {
 	char*ret=removeComments(input);
@@ -23,7 +535,54 @@ char* preprocessor(char*input,Preferences*pref,bool script)
 	return ret;	
 }
 
+#ifndef CONSOLE
+char* preprocessor(QString *input,Preferences*pref,bool script)
+{
+	if(!script)
+		replaceConstants(input,pref);
+	char*ret=removeUnicode(input);
+	if(ret==NULL)
+		return NULL;
+	ret=preprocessor(ret,pref,script);
+	return ret;
+}
+char* removeUnicode(QString*input)
+{
+	if(input->length()<=0)
+		return NULL;
 
+	QString qstr=*input;
+	qstr.replace("\xb2"+getUnicode(ROOTSTRING),"sqrt");
+	qstr.replace("2"+getUnicode(ROOTSTRING),"sqrt");
+	qstr.replace("\xb3"+getUnicode(ROOTSTRING),"curt");
+	qstr.replace("3"+getUnicode(ROOTSTRING),"curt");
+	qstr.replace(getUnicode(ROOTSTRING),"root");
+	qstr.replace(getUnicode(DEGREESTRING),"sprod");
+
+	qstr.replace(getUnicode(PISTRING),"pi");
+	qstr.replace(getUnicode(EULERSTRING),"eu");
+	qstr.replace(getUnicode(INTEGRALSTRING),"integ");
+	qstr.replace("\xb2","^(2)");
+	qstr.replace("\xb3","^(3)");
+
+	qstr.replace(getUnicode(MEGASTRING),"e6");
+	qstr.replace(getUnicode(GIGASTRING),"e9");
+	qstr.replace(getUnicode(TERASTRING),"e12");
+
+	const char*tmp=qstr.ascii();
+	char*output=(char*)malloc(strlen(tmp)+1);
+	memcpy(output,tmp,strlen(tmp)+1);
+
+	return output;
+}
+
+
+void replaceConstants(QString *input,Preferences*pref)
+{
+	for(int c=0; c<pref->constLen; c++)
+		input->replace(*(pref->constList[c].identifier),"("+*(pref->constList[c].value)+")");
+}
+#endif
 
 char* removeComments(char*input)
 {
@@ -235,15 +794,15 @@ char* macroPreprocessor(char*code)
 			
 			
 			if(!((macro[0]>='a' && macro[0]<='z') ||
-						   (macro[0]>='A' && macro[0]<='Z') ||
-						   macro[0]=='_'))
+						  (macro[0]>='A' && macro[0]<='Z') ||
+						  macro[0]=='_'))
 				return NULL;
 			for(int c=1; c<macroLen; c++)
 			{
 				if(!((macro[c]>='a' && macro[c]<='z') ||
-								  (macro[c]>='A' && macro[c]<='Z') ||
-								  (macro[c]>='0' && macro[c]<='9') ||
-								  macro[c]=='_'))
+								 (macro[c]>='A' && macro[c]<='Z') ||
+								 (macro[c]>='0' && macro[c]<='9') ||
+								 macro[c]=='_'))
 					return NULL;
 			}
 			
@@ -259,12 +818,12 @@ char* macroPreprocessor(char*code)
 					else if(!mQuote && strncmp(&code[c],macro,macroLen)==0)
 					{
 						if(c>0 && !((code[c-1]>='a' && code[c-1]<='z') ||
-											 (code[c-1]>='A' && code[c-1]<='Z') ||
-											 code[c-1]=='_')
-											 && !((code[c+macroLen]>='a' && code[c+macroLen]<='z') ||
-											 (code[c+macroLen]>='A' && code[c+macroLen]<='Z') ||
-											 (code[c+macroLen]>='0' && code[c+macroLen]<='9') ||
-											 code[c+macroLen]=='_')
+						            (code[c-1]>='A' && code[c-1]<='Z') ||
+									code[c-1]=='_')
+							   && !((code[c+macroLen]>='a' && code[c+macroLen]<='z') ||
+									(code[c+macroLen]>='A' && code[c+macroLen]<='Z') ||
+									(code[c+macroLen]>='0' && code[c+macroLen]<='9') ||
+									code[c+macroLen]=='_')
 						  )
 						{
 							//code=(char*)realloc(code,len+replacementLen-macroLen);
@@ -349,7 +908,7 @@ char* cleanString(char*code,Preferences*pref)
 			else
 			{
 				if(code[c]==' ' || code[c]=='\t' || code[c]=='\n' || code[c]=='\a' ||
-							   code[c]=='\r' || code[c]=='\f' || code[c]=='\v' || code[c]=='\b')
+				  code[c]=='\r' || code[c]=='\f' || code[c]=='\v' || code[c]=='\b')
 				{
 					memmove(&code[c],&code[c+1],len-c);
 					c--;
@@ -481,17 +1040,17 @@ char* cleanString(char*code,Preferences*pref)
 			
 			else if(
 					((code[c]>='A' && code[c]<='F' && pref->calcType!=BASE) || code[c]>='G' && code[c]<='Z' || code[c]==']' ||
-							 (code[c]>='0' && code[c]<='9') || code[c]=='.') &&
-							 (code[c+1]>='A' && code[c+1]<='F' && pref->calcType!=BASE || code[c+1]>='G' && code[c+1]<='Z'||
-							 (code[c+1]=='$' && code[c+2]=='A') ||
-							 code[c+1]=='(' ||
-							 code[c+1]>='a' && code[c+1] <='z' && code[c+1]!='e' || code[c+1]=='\\')
-							 ||
-							 ((code[c]>='A' && code[c]<='F' && pref->calcType!=BASE) || code[c]>='G' && code[c]<='Z' || code[c]==']') &&
-							 (code[c+1]>='0' && code[c+1] <='9' || code[c+1]=='.' ||
-							 code[c+1]>='A' && code[c+1]<='F' && pref->calcType!=BASE || code[c+1]>='G' && code[c+1]<='Z'||
-							 (code[c+1]=='$' && code[c+2]=='A') ||
-							 code[c+1]=='(')
+					(code[c]>='0' && code[c]<='9') || code[c]=='.') &&
+					(code[c+1]>='A' && code[c+1]<='F' && pref->calcType!=BASE || code[c+1]>='G' && code[c+1]<='Z'||
+					(code[c+1]=='$' && code[c+2]=='A') ||
+					code[c+1]=='(' ||
+					code[c+1]>='a' && code[c+1] <='z' && code[c+1]!='e' || code[c+1]=='\\')
+					||
+					((code[c]>='A' && code[c]<='F' && pref->calcType!=BASE) || code[c]>='G' && code[c]<='Z' || code[c]==']') &&
+					(code[c+1]>='0' && code[c+1] <='9' || code[c+1]=='.' ||
+					code[c+1]>='A' && code[c+1]<='F' && pref->calcType!=BASE || code[c+1]>='G' && code[c+1]<='Z'||
+					(code[c+1]=='$' && code[c+2]=='A') ||
+					code[c+1]=='(')
 				   )
 			{
 				code=strinsert(code,c+1,"*");
@@ -757,10 +1316,10 @@ char* checkStringAnsi(char* str,Preferences*pref)
 			int pos=-1;
 			for(int c1=c+1; c1<calcLen; c1++)
 				if(calcString[c1]=='\n')
-			{
-				pos=c1;
-				break;
-			}
+				{
+					pos=c1;
+					break;
+				}
 			if(pos==-1)
 				return NULL;
 			else {
@@ -886,12 +1445,12 @@ char* checkStringAnsi(char* str,Preferences*pref)
 			delete[]tmp;
 			if(c>0)
 				if(calcString[c-1] == (char)0xc2)
-			{
-				tmp=calcString;
-				calcString=strcut(calcString,c-1,1);
-				delete[]tmp;
-				c--;
-			}
+				{
+					tmp=calcString;
+					calcString=strcut(calcString,c-1,1);
+					delete[]tmp;
+					c--;
+				}
 			tmp=calcString;
 			calcString=strins(calcString,"^2",c);
 			delete[]tmp;
@@ -904,12 +1463,12 @@ char* checkStringAnsi(char* str,Preferences*pref)
 			delete[]tmp;
 			if(c>0)
 				if(calcString[c-1] == (char)0xc2)
-			{
-				tmp=calcString;
-				calcString=strcut(calcString,c-1,1);
-				delete[]tmp;
-				c--;
-			}
+				{
+					tmp=calcString;
+					calcString=strcut(calcString,c-1,1);
+					delete[]tmp;
+					c--;
+				}
 			tmp=calcString;
 			calcString=strins(calcString,"^3",c);
 			delete[]tmp;
@@ -1012,12 +1571,12 @@ char* checkStringAnsi(char* str,Preferences*pref)
 		if(quote)
 			continue;
 		if(
-		   ( calcString[c]=='\\' ||
+				 ( calcString[c]=='\\' ||
 				 ((pref->calcType==SCIENTIFIC && calcString[c] >= 'A' || calcString[c]>='G') && calcString[c]<='Z') ||
 				 (calcString[c] >= 'a' && calcString[c]<='z' &&(calcString[c]!='e' ||calcString[c+1]=='u') && calcString[c]!='x'))
 				 && 
 				 ( //calcString[c-1] == '!' ||
-				   calcString[c-1] == '.' ||
+				 calcString[c-1] == '.' ||
 				 ((pref->calcType==SCIENTIFIC && calcString[c-1] >= 'A' || calcString[c-1]>='G') && calcString[c-1]<='Z') || 
 				 (calcString[c-1] >= '0' && calcString[c-1]<='9'))
 		  )
@@ -1029,11 +1588,11 @@ char* checkStringAnsi(char* str,Preferences*pref)
 
 
 		if(
-		   (calcString[c] == '.' ||
+				 (calcString[c] == '.' ||
 				 (calcString[c] >= '0' && calcString[c] <= '9'))
 				 &&
 				 (//calcString[c-1] == '!' ||
-				  ((pref->calcType==SCIENTIFIC && calcString[c-1] >= 'A' || calcString[c-1]>='G') && calcString[c-1]<='Z'))
+				 ((pref->calcType==SCIENTIFIC && calcString[c-1] >= 'A' || calcString[c-1]>='G') && calcString[c-1]<='Z'))
 		  )
 		{
 			tmp=calcString;
@@ -1060,23 +1619,23 @@ char* checkStringAnsi(char* str,Preferences*pref)
 			char*lastRes=new char[60];
 			if(pref->calcType == SCIENTIFIC)
 			{
-			sprintf(lastRes,"%'.40Lg",vars[26][0]);
-			tmp=calcString;
-			calcString=strins(calcString,"()",c);
-			delete[]tmp;
-			tmp=calcString;
-			calcString=strins(calcString,lastRes,c+1);
-			delete[]tmp;
-		}
+				sprintf(lastRes,"%'.40Lg",vars[26][0]);
+				tmp=calcString;
+				calcString=strins(calcString,"()",c);
+				delete[]tmp;
+				tmp=calcString;
+				calcString=strins(calcString,lastRes,c+1);
+				delete[]tmp;
+			}
 			else {
-			sprintf(lastRes,"\\c%lli",(long long)vars[26][0]);
-			tmp=calcString;
-			calcString=strins(calcString,"()",c);
-			delete[]tmp;
-			tmp=calcString;
-			calcString=strins(calcString,lastRes,c+1);
-			delete[]tmp;
-		}
+				sprintf(lastRes,"\\c%lli",(long long)vars[26][0]);
+				tmp=calcString;
+				calcString=strins(calcString,"()",c);
+				delete[]tmp;
+				tmp=calcString;
+				calcString=strins(calcString,lastRes,c+1);
+				delete[]tmp;
+			}
 			
 			delete[]lastRes;
 			*/
@@ -1123,12 +1682,12 @@ char* checkStringAnsi(char* str,Preferences*pref)
 		if(quote)
 			continue;
 		if(
-		   (calcString[c]=='\\' ||
+				 (calcString[c]=='\\' ||
 				 ((pref->calcType==SCIENTIFIC && calcString[c] >= 'A' || calcString[c]>='G') && calcString[c]<='Z') ||
 				 (calcString[c] >= 'a' && calcString[c]<='z' && calcString[c]!='e' && calcString[c]!='x'))
 				 && 
 				 (//calcString[c-1] == '!' ||
-				  calcString[c-1] == '.' ||
+				 calcString[c-1] == '.' ||
 				 ((pref->calcType==SCIENTIFIC && calcString[c-1] >= 'A' || calcString[c-1]>='G') && calcString[c-1]<='Z') || 
 				 (calcString[c-1] >= '0' && calcString[c-1]<='9'))
 		  )
@@ -1140,11 +1699,11 @@ char* checkStringAnsi(char* str,Preferences*pref)
 
 
 		if(
-		   (calcString[c] == '.' ||
+				 (calcString[c] == '.' ||
 				 (calcString[c] >= '0' && calcString[c] <= '9'))
 				 &&
 				 (//calcString[c-1] == '!' ||
-				  ((pref->calcType==SCIENTIFIC && calcString[c-1] >= 'A' || calcString[c-1]>='G') && calcString[c-1]<='Z') || calcString[c-1]=='i')
+				 ((pref->calcType==SCIENTIFIC && calcString[c-1] >= 'A' || calcString[c-1]>='G') && calcString[c-1]<='Z') || calcString[c-1]=='i')
 		  )
 		{
 			tmp=calcString;
@@ -1269,8 +1828,8 @@ int Calculate::split(char* line, int start, int end)
 		if(pos2>pos1)
 		{
 			if(pos2>start && (line[pos2-1] >='A' && line[pos2-1]<='Z'					//binary - operator
-						|| line[pos2-1]>='0' && line[pos2-1]<='9'
-						|| line[pos2-1]=='.' || line[pos2-1]==')'|| line[pos2-1]==']'))
+			   || line[pos2-1]>='0' && line[pos2-1]<='9'
+			   || line[pos2-1]=='.' || line[pos2-1]==')'|| line[pos2-1]==']'))
 			{
 				pos=pos2;
 				operation=MINUS;
@@ -1288,8 +1847,8 @@ int Calculate::split(char* line, int start, int end)
 		else if(pos1>pos2)
 		{
 			if(pos1>start && (line[pos1-1] >='A' && line[pos1-1]<='Z'					//binary + operator
-						|| line[pos1-1]>='0' && line[pos1-1]<='9'
-						|| line[pos1-1]=='.' || line[pos1-1]==')' || line[pos1-1]==']'))
+						 || line[pos1-1]>='0' && line[pos1-1]<='9'
+						 || line[pos1-1]=='.' || line[pos1-1]==')' || line[pos1-1]==']'))
 			{
 				pos=pos1;
 				operation=PLUS;
@@ -1326,7 +1885,7 @@ int Calculate::split(char* line, int start, int end)
 			return 0;
 		}
 	}
-	else if((pos=bracketFind(line,"%")) != -1)
+  else if((pos=bracketFind(line,"%",start,end)) != -1)
 	{
 		operation=MODULO;
 		vertObj=new Calculate(this,line,start,pos,pref,vars);
@@ -1366,7 +1925,7 @@ int Calculate::split(char* line, int start, int end)
 			operation=ACOSH;
 			vertObj=new Calculate(this,line,start+5,end,pref,vars);
 		}
-		else if(strncmp("atanh",line+start,5) == 0)
+			else if(strncmp("atanh",line+start,5) == 0)
 		{
 			operation=ATANH;
 			vertObj=new Calculate(this,line,start+5,end,pref,vars);
@@ -1759,9 +2318,9 @@ int Script::parse(char* line,int start,int end)
 	}
 	
 
-//	QString outLine(line);
-//	outLine=outLine.mid(start,end-start);
-//	qDebug(outLine);
+//        QString outLine(line);
+//        outLine=outLine.mid(start,end-start);
+//        qDebug(outLine);
 	
 	int pos1;
 //	perror(line);
@@ -2199,17 +2758,17 @@ int Script::parse(char* line,int start,int end)
 	{
 		if(pos1==end-1)
 		{
-			operation=SNOT;
-			vertObj=new Script(this,line,start,end-1,pref,vars,eventReciver);
+				operation=SFAK;
+				vertObj=new Script(this,line,start,end-1,pref,vars,eventReciver);
 		}
 		else if(pos1==start)
 		{
-			operation=SFAK;
+			operation=SNOT;
 			vertObj=new Script(this,line,start+1,end,pref,vars,eventReciver);
 		}
 		else {
-			operation=SFAIL;
-			printError("Invalid use of !",semicolonCount,eventReciver);
+				operation=SFAIL;
+				printError("Invalid use of !",semicolonCount,eventReciver);
 		}
 		return -1;
 	}
@@ -2837,10 +3396,10 @@ int Script::parse(char* line,int start,int end)
 		var=-1;
 		for(int c=0; c<eventReciver->subprogramPath.GetLen(); c++)
 			if(strncmp(eventReciver->subprogramPath[c],line+start+5,end-start-7)==0 && (signed)strlen(eventReciver->subprogramPath[c])==end-start-7)
-		{
-			var=c;
-			break;
-		}
+			{
+				var=c;
+				break;
+			}
 		if(var==-1)
 		{
 			printError("File for run does not exist",semicolonCount,eventReciver);
@@ -2859,7 +3418,7 @@ int Script::parse(char* line,int start,int end)
 			operation=SFAIL;
 			return -1;
 		}
-		vertObj4=new Script(this,line,start+4,pos1,pref,vars,eventReciver);
+                vertObj4=new Script(this,line,start+3,pos1,pref,vars,eventReciver);
 		vertObj=new Script(this,line,pos1+1,end-1,pref,vars,eventReciver);
 		return -1;
 	}
@@ -3092,11 +3651,30 @@ int Script::parse(char* line,int start,int end)
 			operation=DETERMINANT;
 			vertObj=new Script(this,line,start+3,end,pref,vars,eventReciver);
 		}
-		else if(strncmp(line+start,"i",1) == 0  && pref->complex)
+		else if(strncmp(line+start,"i",1) == 0 && pref->complex)
 		{
-			operation=SVALUE;
+			operation=SVALUE; 
 			value.type=NFLOAT;
-			value.fval=Complex(0.0,1.0);
+			
+			if((end-start)==1)
+			{
+				value.fval=Complex(0.0,1.0);
+			}
+			else
+			{
+				char*err,*tmpval;
+				tmpval=new char[end-start];
+				strcopy(tmpval,&line[start+1],end-start-1);
+		
+				value.fval=Complex(0.0,strtold(tmpval,&err));
+					
+				if(*err!=(char)0)
+				{
+					printError("Invalid number",semicolonCount,eventReciver);
+					operation=SFAIL;
+				}
+				delete[] tmpval;
+			}
 			return -1;
 		}
 		else{
@@ -3109,8 +3687,8 @@ int Script::parse(char* line,int start,int end)
 	{
 		if(end-start<2)
 		{
-			operation=SFAIL;
-			printError("No argument for ~ set",semicolonCount,eventReciver);
+				operation=SFAIL;
+				printError("No argument for ~ set",semicolonCount,eventReciver);
 		}
 		else operation=SBNOT;
 		vertObj=new Script(this,line,start+1,end,pref,vars,eventReciver);
@@ -3820,7 +4398,7 @@ Number Script::exec()
 				if(n2.type==NINT)
 					value.bval=(n1.ival==n2.ival);
 				else if(n2.type==NBOOL)
-					value.bval=(n1.ival==(long long)n2.bval);
+						value.bval=(n1.ival==(long long)n2.bval);
 				else value.bval=false;
 			}
 			else if(n2.type==NINT)
@@ -4017,15 +4595,15 @@ Number Script::exec()
 			if(value.type==NBOOL)
 				if(value.bval)
 					value=vertObj2->exec();
-			else value=vertObj3->exec();
+				else value=vertObj3->exec();
 			else if(value.type==NINT)
 				if(value.ival)
 					value=vertObj2->exec();
-			else value=vertObj3->exec();
+				else value=vertObj3->exec();
 			else if(value.type==NFLOAT)
 				if(value.fval.real()!=0.0)
 					value=vertObj2->exec();
-			else value=vertObj3->exec();
+				else value=vertObj3->exec();
 			else value=vertObj3->exec();
 			
 			if(horzObj==NULL)
@@ -4595,7 +5173,7 @@ Number Script::exec()
 #ifndef CONSOLE
 			QCustomEvent *ev=new QCustomEvent(SIGPRINT);
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -4695,7 +5273,7 @@ Number Script::exec()
 					
 			}
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -4712,7 +5290,7 @@ Number Script::exec()
 				int*eventContent=(int*)malloc(sizeof(int));
 				memcpy(eventContent,&num,sizeof(int));
 				ev->setData(eventContent);
-				QApplication::postEvent(eventReciver->eventReciver,ev);
+				QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 				eventReciver->eventCount++;
 				if(eventReciver->eventCount>200)
 					eventReciver->status=1;
@@ -4720,7 +5298,7 @@ Number Script::exec()
 			else if(var==1)
 			{
 				QCustomEvent *ev=new QCustomEvent(SIGSTARTLIST);
-				QApplication::postEvent(eventReciver->eventReciver,ev);
+				QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 				eventReciver->eventCount++;
 				if(eventReciver->eventCount>200)
 					eventReciver->status=1;
@@ -4730,7 +5308,7 @@ Number Script::exec()
 				eventReciver->data=NULL;
 				QCustomEvent*ev=new QCustomEvent(SIGENDLIST);
 				qApp->lock();
-				QApplication::postEvent(eventReciver->eventReciver,ev);
+				QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 				eventReciver->eventCount++;
 				if(eventReciver->eventCount>200)
 					eventReciver->status=1;
@@ -4765,7 +5343,7 @@ Number Script::exec()
 				ev=new QCustomEvent(SIGGRAPHEND);
 			else ev=new QCustomEvent(SIGIDENTITY);
 			
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -4778,7 +5356,7 @@ Number Script::exec()
 			int*eventContent=(int*)malloc(sizeof(int));
 			*eventContent=(int)value.ival;
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -4800,7 +5378,7 @@ Number Script::exec()
 			eventContent[2]=(double)value.fval.real();
 
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -4831,7 +5409,7 @@ Number Script::exec()
 			else ev=new QCustomEvent(SIGGRAPHSCALE);
 
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -4864,7 +5442,7 @@ Number Script::exec()
 			eventContent[2]=(int)value.ival;
 
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -4894,7 +5472,7 @@ Number Script::exec()
 			((int*)eventContent)[1]=(int)value.ival;
 			
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -5528,7 +6106,7 @@ Number Script::exec()
 				long double res=1.0;
 				for(int c=2; c<=end; c++)
 					res*=(long double)c;
-				value.fval=Complex(res,value.fval.imag());
+				value.fval=Complex(res,0.0);
 			}
 			return value;
 		}
@@ -5770,63 +6348,63 @@ Number Script::exec()
 				inv=true;
 			}
 
-			double * line1=new double;						//	Romberg's Method
-			double *line2=new double[3];
-			double y,oldy;
-			vars[23]=start;
-			oldy=vertObj4->calc();
-			vars[23]=end;
-			y=vertObj4->calc();
-			line1[0]=(y+oldy)*(end-start)/2.0;
-			double fail=HUGE_VAL,oldfail=0.0;
+		double * line1=new double;						//	Romberg's Method
+		double *line2=new double[3];
+		double y,oldy;
+		vars[23]=start;
+		oldy=vertObj4->calc();
+		vars[23]=end;
+		y=vertObj4->calc();
+		line1[0]=(y+oldy)*(end-start)/2.0;
+		double fail=HUGE_VAL,oldfail=0.0;
 		
-			int num=1;
-			int steps;
+		int num=1;
+		int steps;
 
-			while(true)
+		while(true)
+		{
+			delete[]line2;
+			line2=line1;
+			line1=new double[num+1];
+			line1[0]=0.0;
+			
+			steps=(int)pow(2.0,(double)(num-1));
+			
+			for(int c=1; c<=steps; c++)
 			{
-				delete[]line2;
-				line2=line1;
-				line1=new double[num+1];
-				line1[0]=0.0;
+				vars[23]=start+((2*c-1)*(end-start))/pow(2.0,(double)num);
+				line1[0]+=vertObj4->calc();
+			}
+			line1[0]=0.5*(line1[0]*(end-start)/pow(2.0,(double)(num-1))+line2[0]);
 			
-				steps=(int)pow(2.0,(double)(num-1));
-			
-				for(int c=1; c<=steps; c++)
-				{
-					vars[23]=start+((2*c-1)*(end-start))/pow(2.0,(double)num);
-					line1[0]+=vertObj4->calc();
-				}
-				line1[0]=0.5*(line1[0]*(end-start)/pow(2.0,(double)(num-1))+line2[0]);
-			
-				for(int c=2; c<=num+1; c++)
-					line1[c-1]=(pow(4.0,(double)(c-1))*line1[c-2]-line2[c-2])/(pow(4.0,(double)(c-1))-1);
+			for(int c=2; c<=num+1; c++)
+				line1[c-1]=(pow(4.0,(double)(c-1))*line1[c-2]-line2[c-2])/(pow(4.0,(double)(c-1))-1);
 
-				num++;
-				oldfail=fail;
-				fail=line1[num-1]-line2[num-2];
-				if(fail < 0.0)
-					fail*=-1.0;
-				if(num>16 || (fail < 1e-9))
+			num++;
+			oldfail=fail;
+			fail=line1[num-1]-line2[num-2];
+			if(fail < 0.0)
+				fail*=-1.0;
+			if(num>16 || (fail < 1e-9))
+			{
+				if(num>3)					//precision check may not work before that
+					break;
+			}
+			if(fail>oldfail)
+			{
+				if(num>5)					//error check may not work before that
 				{
-					if(num>3)					//precision check may not work before that
-						break;
-				}
-				if(fail>oldfail)
-				{
-					if(num>5)					//error check may not work before that
-					{
-						line1[num-1]=NAN;
-						break;
-					}
+					line1[num-1]=NAN;
+					break;
 				}
 			}
-			value.type=NFLOAT;
-			value.fval=Complex((long double)line1[num-1],0.0);
-			if(inv)
-				value.fval*=Complex(-1.0);
+		}
+		value.type=NFLOAT;
+		value.fval=Complex((long double)line1[num-1],0.0);
+		if(inv)
+			value.fval*=Complex(-1.0);
 		
-			return value;
+		return value;
 		}
 		case DETERMINANT:
 		{
@@ -5890,7 +6468,7 @@ Number Script::exec()
 		{
 #ifndef CONSOLE
 			QCustomEvent*killEvent=new QCustomEvent(SIGFINISHED);
-			QApplication::postEvent(eventReciver->eventReciver,killEvent);
+			QCoreApplication::postEvent(eventReciver->eventReciver,killEvent);
 			pthread_exit(0);
 #else 
 			exit(0);
@@ -5972,7 +6550,7 @@ Number Script::exec()
 			QCustomEvent*fileEvent=new QCustomEvent(SIGFILEREAD);
 			fileEvent->setData(eventContent);
 
-			QApplication::postEvent(eventReciver->eventReciver,fileEvent);
+			QCoreApplication::postEvent(eventReciver->eventReciver,fileEvent);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6047,7 +6625,7 @@ Number Script::exec()
 #ifndef CONSOLE
 			QCustomEvent *ev=new QCustomEvent(SIGFILEAPPEND);
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6097,7 +6675,7 @@ Number Script::exec()
 #ifndef CONSOLE
 			QCustomEvent *ev=new QCustomEvent(SIGFILEWRITE);
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6134,7 +6712,7 @@ Number Script::exec()
 			strcpy(eventContent,value.cval);
 			QCustomEvent *ev=new QCustomEvent(SIGFILEREMOVE);
 			ev->setData(eventContent);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6175,7 +6753,7 @@ Number Script::exec()
 #ifndef CONSOLE
 			QCustomEvent *ev=new QCustomEvent(SIGSETTEXTPOS);
 			ev->setData(coords);
-			QApplication::postEvent(eventReciver->eventReciver,ev);
+			QCoreApplication::postEvent(eventReciver->eventReciver,ev);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6191,7 +6769,7 @@ Number Script::exec()
 		{
 #ifndef CONSOLE
 			QCustomEvent*clearEvent=new QCustomEvent(SIGCLEARTEXT);
-			QApplication::postEvent(eventReciver->eventReciver,clearEvent);
+			QCoreApplication::postEvent(eventReciver->eventReciver,clearEvent);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6210,7 +6788,7 @@ Number Script::exec()
 			eventReciver->data=NULL;
 			QCustomEvent*clearEvent=new QCustomEvent(SIGGETKEY);
 
-			QApplication::postEvent(eventReciver->eventReciver,clearEvent);
+			QCoreApplication::postEvent(eventReciver->eventReciver,clearEvent);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6219,10 +6797,10 @@ Number Script::exec()
 			{
 				if(eventReciver->status)
 					if(eventReciver->exit)
-				{
-					eventReciver->exit=false;
-					pthread_exit(0);
-				}
+					{
+						eventReciver->exit=false;
+						pthread_exit(0);
+					}
 				usleep(2000);
 			}
 			value.cval[0]=*((char*)(eventReciver->data));
@@ -6241,7 +6819,7 @@ Number Script::exec()
 			eventReciver->data=NULL;
 			QCustomEvent*clearEvent=new QCustomEvent(SIGKEYSTATE);
 
-			QApplication::postEvent(eventReciver->eventReciver,clearEvent);
+			QCoreApplication::postEvent(eventReciver->eventReciver,clearEvent);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6250,10 +6828,10 @@ Number Script::exec()
 			{
 				if(eventReciver->status)
 					if(eventReciver->exit)
-				{
-					eventReciver->exit=false;
-					pthread_exit(0);
-				}
+					{
+						eventReciver->exit=false;
+						pthread_exit(0);
+					}
 				usleep(1000);
 			}
 			value.cval[0]=*((char*)(eventReciver->data));
@@ -6295,7 +6873,7 @@ Number Script::exec()
 			eventReciver->data=NULL;
 			QCustomEvent*clearEvent=new QCustomEvent(SIGGETLINE);
 
-			QApplication::postEvent(eventReciver->eventReciver,clearEvent);
+			QCoreApplication::postEvent(eventReciver->eventReciver,clearEvent);
 			eventReciver->eventCount++;
 			if(eventReciver->eventCount>200)
 				eventReciver->status=1;
@@ -6304,10 +6882,10 @@ Number Script::exec()
 			{
 				if(eventReciver->status)
 					if(eventReciver->exit)
-				{
-					eventReciver->exit=false;
-					pthread_exit(0);
-				}
+					{
+						eventReciver->exit=false;
+						pthread_exit(0);
+					}
 				usleep(5000);
 			}
 			int dataLen=strlen((char*)eventReciver->data);
@@ -6349,7 +6927,7 @@ Number Script::exec()
 				value=horzObj->exec();
 #ifndef CONSOLE
 			QCustomEvent*killEvent=new QCustomEvent(SIGFINISHED);
-			QApplication::postEvent(eventReciver->eventReciver,killEvent);
+			QCoreApplication::postEvent(eventReciver->eventReciver,killEvent);
 #endif
 			return value;
 		}
@@ -6436,10 +7014,10 @@ long double gauss(int sizex,int sizey,long double*matrix)
 			int swapIndex=0;
 			for(int c2=c1+1; c2<sizey; c2++)
 				if(matrix[c1*sizey+c2]!=0.0)
-			{
-				swapIndex=c2;
-				break;
-			}
+				{
+					swapIndex=c2;
+					break;
+				}
 			if(swapIndex==0)
 			{
 				offset++;
@@ -6503,7 +7081,7 @@ bool invertMatrix(int size,long double*matrix)
 						if(c2!=c4)
 						{
 
-							subMatrix[effDestIndex]=matrix[effSrcIndex];
+								subMatrix[effDestIndex]=matrix[effSrcIndex];
 
 							pos2++;
 						}
@@ -6518,9 +7096,7 @@ bool invertMatrix(int size,long double*matrix)
 			effDestIndex=c4+c3*size;
 			long double subDet=gauss(size-1,size-1,subMatrix);
 			result[effDestIndex]=mainDet*(long double)vz*subDet;
-//			fprintf(stderr,QString::number((double)result[effDestIndex])+" ");
 		}
-		fprintf(stderr,"\n");
 	}
 	memcpy(matrix,result,size*size*sizeof(long double));
 	free(result);
@@ -6530,8 +7106,7 @@ bool invertMatrix(int size,long double*matrix)
 }
 
 
-
-
+#ifdef CONSOLE
 void printError(const char*string,int semicolonCount,ThreadSync*data)
 {
 	data->error=true;
@@ -6556,3 +7131,16 @@ void printError(const char*string,int semicolonCount,ThreadSync*data)
 	fprintf(stderr,string);
 	fprintf(stderr,"\n");
 }
+#else
+void printError(const char*text,int num,ThreadSync*eventReciver)
+{
+		QCustomEvent*debugEvent=new QCustomEvent(SIGDEBUG);
+		char*debugData=(char*)malloc(strlen(text)+5);
+		memcpy(debugData,&num,4);
+		memcpy(&debugData[4],text,strlen(text)+1);
+		debugEvent->setData(debugData);
+		QCoreApplication::postEvent(eventReciver->eventReciver,debugEvent);
+}
+#endif
+
+

@@ -342,7 +342,8 @@ int main(int argc,char**argv)
 	scriptData.error=false;
 	
 	struct termios terminfo,oldTerminfo;
-	tcgetattr(fileno(stdout),&terminfo);
+	if(tcgetattr(fileno(stdout),&terminfo)!=0)
+	  perror("tcgetattr error");
 	oldTerminfo=terminfo;
 	terminfo.c_lflag &=~ECHO;
 	terminfo.c_lflag &=~ICANON;
