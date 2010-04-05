@@ -342,13 +342,13 @@ int main(int argc,char**argv)
 	scriptData.error=false;
 	
 	struct termios terminfo,oldTerminfo;
-	if(tcgetattr(fileno(stdout),&terminfo)!=0)
-	  perror("tcgetattr error");
+	tcgetattr(fileno(stdout),&terminfo);
+
 	oldTerminfo=terminfo;
 	terminfo.c_lflag &=~ECHO;
 	terminfo.c_lflag &=~ICANON;
-	if(tcsetattr(fileno(stdout),TCSANOW,&terminfo)!=0)
-		perror("tcsetattr fehler");
+	tcsetattr(fileno(stdout),TCSANOW,&terminfo);
+
 
 	scriptData.status=0;
 	scriptData.usleep=false;
@@ -373,8 +373,7 @@ int main(int argc,char**argv)
 			delete[]printString;
 			delete[]vars;
 			delete pref;
-			if(tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo)!=0)
-				perror("tcsetattr fehler");
+			tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo);
 			return 0;
 		}
 		searchScripts(res,pref,vars,&scriptData);
@@ -393,8 +392,7 @@ int main(int argc,char**argv)
 			delete[]vars;
 			delete pref;
 			delete s;
-			if(tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo)!=0)
-				perror("tcsetattr error");
+			tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo);
 			return 0;
 		}
 		value=s->exec();
@@ -536,8 +534,7 @@ int main(int argc,char**argv)
 	}
 	delete[] newVarString;
 
-	if(tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo)!=0)
-		perror("tcsetattr error");
+	tcsetattr(fileno(stdout),TCSANOW,&oldTerminfo);
 	
 	free(res);
 	for(int c=0; c<VARNUM; c++)

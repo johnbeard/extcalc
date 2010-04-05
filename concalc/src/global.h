@@ -32,8 +32,8 @@ any later version.
 using namespace std;
 
 
-#define VERSIONSTRING "Version: 0.9.2 2008-08-11\nCalculator algorithms: extcalc v0.9.1 2008-08-11"
-#define AUTHORSTRING "Author:\nRainer Strobel\nhttp://extcalc-linux.sourceforge.net\n2008\n"
+#define VERSIONSTRING "Version: 0.9.3 2010-04-04\nCalculator algorithms: extcalc v0.9.3 2010-03-28"
+#define AUTHORSTRING "Author:\nRainer Strobel\nhttp://extcalc-linux.sourceforge.net\n2010\n"
 
 
 #define SSEMICOLON			83
