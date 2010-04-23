@@ -18,9 +18,11 @@ any later version.
 #include <QResizeEvent>
 
 
-StatisticsWidget::StatisticsWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td) :TabWidget(parent,p,va,td,false)
+StatisticsWidget::StatisticsWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td,StandardButtons*cB,ExtButtons*eB) :TabWidget(parent,p,va,td,"statistics",false)
 {
 
+        calcButtons=cB;
+        extButtons=eB;
         functionChanged=false;
         type=STATAPPROX;
         print=false;
@@ -44,25 +46,13 @@ StatisticsWidget::StatisticsWidget(QWidget*parent,Preferences p,Variable*va,Thre
 		toolFrameLayout->setRowMinimumHeight(4,20);
 		toolFrameLayout->setColumnStretch(0,1);
 		toolFrameLayout->setVerticalSpacing(2);
-		extButtons->hide();
+    toolFrame->hide();
 
-
-        minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
-        maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
-        printIcon=new QPixmap(INSTALLDIR+QString("/data/print.png"));
-        catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));
 
         setMainWidget(horzSplit);
-        addSubWidget(calcButtons);
-        addSubWidget(toolFrame);
-        setDockArea(1);
 
-        toolBar=new Q3ToolBar();
-        dockArea->moveDockWindow(toolBar);
+        toolBar=new QToolBar();
 
-        drawButton=new QPushButton(*printIcon,STATISTICSH_STR14,toolBar);
-        drawButton->setFixedHeight(25);
-        maximizeButton=new QPushButton(*maximizeIcon,"",toolBar);
         lists=new Q3Table(horzSplit);
         lists->setNumRows(1);
         lists->setNumCols(2*LISTCOUNT);
@@ -112,25 +102,33 @@ StatisticsWidget::StatisticsWidget(QWidget*parent,Preferences p,Variable*va,Thre
 
 
         calculateButton=new QPushButton(STATISTICSH_STR12,toolFrame);
-        catalogButton=new QPushButton(*catalogIcon,"",toolBar);
-        catalogButton->setFixedWidth(30);
-        maximizeButton->setFixedWidth(30);
-        typeBox->setFixedWidth(120);
+
+        maximizeAction=new QAction(QIcon(":/view_top_bottom.png"),"",toolBar);
+        maximizeAction->setCheckable(true);
+        maximizeAction->setChecked(true);
+        printAction=new QAction(QIcon(":/print.png"),tr("Print"),toolBar);
+        catalogAction=new QAction(QIcon(":/catalog.png"),"",toolBar);
+        catalogAction->setMenu(catalog);
+
+        toolBar->addAction(maximizeAction);
+        toolBar->addAction(printAction);
+        toolBar->addWidget(typeBox);
+        toolBar->addAction(catalogAction);
+
 
         readListsFile();
 
         typeBoxSlot(0);
         QObject::connect(functionTable,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-        QObject::connect(maximizeButton,SIGNAL(clicked()),this,SLOT(maximizeButtonSlot()));
+        QObject::connect(maximizeAction,SIGNAL(triggered(bool)),this,SLOT(viewSlot(bool)));
         QObject::connect(calculateButton,SIGNAL(clicked()),this,SLOT(calculateButtonSlot()));
         QObject::connect(copyButton,SIGNAL(clicked()),this,SLOT(copyButtonSlot()));
-        QObject::connect(drawButton,SIGNAL(clicked()),this,SLOT(printButtonSlot()));
+        QObject::connect(printAction,SIGNAL(triggered()),this,SLOT(printButtonSlot()));
         QObject::connect(typeBox,SIGNAL(activated(int)),this,SLOT(typeBoxSlot(int)));
         QObject::connect(lists,SIGNAL(valueChanged(int,int)),this,SLOT(itemChangedSlot(int,int)));
-        QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
-        QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-        QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(buttonInputSlot(QString)));
-        QObject::connect(catalogButton,SIGNAL(clicked()),this,SLOT(catalogSlot()));
+//        QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
+//        QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+        QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(processText(QString)));
         QObject::connect(functionTable,SIGNAL(currentChanged(int,int)),this,SLOT(selectionChangedSlot(int,int)));
         QObject::connect(functionTable,SIGNAL(textEditStarted(QString)),this,SLOT(tableEditSlot(QString)));
         QObject::connect(inputLine,SIGNAL(returnPressed()),this,SLOT(inputTextFinished()));
@@ -139,104 +137,12 @@ StatisticsWidget::StatisticsWidget(QWidget*parent,Preferences p,Variable*va,Thre
 
 
 
-/*
-void StatisticsWidget::resizeEvent(QResizeEvent*)
-{
-	int width=geometry().right() - geometry().left();
-	int height=geometry().bottom() - geometry().top();
-	if(fullscreen)
-	{
-		horzSplit->setGeometry(20,menuBottom+40,width-40,height-90);
-	//	drawButton->setGeometry(20,height-45,90,35);
-	//	typeBox->setGeometry(120,height-45,90,35);
-	//	maximizeButton->setGeometry(220,height-45,90,35);
-		dockArea->setGeometry(0,menuBottom,width,35);
-	}
-	else
-	{
-		horzSplit->setGeometry(20,50,width-40,height-290);
-
-	//	drawButton->setGeometry(width/2+15,height-220,90,35);
-	//	typeBox->setGeometry(width/2+115,height-220,90,35);
-	//	maximizeButton->setGeometry(width/2+215,height-220,90,35);
-		dockArea->setGeometry(width/2+15,height-220,width/2-35,35);
-		
-		standardButtons->setGeometry(20,height-220,280,200);
-		
-
-		if(type==STATAPPROX)
-		{
-			functionTypeLabel->setGeometry(width/2+15,height-180,170,25);
-			functionTypeBox->setGeometry(width/2+195,height-180,110,25);
-
-			listNumberLabel->setGeometry(width/2+15,height-150,190,20);
-			listNumber->setGeometry(width/2+205,height-150,100,20);
-			
-			calculateButton->setGeometry(width/2+215,height-120,90,25);
-			
-			resultLabel->setGeometry(width/2+15,height-90,290,20);
-			result->setGeometry(width/2+15,height-65,290,20);
-		
-			copyFunctionLabel->setGeometry(width/2+15,height-40,130,20);
-			copyFunction->setGeometry(width/2+155,height-40,80,20);
-			copyButton->setGeometry(width/2+245,height-40,60,20);	
-		}
-		if(type==STATINTERPOL)
-		{
-			listNumberLabel->setGeometry(width/2+15,height-180,190,20);
-			listNumber->setGeometry(width/2+205,height-180,100,20);
-			
-			calculateButton->setGeometry(width/2+215,height-155,90,25);
-			
-			resultLabel->setGeometry(width/2+15,height-115,290,20);
-			result->setGeometry(width/2+15,height-90,290,20);
-		
-			copyFunctionLabel->setGeometry(width/2+15,height-65,65,20);
-			copyFunction->setGeometry(width/2+155,height-65,80,20);
-			copyButton->setGeometry(width/2+245,height-65,60,20);
-		}
-		if(type==STATLINEGRAPH)
-		{
-
-			listNumberLabel->setGeometry(width/2+15,height-180,190,20);
-			listNumber->setGeometry(width/2+205,height-180,100,20);
-			
-			stepsLabel->setGeometry(width/2+15,height-150,220,20);
-			stepsBox->setGeometry(width/2+235,height-150,70,20);
-		}
-		if(type==STATBARGRAPH)
-		{
-			listNumberLabel->setGeometry(width/2+15,height-180,190,20);
-			listNumberBox->setGeometry(width/2+205,height-180,100,20);
-			
-			stepsLabel->setGeometry(width/2+15,height-150,220,20);
-			stepsBox->setGeometry(width/2+235,height-150,70,20);			
-			
-		}
-		if(type==STATNORMAL)
-		{
-
-			listNumberLabel->setGeometry(width/2+15,height-180,190,20);
-			listNumberBox->setGeometry(width/2+205,height-180,100,20);
-			
-			calculateButton->setGeometry(width/2+215,height-155,90,25);
-			
-			resultLabel->setGeometry(width/2+15,height-115,290,20);
-			result->setGeometry(width/2+15,height-90,290,20);
-		
-			copyFunctionLabel->setGeometry(width/2+15,height-65,65,20);
-			copyFunction->setGeometry(width/2+155,height-65,80,20);
-			copyButton->setGeometry(width/2+245,height-65,60,20);
-		}
-	}
-}
-*/
 
 void StatisticsWidget::setPref(Preferences p)
 {
 	pref=p;
-        calcButtons->setPref(pref);
-//	calcWidget->setPref(pref);
+ //  calcButtons->setPref(pref);
+ // calcWidget->setPref(pref);
 	functionTable->setPref(pref);
 }
 
@@ -246,25 +152,27 @@ void StatisticsWidget::getPref(Preferences p)
 	emit prefChange(pref);
 }
 
-
-void StatisticsWidget::maximizeButtonSlot()
+void StatisticsWidget::updateUI()
 {
-	if(!isMaximized())
-	{
-		maximizeButton->setIconSet(*minimizeIcon);
-		calcButtons->hide();
-		typeBox->hide();
-		typeBoxSlot(-1);
-		maximizeSlot(true);
-	}
-	else 
-	{
-		maximizeButton->setIconSet(*maximizeIcon);
-		typeBoxSlot(typeBox->currentItem());
-		calcButtons->show();
-		typeBox->show();
-		maximizeSlot(false);
-	}
+  if(isVisible() && !isMaximized())
+  {
+    calcButtons->show();
+    extButtons->show();
+  }
+  else if(isVisible() && isMaximized())
+  {
+    calcButtons->hide();
+    extButtons->hide();
+  }
+}
+
+void StatisticsWidget::viewSlot(bool min)
+{
+  if(min)
+    maximizeSlot(false);
+  else maximizeSlot(true);
+
+  updateUI();
 }
 
 void StatisticsWidget::calculateButtonSlot()
@@ -917,7 +825,7 @@ void StatisticsWidget::redrawGraphSlot()
 	print=false;
 }
 
-void StatisticsWidget::buttonInputSlot(QString text)
+void StatisticsWidget::processText(QString text)
 {
 	if(text == "calculate")
 	{
@@ -996,7 +904,8 @@ void StatisticsWidget::inputTextFinished()
 
 void StatisticsWidget::dockWindowSlot()
 {
-	dockArea->moveDockWindow(toolBar);
+  updateUI();
+  repaint();
 }
 
 void StatisticsWidget::catalogSlot()

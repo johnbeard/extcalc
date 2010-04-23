@@ -100,6 +100,8 @@ MainObject::MainObject() :QMainWindow()
   vecs=new Vector [VARNUM];
   for(int c=0; c<VARNUM;c++)
     vecs[c].NewItem(n0);
+
+   lastTab=NULL;
     
   appIcon=new QPixmap(QString(INSTALLDIR)+"/data/icon22.png");
   if(!appIcon->isNull())
@@ -115,10 +117,10 @@ MainObject::MainObject() :QMainWindow()
   setGeometry(10,10,640,630); 
   setMinimumWidth(640);
   setMinimumHeight(400);
+  setDockNestingEnabled(true);
   helpProcess=new Q3Process(this);
     
   infoDialog=new InfoDialog(this);
-
 
   grPref=NULL;
   calcPref=NULL;
@@ -129,7 +131,10 @@ MainObject::MainObject() :QMainWindow()
   functionDialog=NULL;
   graphSetDialog=NULL;
 
+
+
   mainMenu=menuBar();
+//  toolBar=this->tols
 
 //standard preferences
 #ifndef NO_LONG_DOUBLE
@@ -291,9 +296,6 @@ MainObject::MainObject() :QMainWindow()
   QObject::connect(outputMapper,SIGNAL(mapped(int)),this,SLOT(outputMenuSlot(int)));
   outputMenu->addMenu(floatPointMenu);
 
-
-
-    
   baseMapper=new QSignalMapper(this);
   baseMenu=new QMenu(this);
   baseActions=new QActionGroup(this);
@@ -581,32 +583,58 @@ MainObject::MainObject() :QMainWindow()
   setCentralWidget(clientArea);
 
   screenshotDialog=new ScreenshotDialog(this);
-  this->addDockWidget(Qt::BottomDockWidgetArea,screenshotDialog,Qt::Horizontal);
-  screenshotDialog->setFloating(true);
+  addDockWidget(Qt::BottomDockWidgetArea,screenshotDialog,Qt::Horizontal);
+  screenshotDialog->setFloating(false);
   screenshotDialog->hide();
 
-  calculator=new CalcWidget(clientArea,pref,vars,threadData);
-  calculator2=new CalcWidget(clientArea,pref,vars,threadData);
-  graph = new GraphWidget(clientArea,pref,vars,threadData,screenshotDialog);
-  table=new TableWidget(clientArea,pref,vars,threadData);
-  scripting=new ScriptWidget(clientArea,pref,vars);
-  scriptIO=new ScriptIOWidget(clientArea,pref,vars,graph->getShareContext());
-  matrix=new MatrixWidget(clientArea,pref,vars,threadData);
-  statistics=new StatisticsWidget(clientArea,pref,vars,threadData);
+  calcButtons=new StandardButtons(this);
+  addDockWidget(Qt::BottomDockWidgetArea,calcButtons,Qt::Horizontal);
+  calcButtons->setFloating(false);
+  calcButtons->show();
+
+  extButtons=new ExtButtons(this);
+  addDockWidget(Qt::BottomDockWidgetArea,extButtons,Qt::Horizontal);
+  extButtons->setFloating(false);
+  extButtons->show();
+
+  toolWidgets.append(calcButtons);
+  toolWidgets.append(extButtons);
+  toolWidgets.append(screenshotDialog);
+
+  calculator=new CalcWidget(clientArea,pref,vars,threadData,calcButtons,extButtons);
+  calculator2=new CalcWidget(clientArea,pref,vars,threadData,calcButtons,extButtons);
+  graph = new GraphWidget(clientArea,pref,vars,threadData,screenshotDialog,calcButtons,extButtons);
+  table=new TableWidget(clientArea,pref,vars,threadData,calcButtons,extButtons);
+  scripting=new ScriptWidget(clientArea,pref,vars,calcButtons,extButtons);
+  scriptIO=new ScriptIOWidget(clientArea,pref,vars,graph->getShareContext(),calcButtons,extButtons);
+  matrix=new MatrixWidget(clientArea,pref,vars,threadData,calcButtons,extButtons);
+  statistics=new StatisticsWidget(clientArea,pref,vars,threadData,calcButtons,extButtons);
+
+  addToolBar(graph->getToolBar());
+  addToolBar(calculator->getToolBar());
+  addToolBar(calculator2->getToolBar());
+  addToolBar(table->getToolBar());
+  addToolBar(matrix->getToolBar());
+  addToolBar(statistics->getToolBar());
+  addToolBar(scripting->getToolBar());
+  addToolBar(scriptIO->getToolBar());
+  graph->getToolBar()->hide();
+  calculator->getToolBar()->hide();
+  calculator2->getToolBar()->hide();
+  table->getToolBar()->hide();
+  matrix->getToolBar()->hide();
+  statistics->getToolBar()->hide();
+  scripting->getToolBar()->hide();
+  scriptIO->getToolBar()->hide();
+  
+  
 
 
-  clientArea->addTab(calculator,tr("Calculator"));
-  clientArea->addTab(calculator2,tr("Another Calculator"));
-  clientArea->addTab(graph,tr("Graphics"));
-  clientArea->addTab(table,tr("Tables"));
-  clientArea->addTab(scripting,tr("Script Editor"));
-  clientArea->addTab(scriptIO,tr("Script Console"));
-  clientArea->addTab(matrix,tr("Matrix/Vector"));
-  clientArea->addTab(statistics,tr("Statistics"));
 
 
     
-
+  QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+  QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
   QObject::connect(helpMenu,SIGNAL(activated(int)),this,SLOT(helpMenuSlot(int)));
   QObject::connect(prefMenu,SIGNAL(activated(int)),this,SLOT(prefMenuSlot(int)));
   QObject::connect(calculator,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
@@ -640,6 +668,14 @@ MainObject::MainObject() :QMainWindow()
   QObject::connect(graphSetMenu,SIGNAL(aboutToShow()),this,SLOT(updateGraphSetMenuSlot()));
 
     
+  clientArea->addTab(calculator,tr("Calculator"));
+  clientArea->addTab(calculator2,tr("Another Calculator"));
+  clientArea->addTab(graph,tr("Graphics"));
+  clientArea->addTab(table,tr("Tables"));
+  clientArea->addTab(scripting,tr("Script Editor"));
+  clientArea->addTab(scriptIO,tr("Script Console"));
+  clientArea->addTab(matrix,tr("Matrix/Vector"));
+  clientArea->addTab(statistics,tr("Statistics"));
 
     
     
@@ -2311,6 +2347,7 @@ void MainObject::writeConstants()
 
 void MainObject::tabChangeSlot(int index)
 {
+  QToolBar*tb;
 	calculator->dockWindowSlot();
 	calculator2->dockWindowSlot();
 	graph->dockWindowSlot();
@@ -2320,14 +2357,35 @@ void MainObject::tabChangeSlot(int index)
 	scripting->dockWindowSlot();
 	scriptIO->dockWindowSlot();
 
-	
+  if(lastTab!=NULL)
+  {
+    disconnect(calcButtons,SIGNAL(emitText(QString)),lastTab,SLOT(processText(QString)));
+    disconnect(extButtons,SIGNAL(emitText(QString)),lastTab,SLOT(processText(QString)));
+    qDebug("Widget disconnected! " +((TabWidget*)lastTab)->getDescriptor());
+    tb=((TabWidget*)lastTab)->getToolBar();
+    if(tb!=NULL)
+      tb->hide();
+  }
+  else qDebug("Disconnect Index failue!");
+  lastTab=clientArea->widget(index);
+
+  if(clientArea->widget(index)!=NULL)
+  {
+    connect(calcButtons,SIGNAL(emitText(QString)),clientArea->widget(index),SLOT(processText(QString)));
+    connect(extButtons,SIGNAL(emitText(QString)),clientArea->widget(index),SLOT(processText(QString)));
+    qDebug("Widget connected! "+((TabWidget*)(clientArea->widget(index)))->getDescriptor());
+    tb=((TabWidget*)clientArea->widget(index))->getToolBar();
+    if(tb!=NULL)
+      tb->show();
+  }
+  else qDebug("Connect Index failue! " +QString::number(index));
+
 	if(index==clientArea->indexOf(calculator) || index==clientArea->indexOf(calculator2))
 	{
 		mainMenu->setItemVisible(GRAPH,false);
 		mainMenu->setItemVisible(TABLE,false);
 		mainMenu->setItemVisible(SCRIPTM,false);
 		mainMenu->setItemVisible(STATISTICSM,false);
-		
 	}
 	else if(index==clientArea->indexOf(graph))
 	{
@@ -2913,55 +2971,67 @@ void MainObject::runScriptSlot(QString*)
 
 void MainObject::changeTabSlot(int num)
 {
+
+
+
   switch(num)
 	{
 		case 0:
 			if(!pref.showWindows[0])
 				viewMenuSlot(VIEWCALC1);
       clientArea->setCurrentWidget(calculator);
+
 			break;
 		case 1:
 			if(!pref.showWindows[1])
 				viewMenuSlot(VIEWCALC2);
       clientArea->setCurrentWidget(calculator2);
+
 			break;
 		case 2:
 			if(!pref.showWindows[2])
 				viewMenuSlot(VIEWGRAPH);
       clientArea->setCurrentWidget(graph);
+
 			break;
 		case 3:
 			if(!pref.showWindows[3])
 				viewMenuSlot(VIEWTABLE);
       clientArea->setCurrentWidget(table);
+
 			break;
 		case 4:
 			if(!pref.showWindows[4])
 				viewMenuSlot(VIEWMATRIX);
       clientArea->setCurrentWidget(matrix);
+
 			break;
 		case 5:
 			if(!pref.showWindows[5])
 				viewMenuSlot(VIEWSTATISTICS);
       clientArea->setCurrentWidget(statistics);
+
 			break;
 		case 6:
 			if(!pref.showWindows[6])
 				viewMenuSlot(VIEWSCRIPTING);
       clientArea->setCurrentWidget(scripting);
+
 			break;
 		case 7:
 			if(!pref.showWindows[7])
 				viewMenuSlot(VIEWSCRIPTIO);
       clientArea->setCurrentWidget(scriptIO);
+
 			break;
 	}
 }
 
+
 void MainObject::getPref(Preferences newPref)
 {
   static bool running=false;
-
+  int tabIndexCounter=0;
 
 
   if(newPref.graphType==GRAPHPOLAR)
@@ -2992,7 +3062,95 @@ void MainObject::getPref(Preferences newPref)
     }
   }
 
-  
+  if(!running)
+  {
+    running=true;
+    if(pref.showWindows[0])
+    {
+      if(clientArea->indexOf(calculator)==-1)
+        clientArea->insertTab(tabIndexCounter,calculator,EXTCALCH_STR6);
+      tabIndexCounter++;
+    }
+    else {
+      if(clientArea->indexOf(calculator)!=-1)
+        clientArea->removeTab(clientArea->indexOf(calculator));
+    }
+    if(pref.showWindows[1])
+    {
+      if(clientArea->indexOf(calculator2)==-1)
+        clientArea->insertTab(tabIndexCounter,calculator2,EXTCALCH_STR7);
+      tabIndexCounter++;
+    }
+    else {
+      if(clientArea->indexOf(calculator2)!=-1)
+        clientArea->removeTab(clientArea->indexOf(calculator));
+    }
+    if(pref.showWindows[2])
+    {
+      if(clientArea->indexOf(graph)==-1)
+        clientArea->insertTab(tabIndexCounter,graph,EXTCALCH_STR8);
+      tabIndexCounter++;
+    }
+    else {
+      if(clientArea->indexOf(graph)!=-1)
+        clientArea->removeTab(clientArea->indexOf(graph));
+    }
+    if(pref.showWindows[3])
+    {
+      if(clientArea->indexOf(table)==-1)
+        clientArea->insertTab(tabIndexCounter,table,EXTCALCH_STR9);
+      tabIndexCounter++;
+    }
+    else {
+      if(clientArea->indexOf(table)!=-1)
+        clientArea->removeTab(clientArea->indexOf(table));
+    }
+    if(pref.showWindows[4])
+    {
+      if(clientArea->indexOf(matrix)==-1)
+        clientArea->insertTab(tabIndexCounter,matrix,EXTCALCH_MENU73);
+      tabIndexCounter++;
+    }
+    else {
+      if(clientArea->indexOf(matrix)!=-1)
+        clientArea->removeTab(clientArea->indexOf(matrix));
+    }
+    if(pref.showWindows[5])
+    {
+      if(clientArea->indexOf(statistics)==-1)
+        clientArea->insertTab(tabIndexCounter,statistics,EXTCALCH_MENU74);
+      tabIndexCounter++;
+    }
+    else {
+      if(clientArea->indexOf(statistics)!=-1)
+        clientArea->removeTab(clientArea->indexOf(statistics));
+    }
+    if(pref.showWindows[6])
+    {
+      if(clientArea->indexOf(scripting)==-1)
+        clientArea->insertTab(tabIndexCounter,scripting,EXTCALCH_STR12);
+      tabIndexCounter++;
+    }
+    else {
+      if(clientArea->indexOf(scripting)!=-1)
+        clientArea->removeTab(clientArea->indexOf(scripting));
+    }
+    if(pref.showWindows[7])
+    {
+      if(clientArea->indexOf(scriptIO)==-1)
+        clientArea->insertTab(tabIndexCounter,scriptIO,EXTCALCH_STR13);
+      tabIndexCounter++;
+    }
+    else {
+      if(clientArea->indexOf(scriptIO)!=-1)
+        clientArea->removeTab(clientArea->indexOf(scriptIO));
+    }
+
+
+    running=false;
+  }
+
+ /*
   if(((clientArea->indexOf(calculator)!=-1)!=pref.showWindows[0] ||
 	   (clientArea->indexOf(calculator2)!=-1)!=pref.showWindows[1] ||
 	   (clientArea->indexOf(graph)!=-1)!=pref.showWindows[2] ||
@@ -3035,9 +3193,10 @@ void MainObject::getPref(Preferences newPref)
   if(pref.showWindows[6])
 	  clientArea->addTab(scripting,EXTCALCH_STR12);
   if(pref.showWindows[7])
-	  clientArea->addTab(scriptIO,EXTCALCH_STR13);
+    clientArea->addTab(scriptIO,EXTCALCH_STR13);
+  running=false;
   }
-  running=false; 
+*/
 
       if(!calcFocus && newPref.calcType==BASE)
       {
@@ -3097,6 +3256,9 @@ void MainObject::getPref(Preferences newPref)
     statistics->setPref(pref);
     scripting->setPref(pref);
     scriptIO->setPref(pref);
+    calcButtons->setPref(pref);
+    extButtons->setPref(pref);
+    screenshotDialog->setPref(pref);
 
 
     scriptMenu->setItemChecked(CLEARMEMALWAYS,pref.clearScriptMemory);
@@ -3431,6 +3593,7 @@ void MainObject::readFunctionFile(QString name)
 	}
 	getPref(pref);
 }
+
 
 void MainObject::writeFunctionFile(QString name)
 {

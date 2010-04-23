@@ -35,6 +35,7 @@ dialog, the todo list and the bug list.
 #include "importdialog.h"
 #include "graphsetdialog.h"
 #include "screenshotdialog.h"
+#include "buttons.h"
 #include <qtabwidget.h>
 #include <qtabbar.h>
 #include <qstring.h>
@@ -316,13 +317,45 @@ class ImportDialog;
 class HelpBrowser;
 class InfoDialog;
 
+
+/**
+ * @class MainObject
+ * @brief Extcalc main class
+ *
+ * MainObject provides the main window of extcalc. The child widges
+ * and the tabs were controled by this class, as well as the menus.
+ * ToolWidgets are declared in the MainObject constructor, but the view
+ * control of the tool widges is done by the client windows.
+ */
 class MainObject :public QMainWindow
 {
+  /// The menu bar for the extcalc menu.
 	QMenuBar*mainMenu;
-	Q3PopupMenu *calcMenu,*helpMenu,*prefMenu,*graphMenu;
-	Q3PopupMenu *coordinateMenu,*tableMenu;
-	Q3PopupMenu *viewMenu,*fileMenu,*scriptMenu,*statisticsMenu;
-	QMenu *editMenu,*angleMenu,*floatPointMenu,*outputMenu;
+  /// The calculator settings menu.
+  Q3PopupMenu *calcMenu;
+  /// Menu for help and application info.
+  Q3PopupMenu *helpMenu;
+  /// Menu for preferences dialogs.
+  Q3PopupMenu *prefMenu;
+  /// Menu for grapics settings.
+  Q3PopupMenu *graphMenu;
+  /// Graphics coordinate system sub-menu.
+  Q3PopupMenu *coordinateMenu;
+  /// The table settings menu.
+  Q3PopupMenu *tableMenu;
+  /// Menu to choose the shown client windows
+  Q3PopupMenu *viewMenu;
+  /// File menu, which currently only contains the quit item.
+  Q3PopupMenu *fileMenu;
+  /// Menu for scripting settings for script editor and script IO widget.
+  Q3PopupMenu *scriptMenu;
+  /// Menu for statistics settings.
+  Q3PopupMenu *statisticsMenu;
+
+  QMenu *editMenu;
+  QMenu*angleMenu;
+  QMenu *floatPointMenu;
+  QMenu *outputMenu;
 	QSignalMapper *editMapper,*angleMapper,*floatPointMapper,*outputMapper;
 	QActionGroup*floatPointActions,*angleActions,*outputActions;
 	//new
@@ -331,7 +364,12 @@ class MainObject :public QMainWindow
 	QMenu *calcModeMenu,*languageMenu,*baseMenu,*graphTypeMenu,*graphSetMenu,*tableTypeMenu;
 	QAction *complexAction;
 
+
+
   ScreenshotDialog *screenshotDialog;
+  StandardButtons*calcButtons;
+  ExtButtons*extButtons;
+  QList<ToolWidget*>toolWidgets;
 
 	QTabBar*tabBar;
 	CalcWidget *calculator,*calculator2;
@@ -364,7 +402,9 @@ class MainObject :public QMainWindow
 	bool calcModeChanged;
 	ThreadSync*threadData;
     QTabWidget *clientArea;
-	QToolBar *toolBar;
+  QToolBar *calculatorBar,*calculator2Bar;
+  QToolBar *graphicsBar,*tableBar,*matrixBar,*statisticsBar,*scriptEditBar,*srciptIOBar;
+  QWidget* lastTab;
 
 
 Q_OBJECT
@@ -395,89 +435,23 @@ virtual void customEvent(QCustomEvent*);
 
 public slots:
 void fileMenuSlot(int item);
-  //void quitSlot()
 void editMenuSlot(int item);
-  //void undoSlot()
-  //void redoSlot()
-  //void cutSlot()
-  //void copySlot()
-  //void pasteSlot()
 void viewMenuSlot(int item);
-  //void viewCalc1Slot()
-  //void viewCalc2Slot()
-  //void viewGraphSlot()
-  //void viewTableSlot()
-  //void viewMatrixSlot()
-  //void viewStatisticsSlot()
-  //void viewScriptingSlot()
-  //void viewScriptIOSlot()
 void angleMenuSlot(int type);
-  //void degSlot()
-  //void radSlot()
-  //void graSlot()
 void outputMenuSlot(int item);
-  //void fixedNumSlot()
-  //void variableNumSlot()
-  //void expSymSlot()
 void coordinateMenuSlot(int item);
-  //void standardCoordinateSlot()
-  //void trigonimectricCoordinateSlot()
-  //void showAxesSlot()
-  //void showLabelsSlot()
-  //void showRasterSlot()
-  //void constRationSlot()
 void graphTypeMenuSlot(int item);
-  //void graphStdSlot()
-  //void graphPolarSlot()
-  //void graph3DSlot();
 void graphMenuSlot(int item);
-  //void graphsetManageSlot()
-  //void graphsetSaveSlot()
-  //void graphsetCreateSlot()
-  //void graphsetImportSlot()
-  //void graphsetExportSlot()
 void calcModeMenuSlot(int item);
 void calcComplexSlot();
-  //void calcScientificSlot()
-  //void calcBaseSlot()
-  //void calcComplexSlot()
 void baseMenuSlot(int item);
-  //void baseBinSlot()
-  //void baseOctSlot()
-  //void baseDecSlot()
-  //void baseHexSlot()
 void helpMenuSlot(int item);
-  //void helpSlot()
-  //void infoSlot()
 void prefMenuSlot(int item);
-  //void prefCalculatorSlot()
-  //void prefGraphicsSlot()
-  //void prefTableSlot()
-  //void prefScriptSlot()  
 void languageMenuSlot(int item);
-  //void langEnSlot()
-  //void langFrSlot()
-  //void langDeSlot()
 void tableMenuSlot(int item);
-  //void tableStandardSlot()
-  //void tableResetSlot()
 void scriptMenuSlot(int item);
-  //void scriptExportSlot()
-  //void scriptImportSlot()
-  //void scriptMemAutoSlot()
-  //void scripMemClearSlot()
 void statisticsMenuSlot(int item);
-  //void statClearSlot()
-  //void statAutoclearSlot()
-  //void statPointsSlot()
-  //void statLinesSlot()
 void tableTypeMenuSlot(int item);
-  //void tableNormalSlot()
-  //void tablePolarSlot()
-  //void tableParameterSlot()
-  //void tableInequalitySlot()
-  //void table3dSlot()
-  //void tableComplexSlot()
 
 void graphSetMenuSlot(int item);
 void floatPointMenuSlot(int item);

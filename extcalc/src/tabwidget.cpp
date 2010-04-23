@@ -16,21 +16,19 @@ any later version.
 #include "tabwidget.h"
 #include <QResizeEvent>
 
-TabWidget::TabWidget(QWidget*parent,Preferences p,Variable *va,ThreadSync*td, bool max) :QWidget(parent)
+TabWidget::TabWidget(QWidget*par,Preferences p,Variable *va,ThreadSync*td,QString desc, bool max) :QWidget(par)
 {
 	vars=va;
 	threadData=td;
 	pref=p;
 	maximized=false;	
-	calcButtons=new  StandardButtons(this);
-	extButtons=new ExtButtons(this);
-	dockArea=new Q3DockArea(Qt::Horizontal,Q3DockArea::Normal,this);
-	dockArea->setMinimumWidth(300);
-	dockArea->setMinimumHeight(30);
+  descriptor=desc;
+  toolBar=NULL;
+  parent=par;
 
 	mainLayout=new QGridLayout(this);
-	buttonLayout=new QGridLayout(NULL);
-	maximizeLayout=new QGridLayout(NULL);
+  buttonLayout=new QGridLayout((QWidget*)NULL);
+  maximizeLayout=new QGridLayout((QWidget*)NULL);
 	mainLayout->addLayout(maximizeLayout,0,0,1,1);
 	subWidgetCount=0;
 	dockAreaPos=-1;
@@ -55,8 +53,8 @@ void TabWidget::maximizeSlot(bool maximize)
 		maximized=true;
 		if(dockAreaPos!=-1)
 		{
-			buttonLayout->removeWidget(dockArea);
-			maximizeLayout->addWidget(dockArea,0,0,1,1);
+//			buttonLayout->removeWidget(dockArea);
+//			maximizeLayout->addWidget(dockArea,0,0,1,1);
 		}
 	}
 	else {
@@ -64,8 +62,8 @@ void TabWidget::maximizeSlot(bool maximize)
 		maximized=false;
 		if(dockAreaPos!=-1)
 		{
-			maximizeLayout->removeWidget(dockArea);
-			buttonLayout->addWidget(dockArea,0,0,1,1);
+//			maximizeLayout->removeWidget(dockArea);
+//			buttonLayout->addWidget(dockArea,0,0,1,1);
 		}
 		for(c=0; c<subWidgetCount; c++)
 			subWidgets[c]->show();
@@ -130,7 +128,7 @@ void TabWidget::removeSubWidget(int pos)
 	
 }
 
-void TabWidget::setDockArea(int pos)
+/*void TabWidget::setDockArea(int pos)
 {
 	if(pos>subWidgetCount-1)
 		return;
@@ -169,7 +167,7 @@ void TabWidget::setDockArea(int pos)
 		dockAreaPos=pos;
 	}
 
-}
+}*/
 
 
 

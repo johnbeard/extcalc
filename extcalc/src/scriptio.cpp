@@ -24,10 +24,12 @@ any later version.
 
 
 
-ScriptIOWidget::ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWidget*shareContext) :TabWidget(parent,pr,va,NULL,true)
+ScriptIOWidget::ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWidget*shareContext,StandardButtons*cB,ExtButtons*eB) :TabWidget(parent,pr,va,NULL,"scriptconsole",true)
 {
 //			vars=va;
 //			menuBottom=mB;
+  calcButtons=cB;
+  extButtons=eB;
 	vars=new Variable [VARNUM];
 	for(int c=0; c<VARNUM;c++)
 		vars[c]=0.0;
@@ -75,31 +77,28 @@ ScriptIOWidget::ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWid
 	timerInterval=25;
 	redrawTime=20000;
 
-	minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
-	maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
-	runIcon=new QPixmap(INSTALLDIR+QString("/data/exec.png"));
-	killIcon=new QPixmap(INSTALLDIR+QString("/data/exit.png"));
 
   selectStartColumn=selectStartRow=selectEndColumn=selectEndRow=0;
 
 
   output2D=new ScriptDisplay(this);
   glWindow=new ScriptGL(output2D,pref,shareContext);
-	toolBar=new Q3ToolBar();
+  toolBar=new QToolBar();
+
+  maximizeAction=new QAction(QIcon(":/view_top_bottom.png"),"",toolBar);
+  maximizeAction->setCheckable(true);
+  runAction=new QAction(QIcon(":/exec.png"),"",toolBar);
+  killAction=new QAction(QIcon(":/exit.png"),"",toolBar);
+
+  toolBar->addAction(maximizeAction);
+  toolBar->addAction(runAction);
+  toolBar->addAction(killAction);
 
 
 
-	dockArea->moveDockWindow(toolBar);
-	runButton=new QPushButton(*runIcon,"",toolBar);
-	killButton=new QPushButton(*killIcon,"",toolBar);
-	maximizeButton=new QPushButton(*minimizeIcon,"",toolBar);
-	runButton->setFixedWidth(30);
-	maximizeButton->setFixedWidth(30);
-	killButton->setFixedWidth(30);
+  killAction->setEnabled(false);
+  runAction->setEnabled(false);
 
-	killButton->setEnabled(false);
-
-	runButton->setEnabled(false);
 	contextMenu=new Q3PopupMenu(this);
 	contextMenu->insertItem(SCRIPTIO_STR12,EDITCOPY);
 	contextMenu->insertItem(SCRIPTIO_STR13,EDITPASTE);
@@ -108,10 +107,11 @@ ScriptIOWidget::ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWid
 	contextMenu->insertSeparator();
 	contextMenu->insertItem(SCRIPTIO_STR15,EDITCUT);
 
+  /*
 	QToolTip::add(killButton,"Exit Script");
 	QToolTip::add(runButton,"Run Script");
 	QToolTip::add(maximizeButton,"Change View");
-
+*/
 
 	cursorX=cursorY=0;
   drawPen=new QPen(QColor(0,0,0));
@@ -127,9 +127,9 @@ ScriptIOWidget::ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWid
 
 
   setMainWidget(scrollArea);
-  addSubWidget(calcButtons);
-  addSubWidget(extButtons);
-  setDockArea(1);
+//  addSubWidget(calcButtons);
+//  addSubWidget(extButtons);
+//  setDockArea(1);
 
 
 
@@ -139,13 +139,13 @@ ScriptIOWidget::ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWid
 
 
 
-	QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
-	QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
-	QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-	QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
-	QObject::connect(maximizeButton,SIGNAL(clicked()),this,SLOT(maximizeButtonSlot()));
-	QObject::connect(killButton,SIGNAL(clicked()),this,SLOT(killSlot()));
-	QObject::connect(runButton,SIGNAL(clicked()),this,SLOT(runSlot()));
+//	QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
+//	QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(processText(QString)));
+//	QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+//	QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+  QObject::connect(maximizeAction,SIGNAL(triggered(bool)),this,SLOT(viewSlot(bool)));
+  QObject::connect(killAction,SIGNAL(triggered()),this,SLOT(killSlot()));
+  QObject::connect(runAction,SIGNAL(triggered()),this,SLOT(runSlot()));
 	QObject::connect(t,SIGNAL(timeout()),this,SLOT(timerSlot()));
 //	QObject::connect(scrollBar,SIGNAL(valueChanged(int)),this,SLOT(scrollbarSlot(int)));
 	QObject::connect(contextMenu,SIGNAL(activated(int)),this,SLOT(contextMenuSlot(int)));
@@ -160,14 +160,14 @@ void ScriptIOWidget::getPref(Preferences newPref)
 
 
 
-void ScriptIOWidget::maximizeButtonSlot()
+void ScriptIOWidget::viewSlot(bool min)
 {
-	if(isMaximized())
+  if(min)
 		maximizeSlot(false);
 	else 
     maximizeSlot(true);
 
-	repaint();
+  updateUI();
 }
 
 void ScriptIOWidget::killSlot()
@@ -189,7 +189,7 @@ void ScriptIOWidget::killSlot()
 			delete script;
 			script=NULL;
 			inputMode=IMDEFAULT;
-			killButton->setEnabled(false);
+      killAction->setEnabled(false);
 //			scrollBar->show();
 			resizeEvent(NULL);
 			if(pref.clearScriptMemory)
@@ -833,7 +833,7 @@ void ScriptIOWidget::customEvent(QEvent*e)
 				inputMode=IMDEFAULT;
 //				scrollBar->show();
 				resizeEvent(NULL);
-				killButton->setEnabled(false);
+        killAction->setEnabled(false);
 				if(pref.clearScriptMemory)
 					clearMemSlot();
 				break;
@@ -1015,7 +1015,7 @@ void ScriptIOWidget::runSlot()
 	scriptExec=true;
 	script=new ScriptThread(scriptObject,this);
 
-	killButton->setEnabled(true);
+  killAction->setEnabled(true);
 //	scrollBar->hide();
 	if(modeRequest==SCRIPT3D)
 		setDisplayMode(SCRIPT3D);
@@ -1147,11 +1147,11 @@ void ScriptIOWidget::loadSubScripts()
 	if(!errorFlag)
 	{
     output2D->insertText(SCRIPTIO_STR10);
-		runButton->setEnabled(true);
+    runAction->setEnabled(true);
 	}
 	else {
     output2D->insertText(SCRIPTIO_STR11);
-		runButton->setEnabled(false);
+    runAction->setEnabled(false);
 	}
 }
 
@@ -1393,6 +1393,21 @@ int ScriptIOWidget::macroPreprocessor(QString *code)
 	else return 0;
 }
 
+
+void ScriptIOWidget::updateUI()
+{
+  if(isVisible() && !isMaximized())
+  {
+    calcButtons->show();
+    extButtons->show();
+  }
+  else if(isVisible() && isMaximized())
+  {
+    calcButtons->hide();
+    extButtons->hide();
+  }
+}
+
 void ScriptIOWidget::editSlot(int type)
 {
 	if(hasFocus())
@@ -1467,7 +1482,9 @@ void ScriptIOWidget::contextMenuSlot(int item)
 
 void ScriptIOWidget::dockWindowSlot()
 {
-	dockArea->moveDockWindow(toolBar);
+
+  updateUI();
+  repaint();
 }
 
 void ScriptIOWidget::scrollPointSlot(int x, int y)

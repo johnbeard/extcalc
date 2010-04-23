@@ -1,3 +1,20 @@
+/*/////////////////////////////////////////Extcalc////////////////////////////////////////////
+/////////////////////////////////Scientific Graphic Calculator////////////////////////////////
+
+File:         screenshotdialog.cpp
+Author:       Rainer Strobel
+Email:        rainer1223@users.sourceforge.net
+Homepage:     http://extcalc-linux.sourceforge.net
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+
+////////////////////////////////////////////////////////////////////////////////////////////*/
+
+
 #include "screenshotdialog.h"
 #include <QWidget>
 #include <QFileDialog>
@@ -7,7 +24,7 @@
 
 
 /// ScreenshotDialog constructor to initialize ui and window
-ScreenshotDialog::ScreenshotDialog(QWidget*parent) :QDockWidget(tr("Screenshot"),parent,Qt::Window)
+ScreenshotDialog::ScreenshotDialog(QWidget*parent) :ToolWidget(parent)
 {
     screenshotUi.setupUi(this);
 
@@ -46,6 +63,13 @@ ScreenshotDialog::ScreenshotDialog(QWidget*parent) :QDockWidget(tr("Screenshot")
     QObject::connect(screenshotUi.rubberButton,SIGNAL(clicked()),this,SLOT(rubberButtonSlot()));
     QObject::connect(screenshotUi.textButton,SIGNAL(clicked()),this,SLOT(textButtonSlot()));
     QObject::connect(screenshotUi.saveButton,SIGNAL(clicked()),this,SLOT(saveButtonSlot()));
+}
+
+/// update the local copy of the preferences struct and adapt dialog to preferences changes
+void ScreenshotDialog::setPref(Preferences newPref)
+{
+  pref=newPref;
+
 }
 
 /// Shows the open file dialog to select a location for storing the screenshot

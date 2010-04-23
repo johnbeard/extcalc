@@ -22,109 +22,48 @@ ExtButtons for scientific functions
 
 #include "global.h"
 #include <qpushbutton.h>
-#include <q3buttongroup.h>
+#include <QButtonGroup>
+#include <QWidget>
 #include <qstring.h>
 #include <qfont.h>
 //Added by qt3to4:
 #include <QResizeEvent>
 #include <stdio.h>
+#include "toolwidget.h"
 
 
-class StandardButtons :public Q3ButtonGroup
+/**
+ * @class StandardButtons
+ * @brief A DockWidget with some basic buttons for the calculator
+ *
+ * The StandardButtons class manages a set of basic buttons for the
+ * calculator and hands the user input from the buttons by the
+ * emitText signal to another object. The main widget may control
+ * the input data by connecting the active widget to this signal.
+ */
+class StandardButtons :public ToolWidget
 {
-//	QPushButton * buttons;
-	int cols,rows;
-	Preferences pref;
-	QFont stdFont;
+  /// The ButtonGroup contains all buttons and bundles the button signals
+  QButtonGroup *buttons;
+  /// Number of columns of the button field
+  int cols;
+  /// Number of rows of the button field
+  int rows;
 
 	Q_OBJECT
 	
 public:
 
-	StandardButtons(QWidget *parent) :Q3ButtonGroup(parent)
-	{
-		cols=5;
-		rows=4;
-
-
-		QString buttonName[] ={	"7",	"8",	"9",	"DEL",	"AC",
-								"4",	"5",	"6",	"*",	"/",
-								"1",	"2",	"3",	"+",	"-",
-								"0",	".",	"EXP",	"ANS",	"=",
-		};
-
-
-		for(int c=0; c<20; c++)
-			insert(new QPushButton(buttonName[c],this));
+  StandardButtons(QWidget *parent);
 	
-		setMinimumWidth(280);
-		setMaximumWidth(280);
-		setMinimumHeight(200);
-		setMaximumHeight(200);
+  void setPref(Preferences newPref);
 
-		
-		QObject::connect(this,SIGNAL(clicked(int)),this,SLOT(buttonSlot(int)));
+  void setStandardSet();
 
-
-	}
+  void setAlphaSet();
 	
-	void setPref(Preferences newPref)
-	{
-		pref=newPref;
-		if(pref.alpha)
-			setAlphaSet();
-		else if(pref.shift)
-			setShiftSet();
-		else setStandardSet();
-	}
-
-	void setStandardSet()
-	{
-		QString buttonName[] ={	"7",	"8",	"9",	"DEL",	"AC",
-								"4",	"5",	"6",	"*",	"/",
-								"1",	"2",	"3",	"+",	"-",
-								"0",	".",	"EXP",	"ANS",	"=",
-		};
-		QPushButton *currentButton;
-		for(int c=0; c<cols*rows; c++)
-		{
-			currentButton=(QPushButton*)find(c);
-			currentButton->setText(buttonName[c]);
-		}
-	}
-
-	void setAlphaSet()
-	{
-		QString buttonName[] ={	"7",	"8",	"9",	"DEL",	"AC",
-								"4",	"5",	"6",	"W",	"X",
-								"1",	"2",	"3",	"Y",	"Z",
-								"0",	".",	"EXP",	"ANS",	"=",
-		};
-		QPushButton *currentButton;
-		for(int c=0; c<cols*rows; c++)
-		{
-			currentButton=(QPushButton*)find(c);
-			currentButton->setText(buttonName[c]);
-		}
-	}
+  void setShiftSet();
 	
-	void setShiftSet()
-	{
-		QString buttonName[] ={	"M",	"G",	"T",	"DEL",	"AC",
-								"\xb5",	"m",	"k",	"*",	"/",
-								"f",	"p",	"n",	"+",	"-",
-								"0",	".",	"EXP",	"ANS",	"=",
-		};
-		QPushButton *currentButton;
-		for(int c=0; c<cols*rows; c++)
-		{
-			currentButton=(QPushButton*)find(c);
-			currentButton->setText(buttonName[c]);
-		}
-	}
-	
-
-
 
 protected:
 		
@@ -140,203 +79,45 @@ public slots:
 	
 };
 
-
-class ExtButtons :public Q3ButtonGroup
+/**
+ * @class ExtButtons
+ * @brief A DockWidget with extended buttons for the calculator
+ *
+ * The ExtButtons class manages a the extended buttons and behaves
+ * essentially like the StandardButtons class. It also contains
+ * the Shift, Hyp and Alpha buttons which may change the program
+ * preferences.
+ */
+class ExtButtons :public ToolWidget
 {
-//	QPushButton * buttons;
-	int cols,rows;
-	Preferences pref;
+  /// The ButtonGroup contains all buttons and bundles the button signals
+  QButtonGroup *buttons;
+  /// Number of columns of the button field
+  int cols;
+  /// Number of rows of the button field
+  int rows;
 
 	Q_OBJECT
 	
 public:
 
-	ExtButtons(QWidget *parent) :Q3ButtonGroup(parent)
-	{
-		cols=6;
-		rows=4;
-
-
-//		buttons = new QPushButton[24](this);
-		for(int c=0; c<24; c++)
-			insert(new QPushButton(this));
-		
-
-		setStandardSet();
-
-		((QPushButton*)find(0))->setToggleButton(true);
-		((QPushButton*)find(6))->setToggleButton(true);
-		((QPushButton*)find(14))->setToggleButton(true);
-
-		setMinimumWidth(300);
-		setMaximumWidth(300);
-		setMinimumHeight(160);
-		setMaximumHeight(160);
-		
-		QObject::connect(this,SIGNAL(clicked(int)),this,SLOT(buttonSlot(int)));
-
-
-	}
+  ExtButtons(QWidget *parent);
 	
-	void setPref(Preferences newPref)
-	{
-		pref=newPref;
-	//	buttons[0].setOn(pref.shift);	
-	//	buttons[6].setOn(pref.alpha);
-	//	buttons[14].setOn(pref.hyp);
-		((QPushButton*)find(0))->setOn(pref.shift);
-		((QPushButton*)find(6))->setOn(pref.alpha);
-		((QPushButton*)find(14))->setOn(pref.hyp);
-
-		if(pref.calcType == BASE)
-		{
-			if(pref.shift)
-				setBaseShiftSet();
-			else if(pref.alpha)
-				setAlphaSet();
-			else setBaseStandardSet();
-		}
-		else
-		{
-			if(pref.shift)
-				setShiftSet();
-			else if(pref.alpha)
-				setAlphaSet();
-			else if(pref.hyp)
-				setHypSet();
-			else setStandardSet();
-		}
-	}
+  void setPref(Preferences newPref);
 
 
-	void setStandardSet()
-	{
-	//	QString buttonName[] ={	"Shift","Rand",	"!",	"",		"i",	"",
-	//							"Alpha","x\xb2","\xb2",	"^",	"x",	"^-1",
-	//							"log",	"ln",	"hyp",	"sin",	"cos",	"tan",
-	//							"a/b",	"X",	"(",	")",	",",	"->",
-	//	};
-		QString buttonName[] ={	"Shift","","d/dx",	"i",	"",		"",
-								"Alpha","x\xb2","^x",	"^-1",	"\xb2",	"x",
-								"log",	"ln",	"hyp",	"sin",	"cos",	"tan",
-								";",	"X",	"(",	")",	",",	"->"
-		};
-		
-		buttonName[1].insert(0,getUnicode(INTEGRALSTRING));
-		buttonName[10].insert(1,getUnicode(ROOTSTRING));
-		buttonName[11].insert(1,getUnicode(ROOTSTRING));
-		buttonName[4].insert(0,getUnicode(PISTRING));
-		buttonName[5].insert(0,getUnicode(EULERSTRING));
+  void setStandardSet();
 
-		((QPushButton*)find(14))->setToggleButton(true);
-
-		QPushButton *currentButton;
-		for(int c=0; c<cols*rows; c++)
-		{
-			currentButton=(QPushButton*)find(c);
-			currentButton->setText(buttonName[c]);
-		}
-	}
-	void setShiftSet()
-	{
-		QString buttonName[] ={	"Shift","Rand",	"!",	"i",	"",		"",
-								"Alpha","x\xb3","\xb3",	"abs",	"arg",	"conj",
-								"10^",	"^",	"hyp",	"asin",	"acos",	"atan",
-								"==",	"[",	"{",	"}",	"]",	"",
-		};
-
-		buttonName[8].insert(1,getUnicode(ROOTSTRING));
-		buttonName[13].insert(0,getUnicode(EULERSTRING));
-		buttonName[4].insert(0,getUnicode(PISTRING));
-		buttonName[5].insert(0,getUnicode(EULERSTRING));
-		buttonName[23].insert(0,getUnicode(DEGREESTRING));
-	//	buttons[14].setToggleButton(true);
-		((QPushButton*)find(14))->setToggleButton(true);
-
-		QPushButton *currentButton;
-		for(int c=0; c<cols*rows; c++)
-		{
-			currentButton=(QPushButton*)find(c);
-			currentButton->setText(buttonName[c]);
-		}
-		if(pref.hyp)
-			setHypSet();
-	}
-	void setAlphaSet()
-	{
-		QString buttonName[] ={	"Shift","A",	"B",	"C",	"D",	"E",
-								"Alpha","F",	"G",	"H",	"I",	"J",
-								"K",	"L",	"M",	"N",	"O",	"P",
-								"Q",	"R",	"S",	"T",	"U",	"V",
-		};
-	//	buttons[14].setToggleButton(false);
-		((QPushButton*)find(14))->setToggleButton(false);
+  void setShiftSet();
 
 
-		QPushButton *currentButton;
-		for(int c=0; c<cols*rows; c++)
-		{
-			currentButton=(QPushButton*)find(c);
-			currentButton->setText(buttonName[c]);
-		}
-	}
-	void setHypSet()
-	{
-		if(pref.shift)
-		{
-		//	buttons[15].setText("asinh");
-		//	buttons[16].setText("acosh");
-		//	buttons[17].setText("atanh");
-			((QPushButton*)find(15))->setText("asinh");
-			((QPushButton*)find(16))->setText("acosh");
-			((QPushButton*)find(17))->setText("atanh");
-		}
-		else {
-		//	buttons[15].setText("sinh");
-		//	buttons[16].setText("cosh");
-		//	buttons[17].setText("tanh");
-			((QPushButton*)find(15))->setText("sinh");
-			((QPushButton*)find(16))->setText("cosh");
-			((QPushButton*)find(17))->setText("tanh");
-		}
-	}
-	void setBaseStandardSet()
-	{
-		QString buttonName[] ={	"Shift","Rand",	"!",	"%",	"x",	"^",
-								"Alpha","x²",	"&&",	"|",	"~",	"xor",
-								"A",	"B",	"C",	"D",	"E",	"F",
-								"==",	"X",	"(",	")",	",",	"->",
-		};
+  void setAlphaSet();
 
-		buttonName[4].insert(1,getUnicode(ROOTSTRING));
-		((QPushButton*)find(14))->setToggleButton(false);
+  void setHypSet();
 
-		QPushButton *currentButton;
-		for(int c=0; c<cols*rows; c++)
-		{
-			currentButton=(QPushButton*)find(c);
-			currentButton->setText(buttonName[c]);
-		}
-	}
-	void setBaseShiftSet()
-	{
-		QString buttonName[] ={	"Shift","Rand",	">",	"%",	"x",	"^",
-								"Alpha","x\xb3","&&&&",	"||",	"<",	"xor",
-								"dec",	"bin",	"hex",	"oct",	"<<",	">>",
-								"!=",	"X",	"(",	")",	",",	"->",
-		};
+  void setBaseStandardSet();
 
-		buttonName[4].insert(1,getUnicode(ROOTSTRING));
-		((QPushButton*)find(14))->setToggleButton(false);
-
-		QPushButton *currentButton;
-		for(int c=0; c<cols*rows; c++)
-		{
-			currentButton=(QPushButton*)find(c);
-			currentButton->setText(buttonName[c]);
-		}
-
-	}
+  void setBaseShiftSet();
 
 	protected:
 

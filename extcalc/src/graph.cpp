@@ -20,46 +20,141 @@ any later version.
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////GraphOutput/////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
+  GraphWidget::GraphWidget(QWidget*parent,Preferences pr,Variable*va,ThreadSync*td,ScreenshotDialog *sd,StandardButtons*cB,ExtButtons*eB) :TabWidget(parent,pr,va,td,"graph",false)
+  {
+
+    solveMode=false;
+    functionChanged=false;
+    changedRow=-1;
+    dynamicStart=false;
+    processStarted=false;
+
+
+    horzSplit=new QSplitter(Qt::Horizontal,this);
+    vertSplit=new QSplitter(Qt::Vertical,horzSplit);
+    functionTable=new FunctionTable((QWidget*)vertSplit,pref);
+    graphArea=new GraphArea(horzSplit);
+    graph=new GraphOutput(graphArea,vars,threadData);
+    catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX,this);
+    screenshotDialog=sd;
+    calcButtons=cB;
+    extButtons=eB;
+
+    setMainWidget(horzSplit);
+
+/*		minimizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_top_bottom.png"));
+    maximizeIcon=new QPixmap(INSTALLDIR+QString("/data/view_remove.png"));
+    printIcon=new QPixmap(INSTALLDIR+QString("/data/print.png"));
+    catalogIcon=new QPixmap(INSTALLDIR+QString("/data/catalog.png"));*/
+
+    toolBar=new QToolBar("graphics",parent);
+
+    maximizeAction=new QAction(QIcon(":/view_top_bottom.png"),"",toolBar);
+    maximizeAction->setCheckable(true);
+    maximizeAction->setChecked(true);
+    drawAction=new QAction(QIcon(":/print.png"),"Draw",toolBar);
+    catalogAction=new QAction(QIcon(":/catalog.png"),"",toolBar);
+    catalogAction->setMenu(catalog);
+    toolBar->addAction(maximizeAction);
+    toolBar->addAction(drawAction);
+    toolBar->addAction(catalogAction);
+
+
+//		drawButton=new QPushButton(*printIcon,GRAPHH_STR1,toolBar);
+//		maximizeButton=new QPushButton(*maximizeIcon,"",toolBar);
+    modeBox=new QComboBox(toolBar);
+    toolBar->addWidget(modeBox);
+//    modeBox->hide();
+//		catalogButton=new QPushButton(*catalogIcon,"",toolBar);
+//		catalogButton->setFixedWidth(30);
+//		maximizeButton->setFixedWidth(30);
+
+
+//		drawButton->setFixedHeight(25);
+
+    solveType=new QComboBox(toolBar);
+//		functionType=new QComboBox(this);
+//		solveWidget=new GraphSolveWidget(this,pref,vars,threadData);
+//    screenshotDialog=new ScreenshotDialog(parent);
+//    screenshotDialog->hide();
+
+    solveType->hide();
+//		functionType->hide();
+//		solveWidget->hide();
+    inputLine=new QLineEdit(vertSplit);
+    inputLine->setFixedHeight(25);
+    Q3ValueList<int> s = horzSplit->sizes();
+    s[1]=300;
+    s[0]=300;
+    horzSplit->setSizes(s);
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////GraphWidget/////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
 
-/*
-void GraphWidget::resizeEvent(QResizeEvent*)
-{
-	int width=geometry().right() - geometry().left();
-	int height=geometry().bottom() - geometry().top();
-	
+    solveType->insertItem(GRAPHH_STR4,-2);
+    solveType->insertItem(GRAPHH_STR5,-3);
+    solveType->insertItem(GRAPHH_STR6,-3);
+    solveType->insertItem(GRAPHH_STR7,-4);
+    solveType->insertItem(GRAPHH_STR8,-5);
+    solveType->insertItem(GRAPHH_STR9,-6);
+    solveType->insertItem(GRAPHH_STR10,-7);
+    solveType->insertItem(GRAPHH_STR11,-8);
+    solveType->insertItem(GRAPHH_STR26,-9);
 
-	if(maximized)
-	{
-//		graph->setGeometry(10,menuBottom+40,width-20,height-90);
-		horzSplit->setGeometry(20,menuBottom+40,width-40,height-90);
-		dockArea->setGeometry(0,menuBottom,width,35);
-	}
-	else
-	{
-		horzSplit->setGeometry(20,50,width-40,height-290);
+//		functionType->insertItem(TABLEH_STR3);
+//		functionType->insertItem(TABLEH_STR4);
+//		functionType->insertItem(TABLEH_STR5);
+//		functionType->insertItem(TABLEH_STR6);
+//		functionType->insertItem(TABLEH_STR7);
+//		functionType->insertItem(GRAPHH_STR30);
+    modeBox->insertItem(tr("Edit"));
+    modeBox->insertItem(tr("Screenshot"));
+    modeBox->setCurrentItem(0);
 
-		if(solveMode)
-		{
-			solveType->setGeometry(20,height-220,width/4-20,30);
-			functionType->setGeometry(width/4+10,height-220,width/4-20,30);
-			solveWidget->setGeometry(20,height-180,width-40,160);
-		}
-		standardButtons->setGeometry(20,height-220,280,200);
-		extButtons->setGeometry(width/2+10,height-180,300,160);
 
-		dockArea->setGeometry(width/2+15,height-220,width/2-30,35);
-	}
-}
-*/
+    QObject::connect(functionTable,SIGNAL(currentChanged(int,int)),this,SLOT(selectionChangedSlot(int,int)));
+    QObject::connect(functionTable,SIGNAL(textEditStarted(QString)),this,SLOT(tableEditSlot(QString)));
+    QObject::connect(drawAction,SIGNAL(triggered()),graph,SLOT(resetRotation()));
+    QObject::connect(drawAction,SIGNAL(triggered()),graph,SLOT(removeLines()));
+    QObject::connect(drawAction,SIGNAL(triggered()),this,SLOT(drawSlot()));
+    QObject::connect(modeBox,SIGNAL(activated(int)),this,SLOT(modeSlot(int)));
+//		QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
+//		QObject::connect(extButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
+//    QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+//		QObject::connect(extButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+    QObject::connect(graph,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+    QObject::connect(functionTable,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+//		QObject::connect(solveWidget,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+    QObject::connect(inputLine,SIGNAL(returnPressed()),this,SLOT(inputTextFinished()));
+    QObject::connect(inputLine,SIGNAL(textChanged(const QString&)),this,SLOT(inputTextChanged(const QString&)));
+//		QObject::connect(graph,SIGNAL(leftMButtonPressed(double,double)),solveWidget,SLOT(graphLMButtonPressed(double,double)));
+//		QObject::connect(solveWidget,SIGNAL(addHorizontalLine(double)),graph,SLOT(drawHorizontalLine(double)));
+//		QObject::connect(solveWidget,SIGNAL(addVerticalLine(double)),graph,SLOT(drawVerticalLine(double)));
+//		QObject::connect(solveWidget,SIGNAL(addPolarLine(double)),graph,SLOT(drawPolarLine(double)));
+//		QObject::connect(solveWidget,SIGNAL(addCircle(double)),graph,SLOT(drawCircle(double)));
+//		QObject::connect(solveWidget,SIGNAL(add3dXLine(double,double)),graph,SLOT(draw3dXLine(double,double)));
+//		QObject::connect(solveWidget,SIGNAL(add3dYLine(double,double)),graph,SLOT(draw3dYLine(double,double)));
+//		QObject::connect(solveWidget,SIGNAL(add3dZLine(double,double)),graph,SLOT(draw3dZLine(double,double)));
+//		QObject::connect(solveWidget,SIGNAL(removeLines()),graph,SLOT(removeLines()));
+    QObject::connect(solveType,SIGNAL(activated(int)),this,SLOT(solveTypeSlot(int)));
+//		QObject::connect(this,SIGNAL(solveTypeSignal(int)),solveWidget,SLOT(setState(int)));
+//		QObject::connect(functionType,SIGNAL(activated(int)),solveWidget,SLOT(setFunctionType(int)));
+//		QObject::connect(functionType,SIGNAL(activated(int)),this,SLOT(functionTypeSlot(int)));
+//		QObject::connect(solveWidget,SIGNAL(drawInequalityIntersection(int, int)),this,SLOT(inequalitySlot(int,int)));
+    QObject::connect(screenshotDialog,SIGNAL(redrawGraphs()),this,SLOT(drawSlot()));
+    QObject::connect(graph,SIGNAL(redrawSignal()),this,SLOT(drawSlot()));
+    QObject::connect(graph,SIGNAL(screenshotSignal(QPixmap*)),screenshotDialog,SLOT(screenshotSlot(QPixmap*)));
+    QObject::connect(screenshotDialog,SIGNAL(getScreenshotSignal(int,int)),graph,SLOT(screenshotSlot(int,int)));
+    QObject::connect(screenshotDialog,SIGNAL(drawSignal(int,QColor,int)),graph,SLOT(drawSlot(int,QColor,int)));
+    QObject::connect(this,SIGNAL(drawPointsSignal(long double*,int,bool)),graph,SLOT(drawPoints(long double*,int,bool)));
+    QObject::connect(this,SIGNAL(removeLinesSignal()),graph,SLOT(removeLines()));
+    QObject::connect(graph,SIGNAL(statisticsRedrawSignal()),this,SIGNAL(statisticsRedrawSignal()));
+    QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(processText(QString)));
+    QObject::connect(catalogAction,SIGNAL(triggered()),this,SLOT(catalogSlot()));
+    QObject::connect(graphArea,SIGNAL(sizeChanged()),this,SLOT(graphSizeSlot()));
+    QObject::connect(graph,SIGNAL(processingFinished()),this,SLOT(graphProcessingFinishedSlot()));
+    QObject::connect(maximizeAction,SIGNAL(toggled(bool)),this,SLOT(viewSlot(bool)));
+  }
 
 
 void GraphWidget::selectionChangedSlot(int row,int)
@@ -101,13 +196,13 @@ void GraphWidget::drawSlot()
 		if(pref.dynamicDelay==0)
 		{
 			graph->timerSlot();
-			drawButton->setText(GRAPHH_STR1);
+      drawAction->setText(GRAPHH_STR1);
 		}
 		else
 		{
 			dynamicStart=false;
 			graph->timerStartSlot(false);
-			drawButton->setText(GRAPHH_STR1);
+      drawAction->setText(GRAPHH_STR1);
 			return;
 		}
 	}
@@ -115,7 +210,7 @@ void GraphWidget::drawSlot()
 
 	if(processStarted)
 		return;
-	drawButton->setEnabled(false);
+  drawAction->setEnabled(false);
 	processStarted=true;
   qDebug("processStarted flag checked");
 	
@@ -146,8 +241,8 @@ void GraphWidget::drawSlot()
 	}
 	
 	if(dynamicStart && pref.dynamicDelay!=0)
-		drawButton->setText(GRAPHC_STR5);
-	else drawButton->setText(GRAPHH_STR1);
+    drawAction->setText(GRAPHC_STR5);
+  else drawAction->setText(GRAPHH_STR1);
 	qDebug("data structure creation finished; start processing");
 	
 	graph->calculateGraphData();
@@ -162,7 +257,7 @@ void GraphWidget::graphProcessingFinishedSlot()
 	graph->repaint(true);
   qDebug("initial repaint successful");
 	processStarted=false;
-	drawButton->setEnabled(true);
+  drawAction->setEnabled(true);
 }
 
 
@@ -173,19 +268,19 @@ void GraphWidget::modeSlot(int)
 	{
 		case 0:
 			solveMode=false;
-      screenshotDialog->hide();
+      updateUIState();
 			break;
 	
 		case 1:
       solveMode=true;
-      screenshotDialog->show();
+      updateUIState();
 			break;
 			
 		case 2:
 			solveMode=true;
 			solveType->hide();
-			functionType->hide();
-			setDockArea(0);
+//			functionType->hide();
+//			setDockArea(0);
 			removeSubWidget(1);
 			emit solveTypeSignal(9);
 			break;
@@ -194,7 +289,7 @@ void GraphWidget::modeSlot(int)
 }
 
 
-void GraphWidget::buttonInputSlot(QString text)
+void GraphWidget::processText(QString text)
 {
 	if(text == "calculate")
 	{
@@ -234,9 +329,60 @@ void GraphWidget::buttonInputSlot(QString text)
 	}
 	
 }
+
+void GraphWidget::updateUIState()
+{
+  if(isVisible() && !isMaximized())
+  {
+
+    if(solveMode)
+    {
+      screenshotDialog->show();
+      screenshotDialog->setActive(true);
+      calcButtons->setActive(false);
+      extButtons->setActive(false);
+      calcButtons->hide();
+      extButtons->hide();
+    }
+    else {
+      calcButtons->setActive(true);
+      extButtons->setActive(true);
+      calcButtons->show();
+      extButtons->show();
+
+    }
+  }
+  else if(isVisible() && isMaximized())
+  {
+    calcButtons->setActive(false);
+    extButtons->setActive(false);
+    screenshotDialog->setActive(false);
+    calcButtons->hide();
+    extButtons->hide();
+    screenshotDialog->hide();
+  }
+  repaint();
+}
+
+void GraphWidget::viewSlot(bool min)
+{
+  if(min)
+  {
+    maximizeSlot(false);
+  }
+  else
+  {
+    maximizeSlot(true);
+  }
+
+  updateUIState();
+
+}
+
+
 void GraphWidget::solveTypeSlot(int type)
 {
-	switch(functionType->currentItem())
+/*	switch(functionType->currentItem())
 	{
 		case 0:	//normal
 		case 1:	//polar
@@ -277,7 +423,7 @@ void GraphWidget::solveTypeSlot(int type)
 			else if(type==3)
 				emit solveTypeSignal(9);
 			break;
-	}
+  }*/
 }
 
 void GraphWidget::functionTypeSlot(int fType)
@@ -406,18 +552,12 @@ void GraphWidget::editSlot(int type)
 
 void GraphWidget::catalogSlot()
 {
-	catalog->exec(toolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));
+//	catalog->exec(toolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));
 }
 
 void GraphWidget::dockWindowSlot()
 {
-	dockArea->moveDockWindow(toolBar);
-
-  if(solveMode)
-  {
-    modeBox->setCurrentIndex(0);
-    modeSlot(0);
-  }
+  updateUIState();
 }
 
 

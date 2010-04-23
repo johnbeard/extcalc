@@ -11,8 +11,8 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-The class of the matrix/vector tab window.
-Includes the matrix/vector window GUI and all needed math. functions.
+This class provides a window to render text and 2D-graphics output
+of extcalc scripts.
 
 ////////////////////////////////////////////////////////////////////////////////////////////*/
 

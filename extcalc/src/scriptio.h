@@ -343,14 +343,12 @@ class ScriptIOWidget :public TabWidget
   ScriptDisplay *output2D;
   /// Copy of the preferences for a running script. This is necessary to provied fixed settings for a running script code.
 	Preferences runningPref;
-  /// PushButton for maximizeing and minimizing the script display widget
-  QPushButton*maximizeButton;
-  /// Kill button to stop a running script
-  QPushButton*killButton;
-  /// Start button to execute script
-  QPushButton*runButton;
   /// Context menu for text area
 	Q3PopupMenu*contextMenu;
+  /// pointer to the standard buttons tool widget provided by the MainObject class
+  StandardButtons*calcButtons;
+  /// pointer to the ext buttons tool widget provided by the MainObject class
+  ExtButtons*extButtons;
 	
   ///
   int ioFieldWidth;
@@ -370,8 +368,6 @@ class ScriptIOWidget :public TabWidget
 	int countDifference;
 	bool errorFlag;
 
-	Q3ToolBar*toolBar;
-
 	bool scriptExec;
 	ScriptThread*script;
 	Script*scriptObject;
@@ -379,7 +375,7 @@ class ScriptIOWidget :public TabWidget
 	QMutex*mutex;
 
   QScrollArea * scrollArea;
-	QPixmap *maximizeIcon,*minimizeIcon,*runIcon,*killIcon;
+  QAction*maximizeAction,*runAction,*killAction;
 	
 	QTimer*t;
 	int timerInterval,redrawTime;
@@ -387,13 +383,12 @@ class ScriptIOWidget :public TabWidget
   int selectStartColumn,selectStartRow,selectEndColumn,selectEndRow;
 	int displayType;
 	int modeRequest;
-//	int menuBottom;
 	bool autosize;
 
 	Q_OBJECT
 
 	public:
-		ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWidget*shareContext);
+    ScriptIOWidget(QWidget*parent,Preferences pr,Variable *va,QGLWidget*shareContext,StandardButtons*cB,ExtButtons*eB);
 
 		~ScriptIOWidget()
 		{
@@ -403,8 +398,8 @@ class ScriptIOWidget :public TabWidget
 		void setPref(Preferences newPref)
 		{
 			pref=newPref;
-			calcButtons->setPref(pref);
-			extButtons->setPref(pref);
+//			calcButtons->setPref(pref);
+//			extButtons->setPref(pref);
 		}
 
 		void searchScripts(QString*code);
@@ -415,6 +410,9 @@ class ScriptIOWidget :public TabWidget
 		void selectText(int startx,int starty,int endx,int endy);
 		void setDisplayMode(int);
 
+  private:
+    void updateUI();
+
 	protected:
 		virtual void resizeEvent(QResizeEvent*);
 		virtual void paintEvent(QPaintEvent*);
@@ -424,7 +422,7 @@ class ScriptIOWidget :public TabWidget
 
 	public slots:
 		void getPref(Preferences newPref);
-		void maximizeButtonSlot();
+    void viewSlot(bool);
 		void killSlot();
 		void processText(QString text);
 		void runScript(QString*code);

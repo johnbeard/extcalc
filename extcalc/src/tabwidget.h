@@ -21,9 +21,8 @@ This is the class provides an empty tab subwindow.
 
 #include "buttons.h"
 #include <QWidget>
-#include <q3toolbar.h>
-#include <q3dockarea.h>
 #include <QGridLayout>
+#include <QToolBar>
 
 
 
@@ -31,44 +30,53 @@ class TabWidget :public QWidget
 {
 
 
-	bool maximized;
-	
+
 	QGridLayout *mainLayout,*buttonLayout,*maximizeLayout;
 	int subWidgetCount;
 	int dockAreaPos;
 	QWidget*mainWidget;
 	QWidget**subWidgets;
+  QString descriptor;
+	bool maximized;
 	
 	
 	Q_OBJECT
 			
 	protected:
-	StandardButtons*calcButtons;
-	ExtButtons*extButtons;
 	Preferences pref;
 	Variable *vars;
-	ThreadSync*threadData;
-	Q3DockArea*dockArea;
+  ThreadSync*threadData;
+  QToolBar *toolBar;
+  QWidget *parent;
 	
 	public:
-		TabWidget(QWidget*parent,Preferences p,Variable *va,ThreadSync*td, bool max);
+    TabWidget(QWidget*par,Preferences p,Variable *va,ThreadSync*td,QString desc, bool max);
 	
 		virtual void setPref(Preferences newPref)=0;
 		bool isMaximized()
 		{return maximized;}
+
+    QString getDescriptor()
+    {return descriptor;}
+
+    virtual QToolBar*getToolBar()
+    {
+      return toolBar;
+    }
 
 	protected:
 		void setMainWidget(QWidget*);
 		void addSubWidget(QWidget*);
 		void replaceSubWidget(QWidget*,int);
 		void removeSubWidget(int);
-		void setDockArea(int pos);
 
 
 	public slots:
 
 		virtual void getPref(Preferences newPref)=0;
 		void maximizeSlot(bool maximize);
+
+
 };
 
  

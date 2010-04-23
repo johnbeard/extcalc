@@ -18,41 +18,78 @@ any later version.
 #include <QResizeEvent>
 #include <Q3ValueList>
 
-/*
-void TableWidget::resizeEvent(QResizeEvent*)
-{
-	int width=geometry().right() - geometry().left();
-	int height=geometry().bottom() - geometry().top();
+  TableWidget::TableWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td,StandardButtons*cB,ExtButtons*eB) :TabWidget(parent,p,va,td,"table",false)
+  {
+
+    extButtons=eB;
+    calcButtons=cB;
+    horzSplit=new QSplitter(Qt::Horizontal,this);
+    vertSplit=new QSplitter(Qt::Vertical,horzSplit);
+    functionTable=new FunctionTable(vertSplit,pref);
+    inputLine=new QLineEdit(vertSplit);
+    outputTable=new CalcTable(horzSplit,0,true);
+    outputTable->setNumRows(10);
+    outputTable->setNumCols(4);
+    horzHeader=outputTable->horizontalHeader();
+    vertHeader=outputTable->verticalHeader();
+    horzHeader->setClickEnabled(true);
+    vertHeader->setClickEnabled(true);
+    catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX,this);
+    toolBar=new QToolBar(parent);
+
+    setMainWidget(horzSplit);
 
 
-	if(fullscreen)
-	{
-//		outputTable->setGeometry(20,50,width-40,height-100);
-		horzSplit->setGeometry(20,menuBottom+40,width-40,height-100);
-		dockArea->setGeometry(0,menuBottom,width,35);
-		
-//		calculateButton->setGeometry(20,height-45,90,35);
-//		typeBox->setGeometry(120,height-45,90,35);
-//		maximizeButton->setGeometry(220,height-45,90,35);
-	}
-	else
-	{
-//		functionTable->setGeometry(20,50,width/2-30,height-320);
-//		outputTable->setGeometry(width/2+10,50,width/2-30,height-290);
-//		inputLine->setGeometry(20,height-260,width/2-30,20);
-		
-		horzSplit->setGeometry(20,50,width-40,height-290);
-	
-		standardButtons->setGeometry(20,height-220,280,200);
-		extButtons->setGeometry(width/2+10,height-180,300,160);
-		
-//		calculateButton->setGeometry(width/2+15,height-220,90,35);
-//		typeBox->setGeometry(width/2+115,height-220,90,35);
-//		maximizeButton->setGeometry(width/2+215,height-220,90,35);
-		dockArea->setGeometry(width/2+15,height-220,width/2-35,35);
-	}
-}
-*/
+
+ //   calculateButton=new QPushButton(TABLEH_STR1,toolBar);
+ //   maximizeButton=new QPushButton(*maximizeIcon,"",toolBar);
+    typeBox=new QComboBox(toolBar);
+ //   catalogButton=new QPushButton(*catalogIcon,"",toolBar);
+ //   catalogButton->setFixedWidth(30);
+ //   maximizeButton->setFixedWidth(30);
+
+    calculateAction=new QAction("Calculate",toolBar);
+    maximizeAction=new QAction(QIcon(":/view_top_bottom.png"),"",toolBar);
+    maximizeAction->setCheckable(true);
+    maximizeAction->setChecked(true);
+    catalogAction=new QAction(QIcon(":/catalog.png"),"",toolBar);
+    catalogAction->setMenu(catalog);
+
+    toolBar->addAction(calculateAction);
+    toolBar->addAction(maximizeAction);
+    toolBar->addWidget(typeBox);
+    toolBar->addAction(catalogAction);
+
+//		QToolTip::add(maximizeButton,TABLEH_STR13);
+//		QToolTip::add(typeBox,TABLEH_STR14);
+//		QToolTip::add(catalogButton,TABLEH_STR15);
+
+    typeBox->insertItem(TABLEH_STR3);
+    typeBox->insertItem(TABLEH_STR4);
+    typeBox->insertItem(TABLEH_STR5);
+    typeBox->insertItem(TABLEH_STR6);
+    typeBox->insertItem(TABLEH_STR7);
+    typeBox->insertItem(TABLEH_STR9);
+
+    Q3ValueList<int> s = horzSplit->sizes();
+    s[1]=300;
+    s[0]=300;
+    horzSplit->setSizes(s);
+
+
+    QObject::connect(functionTable,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+    QObject::connect(functionTable,SIGNAL(currentChanged(int,int)),this,SLOT(selectionChangedSlot(int,int)));
+    QObject::connect(functionTable,SIGNAL(textEditStarted(QString)),this,SLOT(tableEditSlot(QString)));
+    QObject::connect(inputLine,SIGNAL(returnPressed()),this,SLOT(inputTextChanged()));
+    QObject::connect(inputLine,SIGNAL(lostFocus()),this,SLOT(inputTextChanged()));
+    QObject::connect(calculateAction,SIGNAL(triggered()),this,SLOT(calculateButtonSlot()));
+    QObject::connect(maximizeAction,SIGNAL(triggered(bool)),this,SLOT(viewSlot(bool)));
+    QObject::connect(typeBox,SIGNAL(activated(const QString&)),this,SLOT(typeBoxSlot(const QString&)));
+    QObject::connect(horzHeader,SIGNAL(clicked(int)),this,SLOT(horzHeaderSlot(int)));
+    QObject::connect(vertHeader,SIGNAL(clicked(int)),this,SLOT(vertHeaderSlot(int)));
+    QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(processText(QString)));
+//    QObject::connect(catalogButton,SIGNAL(clicked()),this,SLOT(catalogSlot()));
+  }
 
 
 void TableWidget::setPref(Preferences p)
@@ -107,8 +144,8 @@ void TableWidget::setPref(Preferences p)
 		horzValues[c]=c*tableZStep+pref.tableZStart;
 
 
-	calcButtons->setPref(pref);
-	extButtons->setPref(pref);
+//	calcButtons->setPref(pref);
+//	extButtons->setPref(pref);
 	functionTable->setPref(pref);
 }
 
@@ -299,47 +336,33 @@ void TableWidget::calculateButtonSlot()
 	}
 }
 
+void TableWidget::updateUI()
+{
+    if(isVisible() && !isMaximized())
+  {
+    calcButtons->show();
+    extButtons->show();
+  }
+  else if(isVisible() && isMaximized())
+  {
+    calcButtons->hide();
+    extButtons->hide();
+  }
+}
 
-void TableWidget::maximizeButtonSlot()
+void TableWidget::viewSlot(bool min)
 {
 	
-	if(isMaximized())
+  if(min)
 	{
 		maximizeSlot(false);
-		maximizeButton->setIconSet(*maximizeIcon);
 	}
 	else {
 		maximizeSlot(true);
-		maximizeButton->setIconSet(*minimizeIcon);
-	}
-/*	if(fullscreen)
-	{
+  }
 
-		
-		standardButtons->show();
-		extButtons->show();
-		Q3ValueList<int> s = horzSplit->sizes();
-		s[1]=(s[0]+s[1])/2;
-		s[0]=s[1];
-		horzSplit->setSizes(s);
-//		functionTable->show();
-//		inputLine->show();
-	}
-	else 
-	{
-		
-		standardButtons->hide();
-		extButtons->hide();
-		Q3ValueList<int> s = horzSplit->sizes();
-		s[1]=s[0]+s[1];
-		s[0]=0;
-		horzSplit->setSizes(s);
-//		functionTable->hide();
-//		inputLine->hide();
-	}
-	fullscreen=!fullscreen;
-	resizeEvent(NULL);
-	*/
+  updateUI();
+
 }
 
 void TableWidget::typeBoxSlot(const QString&str)
@@ -361,7 +384,7 @@ void TableWidget::typeBoxSlot(const QString&str)
 }
 
 
-void TableWidget::buttonInputSlot(QString text)
+void TableWidget::processText(QString text)
 {
 	
 	if(text == "calculate")
@@ -493,13 +516,8 @@ void TableWidget::tableMenuSlot(int item)
 
 void TableWidget::dockWindowSlot()
 {
-	dockArea->moveDockWindow(toolBar);
-}
-
-
-void TableWidget::catalogSlot()
-{
-	catalog->exec(toolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));
+  updateUI();
+  repaint();
 }
 
 

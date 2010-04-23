@@ -25,10 +25,8 @@ This is the class for the calculator tab window.
 #include <qcombobox.h>
 
 #include <QWidget>
-#include <q3toolbar.h>
-#include <q3dockarea.h>
+#include <QToolBar>
 #include <qicon.h>
-#include <q3popupmenu.h>
 #include <qtooltip.h>
 //Added by qt3to4:
 #include <QPixmap>
@@ -40,52 +38,33 @@ This is the class for the calculator tab window.
 class CalcWidget :public TabWidget
 {
 	CalcInput*textEdit;
-//	StandardButtons*calcButtons;
-//	ExtButtons*extButtons;
-//	Preferences pref;
-	int menuBottom;
 
-//	bool maximized;
-//	Variable *vars;
-//	ThreadSync*threadData;
-	
-	Q3ToolBar*toolBar;
-//	Q3DockArea*dockArea;
+	int menuBottom;	
+
 	QComboBox *angleBox,*baseBox,*typeBox;
-	QPixmap *minimizeIcon,*angleIcon,*maximizeIcon,*scientificIcon,*baseIcon,*catalogIcon;
 	Catalog *catalog,*constants;
-	QPushButton* catalogButton,*viewButton,*constantsButton;
+  QAction*maximizeAction,*catalogAction,*constantsAction;
+  StandardButtons*calcButtons;
+  ExtButtons*extButtons;
 
 	Q_OBJECT
 
-//	QLabel *text1,*text2,*text3;
-//	QLabel *num1,*num2,*num3,*num4;
-
-
-
-
 	public:
-	CalcWidget(QWidget*parent,Preferences p,Variable *va,ThreadSync*td);
+  CalcWidget(QWidget*parent,Preferences p,Variable *va,ThreadSync*td,StandardButtons*cB,ExtButtons*eB);
 	
 	void setPref(Preferences newPref);
 
-	
+  private:
+  void updateUI();
 
-protected:
-	
-//	virtual void resizeEvent(QResizeEvent*);
-
-	
 public slots:
 
 	void getPref(Preferences newPref);
-	void viewSlot();
+  void viewSlot(bool);
 	void baseSlot(int);
 	void angleSlot(int);
 	void typeSlot(int);
 	void editSlot(int);
-	void catalogSlot();
-	void constantsSlot();
 	void dockWindowSlot();
 
 	

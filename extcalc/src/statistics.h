@@ -30,8 +30,7 @@ Graphical results were shown by the graphics window class.
 #include <qlabel.h>
 #include <qsplitter.h>
 #include <qpushbutton.h>
-#include <q3toolbar.h>
-#include <q3dockarea.h>
+#include <QToolBar>
 #include <qicon.h>
 #include <q3popupmenu.h>
 #include <qtooltip.h>
@@ -67,10 +66,11 @@ Graphical results were shown by the graphics window class.
 
 class StatisticsWidget :public TabWidget
 {
+  StandardButtons*calcButtons;
+  ExtButtons*extButtons;
 	FunctionTable *functionTable;
 	Q3Table *lists;
 	QSplitter *horzSplit,*vertSplit;
-	Q3ToolBar*toolBar;
 	QPixmap *minimizeIcon,*maximizeIcon,*printIcon,*catalogIcon;
 	Catalog *catalog;
 	QComboBox *typeBox, *functionTypeBox,*copyFunction,*listNumberBox;
@@ -80,6 +80,7 @@ class StatisticsWidget :public TabWidget
 	QLineEdit * result,*inputLine;
 	QFrame *toolFrame;
 	QGridLayout *toolFrameLayout;
+  QAction*printAction,*maximizeAction,*catalogAction;
 	
 	double xmin,xmax,ymin,ymax;
 	bool print,functionChanged;
@@ -88,22 +89,25 @@ class StatisticsWidget :public TabWidget
 
 	Q_OBJECT
 	public:
-                StatisticsWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td);
+    StatisticsWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td,StandardButtons*cB,ExtButtons*eB);
 
 		void setPref(Preferences);
 		void writeListsFile();
 		void readListsFile();
 		void setCoordinateSystem();
 
+  private:
+    void updateUI();
+
 	public slots:
 		void getPref(Preferences);
-		void maximizeButtonSlot();
+    void viewSlot(bool);
 		void typeBoxSlot(int);
 		void calculateButtonSlot();
 		void itemChangedSlot(int,int);
 		void copyButtonSlot();
 		void printButtonSlot();
-		void buttonInputSlot(QString);
+    void processText(QString);
 		void redrawGraphSlot();
 		void dockWindowSlot();
 		void catalogSlot();

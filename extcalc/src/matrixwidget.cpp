@@ -17,85 +17,150 @@ any later version.
 //Added by qt3to4:
 #include <QResizeEvent>
 
-/*
-void MatrixWidget::resizeEvent(QResizeEvent*)
+
+
+MatrixWidget::MatrixWidget(QWidget*parent,Preferences p,Variable*va,ThreadSync*td,StandardButtons*cB,ExtButtons*eB) :TabWidget(parent,p,va,td,"matrix",false)
 {
-	int width=geometry().right() - geometry().left();
-	int height=geometry().bottom() - geometry().top();
+  currentVar=0;
+  state=MATCALC;
 
-	
-//	varTable->setGeometry(20,50,width/4-30,height-290);
-//	outputTable->setGeometry(width/4+10,50,3*width/4-30,height-290);
-	split->setGeometry(20,50,width-40,height-290);
+  calcButtons=cB;
+  extButtons=eB;
 
-//	operationBox->setGeometry(320,height-220,145,35);
-//	sprodButton->setGeometry(490,height-220,35,35);
-//	invertButton->setGeometry(535,height-220,35,35);
-//	detButton->setGeometry(580,height-220,35,35);
-	dockArea->setGeometry(320,height-220,width-340,35);
+  split=new QSplitter(Qt::Horizontal,this);
 
-	switch(state)
-	{
-		case MATCALC:
-			standardButtons->setGeometry(20,height-220,280,200);
-			calcWidget->setGeometry(320,height-180,width-340,160);
-			break;
-		case MATLSE:
-			matrixLabel->setGeometry(20,height-220,140,20);
-			vectorLabel->setGeometry(160,height-220,140,20);
-			matrixBox->setGeometry(20,height-190,120,25);
-			vectorBox->setGeometry(160,height-190,120,25);
-			size1Label->setGeometry(20,height-155,100,20);
-			size1Box->setGeometry(140,height-155,85,20);
-			sizeButton->setGeometry(230,height-155,50,20);
-			size2Label->setGeometry(20,height-135,280,80);
-			calcButton->setGeometry(180,height-45,100,25);
-			resultTable->setGeometry(320,height-180,width-340,160);
-			break;
-		case MATGENERATE:
-			calcWidget->setGeometry(320,height-180,width-340,160);
-			vectorLabel->setGeometry(20,height-220,140,20);
-			matrixLabel->setGeometry(160,height-220,140,20);
-			typeBox->setGeometry(20,height-190,120,25);
-			matrixBox->setGeometry(160,height-190,120,25);
-			size1Label->setGeometry(20,height-155,100,20);
-			size1Box->setGeometry(140,height-155,85,20);
-			sizeButton->setGeometry(230,height-155,50,20);
-			label1->setGeometry(20,height-130,140,20);
-			input1->setGeometry(160,height-130,120,20);
-			label2->setGeometry(20,height-105,140,20);
-			input2->setGeometry(160,height-105,120,20);
-			label3->setGeometry(20,height-80,140,20);
-			input3->setGeometry(160,height-80,120,20);
-			calcButton->setGeometry(180,height-45,100,25);
-			break;
-		case MATANALYSE:
-			matrixLabel->setGeometry(20,height-220,120,25);
-			matrixBox->setGeometry(160,height-220,120,25);
-			size2Label->setGeometry(20,height-190,240,25);
-			label1->setGeometry(20,height-160,140,20);
-			input1->setGeometry(160,height-160,120,20);
-			label2->setGeometry(20,height-135,140,20);
-			input2->setGeometry(160,height-135,120,20);
-			label3->setGeometry(20,height-110,140,20);
-			input3->setGeometry(160,height-110,120,20);
-			vectorLabel->setGeometry(320,height-180,width-340,20);
-			resultTable->setGeometry(320,height-155,width-340,135);
-			calcButton->setGeometry(180,height-45,100,25);
-			break;
-		case MATINV:
-			matrixLabel->setGeometry(20,height-220,120,25);
-			matrixBox->setGeometry(140,height-220,140,25);
-			size1Label->setGeometry(20,height-180,100,20);
-			size1Box->setGeometry(140,height-180,85,20);
-			sizeButton->setGeometry(230,height-180,50,20);
-			size2Label->setGeometry(20,height-150,280,80);
-			calcButton->setGeometry(180,height-45,100,25);
-			resultTable->setGeometry(320,height-180,width-340,160);
-			break;
-	}
+  varTable=new CalcTable(split,0,true);
+  outputTable=new CalcTable(split,0,true);
+  outputTable->setNumRows(10);
+  outputTable->setNumCols(4);
+
+
+  setMainWidget(split);
+
+  varTable->setNumRows(27);
+  varTable->setNumCols(3);
+  QString headLine("A");
+  for(int c=0; c<26; c++)
+  {
+    headLine[0]=(char)(c+65);
+    varTable->verticalHeader()->setLabel(c,headLine);
+  }
+  varTable->verticalHeader()->setLabel(26,"ans");
+  varTable->horizontalHeader()->setLabel(0,MATRIXWIDGETH_STR1);
+  varTable->horizontalHeader()->setLabel(1,MATRIXWIDGETH_STR2);
+  varTable->horizontalHeader()->setLabel(2,MATRIXWIDGETH_STR3);
+  varTable->setSelectionMode(Q3Table::SingleRow);
+  varTable->selectRow(currentVar);
+  varTable->setColumnReadOnly(0,true);
+  setVarTable();
+
+  Q3ValueList<int> s = split->sizes();
+  s[0]=150;
+  s[1]=450;
+  split->setSizes(s);
+
+  calcWidget=new CalcInput(this,vars,threadData,true);
+  calcWidget->hide();
+
+  toolBar=new QToolBar(parent);
+
+  maximizeAction=new QAction(QIcon(":/view_top_bottom.png"),"",toolBar);
+  maximizeAction->setCheckable(true);
+  maximizeAction->setChecked(true);
+
+  catalog=new Catalog(CATMATHSTD | CATMATHCOMPLEX | CATMATRIX,this);
+  catalogAction=new QAction(QIcon(":/catalog.png"),"",toolBar);
+  catalogAction->setMenu(catalog);
+
+  typeBox=new QComboBox(toolBar);
+  typeBox->insertItem(MATRIXWIDGETH_STR12);
+  typeBox->insertItem(MATRIXWIDGETH_STR13);
+  typeBox->insertItem(MATRIXWIDGETH_STR14);
+  typeBox->insertItem(MATRIXWIDGETH_STR15);
+  typeBox->insertItem(MATRIXWIDGETH_STR16);
+  typeBox->insertItem(MATRIXWIDGETH_STR17);
+  typeBox->insertItem(MATRIXWIDGETH_STR18);
+
+  toolBar->addAction(maximizeAction);
+  toolBar->addWidget(typeBox);
+  toolBar->addAction(catalogAction);
+
+
+//  operationBox=new QComboBox(toolBar);
+ // sprodButton=new QPushButton(getUnicode(DEGREESTRING),toolBar);
+ // invertButton=new QPushButton(getUnicode(8315)+getUnicode(185),toolBar);
+ // detButton=new QPushButton("det",toolBar);
+ // catalogButton=new QPushButton(*catalogIcon,"",toolBar);
+//  operationBox->hide();
+
+//  operationBox->insertItem(MATRIXWIDGETH_STR4);
+//  operationBox->insertItem(MATRIXWIDGETH_STR5);
+//  operationBox->insertItem(MATRIXWIDGETH_STR6);
+//  operationBox->insertItem(MATRIXWIDGETH_STR7);
+//  operationBox->insertItem(MATRIXWIDGETH_STR8);
+
+//  addSubWidget(calcWidget);
+//  calcWidget->setFixedHeight(160);
+
+/*  size1Box=new QSpinBox(1,20,1,this);
+  size2Box=new QSpinBox(1,20,1,this);
+  size1Label=new QLabel(" ",this);
+  size2Label=new QLabel(" ",this);
+  matrixLabel=new QLabel(" ",this);
+  vectorLabel=new QLabel(" ",this);
+  label1=new QLabel(" ",this);
+  label2=new QLabel(" ",this);
+  label3=new QLabel(" ",this);
+  input1=new QLineEdit(this);
+  input2=new QLineEdit(this);
+  input3=new QLineEdit(this);
+  calcButton=new QPushButton(MATRIXWIDGETH_STR9,this);
+  sizeButton=new QPushButton(MATRIXWIDGETH_STR10,this);
+  resultTable=new CalcTable(this,0,true);
+  matrixBox=new QComboBox(this);
+  vectorBox=new QComboBox(this);*/
+
+
+  /*invertButton->setFixedWidth(30);
+  detButton->setFixedWidth(30);
+  sprodButton->setFixedWidth(30);
+  catalogButton->setFixedWidth(30);*/
+/*
+  vectorBox->insertItem(MATRIXWIDGETH_STR11);
+  for(int c=0; c<26; c++)
+  {
+    headLine[0]=(char)(c+65);
+    matrixBox->insertItem(headLine);
+    vectorBox->insertItem(headLine);
+  }*/
+
+//      setDockArea(1);
+
+  resetInterface();
+
+
+
+//			QObject::connect(calcButtons,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+//  QObject::connect(sprodButton,SIGNAL(clicked()),this,SLOT(sprodButtonSlot()));
+//  QObject::connect(invertButton,SIGNAL(clicked()),this,SLOT(invertButtonSlot()));
+//  QObject::connect(detButton,SIGNAL(clicked()),this,SLOT(detButtonSlot()));
+//  QObject::connect(operationBox,SIGNAL(activated(int)),this,SLOT(operationBoxSlot(int)));
+  QObject::connect(calcWidget,SIGNAL(prefChange(Preferences)),this,SLOT(getPref(Preferences)));
+//			QObject::connect(calcButtons,SIGNAL(emitText(QString)),this,SLOT(buttonInputSlot(QString)));
+  QObject::connect(varTable,SIGNAL(currentChanged(int,int)),this,SLOT(varSelectionSlot(int,int)));
+  QObject::connect(varTable,SIGNAL(valueChanged(int,int)),this,SLOT(varChangedSlot(int,int)));
+//  QObject::connect(outputTable,SIGNAL(valueChanged(int,int)),this,SLOT(outputChangedSlot(int,int)));
+//  QObject::connect(calcWidget,SIGNAL(calcSignal()),this,SLOT(enterSlot()));
+//  QObject::connect(calcButton,SIGNAL(pressed()),this,SLOT(calcButtonSlot()));
+//  QObject::connect(matrixBox,SIGNAL(activated(int)),this,SLOT(matrixBoxSlot(int)));
+//  QObject::connect(vectorBox,SIGNAL(activated(int)),this,SLOT(vectorBoxSlot(int)));
+  QObject::connect(typeBox,SIGNAL(activated(int)),this,SLOT(typeBoxSlot(int)));
+//  QObject::connect(size1Box,SIGNAL(valueChanged(int)),this,SLOT(size1BoxSlot(int)));
+//  QObject::connect(sizeButton,SIGNAL(pressed()),this,SLOT(sizeButtonSlot()));
+  QObject::connect(catalog,SIGNAL(menuSignal(QString)),this,SLOT(processText(QString)));
+  QObject::connect(maximizeAction,SIGNAL(triggered(bool)),this,SLOT(viewSlot(bool)));
+//  QObject::connect(catalogButton,SIGNAL(clicked()),this,SLOT(catalogSlot()));
 }
-*/
 
 void MatrixWidget::setVarTable()
 {
@@ -210,7 +275,7 @@ void MatrixWidget::resizeVar(int var,int rows,int cols)
 
 void MatrixWidget::resetInterface()
 {
-	size1Box->hide();
+/*	size1Box->hide();
 	size2Box->hide();
 	matrixBox->hide();
 	vectorBox->hide();
@@ -236,7 +301,7 @@ void MatrixWidget::resetInterface()
 	{
 		case MATCALC:
 			calcWidget->show();
-			calcButtons->show();
+//			calcButtons->show();
 			break;
 		case MATLSE:
 			size1Box->setMinValue(1);
@@ -327,7 +392,7 @@ void MatrixWidget::resetInterface()
 			matrixBoxSlot(currentVar);
 			break;
 	}
-	resizeEvent(NULL);
+  resizeEvent(NULL);*/
 }
 
 void MatrixWidget::setHeader(CalcTable*table)
@@ -348,7 +413,7 @@ void MatrixWidget::setHeader(CalcTable*table)
 void MatrixWidget::setPref(Preferences p)
 {
 	pref=p;
-	calcButtons->setPref(pref);
+//	calcButtons->setPref(pref);
 	calcWidget->setPref(pref);
 }
 
@@ -358,6 +423,28 @@ void MatrixWidget::getPref(Preferences p)
 	emit prefChange(pref);
 }
 
+void MatrixWidget::updateUI()
+{
+  if(isVisible() && !isMaximized())
+  {
+    calcButtons->show();
+    extButtons->show();
+  }
+  else if(isVisible() && isMaximized())
+  {
+    calcButtons->hide();
+    extButtons->hide();
+  }
+}
+
+void MatrixWidget::viewSlot(bool min)
+{
+  if(min)
+    maximizeSlot(false);
+  else maximizeSlot(true);
+
+  updateUI();
+}
 
 void MatrixWidget::sprodButtonSlot()
 {
@@ -384,7 +471,7 @@ void MatrixWidget::operationBoxSlot(int index)
 	resetInterface();
 }
 
-void MatrixWidget::buttonInputSlot(QString text)
+void MatrixWidget::processText(QString text)
 {
 	if(text == "calculate")
 	{
@@ -460,7 +547,7 @@ void MatrixWidget::outputChangedSlot(int row,int col)
 
 void MatrixWidget::matrixBoxSlot(int)
 {
-	if(state==MATLSE || state==MATGENERATE || state==MATINV)
+/*	if(state==MATLSE || state==MATGENERATE || state==MATINV)
 	{
 		int size=threadData->dimension[matrixBox->currentItem()][0];
 		if(threadData->dimension[matrixBox->currentItem()][1]>size)
@@ -562,11 +649,11 @@ void MatrixWidget::matrixBoxSlot(int)
 		setVarTable();
 		setOutputTable(currentVar);
 	}
-	
+  */
 }
 
 void MatrixWidget::vectorBoxSlot(int)
-{
+{/*
 	if(state==MATLSE && vectorBox->currentItem()!=0)
 	{
 		if(vectorBox->currentItem()-1==matrixBox->currentItem())
@@ -582,11 +669,11 @@ void MatrixWidget::vectorBoxSlot(int)
 			setOutputTable(currentVar);
 			size1BoxSlot(threadData->dimension[currentVar][0]);
 		}
-	}
+  }*/
 }
 
 void MatrixWidget::size1BoxSlot(int newsize)
-{
+{/*
 	if(state==MATLSE)
 	{
 		if(vectorBox->currentItem()==0)
@@ -616,11 +703,11 @@ void MatrixWidget::size1BoxSlot(int newsize)
 				size2Label->setText(MATRIXWIDGETC_STR21);
 			}
 		}
-	}
+  }*/
 }
 
 void MatrixWidget::sizeButtonSlot()
-{
+{/*
 	if(state==MATLSE)
 	{
 		int newsize=size1Box->value();
@@ -645,13 +732,13 @@ void MatrixWidget::sizeButtonSlot()
 		resizeVar(matrixBox->currentItem(),newsize,newsize);
 		setVarTable();
 		setOutputTable(currentVar);
-	}
+  }*/
 }
 
 
 void MatrixWidget::typeBoxSlot(int index)
 {
-	if(state==MATGENERATE)
+/*	if(state==MATGENERATE)
 	{
 		switch(index)
 		{
@@ -711,24 +798,19 @@ void MatrixWidget::typeBoxSlot(int index)
 				input2->hide();
 				input3->hide();
 		}
-	}
+  }*/
 }
 
 void MatrixWidget::dockWindowSlot()
 {
-	dockArea->moveDockWindow(toolBar);
+  updateUI();
+  repaint();
 }
-
-void MatrixWidget::catalogSlot()
-{
-	catalog->exec(toolBar->mapToGlobal(QPoint(catalogButton->x(),catalogButton->y()+catalogButton->height())));
-}
-
 
 
 void MatrixWidget::calcButtonSlot()
 {
-	switch(state)
+/*	switch(state)
 	{
 		case MATLSE:
 		{
@@ -1031,7 +1113,7 @@ void MatrixWidget::calcButtonSlot()
 			free(matrix);
 			break;
 		}
-	}
+  }*/
 }
 
 

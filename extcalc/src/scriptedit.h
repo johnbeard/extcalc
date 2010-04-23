@@ -76,8 +76,8 @@ class ScriptWidget :public TabWidget
 {
 //	Preferences pref;
 //	Variable * vars;
-//	StandardButtons* standardButtons;
-//	ExtButtons* extButtons;
+  StandardButtons* calcButtons;
+  ExtButtons* extButtons;
 	Catalog *catalog;
 	Q3TextEdit*editor;
 	Q3ListView*fileBrowser;
@@ -95,18 +95,14 @@ class ScriptWidget :public TabWidget
 	bool currentTextChanged;
 	Q3ListViewItem*activeFileItem;
 	Q3ListViewItem*clickedFileItem;
-	Q3ToolBar*editorToolBar;
-//	Q3DockArea*dockArea;
-	QPixmap*newIcon,*saveIcon,*saveallIcon,*undoIcon,*redoIcon,*cutIcon,*copyIcon,*pasteIcon,*importIcon,*exportIcon,*runIcon,*minimizeIcon,*catalogIcon;
-//	QAction*newAction,*saveAction,*saveallAction,*undoAction,*redoAction,*cutAction,*copyAction,*pasteAction,*importAction,*exportAction,*runAction,*minimizeAction,*catalogAction;
-	QPushButton *newButton,*saveButton,*saveallButton,*undoButton,*redoButton,*cutButton,*copyButton,*pasteButton,*importButton,*exportButton,*runButton,*minimizeButton,*catalogButton;
-	
+  QAction*newAction,*saveAction,*saveallAction,*undoAction,*redoAction,*cutAction,*copyAction,*pasteAction,*importAction,*exportAction,*runAction,*maximizeAction,*catalogAction;
+
 	
 	
 	Q_OBJECT
 public:
 
-	ScriptWidget(QWidget*parent,Preferences p,Variable*va);
+  ScriptWidget(QWidget*parent,Preferences p,Variable*va,StandardButtons*cB,ExtButtons*eB);
 
 
 	void setPref(Preferences);
@@ -118,11 +114,15 @@ public:
 	bool quitProgram();
 	bool saveFile(QString path,QString content);
 	void createNumbers();
+
+private:
+  void updateUI();
+
 	
 public slots:
 	void getPref(Preferences);
-	void buttonInputSlot(QString);
-	void maximizeButtonSlot();
+  void processText(QString);
+  void viewSlot(bool);
 	void editSlot(int);
 	void showFile(Q3ListViewItem*);
 	void createFileBrowserMenu(Q3ListViewItem*,const QPoint&,int);
@@ -136,7 +136,6 @@ public slots:
 	void importSlot();
 	void exportSlot();
 	void dockWindowSlot();
-	void catalogSlot();
 
 protected:
 //virtual void resizeEvent(QResizeEvent*);
@@ -145,6 +144,7 @@ signals:
 	void prefChange(Preferences);
 	void runScript(QString*);
 	void controlScriptMenu(int);
+
 };
 
 

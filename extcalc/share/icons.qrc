@@ -7,5 +7,22 @@
         <file alias="drawrect" >rect.png</file>
         <file alias="drawrubber" >rubber.png</file>
         <file alias="drawtext" >text.png</file>
+        <file>catalog.png</file>
+        <file>exec.png</file>
+        <file>print.png</file>
+        <file>view_top_bottom.png</file>
+        <file>constants.png</file>
+        <file>editcopy.png</file>
+        <file>editcut.png</file>
+        <file>editdelete.png</file>
+        <file>editpaste.png</file>
+        <file>fileexport.png</file>
+        <file>fileimport.png</file>
+        <file>filenew.png</file>
+        <file>filesaveas.png</file>
+        <file>save_all.png</file>
+        <file>undo.png</file>
+        <file>exit.png</file>
+        <file>redo.png</file>
     </qresource>
 </RCC>
